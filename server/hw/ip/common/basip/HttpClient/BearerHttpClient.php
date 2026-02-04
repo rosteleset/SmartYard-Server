@@ -2,10 +2,22 @@
 
 namespace hw\ip\common\basip\HttpClient;
 
+/**
+ * HTTP client implementation using Bearer token authentication.
+ */
 final class BearerHttpClient implements HttpClientInterface
 {
+    /**
+     * Cached bearer token.
+     */
     private ?string $bearerToken = null;
 
+    /**
+     * @param string $url Base device URL.
+     * @param string $password User password.
+     * @param string $login Login used for authentication.
+     * @param string $apiPrefix API prefix path.
+     */
     public function __construct(
         private readonly string $url,
         private readonly string $password,
@@ -47,6 +59,11 @@ final class BearerHttpClient implements HttpClientInterface
         return json_decode($res, true) ?? $res;
     }
 
+    /**
+     * Refreshes bearer token using Basic authentication.
+     *
+     * @return void
+     */
     private function refreshBearerToken(): void
     {
         $basicClient = new BasicHttpClient($this->url, $this->login, $this->password, $this->apiPrefix);

@@ -2,8 +2,17 @@
 
 namespace hw\ip\common\basip\HttpClient;
 
+/**
+ * HTTP client implementation using Basic Authentication.
+ */
 final class BasicHttpClient implements HttpClientInterface
 {
+    /**
+     * @param string $url Base device URL.
+     * @param string $password Password for basic authentication.
+     * @param string $login Login for basic authentication.
+     * @param string $apiPrefix API prefix path.
+     */
     public function __construct(
         private readonly string $url,
         private readonly string $password,
