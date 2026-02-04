@@ -177,6 +177,9 @@
 
             // http timeout to get screenshots
             "http_timeout": 3,
+
+            // ffmpeg timeout to get screenshots in microseconds (default is 0 - no timeout)
+            "ffmpeg_timeout": 0,
         },
 
         "configs": {

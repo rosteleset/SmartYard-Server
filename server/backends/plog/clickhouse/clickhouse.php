@@ -23,6 +23,7 @@
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
             private $cron_process_events_scheduler;
             private $http_timeout;  // timeout for file_get_contents
+            private $ffmpeg_timeout;  // timeout for running ffmpeg in microseconds
 
             public function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
@@ -44,6 +45,7 @@
                 $this->back_time_shift_video_shot = $config['backends']['plog']['back_time_shift_video_shot'];
                 $this->cron_process_events_scheduler = $config['backends']['plog']['cron_process_events_scheduler'];
                 $this->http_timeout = $config['backends']['plog']['http_timeout'] ?? 3;  // default 3 seconds
+                $this->ffmpeg_timeout = $config['backends']['plog']['ffmpeg_timeout'] ?? 0;  // default 0 seconds
             }
 
             /**
@@ -178,7 +180,7 @@
                                         throw new \InvalidArgumentException("Invalid URL $urlOfScreenshot");
                                     }
                                     if (pathinfo(parse_url($urlOfScreenshot, PHP_URL_PATH), PATHINFO_EXTENSION) === 'mp4') {
-                                        system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
+                                        system("ffmpeg -y -timeout " . $this->ffmpeg_timeout . " -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                     } else {
                                         file_put_contents($filename, file_get_contents($urlOfScreenshot, false,
                                             stream_context_create(["http" => ["timeout" => $this->http_timeout]])));
