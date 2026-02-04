@@ -7,12 +7,12 @@ use DateTimeZone;
 use Exception;
 
 /**
- * Trait providing common functionality related to BASIP devices.
+ * Trait providing common functionality related to BasIP devices.
  */
 trait basip
 {
     /**
-     * Get timezone representation for BASIP
+     * Get timezone representation for BasIP devices.
      *
      * @param string $timezone Timezone identifier.
      * @return string UTC offset (UTC+03:00 for example).
@@ -33,20 +33,15 @@ trait basip
         }
     }
 
-    public function configureEventServer(string $url): void
-    {
-        ['host' => $server, 'port' => $port] = parse_url_ext($url);
-
-        $this->client->call('/v1/syslog/settings', 'POST', [
-            'enabled' => $url !== '',
-            'server' => [
-                'port' => $port,
-                'server' => $server,
-                'severity' => 6,
-            ],
-            'tag' => '',
-        ]);
-    }
+    /**
+     * Returns the name of the parameter that contains the timezone value.
+     *
+     * This method must be implemented by subclasses to define which
+     * parameter should be used to read/write the timezone.
+     *
+     * @return string The timezone parameter name.
+     */
+    abstract protected static function getTimezoneParamName(): string;
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
@@ -57,7 +52,7 @@ trait basip
         ]);
 
         $this->client->call('/v1/network/timezone', 'POST', [
-            'timezone' => self::getOffsetByTimezone($timezone),
+            $this->getTimezoneParamName() => self::getOffsetByTimezone($timezone),
         ]);
     }
 
@@ -117,12 +112,6 @@ trait basip
         return $dbConfig;
     }
 
-    protected function getEventServer(): string
-    {
-        $settings = $this->client->call('/v1/syslog/settings')['server'];
-        return 'http://' . $settings['server'] . ':' . $settings['port'];
-    }
-
     protected function getNtpConfig(): array
     {
         $ntp = $this->client->call('/v1/network/ntp');
@@ -131,7 +120,7 @@ trait basip
         return [
             'server' => $ntp['custom_server'] ?? '',
             'port' => 123,
-            'timezone' => $timezone['timezone'],
+            'timezone' => $timezone[$this->getTimezoneParamName()],
         ];
     }
 
