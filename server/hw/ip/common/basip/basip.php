@@ -43,6 +43,13 @@ trait basip
      */
     abstract protected static function getTimezoneParamName(): string;
 
+    /**
+     * Returns the API endpoint for changing the administrator password.
+     *
+     * @return string API path for the admin password endpoint.
+     */
+    abstract protected static function getAdminPasswordEndpoint(): string;
+
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->client->call('/v1/network/ntp', 'POST', [
@@ -52,7 +59,7 @@ trait basip
         ]);
 
         $this->client->call('/v1/network/timezone', 'POST', [
-            $this->getTimezoneParamName() => self::getOffsetByTimezone($timezone),
+            static::getTimezoneParamName() => self::getOffsetByTimezone($timezone),
         ]);
     }
 
@@ -80,23 +87,8 @@ trait basip
 
     public function setAdminPassword(string $password): void
     {
-        $params = [
-            'oldPassword' => $this->defaultPassword,
-            'newPassword' => $password,
-        ];
-
-        $this->client->call('/v1/device/settings/rtsp', 'POST', [
-            'username' => $this->login,
-            'password' => $password,
-
-            /*
-             * Perhaps this parameter should be removed from here.
-             * Bad audio in SIP if it's enabled.
-             */
-            'is_audio_enabled' => false,
-        ]);
-
-        $this->client->call('/v1/security/password/admin?' . http_build_query($params), 'POST');
+        $this->setDevicePassword($password);
+        $this->setRtspPassword($password);
     }
 
     public function syncData(): void
@@ -120,7 +112,7 @@ trait basip
         return [
             'server' => $ntp['custom_server'] ?? '',
             'port' => 123,
-            'timezone' => $timezone[$this->getTimezoneParamName()],
+            'timezone' => $timezone[static::getTimezoneParamName()],
         ];
     }
 
@@ -128,6 +120,41 @@ trait basip
     {
         $this->login = 'admin';
         $this->defaultPassword = '123456';
-        $this->apiPrefix = '/api';
+    }
+
+    /**
+     * Changes the administrator password used for WEB and API access.
+     *
+     * @param string $password New password.
+     * @return void
+     */
+    protected function setDevicePassword(string $password): void
+    {
+        $params = [
+            'oldPassword' => $this->defaultPassword,
+            'newPassword' => $password,
+        ];
+
+        $this->client->call(static::getAdminPasswordEndpoint() . '?' . http_build_query($params), 'POST');
+    }
+
+    /**
+     * Changes the password for RTSP.
+     *
+     * @param string $password New password.
+     * @return void
+     */
+    protected function setRtspPassword(string $password): void
+    {
+        $this->client->call('/v1/device/settings/rtsp', 'POST', [
+            'username' => $this->login,
+            'password' => $password,
+
+            /*
+             * Perhaps this parameter should be removed from here.
+             * Bad audio in SIP if it's enabled.
+             */
+            'is_audio_enabled' => false,
+        ]);
     }
 }

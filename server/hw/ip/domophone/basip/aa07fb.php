@@ -14,7 +14,7 @@ class aa07fb extends basip implements FreePassInterface
 
     public function __construct(string $url, string $password, bool $firstTime = false)
     {
-        $this->client = new BasicHttpClient($url, $password);
+        $this->client = new BasicHttpClient($url, $firstTime ? '123456' : $password);
         parent::__construct($url, $password, $firstTime);
     }
 

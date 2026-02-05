@@ -12,6 +12,11 @@ trait aa07fb
         return 'timezone';
     }
 
+    protected static function getAdminPasswordEndpoint(): string
+    {
+        return '/v1/security/password/admin';
+    }
+
     public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
