@@ -15,7 +15,7 @@ class aa07bd extends basip
 
     public function __construct(string $url, string $password, bool $firstTime = false)
     {
-        $this->client = new BearerHttpClient($url, $firstTime ? '123456' : $password);
+        $this->client = new BearerHttpClient(rtrim($url, '/'), $firstTime ? '123456' : $password);
         parent::__construct($url, $password, $firstTime);
     }
 
