@@ -1,4 +1,4 @@
-zzabbix_export:
+zabbix_export:
   version: '6.4'
   template_groups:
     - uuid: e858e071fe054cdabec002d7d99891e9
