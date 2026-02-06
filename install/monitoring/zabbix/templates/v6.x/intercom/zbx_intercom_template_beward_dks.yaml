@@ -95,7 +95,6 @@ zabbix_export:
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
-          delay: 1m
           history: 1h
           trends: '0'
           value_type: TEXT
@@ -134,6 +133,9 @@ zabbix_export:
               name: 'HTTP: port/service unreachable (ICMP OK)'
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
+              dependencies:
+                - name: 'ICMP: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_BEWARD_DKS/icmpping,#3)=0'
         - uuid: 08c81ea3a8fb4540a626cea86d095531
           name: 'BEWARD Intercom: uptime'
           type: DEPENDENT
