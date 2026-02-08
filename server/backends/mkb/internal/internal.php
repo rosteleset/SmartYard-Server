@@ -286,15 +286,18 @@
                 $options = [];
 
                 if ($sort) {
-                    $options["sort"] = $sort;
+                    $options["sort"] = [];
+                    foreach ($sort as $key => $dir) {
+                        $options["sort"][$key] = (int)$dir;
+                    }
                 }
 
                 if ($skip) {
-                    $options["skip"] = $skip;
+                    $options["skip"] = (int)$skip;
                 }
 
                 if ($limit) {
-                    $options["limit"] = $limit;
+                    $options["limit"] = (int)$limit;
                 }
 
                 return $this->get($query, $options);

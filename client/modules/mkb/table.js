@@ -172,7 +172,7 @@
                 }
             }
 
-            QUERY("mkb", "cards", false, { query, skip, limit }).
+            QUERY("mkb", "cards", { query, skip, limit, sort: { date: 1 } }, true).
             done(r => {
                 let cl = [];
 
