@@ -634,7 +634,7 @@
         $("#mainForm").html(`
             <div id='stickiesTable'>
                 <div class='p-0 mt-2 ml-0 mb-1 mr-0 row'>
-                    <div id='stickiesContainer' class='col p-0 m-0 dots d-flex flex-wrap align-content-start align-items-start' style='gap: 8px;'></div>
+                    <div id='stickiesContainer' class='col p-0 m-0 d-flex flex-wrap align-content-start align-items-start' style='gap: 8px;'></div>
                 </div>
             </div>
         `);
