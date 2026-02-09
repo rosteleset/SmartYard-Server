@@ -1,0 +1,11 @@
+{
+    "title": "BASIP AA-14FB",
+    "vendor": "BASIP",
+    "model": "AA-14FB",
+    "class": "aa07fb",
+    "eventServer": "basip",
+    "outputs": 2,
+    "camera": "basip",
+    "useSmartConfigurator": true,
+    "cmses": []
+}
