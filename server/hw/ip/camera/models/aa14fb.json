@@ -1,0 +1,9 @@
+{
+    "title": "BASIP AA-14FB",
+    "vendor": "BASIP",
+    "model": "AA-14FB",
+    "version": false,
+    "eventServer": "basip",
+    "class": "aa07fb",
+    "useSmartConfigurator": true
+}
