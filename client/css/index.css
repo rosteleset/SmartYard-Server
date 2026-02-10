@@ -1123,3 +1123,7 @@ code {
   padding-top: 7px;
   padding-left: 3px;
 }
+
+.tr-no-hover:hover {
+  background-color: inherit !important;
+}

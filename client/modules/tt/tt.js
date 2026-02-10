@@ -1935,6 +1935,7 @@
                 });
 
                 let pKeys = [];
+                let cellar = [];
 
                 if (issues.projection) {
                     pKeys = Object.keys(issues.projection);
@@ -1948,6 +1949,10 @@
                         }
                     }
                     pKeys = t;
+                }
+
+                if (filterName && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].cellar) {
+                    cellar = modules.tt.meta.filters[filterName].cellar;
                 }
 
                 let sortMenuItems = [
@@ -2073,9 +2078,17 @@
                     columns.push({
                         title: modules.tt.issueFieldTitle(pKeys[i], "list"),
                         nowrap: true,
-                        fullWidth: i == pKeys.length - 1,
+                        cellar: cellar.indexOf(pKeys[i]) >= 0,
+                        skip: 1,
                     });
                 };
+
+                for (let i = columns.length - 1; i >= 0; i--) {
+                    if (!columns[i].cellar) {
+                        columns[i].fullWidth = true;
+                        break;
+                    }
+                }
 
                 if (params.customFilter && params.customFilter !== true) {
                     let editor = ace.edit("filterEditor");

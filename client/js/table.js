@@ -149,8 +149,15 @@ function cardTable(params) {
         h += `<th><i class="fa fa-fw"></i></th>`;
     }
 
+    let columns = 0;
+    let cellar = 0;
+
     for (let i in params.columns) {
         if (params.columns[i].hidden) {
+            continue;
+        }
+        if (params.columns[i].cellar) {
+            cellar++;
             continue;
         }
         if (params.columns[i].fullWidth) {
@@ -158,6 +165,7 @@ function cardTable(params) {
         } else {
             h += `<th nowrap>${params.columns[i].title}</th>`;
         }
+        columns++;
     }
 
     if (hasDropDowns) {
@@ -195,6 +203,8 @@ function cardTable(params) {
         let h = '';
 
         for (let i = from; i < Math.min(rows.length, from + length); i++) {
+            let w = 0;
+
             h += `<tr`;
             if (rows[i].class) {
                 h += ` class="${rows[i].class}"`;
@@ -205,14 +215,17 @@ function cardTable(params) {
             h += `>`;
             if (typeof params.edit === "function") {
                 h += `<td class="hoverable pointer ${editClass}" data-uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
+                w++;
             }
+
             for (let j in rows[i].cols) {
-                if (rows[i].cols[j].hidden) {
+                if (rows[i].cols[j].hidden || params.columns[j].hidden || params.columns[j].cellar) {
                     continue;
                 }
                 h += `<td data-row-id="${i}" colId="${j}" data-uid="${rows[i].uid}"`;
-                if (j == params.columns.length - 1 && !hasDropDowns && params.dropDownHeader) {
+                if (j == columns - 1 && !hasDropDowns && params.dropDownHeader) {
                     h += ' colspan="2"';
+                    w++;
                 }
                 let clss = rows[i].cols[j].class ? (rows[i].cols[j].class + " ") : "";
                 if (typeof rows[i].cols[j].click === "function") {
@@ -243,7 +256,9 @@ function cardTable(params) {
                     h += '</div>';
                 }
                 h += "</td>";
+                w++;
             }
+
             if (rows[i].dropDown && hasDropDowns) {
                 h += `<td>`;
                 let t = '';
@@ -313,13 +328,59 @@ function cardTable(params) {
                     h += '<i class="fa fa-fw"></i>';
                 }
                 h += `</td>`;
+                w++;
             } else {
                 if (hasDropDowns) {
                     h += `<td><i class="fa fa-fw"></i></td>`;
+                    w++;
                 }
             }
             h += `</tr>`;
+
+            if (cellar) {
+                for (let j in rows[i].cols) {
+                    if (!rows[i].cols[j].hidden && !params.columns[j].hidden && !params.columns[j].cellar) {
+                        continue;
+                    }
+                    h += '<tr class="tr-no-hover">';
+                    if (params.columns[j].skip) {
+                        h += `<td colspan="${params.columns[j].skip}" style="border-top: none !important;">&nbsp;</td>`;
+                        h += `<td colspan="${w - params.columns[j].skip}" data-row-id="${i}" colId="${j}" data-uid="${rows[i].uid}"`;
+                    } else {
+                        h += `<td colspan="${w}" data-row-id="${i}" colId="${j}" data-uid="${rows[i].uid}"`;
+                    }
+                    let clss = rows[i].cols[j].class ? (rows[i].cols[j].class + " ") : "";
+                    if (typeof rows[i].cols[j].click === "function") {
+                        clss = `hoverable ${clickableClass} `;
+                    }
+                    if (rows[i].cols[j].nowrap) {
+                        clss += "cut-text ";
+                    }
+                    clss = $.trim(clss);
+                    if (clss) {
+                        h += ` class="${clss}"`;
+                    }
+                    h += ` width="100%" style="border-top: none !important;">`;
+                    if (rows[i].cols[j].ellipses) {
+                        h += '<div class="ellipses-parent">';
+                        h += '<div class="ellipses-children">';
+                    }
+                    if (typeof rows[i].cols[j].click === "string") {
+                        h += `<a href="${rows[i].cols[j].click}" class="nodec hoverable">${rows[i].cols[j].data}</a>`;
+                    } else {
+                        h += rows[i].cols[j].data;
+                    }
+                    if (rows[i].cols[j].ellipses) {
+                        h += '</div>';
+                        h += '</div>';
+                    }
+                    h += "</td>";
+                    h += '</tr>';
+                    w++;
+                }
+            }
         }
+
 
         return h;
     }

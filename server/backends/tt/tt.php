@@ -947,6 +947,7 @@
                             "shortName" => @$f["shortName"],
                             "sort" => @$f["sort"],
                             "hide" => @$f["hide"],
+                            "cellar" => @$f["cellar"],
                             "disableCustomSort" => !!@$f["disableCustomSort"],
                             "pipeline" => !!@$f["pipeline"],
                             "owner" => @$filter["metadata"]["owner"],
