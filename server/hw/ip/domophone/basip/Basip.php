@@ -8,13 +8,14 @@ use hw\Interface\{
     LanguageInterface,
 };
 use hw\ip\common\basip\HttpClient\HttpClientInterface;
+use hw\ip\domophone\basip\Enums\IdentifierType;
 use hw\ip\domophone\domophone;
 use hw\ValueObject\HousePrefix;
 
 /**
  * Abstract base class for BasIP intercoms.
  */
-abstract class basip extends domophone implements
+abstract class Basip extends domophone implements
     DbConfigUpdaterInterface,
     HousePrefixInterface,
     LanguageInterface

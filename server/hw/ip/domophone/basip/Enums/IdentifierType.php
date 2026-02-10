@@ -1,6 +1,6 @@
 <?php
 
-namespace hw\ip\domophone\basip;
+namespace hw\ip\domophone\basip\Enums;
 
 /**
  * Represents the type of identifiers used in the BasIP intercom.

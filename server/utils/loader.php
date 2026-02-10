@@ -78,10 +78,22 @@
         $class = $data['class'];
         $vendor = strtolower($data['vendor']);
 
-        $className = "hw\\ip\\$type\\$vendor\\custom\\$class";
-        if (!class_exists($className)) {
-            // If custom class is not found, use standard class
-            $className = "hw\\ip\\$type\\$vendor\\$class";
+        $namespacesToTry = [
+            "hw\\ip\\$type\\$vendor\\custom\\$class",
+            "hw\\ip\\$type\\$vendor\\Models\\$class",
+            "hw\\ip\\$type\\$vendor\\$class",
+        ];
+
+        $className = null;
+        foreach ($namespacesToTry as $namespace) {
+            if (class_exists($namespace)) {
+                $className = $namespace;
+                break;
+            }
+        }
+
+        if (!$className) {
+            throw new RuntimeException("Class '$class' not found for type '$type' and vendor '$vendor'");
         }
 
         return new $className($url, $password, $firstTime);

@@ -2,7 +2,7 @@
     "title": "BASIP AA-07BD",
     "vendor": "BASIP",
     "model": "AA-07BD",
-    "class": "aa07bd",
+    "class": "AA07BD",
     "eventServer": "basip",
     "outputs": 2,
     "camera": "basip",
