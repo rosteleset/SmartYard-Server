@@ -1,13 +1,14 @@
 <?php
 
-namespace hw\ip\domophone\basip;
+namespace hw\ip\domophone\basip\Models;
 
 use hw\ip\common\basip\HttpClient\BearerHttpClient;
+use hw\ip\domophone\basip\Basip;
 
 /**
  * Represents a BasIP AA-07BD intercom.
  */
-class aa07bd extends basip
+class AA07BD extends Basip
 {
     use \hw\ip\common\basip\aa07bd {
         transformDbConfig as protected aa07bdTransformDbConfig;
