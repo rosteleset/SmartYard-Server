@@ -28,12 +28,20 @@ function menu(config) {
     h += `<div class="dropdown">`;
     h += `<div id="${xid}" class="contextMenusGlobalList pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">`;
 
+    if (config.icon && config.text) {
+        h += '<div style="display: flex !important; flex-wrap: nowrap !important; align-items: center !important;">';
+    }
+
     if (config.icon) {
-        h += `<i class="mr-1 fa-fw ${config.icon}"></i>`
+        h += `<i class="fa-fw ${config.icon}"></i>`
     }
 
     if (config.text) {
         h += `<div class="${config.noHover ? "" : "hoverable"} ${config.icon ? "ml-1" : ""}">${config.text}</div>`;
+    }
+
+    if (config.icon && config.text) {
+        h += '</div>';
     }
 
     h += '</div>';

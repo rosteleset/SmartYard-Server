@@ -2461,10 +2461,10 @@
                                         });
                                     }
                                     if (id == "selectAll") {
-                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='ml-1 tableRowCheckbox' checked='checked'>");
+                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='tableRowCheckbox' checked='checked'>");
                                     }
                                     if (id == "unselectAll") {
-                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='ml-1 tableRowCheckbox'>");
+                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='tableRowCheckbox'>");
                                     }
                                 }
                             }),

@@ -168,25 +168,16 @@ function cardTable(params) {
         columns++;
     }
 
-    if (hasDropDowns) {
-        if (params.dropDownHeader) {
-            if (params.dropDownHeader.menu) {
-                h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
-            } else {
-                params.dropDownHeader.id = "dropDownHeader" + md5(guid());
-                h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
-            }
+    if (params.dropDownHeader) {
+        if (params.dropDownHeader.menu) {
+            h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
         } else {
-            h += `<th><i class="fa fa-fw"></i></th>`;
+            params.dropDownHeader.id = "dropDownHeader" + md5(guid());
+            h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
         }
     } else {
-        if (params.dropDownHeader) {
-            if (params.dropDownHeader.menu) {
-                h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
-            } else {
-                params.dropDownHeader.id = "dropDownHeader" + md5(guid());
-                h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
-            }
+        if (hasDropDowns) {
+            h += `<th><i class="fa fa-fw"></i></th>`;
         }
     }
 
