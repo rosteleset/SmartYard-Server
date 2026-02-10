@@ -2461,10 +2461,14 @@
                                         });
                                     }
                                     if (id == "selectAll") {
+                                        loadingStart();
                                         $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='tableRowCheckbox' checked='checked'>");
+                                        setTimeout(loadingDone, 100);
                                     }
                                     if (id == "unselectAll") {
+                                        loadingStart();
                                         $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='tableRowCheckbox'>");
+                                        setTimeout(loadingDone, 100);
                                     }
                                 }
                             }),
