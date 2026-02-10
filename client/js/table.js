@@ -219,7 +219,7 @@ function cardTable(params) {
             }
 
             for (let j in rows[i].cols) {
-                if (rows[i].cols[j].hidden || params.columns[j].hidden || params.columns[j].cellar) {
+                if (params.columns[j].hidden || params.columns[j].cellar) {
                     continue;
                 }
                 h += `<td data-row-id="${i}" colId="${j}" data-uid="${rows[i].uid}"`;
