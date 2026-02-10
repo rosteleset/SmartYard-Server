@@ -2494,8 +2494,6 @@
                                             cols.push({
                                                 data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
                                                 nowrap: true,
-                                                fullWidth: j == pKeys.length - 1,
-                                                ellipses: j == pKeys.length - 1,
                                             });
                                         } else {
                                             let l = links[pKeys[j]];
@@ -2506,15 +2504,11 @@
                                                     click: () => {
                                                         window.open(l.replaceAll('%value%', issues.issues[i][pKeys[j]]));
                                                     },
-                                                    fullWidth: j == pKeys.length - 1,
-                                                    ellipses: j == pKeys.length - 1,
                                                 });
                                             } else {
                                                 cols.push({
                                                     data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
                                                     nowrap: true,
-                                                    fullWidth: j == pKeys.length - 1,
-                                                    ellipses: j == pKeys.length - 1,
                                                 });
                                             }
                                         }
@@ -2522,14 +2516,24 @@
                                         cols.push({
                                             data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
                                             nowrap: true,
-                                            click: navigateUrl("tt.issue", {
+                                            click: columns[j + 1].cellar ? false : navigateUrl("tt.issue", {
                                                 issue: issues.issues[i]["issueId"],
                                                 filter: filterName ? filterName : "",
                                                 search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                             }),
-                                            fullWidth: j == pKeys.length - 1,
-                                            ellipses: j == pKeys.length - 1,
                                         });
+                                    }
+                                }
+
+                                let l = false;
+                                for (let j = cols.length - 1; j >= 0; j--) {
+                                    if (!columns[j].cellar && !l) {
+                                        cols[j].fullWidth = true;
+                                        cols[j].ellipses = true;
+                                        l = true;
+                                    }
+                                    if (columns[j].cellar) {
+                                        cols[j].nowrap = false;
                                     }
                                 }
 
