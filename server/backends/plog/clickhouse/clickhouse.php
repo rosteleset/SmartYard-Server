@@ -583,7 +583,7 @@
 
                     // skip the event from an unknown domophone
                     if ($domophone_id === null) {
-                        error_log("    Skip the event from an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id . "\n");
+                        error_log("    Skip the event from an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id);
                         continue;
                     }
 
@@ -605,6 +605,7 @@
                         $event_data[self::COLUMN_RFID] = $rfid_key;
                         $flat_list = $this->getFlatIdByRfid($rfid_key, $domophone_id);
                         if (!$flat_list) {
+                            error_log("    Skip the event because there is no apartment linked to the rfid = $rfid_key.");
                             continue;
                         }
                     }
@@ -615,6 +616,7 @@
                         $event_data[self::COLUMN_CODE] = $open_code;
                         $flat_list = $this->getFlatIdByCode($open_code, $domophone_id);
                         if (!$flat_list) {
+                            error_log("    Skip the event because there is no apartment linked to the code = $open_code.");
                             continue;
                         }
                     }
@@ -625,6 +627,7 @@
                         $event_data[self::COLUMN_PHONES]['user_phone'] = $user_phone;
                         $flat_list = $this->getFlatIdByUserPhone($user_phone, $domophone_id);
                         if (!$flat_list) {
+                            error_log("    Skip the event because there is no apartment linked to the user phone = $user_phone.");
                             continue;
                         }
                     }
@@ -643,6 +646,7 @@
                         if ($frs)
                             $flat_list = $frs->getFlatsByFaceIdFrs($face_id, $entrance["entranceId"]);
                         if (!$flat_list) {
+                            error_log("    Skip the event because there is no apartment linked to the face_id = $face_id.");
                             continue;
                         }
                     }
@@ -659,6 +663,7 @@
                         }
 
                         if (!$flat_list) {
+                            error_log("    Skip the event because there is no apartment linked to the license plate number = $number.");
                             continue;
                         }
                     }
