@@ -44,7 +44,7 @@
          * mkb method
          */
 
-        class cards extends api {
+        class otherCards extends api {
 
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
