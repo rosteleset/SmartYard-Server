@@ -1256,19 +1256,6 @@
              * @return boolean
              */
 
-            private static function al($a) {
-                if ($a === []) {
-                    return true;
-                }
-                return array_keys($a) === range(0, count($a) - 1);
-            }
-
-            /**
-             * @param $a
-             *
-             * @return boolean
-             */
-
             private static function an($a) {
                 return ctype_digit(implode('', array_keys($a)));
             }

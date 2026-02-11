@@ -48,8 +48,9 @@
                     } else {
                         $_id = $id;
                     }
-                    $this->mongo->$db->$login->replaceOne([ $key => $_id ], $json, [ "upsert" => true ]);
+                    $this->mongo->$db->$login->replaceOne([ $key => $_id ], $json);
                 } else {
+                    $json["author"] = $login;
                     $id = object_to_array($this->mongo->$db->$login->insertOne($json)->getInsertedId())["oid"];
                 }
 
@@ -189,6 +190,7 @@
 
                 $fields = [
                     "type",
+                    "author",
                     "name",
                     "subject",
                     "color",
