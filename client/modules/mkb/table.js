@@ -225,8 +225,6 @@
                     }
                 }
 
-                console.log(parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count);
-
                 h += `
                     <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span class="text-bold">${title}</span><br /><span class="small">${i18n("mkb.showCounts", parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count)}</span></td><td>${pager(r.count)}</td></tr></table>
                     <div id="cards"></div>
