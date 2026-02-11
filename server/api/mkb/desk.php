@@ -16,6 +16,21 @@
      */
 
     /**
+     * @api {put} /api/mkb/desk add/modify desk
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addDesk
+     * @apiGroup mkb
+     *
+     * @apiHeader {String} Authorization authentication token
+     *
+     * @apiBody desk
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * @api {delete} /api/mkb/desk/:name delete desk
      *
      * @apiVersion 1.0.0
@@ -45,6 +60,18 @@
         class desk extends api {
 
             public static function POST($params) {
+                $mkb = loadBackend("mkb");
+
+                $result = false;
+
+                if ($mkb) {
+                    $result = $mkb->upsertDesk(@$params["desk"]);
+                }
+
+                return api::ANSWER(!!$result);
+            }
+
+            public static function PUT($params) {
                 $mkb = loadBackend("mkb");
 
                 $result = false;

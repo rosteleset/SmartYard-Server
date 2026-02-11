@@ -16,6 +16,21 @@
      */
 
     /**
+     * @api {put} /api/mkb/card add/modify card
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addCard
+     * @apiGroup mkb
+     *
+     * @apiHeader {String} Authorization authentication token
+     *
+     * @apiBody card
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * @api {delete} /api/mkb/card/:cardId delete card
      *
      * @apiVersion 1.0.0
@@ -45,6 +60,18 @@
         class card extends api {
 
             public static function POST($params) {
+                $mkb = loadBackend("mkb");
+
+                $result = false;
+
+                if ($mkb) {
+                    $result = $mkb->upsertCard(@$params["card"]);
+                }
+
+                return api::ANSWER($result);
+            }
+
+            public static function PUT($params) {
                 $mkb = loadBackend("mkb");
 
                 $result = false;

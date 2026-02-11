@@ -40,7 +40,7 @@
             }
 
             h += `<nav class="pager">`;
-            h += '<ul class="pagination mb-0 ml-0" style="margin-right: -2px!important;">';
+            h += '<ul class="pagination mb-0 ml-0" style="margin-right: -2px !important;">';
 
             if (first > 1) {
                 h += `<li class="page-item pointer mkbPager" data-page="1" ><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
@@ -155,9 +155,41 @@
 
             if (params.archive) {
                 query = {
-                    desk: false,
+                    "$and": [
+                        {
+                            "$or": [
+                                {
+                                    desk: false,
+                                },
+                                {
+                                    desk: {
+                                        "$exists": false
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            "$or": [
+                                {
+                                    inbox: false,
+                                },
+                                {
+                                    inbox: {
+                                        "$exists": false
+                                    },
+                                },
+                            ],
+                        },
+                    ],
                 };
                 title = i18n("mkb.archived");
+            }
+
+            if (params.inbox) {
+                query = {
+                    inbox: true,
+                };
+                title = i18n("mkb.cardsInbox");
             }
 
             if (params.desk) {
@@ -165,7 +197,6 @@
                     desk: params.table,
                 };
                 if (params.column) {
-                    // title = params.desk + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + columns[params.column];
                     title = columns[params.column];
                 } else {
                     title = params.desk;
@@ -193,6 +224,8 @@
                         cl[r.cards[i]._id] = c;
                     }
                 }
+
+                console.log(parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count);
 
                 h += `
                     <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span class="text-bold">${title}</span><br /><span class="small">${i18n("mkb.showCounts", parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count)}</span></td><td>${pager(r.count)}</td></tr></table>
@@ -334,6 +367,8 @@
                     $(".cardsBottomPager").show();
                 }
 
+                modules.mkb.refreshInbox();
+
                 loadingDone();
             }).
             fail(FAILPAGE);
@@ -350,10 +385,28 @@
 
         if (parseInt(myself.uid) && AVAIL("mkb")) {
             $("#leftTopDynamic").html(`
-                <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsArchive" title="${i18n("mkb.cardsArchive")}"><i class="fas fa-fw fa-archive text-secondary"></i></li>
-                <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsAll" title="${i18n("mkb.cardsAll")}"><i class="far fa-fw fa-list-alt text-secondary"></i></li>
+                <li class="nav-item d-none d-sm-inline-block pointer cardsInbox" title="${i18n("mkb.cardsInbox")}">
+                    <span class="nav-link">
+                        <i class="fas fa-fw fa-inbox text-secondary"></i>
+                        <span class="badge badge-danger navbar-badge kanban-inbox-count" style="display: none; font-weight: 600; padding: 2px 4px 0px 4px;">0</span>
+                    </span>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block pointer cardsArchive" title="${i18n("mkb.cardsArchive")}">
+                    <span class="nav-link">
+                        <i class="fas fa-fw fa-archive text-secondary"></i>
+                    </span>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block pointer cardsAll" title="${i18n("mkb.cardsAll")}">
+                    <span class="nav-link">
+                        <i class="fas fa-fw fa-box-tissue text-secondary"></i>
+                    </span>
+                </li>
             `);
         }
+
+        $(".cardsInbox").off("click").on("click", () => {
+            navigateUrl("mkb.table", { inbox: true }, { run: true });
+        });
 
         $(".cardsArchive").off("click").on("click", () => {
             navigateUrl("mkb.table", { archive: true }, { run: true });

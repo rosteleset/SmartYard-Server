@@ -36,18 +36,20 @@
              * @param
              */
 
-            private function put($json, $key = "_id") {
+            private function put($json, $key = "_id", $login = false) {
                 $db = $this->dbName;
-                $login = $this->login;
+                $login = $login ?: $this->login;
 
                 if (@$json[$key]) {
                     $id = $json[$key];
+
                     if ($key == "_id") {
                         $_id = new \MongoDB\BSON\ObjectID($id);
                         unset($json["_id"]);
                     } else {
                         $_id = $id;
                     }
+
                     $this->mongo->$db->$login->replaceOne([ $key => $_id ], $json);
                 } else {
                     $json["author"] = $login;
@@ -61,9 +63,9 @@
              * get json
              */
 
-            private function get($query = false, $options = false) {
+            private function get($query = false, $options = false, $login = false) {
                 $db = $this->dbName;
-                $login = $this->login;
+                $login = $login ?: $this->login;
 
                 if (!$query) {
                     $query = [];
@@ -72,6 +74,13 @@
                 array_walk_recursive($query, function (&$value, $key) {
                     if ($key === '_id') {
                         $value = new \MongoDB\BSON\ObjectID($value);
+                    }
+                    // ?WTF
+                    if ($value === "false") {
+                        $value = false;
+                    }
+                    if ($value === "true") {
+                        $value = true;
                     }
                 });
 
@@ -105,6 +114,13 @@
                         if ($key === '_id') {
                             $value = new \MongoDB\BSON\ObjectID($value);
                         }
+                        // ?WTF
+                        if ($value === "false") {
+                            $value = false;
+                        }
+                        if ($value === "true") {
+                            $value = true;
+                        }
                     });
 
                     return $this->mongo->$db->$login->updateMany($query, [ "\$set" => $json ]);
@@ -117,9 +133,9 @@
              * count json
              */
 
-            private function count($query = false) {
+            private function count($query = false, $login = false) {
                 $db = $this->dbName;
-                $login = $this->login;
+                $login = $login ?: $this->login;
 
                 if (!$query) {
                     $query = [];
@@ -128,6 +144,13 @@
                 array_walk_recursive($query, function (&$value, $key) {
                     if ($key === '_id') {
                         $value = new \MongoDB\BSON\ObjectID($value);
+                    }
+                    // ?WTF
+                    if ($value === "false") {
+                        $value = false;
+                    }
+                    if ($value === "true") {
+                        $value = true;
                     }
                 });
 
@@ -149,6 +172,13 @@
                 array_walk_recursive($query, function (&$value, $key) {
                     if ($key === '_id') {
                         $value = new \MongoDB\BSON\ObjectID($value);
+                    }
+                    // ?WTF
+                    if ($value === "false") {
+                        $value = false;
+                    }
+                    if ($value === "true") {
+                        $value = true;
                     }
                 });
 
@@ -197,6 +227,7 @@
                     "body",
                     "desk",
                     "date",
+                    "inbox",
                     "done",
                 ];
 
@@ -230,8 +261,8 @@
              * @inheritDoc
              */
 
-            public function getDesks() {
-                return $desks = $this->get([ "type" => "desk" ]);
+            public function getDesks($login = false) {
+                return $this->get([ "type" => "desk" ], false, $login);
             }
 
             /**
@@ -282,7 +313,7 @@
              * @inheritDoc
              */
 
-            public function getCards($query, $sort, $skip, $limit) {
+            public function getCards($query, $sort, $skip, $limit, $login = false) {
                 $query["type"] = "card";
 
                 $options = [];
@@ -302,17 +333,17 @@
                     $options["limit"] = (int)$limit;
                 }
 
-                return $this->get($query, $options);
+                return $this->get($query, $options, $login);
             }
 
             /**
              * @inheritDoc
              */
 
-            public function countCards($query) {
+            public function countCards($query, $login = false) {
                 $query["type"] = "card";
 
-                return $this->count($query);
+                return $this->count($query, $login);
             }
 
             /**
@@ -350,6 +381,30 @@
                 }
 
                 return $this->delete([ "type" => "card", "_id" => $id ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function transferCard($id, $login) {
+                $card = @$this->getCards([ "_id" => $id])[0];
+
+                // TODO check for existing user and user has access to mkb
+                if ($card) {
+                    unset($card["_id"]);
+
+                    $card["inbox"] = true;
+                    $card["desk"] = false;
+
+                    $newId = $this->put($card, "_id", $login);
+
+                    if ($newId) {
+                        $this->deleteCard($id);
+                    }
+
+                    return $newId;
+                }
             }
 
             /**

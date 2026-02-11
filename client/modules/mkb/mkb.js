@@ -374,6 +374,7 @@
         }
 
         modules.mkb.cards[id].desk = false;
+        modules.mkb.cards[id].inbox = false;
 
         POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
         done(() => {
@@ -422,6 +423,7 @@
         modules.mkb.desks[d1].columns[0].cards.push(id);
 
         modules.mkb.cards[id].desk = name;
+        modules.mkb.cards[id].inbox = false;
 
         POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
         done(() => {
@@ -1185,6 +1187,10 @@
             modules.mkb.updateCard(id, true);
         });
 
+        $(".cardsInbox").off("click").on("click", () => {
+            navigateUrl("mkb.table", { inbox: true }, { run: true });
+        });
+
         $(".cardsArchive").off("click").on("click", () => {
             navigateUrl("mkb.table", { archive: true }, { run: true });
         });
@@ -1196,6 +1202,18 @@
         $(".columnTable").off("click").on("click", function () {
             navigateUrl("mkb.table", { column: $(this).parent().attr("data-column-id"), desk: modules.mkb.desk().name }, { run: true });
         });
+    },
+
+    refreshInbox: function () {
+        POST("mkb", "cards", false, { query: { inbox: true }, countOnly: true }).
+        done(r => {
+            if (r.count) {
+                $(".kanban-inbox-count").show().text(r.count > 9 ? "9+" : r.count);
+            } else {
+                $(".kanban-inbox-count").hide();
+            }
+        }).
+        fail(FAIL);
     },
 
     renderCard: function (card) {
@@ -1485,12 +1503,28 @@
 
             if (parseInt(myself.uid) && AVAIL("mkb")) {
                 $("#leftTopDynamic").html(`
-                    <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsArchive" title="${i18n("mkb.cardsArchive")}"><i class="fas fa-fw fa-archive text-secondary"></i></li>
-                    <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsAll" title="${i18n("mkb.cardsAll")}"><i class="far fa-fw fa-list-alt text-secondary"></i></li>
+                    <li class="nav-item d-none d-sm-inline-block pointer cardsInbox" title="${i18n("mkb.cardsInbox")}">
+                        <span class="nav-link">
+                            <i class="fas fa-fw fa-inbox text-secondary"></i>
+                            <span class="badge badge-danger navbar-badge kanban-inbox-count" style="display: none; font-weight: 600; padding: 2px 4px 0px 4px;">0</span>
+                        </span>
+                    </li>
+                    <li class="nav-item d-none d-sm-inline-block pointer cardsArchive" title="${i18n("mkb.cardsArchive")}">
+                        <span class="nav-link">
+                            <i class="fas fa-fw fa-archive text-secondary"></i>
+                        </span>
+                    </li>
+                    <li class="nav-item d-none d-sm-inline-block pointer cardsAll" title="${i18n("mkb.cardsAll")}">
+                        <span class="nav-link">
+                            <i class="fas fa-fw fa-box-tissue text-secondary"></i>
+                        </span>
+                    </li>
                 `);
             }
 
             modules.mkb.renderDesk();
+
+            modules.mkb.refreshInbox();
         }).
         fail(FAILPAGE);
     },

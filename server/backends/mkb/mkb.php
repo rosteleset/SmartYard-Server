@@ -18,7 +18,7 @@
              * @return mixed
              */
 
-            abstract public function getDesks();
+            abstract public function getDesks($login = false);
 
             /**
              * $desk desk
@@ -42,7 +42,7 @@
              * @return mixed
              */
 
-            abstract public function getCards($query, $sort, $skip, $limit);
+            abstract public function getCards($query, $sort, $skip, $limit, $login = false);
 
             /**
              * $query array
@@ -50,7 +50,7 @@
              * @return mixed
              */
 
-            abstract public function countCards($query);
+            abstract public function countCards($query, $login = false);
 
             /**
              * $card card
@@ -67,5 +67,14 @@
              */
 
             abstract public function deleteCard($id);
+
+            /**
+             * $id card uuid
+             * $login transfer to
+             *
+             * @return mixed
+             */
+
+            abstract public function transferCard($id, $login);
         }
     }

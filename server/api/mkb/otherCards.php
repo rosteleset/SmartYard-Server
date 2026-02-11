@@ -1,30 +1,32 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/cards get cards
+     * @api {get} /api/mkb/otherCards/:login get cards
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getCards
+     * @apiName getOtherCards
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {Object} query
+     * @apiParam {String} login
+     * @apiQuery {Object} query
      *
      * @apiSuccess {Object[]} cards
      */
 
     /**
-     * @api {post} /api/mkb/cards get cards
+     * @api {post} /api/mkb/otherCards/:login get cards
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getCards
+     * @apiName getOtherCards
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
+     * @apiParam {String} login
      * @apiBody {Object} query
      *
      * @apiSuccess {Object[]} cards
@@ -49,8 +51,8 @@
 
                 if ($mkb) {
                     return api::ANSWER([
-                        "cards" => !!@$params["countOnly"] ?: $mkb->getCards(@$params["query"], @$params["sort"] ?: [ "date" => 1 ], @$params["skip"], @$params["limit"]),
-                        "count" => $mkb->countCards(@$params["query"]),
+                        "cards" => $mkb->getCards(@$params["query"], @$params["sort"] ?: [ "date" => 1 ], @$params["skip"], @$params["limit"], @$params["_id"]),
+                        "count" => $mkb->countCards(@$params["query"], @$params["_id"]),
                     ], "__asis__");
                 }
 
@@ -62,8 +64,8 @@
 
                 if ($mkb) {
                     return api::ANSWER([
-                        "cards" => !!@$params["countOnly"] ?: $mkb->getCards(@$params["query"], @$params["sort"] ?: [ "date" => 1 ], @$params["skip"], @$params["limit"]),
-                        "count" => $mkb->countCards(@$params["query"]),
+                        "cards" => $mkb->getCards(@$params["query"], @$params["sort"] ?: [ "date" => 1 ], @$params["skip"], @$params["limit"], @$params["_id"]),
+                        "count" => $mkb->countCards(@$params["query"], @$params["_id"]),
                     ], "__asis__");
                 }
 
@@ -76,7 +78,7 @@
                 if ($mkb) {
                     return [
                         "GET",
-                        "POST" => "#same(mkb,cards,GET)",
+                        "POST" => "#same(mkb,otherCards,GET)",
                     ];
                 } else {
                     return false;

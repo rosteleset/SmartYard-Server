@@ -41,6 +41,7 @@
     "desks": "Desks",
     "column": "Column",
     "done": "Done",
+    "cardsInbox": "Assigned cards",
     "methods": {
         "mkb": {
             "_title": "Kanban",
