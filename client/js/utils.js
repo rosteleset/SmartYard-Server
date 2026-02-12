@@ -611,7 +611,7 @@ function getSafeWeekInfo(localeCode = navigator.language) {
 }
 
 function isWeekend(date, localeCode = navigator.language) {
-    let { weekend } =getSafeWeekInfo(localeCode);
+    let { weekend } = getSafeWeekInfo(localeCode);
 
     return weekend.includes(date.getDay() === 0 ? 7 : date.getDay());
 }
@@ -628,6 +628,39 @@ function date(format, timestamp) {
     }
 
     return d[l](format, timestamp);
+}
+
+/*
+async function encryptAsync(msg, pk) {
+    await sodium.ready;
+
+    return sodium.to_base64(sodium.crypto_box_seal(msg, sodium.from_base64(pk)));
+}
+*/
+
+async function encryptAsync(msg, pk) {
+    let binaryDerString = window.atob(pk);
+    const binaryDer = new Uint8Array(binaryDerString.length);
+
+    for (let i = 0; i < binaryDerString.length; i++) {
+        binaryDer[i] = binaryDerString.charCodeAt(i);
+    }
+
+    let publicKey = await window.crypto.subtle.importKey(
+        "spki",
+        binaryDer,
+        { name: "RSA-OAEP", hash: "SHA-1" },
+        false,
+        ["encrypt"]
+    );
+
+    const encrypted = await window.crypto.subtle.encrypt(
+        { name: "RSA-OAEP" },
+        publicKey,
+        new TextEncoder().encode(msg)
+    );
+
+    return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 }
 
 Object.defineProperty(Array.prototype, "assoc", {

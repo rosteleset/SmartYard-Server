@@ -361,46 +361,93 @@ function login() {
     lStore("_login", login);
     lStore("_server", server);
 
-    ping(server).then(() => {
-        return $.ajax({
-            url: server + "/authentication/login",
-            type: "POST",
-            contentType: "json",
-            data: JSON.stringify({
-                login: login,
-                password: password,
-                rememberMe: true,
-                did: lStore("_did"),
-                oneCode: code,
-            }),
-            success: response => {
-                if (response && response.token) {
-                    $("#loginBoxPassword").val("");
-                    lStore("_token", response.token);
-                    window.location.reload();
-                } else {
-                    if (response && response.otp) {
-                        loadingDone();
-                        $("#loginForm").hide();
-                        $("#2faForm").show();
-                        setTimeout(() => {
-                            $("#2faBoxCode").focus();
-                        }, 150);
+    ping(server).
+    then(() => {
+        if (config.pubKey) {
+            encryptAsync(password, config.pubKey).
+            then(encrypted => {
+                $.ajax({
+                    url: server + "/authentication/login",
+                    type: "POST",
+                    contentType: "json",
+                    data: JSON.stringify({
+                        login: login,
+                        encrypted: true,
+                        password: encrypted,
+                        rememberMe: true,
+                        did: lStore("_did"),
+                        oneCode: code,
+                    }),
+                    success: response => {
+                        if (response && response.token) {
+                            $("#loginBoxPassword").val("");
+                            lStore("_token", response.token);
+                            window.location.reload();
+                        } else {
+                            if (response && response.otp) {
+                                loadingDone();
+                                $("#loginForm").hide();
+                                $("#2faForm").show();
+                                setTimeout(() => {
+                                    $("#2faBoxCode").focus();
+                                }, 150);
+                            } else {
+                                error(i18n("errors.unknown"), i18n("error"), 30);
+                            }
+                        }
+                    },
+                    error: response => {
+                        loadingDone(true);
+                        $("#loginBoxLogin").focus();
+                        if (response && response.responseJSON && response.responseJSON.error) {
+                            error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
+                        } else {
+                            error(i18n("errors.unknown"), i18n("error"), 30);
+                        }
+                    }
+                });
+            });
+        } else {
+            $.ajax({
+                url: server + "/authentication/login",
+                type: "POST",
+                contentType: "json",
+                data: JSON.stringify({
+                    login: login,
+                    password: password,
+                    rememberMe: true,
+                    did: lStore("_did"),
+                    oneCode: code,
+                }),
+                success: response => {
+                    if (response && response.token) {
+                        $("#loginBoxPassword").val("");
+                        lStore("_token", response.token);
+                        window.location.reload();
+                    } else {
+                        if (response && response.otp) {
+                            loadingDone();
+                            $("#loginForm").hide();
+                            $("#2faForm").show();
+                            setTimeout(() => {
+                                $("#2faBoxCode").focus();
+                            }, 150);
+                        } else {
+                            error(i18n("errors.unknown"), i18n("error"), 30);
+                        }
+                    }
+                },
+                error: response => {
+                    loadingDone(true);
+                    $("#loginBoxLogin").focus();
+                    if (response && response.responseJSON && response.responseJSON.error) {
+                        error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
                     } else {
                         error(i18n("errors.unknown"), i18n("error"), 30);
                     }
                 }
-            },
-            error: response => {
-                loadingDone(true);
-                $("#loginBoxLogin").focus();
-                if (response && response.responseJSON && response.responseJSON.error) {
-                    error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
-                } else {
-                    error(i18n("errors.unknown"), i18n("error"), 30);
-                }
-            }
-        });
+            });
+        }
     });
 }
 
