@@ -645,7 +645,7 @@ async function encryptAsync(msg, pk) {
 
 async function encryptAsync(msg, pk) {
     let binaryDerString = window.atob(pk);
-    const binaryDer = new Uint8Array(binaryDerString.length);
+    let binaryDer = new Uint8Array(binaryDerString.length);
 
     for (let i = 0; i < binaryDerString.length; i++) {
         binaryDer[i] = binaryDerString.charCodeAt(i);
@@ -659,7 +659,7 @@ async function encryptAsync(msg, pk) {
         ["encrypt"]
     );
 
-    const encrypted = await window.crypto.subtle.encrypt(
+    let encrypted = await window.crypto.subtle.encrypt(
         { name: "RSA-OAEP" },
         publicKey,
         new TextEncoder().encode(msg)
