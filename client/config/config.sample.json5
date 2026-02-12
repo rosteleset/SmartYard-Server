@@ -59,6 +59,8 @@
     "mdRedirect": "https://m.example.com",
     // camTree by false - off, houses - common for all houses, perHouse - per house
     "camTree": false,
+    // client's pubkey
+    "pubKey": false,
     // hide "Create issue" menu item
     "disableCreateIssue": false,
 }

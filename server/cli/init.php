@@ -103,6 +103,11 @@
                     "description" => "Update version to local",
                     "exec" => [ $this, "local" ],
                 ];
+
+                $global_cli["#"]["initialization and update"]["keys"] = [
+                    "description" => "Generate server and client keys",
+                    "exec" => [ $this, "keys" ],
+                ];
             }
 
             function password($args) {
@@ -263,6 +268,34 @@
                 file_put_contents("$dir/../../version", $version . " (" . date("Y-m-d") . ")");
 
                 echo "SmartYard: $currentVersion -> $version\n\n";
+
+                exit(0);
+            }
+
+            function keys() {
+                global $redis;
+
+                $config = [
+                    "digest_alg" => "sha256",
+                    "private_key_bits" => 2048,
+                    "private_key_type" => OPENSSL_KEYTYPE_RSA,
+                ];
+
+                $res = openssl_pkey_new($config);
+
+                if (!$res) {
+                    echo i18n("generationError",  openssl_error_string()) . "\n\n";
+                    exit(0);
+                }
+
+                openssl_pkey_export($res, $privateKey);
+
+                $redis->set("PK", $privateKey);
+
+                $publicKeyDetails = openssl_pkey_get_details($res);
+                $publicKey = trim(implode("", explode("\n", str_replace("-----END PUBLIC KEY-----", "", str_replace("-----BEGIN PUBLIC KEY-----", "", $publicKeyDetails["key"])))));
+
+                echo i18n("publicKey", $publicKey) . "\n\n";
 
                 exit(0);
             }

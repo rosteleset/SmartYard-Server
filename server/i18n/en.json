@@ -23,6 +23,9 @@
     "2faName": "SmartYard",
     "2faTitle": "RBT",
 
+    "generationError": "Error while generations keys: %s",
+    "publicKey": "Public key: %s",
+
     "mobile": {
         "newAddressTitle": "New address",
         "newAddressBody": "A new address has been added to your account.",

@@ -32,6 +32,13 @@
         class login extends api {
 
             public static function POST($params) {
+                global $redis;
+
+                $pk = $redis->get("PK");
+
+                if ($pk && @$params["encrypted"]) {
+                    $params["password"] = decryptData($params["password"], $pk);
+                }
 
                 $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], @$params["rememberMe"] && $params["_ua"] && @$params["did"], trim($params["_ua"]), trim(@$params["did"]), $params["_ip"], @$params["oneCode"]);
 

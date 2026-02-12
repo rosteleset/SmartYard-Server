@@ -23,6 +23,9 @@
     "2faName": "SmartYard",
     "2faTitle": "RBT",
 
+    "generationError": "Ошибка генерации ключей: %s",
+    "publicKey": "Открытый ключ: %s",
+
     "mobile": {
         "newAddressTitle": "Новый адрес",
         "newAddressBody": "В вашу учётную запись добавлен новый адрес",

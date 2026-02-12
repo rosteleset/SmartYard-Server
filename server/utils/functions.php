@@ -388,3 +388,35 @@
     function expire($val, $default) {
         return time() + ttl($val, $default);
     }
+
+    /**
+     * Decrypts data using a private key with OpenSSL
+     *
+     * Uses OpenSSL's private key decryption to decrypt previously encrypted data.
+     * The decrypted data is typically encrypted with the corresponding public key.
+     *
+     * @param string $data The encrypted data to decrypt
+     * @param string|array $private_key The private key resource or string
+     * @param int $padding The padding method (default: OPENSSL_RAW_DATA)
+     *
+     * @return string|false The decrypted data on success, or false on failure
+     *
+     * @see openssl_public_encrypt() For the corresponding encryption function
+     */
+
+    function decryptData($encryptedBase64, $privateKeyPem) {
+        $decrypted = '';
+
+        $result = openssl_private_decrypt(
+            base64_decode($encryptedBase64),
+            $decrypted,
+            openssl_pkey_get_private($privateKeyPem),
+            OPENSSL_PKCS1_OAEP_PADDING
+        );
+
+        if ($result) {
+            return $decrypted;
+        } else {
+            return false;
+        }
+    }
