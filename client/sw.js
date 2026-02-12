@@ -1,5 +1,5 @@
-var version = false;
-var cache = false;
+let version = false;
+let cache = false;
 
 const forceVersioningResources = [
     "app.js",

@@ -1,30 +1,30 @@
-const modules = {};
-const moduleLoadQueue = [];
+let modules = {};
+let moduleLoadQueue = [];
 
 // TODO f..ck!
 let mainFormTop = 74;
 
-var lastHash = false;
-var prevHash = false;
-var currentPage = false;
-var mainSidebarFirst = true;
-var mainSidebarGroup = false;
-var config = false;
-var lang = false;
-var myself = false;
-var available = false;
-var badge = false;
-var currentModule = false;
-var hasUnsavedChanges = false;
-var currentAceEditor = false;
-var currentAceEditorOriginalValue = false;
-var lastLoadedModule = false;
-var loasLoadedGroup = false;
-var lStoreEngine = false;
-var lStoreData = {};
-var availableFonts = [];
-var noGravatar = false;
-var reg = [];
+let lastHash = false;
+let prevHash = false;
+let currentPage = false;
+let mainSidebarFirst = true;
+let mainSidebarGroup = false;
+let config = false;
+let lang = false;
+let myself = false;
+let available = false;
+let badge = false;
+let currentModule = false;
+let hasUnsavedChanges = false;
+let currentAceEditor = false;
+let currentAceEditorOriginalValue = false;
+let lastLoadedModule = false;
+let loasLoadedGroup = false;
+let lStoreEngine = false;
+let lStoreData = {};
+let availableFonts = [];
+let noGravatar = false;
+let reg = [];
 
 function lStore(key, val) {
     if (!lStoreEngine) {
