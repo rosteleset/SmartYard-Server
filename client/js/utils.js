@@ -617,17 +617,16 @@ function isWeekend(date, localeCode = navigator.language) {
 }
 
 function date(format, timestamp) {
-    let l = lang._code;
     let d = {
         "ru": date_ru,
         "en": date_en,
     };
 
-    if (!d[l]) {
-        d[l] = date_en;
+    if (!d[lang._code]) {
+        d[lang._code] = date_en;
     }
 
-    return d[l](format, timestamp);
+    return d[lang._code](format, timestamp);
 }
 
 function forceReload() {
