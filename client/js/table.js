@@ -512,9 +512,9 @@ function cardTable(params) {
         }
 
         if (text) {
-            $(`#${filterInput}-search-button`).children().first().removeClass("fa-filter").addClass("fa-window-close");
+            $(`#${filterInput}-search-button`).children().first().removeClass("fa-filter").addClass("fa-x");
         } else {
-            $(`#${filterInput}-search-button`).children().first().addClass("fa-filter").removeClass("fa-window-close");
+            $(`#${filterInput}-search-button`).children().first().addClass("fa-filter").removeClass("fa-x");
         }
 
         if (apply) {

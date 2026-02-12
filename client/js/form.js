@@ -555,9 +555,9 @@ function cardForm(params) {
                 if (params.fields[i].multiple) {
                     h += `<div class="input-group-append">`;
                     if (params.fields[i].readonly) {
-                        h += `<span class="input-group-text disabled" disabled="disabled"><i class="fas fa-fw fa-window-close"></i></span>`;
+                        h += `<span class="input-group-text disabled" disabled="disabled"><i class="fas fa-fw fa-x"></i></span>`;
                     } else {
-                        h += `<span class="input-group-text pointer select2Clear" data-for="${_prefix}${params.fields[i].id}"><i class="fas fa-fw fa-window-close"></i></span>`;
+                        h += `<span class="input-group-text pointer select2Clear" data-for="${_prefix}${params.fields[i].id}"><i class="fas fa-fw fa-x"></i></span>`;
                     }
                     h += `</div>`;
                 }
