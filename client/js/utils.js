@@ -634,14 +634,6 @@ function forceReload() {
     window.location.reload();
 }
 
-/*
-async function encryptAsync(msg, pk) {
-    await sodium.ready;
-
-    return sodium.to_base64(sodium.crypto_box_seal(msg, sodium.from_base64(pk)));
-}
-*/
-
 async function encryptAsync(msg, pk) {
     let binaryDerString = window.atob(pk);
     let binaryDer = new Uint8Array(binaryDerString.length);
