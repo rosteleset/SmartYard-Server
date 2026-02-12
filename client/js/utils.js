@@ -647,7 +647,7 @@ async function encryptAsync(msg, pk) {
         binaryDer,
         { name: "RSA-OAEP", hash: "SHA-1" },
         false,
-        ["encrypt"]
+        [ "encrypt" ]
     );
 
     let encrypted = await window.crypto.subtle.encrypt(
