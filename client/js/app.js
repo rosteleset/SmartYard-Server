@@ -484,11 +484,7 @@ function sudo() {
             loadingStart();
             DELETE("user", "sudo", false).
             then(() => {
-                setTimeout(() => {
-                    window.onhashchange = hashChange;
-                    // navigateUrl(config.defaultRoute, false, { run: true });
-                    window.location.reload();
-                }, 150);
+                setTimeout(forceReload, 150);
             }).
             fail(FAIL).
             fail(loadingDone);
@@ -500,11 +496,7 @@ function sudo() {
                 PUT("user", "sudo", false, {
                     code
                 }).
-                done(r => {
-                    window.onhashchange = hashChange;
-                    // navigateUrl(config.defaultRoute, false, { run: true });
-                    window.location.reload();
-                }).
+                done(forceReload).
                 fail(FAIL).
                 fail(loadingDone);
             });
@@ -514,11 +506,7 @@ function sudo() {
                 PUT("user", "sudo", false, {
                     password
                 }).
-                done(r => {
-                    window.onhashchange = hashChange;
-                    // navigateUrl(config.defaultRoute, false, { run: true });
-                    window.location.reload();
-                }).
+                done(forceReload).
                 fail(FAIL).
                 fail(loadingDone);
             });

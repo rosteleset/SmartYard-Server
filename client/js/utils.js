@@ -630,6 +630,11 @@ function date(format, timestamp) {
     return d[l](format, timestamp);
 }
 
+function forceReload() {
+    window.onhashchange = hashChange;
+    window.location.reload();
+}
+
 /*
 async function encryptAsync(msg, pk) {
     await sodium.ready;
