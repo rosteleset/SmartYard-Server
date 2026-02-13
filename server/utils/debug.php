@@ -1,11 +1,11 @@
 <?php
 
-    $script_debug = false;
+    $scriptDebug = false;
 
     function debugOn($enable = true) {
-        global $script_debug;
+        global $scriptDebug;
 
-        $script_debug = $enable;
+        $scriptDebug = $enable;
     }
 
     function unit() {
@@ -13,9 +13,9 @@
     }
 
     function debugMsg($msg) {
-        global $script_debug, $cli;
+        global $scriptDebug, $cli;
 
-        if ($script_debug) {
+        if ($scriptDebug) {
             if ($cli) {
                 error_log("[" . date("Y-m-d H:i:s") . "] dbg > " . $msg);
             } else {
@@ -30,9 +30,9 @@
     }
 
     function logMsg($msg) {
-        global $script_debug, $cli;
+        global $scriptDebug, $cli;
 
-        if ($script_debug) {
+        if ($scriptDebug) {
             if ($cli) {
                 error_log("[" . date("Y-m-d H:i:s") . "] log > " . $msg);
             } else {
