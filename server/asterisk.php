@@ -328,6 +328,7 @@
                     break;
 
                 case "debug":
+                    debugOn();
                     debugMsg($params);
 
                     break;

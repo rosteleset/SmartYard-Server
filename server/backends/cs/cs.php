@@ -315,8 +315,6 @@
              */
 
             public function cleanup() {
-                global $script_debug;
-
                 $ttl = @(int)$this->config["backends"]["cs"]["ttl"] ?: 3;
 
                 $sheets = $this->getCSes();
@@ -325,11 +323,7 @@
 
                 foreach ($sheets as $sheet) {
                     if ($sheet["metadata"]["date"] < date("Y-m-d", strtotime("-$ttl day"))) {
-
-                        if ($script_debug) {
-                            error_log(print_r($sheet, true));
-                        }
-
+                        debugMsg(print_r($sheet, true));
                         $this->deleteCS($sheet["metadata"]["sheet"], $sheet["metadata"]["date"]);
                         $n++;
                     }
