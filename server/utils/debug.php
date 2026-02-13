@@ -20,7 +20,7 @@
 
             $accounting = loadBackend('accounting');
             if ($accounting) {
-                $accounting->raw("127.0.0.1", unit() . ":debug", $msg);
+                $accounting->raw("127.0.0.1", unit() . ":dbg", $msg);
             }
         }
     }
