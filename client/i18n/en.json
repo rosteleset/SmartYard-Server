@@ -139,7 +139,7 @@
         "accessDenied": "Access denied",
         "tokenNotFound": "Token",
         "noToken": "Token is not specified",
-        "userNotFound": "User is not found",
+        "userNotFound": "Wrong username or (and) password",
         "permissionDenied": "Access denied",
         "notAcceptable": "Not acceptable",
         "cantStoreData": "Can't store data",

@@ -140,7 +140,7 @@
         "accessDenied": "В доступе отказано",
         "tokenNotFound": "Срок действия токена истек",
         "noToken": "Token не указан",
-        "userNotFound": "Пользователь не найден",
+        "userNotFound": "Неверно указан пользователь или (или) пароль",
         "permissionDenied": "В доступе отказано",
         "notAcceptable": "Действие невозможно",
         "cantStoreData": "Нет доступа к хранилищу",
