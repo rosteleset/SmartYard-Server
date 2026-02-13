@@ -289,6 +289,7 @@
                                 cols: [
                                     {
                                         data: parseInt(i) + skip + 1,
+                                        class: "bg-" + r.cards[i].color,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
                                                 modules.mkb.table.renderCards(params);

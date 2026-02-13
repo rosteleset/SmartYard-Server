@@ -220,7 +220,7 @@ function cardTable(params) {
                 }
                 let clss = rows[i].cols[j].class ? (rows[i].cols[j].class + " ") : "";
                 if (typeof rows[i].cols[j].click === "function") {
-                    clss = `hoverable ${clickableClass} `;
+                    clss += `hoverable ${clickableClass} `;
                 }
                 if (rows[i].cols[j].nowrap) {
                     clss += "cut-text ";
