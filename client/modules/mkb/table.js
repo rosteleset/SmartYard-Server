@@ -140,6 +140,8 @@
 
             $("#mkbDesks").html(h);
 
+            h = '';
+
             if (params.search) {
                 query = {
                     $text: {
@@ -282,7 +284,6 @@
                                 cols: [
                                     {
                                         data: parseInt(i) + skip + 1,
-                                        class: "bg-" + r.cards[i].color,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
                                                 modules.mkb.table.renderCards(params);
@@ -291,6 +292,7 @@
                                     },
                                     {
                                         data: date("Y-m-d", r.cards[i].date),
+                                        class: "bg-" + r.cards[i].color,
                                         nowrap: true,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
