@@ -19,7 +19,7 @@
             if ($cli) {
                 error_log("[" . date("Y-m-d H:i:s") . "] dbg >>> " . $msg);
             } else {
-                error_log("dbg >>> " . $msg);
+                error_log("dbg > " . $msg);
             }
 
             $accounting = loadBackend('accounting');
@@ -33,7 +33,7 @@
         global $script_debug;
 
         if ($script_debug) {
-            error_log("log >>> " . $msg);
+            error_log("log > " . $msg);
         }
 
         $accounting = loadBackend('accounting');
