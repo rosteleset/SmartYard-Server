@@ -1,5 +1,5 @@
 zabbix_export:
-  version: '7.2'
+  version: '7.0'
   template_groups:
     - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
@@ -10,11 +10,16 @@ zabbix_export:
       description: 'Intercom BASIP AA-07FB by HTTP panel monitoring'
       vendor:
         name: SmartYard
-        version: 2026-01
+        version: 2026-02
       templates:
         - name: 'ICMP Ping'
       groups:
         - name: Templates/Intercoms
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: basip
       macros:
         - macro: '{$HOST_PASSWORD}'
           value: admin

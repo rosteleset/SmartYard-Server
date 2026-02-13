@@ -1,5 +1,5 @@
 zabbix_export:
-  version: '7.2'
+  version: '7.0'
   template_groups:
     - uuid: f781ffa99c56461cb45e316580182ed4
       name: Templates/SmartYard-Server
@@ -9,7 +9,7 @@ zabbix_export:
       name: 'SmartYard-Server | Asterisk'
       vendor:
         name: SmartYard
-        version: 2024-12
+        version: 2026-02
       groups:
         - name: Templates/SmartYard-Server
       items:
