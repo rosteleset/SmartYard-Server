@@ -451,7 +451,7 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive, badge) {
             <a href="${target}" data-href="${target}" class="nav-link ${(target === "#" + (route ? route.split('.')[0] : "")) ? "active" : ""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
-                <span class="badge badge-danger navbar-badge ${badge}" style="display: none; font-weight: 600; padding: 2px 4px 1px 4px;">0</span>
+                <span class="badge badge-danger navbar-badge ${badge}" style="display: none; font-weight: 600; padding: 2px 4px 1px 3px;">0</span>
             </a>
         </li>
     `);
@@ -478,7 +478,7 @@ function leftSideClick(button, title, group, click, badge) {
             <a class="nav-link" href="#" onclick="xblur(); return false;">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
-                <span class="badge badge-danger navbar-badge ${badge}" style="display: none; font-weight: 600; padding: 2px 4px 1px 4px;">0</span>
+                <span class="badge badge-danger navbar-badge ${badge}" style="display: none; font-weight: 600; padding: 2px 4px 1px 3px;">0</span>
             </a>
         </li>
     `);

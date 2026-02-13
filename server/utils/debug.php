@@ -15,9 +15,9 @@
     function debugMsg($msg) {
         global $script_debug;
 
-        error_log(">>>>>>>>>>>> " . $msg);
-
         if ($script_debug) {
+            error_log(">>>>>>>>>>>> " . $msg);
+
             $accounting = loadBackend('accounting');
             if ($accounting) {
                 $accounting->raw("127.0.0.1", unit() . ":debug", $msg);
@@ -27,6 +27,7 @@
 
     function logMsg($msg) {
         error_log(">>>>>>>>>>>> " . $msg);
+
         $accounting = loadBackend('accounting');
         if ($accounting) {
             $accounting->raw("127.0.0.1", unit() . ":log", $msg);

@@ -36,10 +36,19 @@
         items: [
             {
                 id: "mkbAddColumn",
-                icon: "far fa-plus-square",
+                icon: "fas fa-plus-square",
                 text: i18n("mkb.addColumn"),
             },
-            {   text: "-",
+            {
+                text: "-",
+            },
+            {
+                id: "mkbTableView",
+                icon: "fas fa-table-list",
+                text: i18n("mkb.tableView"),
+            },
+            {
+                text: "-",
             },
             {
                 id: "mkbAddDesk",
@@ -59,6 +68,10 @@
         ],
         click: (id) => {
             switch (id) {
+                case "mkbTableView":
+                    navigateUrl("mkb.table", { desk: modules.mkb.desk().name }, { run: true });
+                    break;
+
                 case "mkbAddColumn":
                     modules.mkb.addColumn();
                     break;
@@ -1198,17 +1211,13 @@
         $(".cardsAll").off("click").on("click", () => {
             navigateUrl("mkb.table", { all: true }, { run: true });
         });
-
-        $(".columnTable").off("click").on("click", function () {
-            navigateUrl("mkb.table", { column: $(this).parent().attr("data-column-id"), desk: modules.mkb.desk().name }, { run: true });
-        });
     },
 
     refreshInbox: function () {
         POST("mkb", "cards", false, { query: { inbox: true }, countOnly: true }).
         done(r => {
             if (r.count) {
-                $(".kanban-inbox-count").show().text(r.count > 9 ? "9+" : r.count);
+                $(".kanban-inbox-count").show().text(r.count > 9 ? "+" : r.count);
             } else {
                 $(".kanban-inbox-count").hide();
             }
@@ -1358,7 +1367,6 @@
                 <div class="card-header col-handle pl-3 pr-3">
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column._id}">
-                        <span class="btn btn-tool column-table columnTable pr-0 pl-0" title="${i18n("mkb.tableView")}"><i class="fas fa-fw fa-table"></i></span>
                         <span class="btn btn-tool cardAdd pr-0" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
                         <span class="btn btn-tool columnEdit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
                     </div>
@@ -1506,7 +1514,7 @@
                     <li class="nav-item d-none d-sm-inline-block pointer cardsInbox" title="${i18n("mkb.cardsInbox")}">
                         <span class="nav-link">
                             <i class="fas fa-fw fa-inbox text-secondary"></i>
-                            <span class="badge badge-danger navbar-badge kanban-inbox-count" style="display: none; font-weight: 600; padding: 2px 4px 0px 4px;">0</span>
+                            <span class="badge badge-danger navbar-badge kanban-inbox-count" style="display: none; font-weight: 600; padding: 2px 4px 0px 3px;">0</span>
                         </span>
                     </li>
                     <li class="nav-item d-none d-sm-inline-block pointer cardsArchive" title="${i18n("mkb.cardsArchive")}">

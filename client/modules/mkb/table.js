@@ -72,7 +72,6 @@
 
         GET("mkb", "desks", false, true).
         done(d => {
-            let filter = false;
             let query;
             let title;
             let columns = {};
@@ -115,6 +114,8 @@
                 },
             ];
 
+            let h = '';
+
             for (let i in d.desks) {
                 dropDownItems.push({
                     icon: "fas fa-layer-group",
@@ -127,17 +128,17 @@
                 });
                 if (d.desks[i].columns && d.desks[i].columns.length) {
                     for (let j in d.desks[i].columns) {
-                        if (params.column == d.desks[i].columns[j]._id) {
-                            if (d.desks[i].columns[j].cards && d.desks[i].columns[j].cards.length) {
-                                filter = d.desks[i].columns[j].cards;
-                            } else {
-                                filter = [];
-                            }
-                        }
                         columns[d.desks[i].columns[j]._id] = d.desks[i].columns[j].title;
                     }
                 }
+                if (d.desks[i].name == params.desk) {
+                    h += '<option selected>' + escapeHTML(d.desks[i].name) + '</option>';
+                } else {
+                    h += '<option>' + escapeHTML(d.desks[i].name) + '</option>';
+                }
             }
+
+            $("#mkbDesks").html(h);
 
             if (params.search) {
                 query = {
@@ -194,13 +195,9 @@
 
             if (params.desk) {
                 query = {
-                    desk: params.table,
+                    desk: params.desk,
                 };
-                if (params.column) {
-                    title = columns[params.column];
-                } else {
-                    title = params.desk;
-                }
+                title = params.desk;
             }
 
             QUERY("mkb", "cards", { query, skip, limit, sort: { date: 1 } }, true).
@@ -264,10 +261,6 @@
                         let rows = [];
 
                         for (let i in r.cards) {
-                            if (filter && filter.indexOf(r.cards[i]._id) < 0) {
-                                continue;
-                            }
-
                             let progress = '-';
 
                             if (r.cards[i].subtasks && r.cards[i].subtasks.length) {
@@ -382,12 +375,29 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("mkb.mkb");
 
+        let rtd = '';
+
+        if (params.desk) {
+            rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1" title="${i18n("mkb.desks")}"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>`;
+
+            $("#rightTopDynamic").html(rtd);
+        }
+
+        $("#rightTopDynamic").html(rtd);
+
+
+        $("#mkbDesks").off("change").on("change", () => {
+            lStore("mkbDesk", $("#mkbDesks").val());
+            params.desk = $("#mkbDesks").val();
+            modules.mkb.table.renderCards(params);
+        });
+
         if (parseInt(myself.uid) && AVAIL("mkb")) {
             $("#leftTopDynamic").html(`
                 <li class="nav-item d-none d-sm-inline-block pointer cardsInbox" title="${i18n("mkb.cardsInbox")}">
                     <span class="nav-link">
                         <i class="fas fa-fw fa-inbox text-secondary"></i>
-                        <span class="badge badge-danger navbar-badge kanban-inbox-count" style="display: none; font-weight: 600; padding: 2px 4px 0px 4px;">0</span>
+                        <span class="badge badge-danger navbar-badge kanban-inbox-count" style="display: none; font-weight: 600; padding: 2px 4px 0px 3px;">0</span>
                     </span>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block pointer cardsArchive" title="${i18n("mkb.cardsArchive")}">
