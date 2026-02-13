@@ -17,7 +17,7 @@
 
         if ($script_debug) {
             if ($cli) {
-                error_log(date() . " dbg >>> " . $msg);
+                error_log(date(time()) . " dbg >>> " . $msg);
             } else {
                 error_log("dbg >>> " . $msg);
             }
