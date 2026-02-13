@@ -97,7 +97,7 @@ function cardForm(params) {
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
-        h += `<div class="card mt-0 mb-0" style="max-height: calc(100vh - 200px);">`;
+        h += `<div class="card mt-0 mb-0" style="max-height: calc(100vh - 50px);">`;
         $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
         if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
             $("#modalBody").parent().addClass("modal-" + params.size);
@@ -583,7 +583,7 @@ function cardForm(params) {
                     h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="max-height: 300px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 for (let j = 0; j < params.fields[i].options.length; j++) {
@@ -615,7 +615,7 @@ function cardForm(params) {
                     h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="overflow-y-auto pl-0" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="overflow-y-auto pl-0" style="max-height: 400px; overflow-y: scroll!important; position: relative; border: solid thin transparent; border-radius: 3px; padding-right: 8px">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="overflow-y-auto pl-0" style="max-height: 300px; overflow-y: scroll!important; position: relative; border: solid thin transparent; border-radius: 3px; padding-right: 8px">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 h += renderSortable(i);
@@ -711,7 +711,7 @@ function cardForm(params) {
                     };
                 }
                 // TODO: Do something with this!!! (max-height)
-                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
+                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 300px; min-height: 300px; height: 300px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
                 // TODO: Do something with this!!! (max-height)
                 if (params.fields[i].add || params.fields[i].rename || params.fields[i].delete) {
                     h += `<div class="mt-2">`;
@@ -734,7 +734,7 @@ function cardForm(params) {
 
             case "settings":
                 // TODO: Do something with this!!! (max-height)
-                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
+                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 300px; min-height: 300px; height: 300px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
                 // TODO: Do something with this!!! (max-height)
                 h += `<div name="${_prefix}${params.fields[i].id}-hint" id="${_prefix}${params.fields[i].id}-hint" class="mt-2 pl-2 border-no-shadow">&nbsp;</div>`;
                 h += `<textarea name="${_prefix}${params.fields[i].id}-value" id="${_prefix}${params.fields[i].id}-value" rows="5" class="mt-2 form-control formField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"></textarea>`;
@@ -1503,7 +1503,8 @@ function cardForm(params) {
                 exec: function (editor) { editor.redo(); }
             });
 
-            let height = params.fields[i].height ? params.fields[i].height : 400;
+            let height = params.fields[i].height ? params.fields[i].height : 300;
+
             $(`#${_prefix}${params.fields[i].id}`).css("height", height + "px").css("resize", "vertical");
             new ResizeObserver(function () {
                 editor.resize();
@@ -1595,7 +1596,7 @@ function cardForm(params) {
                 exec: function (editor) { editor.redo(); }
             });
 
-            let height = params.fields[i].height ? params.fields[i].height : 400;
+            let height = params.fields[i].height ? params.fields[i].height : 300;
             $(`#${_prefix}${params.fields[i].id}`).css("height", height + "px").css("resize", "vertical");
 
             new ResizeObserver(function () {
