@@ -17,7 +17,7 @@
 
         if ($script_debug) {
             if ($cli) {
-                error_log("[" . date("Y-m-d H:i:s") . "] dbg >>> " . $msg);
+                error_log("[" . date("Y-m-d H:i:s") . "] dbg > " . $msg);
             } else {
                 error_log("dbg > " . $msg);
             }
@@ -30,10 +30,14 @@
     }
 
     function logMsg($msg) {
-        global $script_debug;
+        global $script_debug, $cli;
 
         if ($script_debug) {
-            error_log("log > " . $msg);
+            if ($cli) {
+                error_log("[" . date("Y-m-d H:i:s") . "] log > " . $msg);
+            } else {
+                error_log("log > " . $msg);
+            }
         }
 
         $accounting = loadBackend('accounting');
