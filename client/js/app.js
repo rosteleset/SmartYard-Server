@@ -502,25 +502,27 @@ function sudo() {
             });
         } else {
             mPassword(i18n("password"), i18n("sudo"), password => {
-                loadingStart();
-                if (config.pubKey) {
-                    encryptAsync(password, config.pubKey).
-                    then(encrypted => {
+                if (password = $.trim(password)) {
+                    loadingStart();
+                    if (config.pubKey) {
+                        encryptAsync(password, config.pubKey).
+                        then(encrypted => {
+                            PUT("user", "sudo", false, {
+                                password: encrypted,
+                                encrypted: true,
+                            }).
+                            done(forceReload).
+                            fail(FAIL).
+                            fail(loadingDone);
+                        });
+                    } else {
                         PUT("user", "sudo", false, {
-                            password: encrypted,
-                            encrypted: true,
+                            password
                         }).
                         done(forceReload).
                         fail(FAIL).
                         fail(loadingDone);
-                    });
-                } else {
-                    PUT("user", "sudo", false, {
-                        password
-                    }).
-                    done(forceReload).
-                    fail(FAIL).
-                    fail(loadingDone);
+                    }
                 }
             });
         }

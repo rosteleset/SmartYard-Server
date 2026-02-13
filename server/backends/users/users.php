@@ -223,123 +223,13 @@
              * @return mixed
              */
 
-            public function notify($uid, $subject, $message) {
-                if (!checkInt($uid)) {
-                    return false;
-                }
-
-                return $this->db->insert("insert into core_users_notifications_queue (login, uid, subject, message) values (:login, :uid, :subject, :message)", [
-                    "login" => $this->login,
-                    "uid" => $uid,
-                    "subject" => $subject,
-                    "message" => $message,
-                ]);
-            }
+            abstract public function notify($uid, $subject, $message);
 
             /**
              * none
              */
 
-            private function realNotify() {
-                $notifications = $this->db->get("select * from core_users_notifications_queue", false, [
-                    "notification_id" => "id",
-                    "login" => "login",
-                    "uid" => "uid",
-                    "subject" => "subject",
-                    "message" => "message",
-                ]);
-
-                foreach ($notifications as $notification) {
-                    $login = $notification["login"];
-                    $uid = $notification["uid"];
-                    $subject = $notification["subject"];
-                    $message = $notification["message"];
-
-                    $user = $this->getUser($uid);
-
-                    if (!$user) {
-                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
-                            "notification_id" => $notification["id"],
-                        ]);
-                        continue;
-                    }
-
-                    if (!in_array($user["notification"], [ "tgEmail", "emailTg", "tg", "email" ])) {
-                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
-                            "notification_id" => $notification["id"],
-                        ]);
-                        continue;
-                    }
-
-                    if ($user["notification"] == "tg" && (!$user["tg"] || !@$this->config["telegram"]["bot"])) {
-                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
-                            "notification_id" => $notification["id"],
-                        ]);
-                        continue;
-                    }
-
-                    if ($user["notification"] == "email" && (!$user["eMail"] || !$this->config["email"])) {
-                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
-                            "notification_id" => $notification["id"],
-                        ]);
-                        continue;
-                    }
-
-                    $message = trim($message);
-                    $subject = trim($subject);
-
-                    if (!$message) {
-                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
-                            "notification_id" => $notification["id"],
-                        ]);
-                        continue;
-                    }
-
-                    $id = false;
-
-                    if ($user["notification"] == "tg") {
-                        if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
-                            $id = $user["tg"];
-                        }
-                    } else
-
-                    if ($user["notification"] == "tgEmail") {
-                        if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
-                            $id = $user["tg"];
-                        } else {
-                            if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config["email"])) {
-                                $id = $user["eMail"];
-                            }
-                        }
-                    } else
-
-                    if ($user["notification"] == "email") {
-                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config["email"])) {
-                            $id = $user["eMail"];
-                        }
-                    } else
-
-                    if ($user["notification"] == "emailTg") {
-                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config["email"])) {
-                            $id = $user["eMail"];
-                        } else {
-                            if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
-                                $id = $user["tg"];
-                            }
-                        }
-                    }
-
-                    if ($id) {
-                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $login, "to" => $user["login"], "uid" => $uid, "id" => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
-                    } else {
-                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $login, "to" => $user["login"], "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
-                    }
-
-                    $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
-                        "notification_id" => $notification["id"],
-                    ]);
-                }
-            }
+            abstract protected function realNotify();
 
             /**
              * @return mixed
@@ -426,60 +316,13 @@
              * @return mixed
              */
 
-            public function sudoOn($uid, $password) {
-                $timeout = @$this->bconfig["sudo_timeout"] ?: 30 * 60;
-
-                $user = $this->getUser($uid);
-
-                $dbPassword = $this->db->get("select password from core_users where login = :login", [
-                    "login" => $this->login,
-                ],
-                [
-                    "password" => "password",
-                ],
-                [
-                    "fieldlify",
-                ]);
-
-                if ((int)$user["sudo"] && password_verify($password, $dbPassword)) {
-                    $this->redis->setEx("SUDO:" . $this->login, $timeout, 1);
-                    return $timeout;
-                }
-
-                return false;
-            }
+            abstract public function sudoOn($uid, $password);
 
             /**
              * @return mixed
              */
 
-            public function sudoOn2fa($uid, $token, $code) {
-                require_once "lib/GoogleAuthenticator/GoogleAuthenticator.php";
-
-                $timeout = @$this->bconfig["sudo_timeout"] ?: 30 * 60;
-
-                $user = $this->getUser($uid);
-
-                $ga = new \PHPGangsta_GoogleAuthenticator();
-
-                $secret = $this->db->get("select secret from core_users where login = :login", [
-                    "login" => $this->login,
-                ],
-                [
-                    "secret" => "secret",
-                ],
-                [
-                    "fieldlify",
-                ]);
-
-                if ((int)$user["sudo"] && $secret && $ga->verifyCode($secret, $code, 2)) {
-                    $this->redis->setEx("SUDO:" . $this->login, $timeout, 1);
-                    return $timeout;
-                }
-
-                return false;
-            }
-
+            abstract public function sudoOn2fa($uid, $token, $code);
             /**
              * @return mixed
              */
