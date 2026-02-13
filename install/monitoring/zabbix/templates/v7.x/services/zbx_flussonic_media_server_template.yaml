@@ -1,5 +1,5 @@
 zabbix_export:
-  version: '7.2'
+  version: '7.0'
   template_groups:
     - uuid: 441c5f644e5a41b98e9b8d9ab7ae94e8
       name: Templates/SmartYard-Server
@@ -9,7 +9,7 @@ zabbix_export:
       name: 'Flussonic Media Server'
       vendor:
         name: SmartYard
-        version: 2024-12
+        version: 2026-02
       groups:
         - name: Templates/SmartYard-Server
       items:

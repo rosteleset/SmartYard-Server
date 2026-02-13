@@ -1,7 +1,7 @@
 zabbix_export:
-  version: '7.2'
+  version: '7.0'
   template_groups:
-    - uuid: e858e071fe054cdabec002d7d99891e9
+    - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
   templates:
     - uuid: 1def59ffd59d4d3e88fcdfc7c3fe0377
@@ -10,7 +10,7 @@ zabbix_export:
       description: 'Intercom BEWARD DKS panel monitoring'
       vendor:
         name: SmartYard
-        version: 2025-04
+        version: 2026-02
       templates:
         - name: 'ICMP Ping'
       groups:
@@ -91,7 +91,6 @@ zabbix_export:
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
-          delay: 1h
           history: 1h
           value_type: TEXT
           authtype: BASIC
