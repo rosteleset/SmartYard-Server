@@ -44,6 +44,12 @@
                 if (@$params["code"]) {
                     $success = $params["_backends"]["users"]->sudoOn2fa(@$params["_realUid"], @$params["_token"], @$params["code"]);
                 } else {
+                    $pk = $params["_redis"]->get("PK");
+
+                    if ($pk && @$params["encrypted"]) {
+                        $params["password"] = decryptData($params["password"], $pk);
+                    }
+
                     $success = $params["_backends"]["users"]->sudoOn(@$params["_realUid"], @$params["password"]);
                 }
 
