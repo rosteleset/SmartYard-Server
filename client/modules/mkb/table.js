@@ -291,8 +291,7 @@
                                         },
                                     },
                                     {
-                                        data: date("Y-m-d", r.cards[i].date),
-                                        class: "bg-" + r.cards[i].color,
+                                        data: `<span class="${"bg-" + r.cards[i].color} p-1 pl-2 pr-2 border-no-shadow">${date("Y-m-d", r.cards[i].date)}</span>`,
                                         nowrap: true,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
