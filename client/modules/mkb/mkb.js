@@ -14,14 +14,14 @@
 
     init: function () {
         if (parseInt(myself.uid) && AVAIL("mkb")) {
-            this.menuItem = leftSide("fas fa-fw fa-layer-group", i18n("mkb.mkb"), "?#mkb", "productivity");
+            this.menuItem = leftSide("fas fa-fw fa-layer-group", i18n("mkb.mkb"), "?#mkb", "productivity", false, "kanban-inbox-count");
         }
 
         loadSubModules("mkb", JSON.parse(JSON.stringify(this.subModules)), this);
     },
 
     allLoaded: function () {
-        //
+        modules.mkb.refreshInbox();
     },
 
     mdr: function (str) {

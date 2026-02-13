@@ -427,7 +427,7 @@ function subTop(html) {
     }
 }
 
-function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
+function leftSide(button, title, target, group, wisibleOnlyWhenActive, badge) {
     if (group != mainSidebarGroup && !mainSidebarFirst) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
@@ -444,11 +444,14 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
         style += "display: none;";
     }
 
+    badge = badge ? badge : ("badge-" + md5(guid()));
+
     $("#leftside-menu").append(`
         <li id="${id}" class="leftsidebar-button nav-item${wisibleOnlyWhenActive?" wisibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}" style="${style}">
             <a href="${target}" data-href="${target}" class="nav-link ${(target === "#" + (route ? route.split('.')[0] : "")) ? "active" : ""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
+                <span class="badge badge-danger navbar-badge ${badge}" style="display: none; font-weight: 600; padding: 2px 4px 1px 4px;">0</span>
             </a>
         </li>
     `);
@@ -459,7 +462,7 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
     return id;
 }
 
-function leftSideClick(button, title, group, click) {
+function leftSideClick(button, title, group, click, badge) {
     if (group != mainSidebarGroup && !mainSidebarFirst) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
@@ -468,11 +471,14 @@ function leftSideClick(button, title, group, click) {
 
     let id = "id-" + md5(guid());
 
+    badge = badge ? badge : ("badge-" + md5(guid()));
+
     $("#leftside-menu").append(`
         <li id="${id}" class="leftsidebar-button nav-item" title="${escapeHTML(title)}">
             <a class="nav-link" href="#" onclick="xblur(); return false;">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
+                <span class="badge badge-danger navbar-badge ${badge}" style="display: none; font-weight: 600; padding: 2px 4px 1px 4px;">0</span>
             </a>
         </li>
     `);
