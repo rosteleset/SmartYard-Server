@@ -143,7 +143,9 @@
         "userNotFound": "Пользователь не найден",
         "permissionDenied": "В доступе отказано",
         "notAcceptable": "Действие невозможно",
-        "cantStoreData": "Нет доступа к хранилищу"
+        "cantStoreData": "Нет доступа к хранилищу",
+        "wrongPassword": "Неверный пароль",
+        "wrongCode": "Неверный код"
     },
     "images": {
         "maintenance": "maintenance_ru.jpg"
