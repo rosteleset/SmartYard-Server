@@ -54,13 +54,9 @@
 
             public function cron($part) {
                 if ($part === $this->cron_process_events_scheduler) {
-                    error_log("");
-                    error_log("");
-                    error_log("Start of processing events.");
+                    debugMsg("Start of processing events.");
                     $this->processEvents();
-                    error_log("End of processing events.");
-                    error_log("");
-                    error_log("");
+                    debugMsg("End of processing events.");
                     $this->db->modify("delete from plog_door_open where expire < " . time());
                     $this->db->modify("delete from plog_call_done where expire < " . time());
                     return true;
@@ -75,7 +71,7 @@
              */
 
             public function getCamshot($domophone_id, $output, $date, $event_id = false, $number = "", $camera_id = null) {
-                error_log("      Getting snapshot...");
+                debugMsg("Getting snapshot...");
 
                 $files = loadBackend('files');
                 $camshot_data = [];
@@ -91,7 +87,7 @@
                             $camshot_data['camera_id'] = $camera_id ?? $entrances[0]["cameraId"];
                             $frs = loadBackend("frs");
                             if ($frs) {
-                                error_log("        Trying from FRS...");
+                                debugMsg("Trying from FRS...");
                                 if ($number === "") {
                                     if ($event_id === false) {
                                         $response = $frs->bestQualityByDateFrs($cameras[0], $date);
@@ -170,9 +166,9 @@
                                     }
                                 }
                                 if (isset($camshot_data[self::COLUMN_PREVIEW])) {
-                                    error_log("        Event has image from FRS.");
+                                    debugMsg("Event has image from FRS.");
                                 } else {
-                                    error_log("        No image from FRS.");
+                                    debugMsg("No image from FRS.");
                                 }
                             }
                         } catch (\Exception $e) {
@@ -187,7 +183,7 @@
                                 //получение кадра с DVR-серевера, если нет кадра от FRS
                                 $prefix = $cameras[0]["dvrStream"];
                                 if ($prefix) {
-                                    error_log("        Trying from media server...");
+                                    debugMsg("Trying from media server...");
                                     $ts_event = $date - $this->back_time_shift_video_shot;
                                     $filename = "/tmp/" . uniqid('camshot_') . ".jpg";
                                     $urlOfScreenshot = loadBackend("dvr")->getUrlOfScreenshot($cameras[0], $ts_event);
@@ -215,9 +211,9 @@
                                         $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                                     }
                                     if (isset($camshot_data[self::COLUMN_PREVIEW])) {
-                                        error_log("        Event has image from a media server.");
+                                        debugMsg("Event has image from a media server.");
                                     } else {
-                                        error_log("        No image from a media server.");
+                                        debugMsg("No image from a media server.");
                                     }
                                 } else {
                                     $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
@@ -233,9 +229,9 @@
                 }
 
                 if (!isset($camshot_data[self::COLUMN_PREVIEW])) {
-                    error_log("        No image for the event.");
+                    debugMsg("No image for the event.");
                 }
-                error_log("      Done snapshot.");
+                debugMsg("Done snapshot.");
                 return $camshot_data;
             }
 
@@ -244,7 +240,7 @@
              */
 
             public function writeEventData($event_data, $flat_list = []) {
-                error_log("      Writing the event data...");
+                debugMsg("Writing the event data...");
                 try {
                     if (count($flat_list)) {
                         foreach ($flat_list as $flat_id) {
@@ -264,7 +260,7 @@
                         $event_data[self::COLUMN_HIDDEN] = $hidden;
                         $this->clickhouse->insert("plog", [$event_data]);
                     }
-                    error_log("      Done writing the event data.");
+                    debugMsg("Done writing the event data.");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return;
@@ -556,7 +552,7 @@
             private function processEvents() {
                 $end_date = time() - (int)$this->time_shift;  //крайняя дата обработки
 
-                error_log("  Start of processing data from plog_door_open");
+                debugMsg("Start of processing data from plog_door_open");
 
                 //обработка данных из таблицы plog_door_open
                 $query = "
@@ -579,11 +575,11 @@
                     ['date' => $plog_date, 'ip' => $ip, 'sub_id' => $sub_id, 'door' => $output] = $row;
 
                     $domophone_id = $this->getDomophoneId($ip, $sub_id);
-                    error_log("    Event data: date = $plog_date" . "; ip = " . $ip . "; sub_id = " . $sub_id . "; door = $output" . "; domophone_id = $domophone_id");
+                    debugMsg("Event data: date = $plog_date" . "; ip = " . $ip . "; sub_id = " . $sub_id . "; door = $output" . "; domophone_id = $domophone_id");
 
                     // skip the event from an unknown domophone
                     if ($domophone_id === null) {
-                        error_log("    Skip the event from an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id);
+                        debugMsg("Skip the event from an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id);
                         continue;
                     }
 
@@ -605,7 +601,7 @@
                         $event_data[self::COLUMN_RFID] = $rfid_key;
                         $flat_list = $this->getFlatIdByRfid($rfid_key, $domophone_id);
                         if (!$flat_list) {
-                            error_log("    Skip the event because there is no apartment linked to the rfid = $rfid_key.");
+                            debugMsg("Skip the event because there is no apartment linked to the rfid = $rfid_key.");
                             continue;
                         }
                     }
@@ -616,7 +612,7 @@
                         $event_data[self::COLUMN_CODE] = $open_code;
                         $flat_list = $this->getFlatIdByCode($open_code, $domophone_id);
                         if (!$flat_list) {
-                            error_log("    Skip the event because there is no apartment linked to the code = $open_code.");
+                            debugMsg("Skip the event because there is no apartment linked to the code = $open_code.");
                             continue;
                         }
                     }
@@ -627,7 +623,7 @@
                         $event_data[self::COLUMN_PHONES]['user_phone'] = $user_phone;
                         $flat_list = $this->getFlatIdByUserPhone($user_phone, $domophone_id);
                         if (!$flat_list) {
-                            error_log("    Skip the event because there is no apartment linked to the user phone = $user_phone.");
+                            debugMsg("Skip the event because there is no apartment linked to the user phone = $user_phone.");
                             continue;
                         }
                     }
@@ -646,7 +642,7 @@
                         if ($frs)
                             $flat_list = $frs->getFlatsByFaceIdFrs($face_id, $entrance["entranceId"]);
                         if (!$flat_list) {
-                            error_log("    Skip the event because there is no apartment linked to the face_id = $face_id.");
+                            debugMsg("Skip the event because there is no apartment linked to the face_id = $face_id.");
                             continue;
                         }
                     }
@@ -663,7 +659,7 @@
                         }
 
                         if (!$flat_list) {
-                            error_log("    Skip the event because there is no apartment linked to the license plate number = $number.");
+                            debugMsg("Skip the event because there is no apartment linked to the license plate number = $number.");
                             continue;
                         }
                     }
@@ -697,7 +693,7 @@
                     $this->writeEventData($event_data, $flat_list);
                 }
 
-                error_log("  End of processing data from plog_door_open");
+                debugMsg("End of processing data from plog_door_open");
 
                 //удаление данных из таблицы plog_door_open
                 $query = "
@@ -708,9 +704,9 @@
                         date <= $end_date
                 ";
                 $this->db->query($query);
-                error_log("  The processed data has been removed from plog_door_open");
+                debugMsg("The processed data has been removed from plog_door_open");
 
-                error_log("  Start of processing data from plog_call_done");
+                debugMsg("Start of processing data from plog_call_done");
 
                 //обработка данных из таблицы plog_call_done
                 $query = "
@@ -729,11 +725,11 @@
                     $sub_id = $row['sub_id'];
 
                     $domophone_id = $this->getDomophoneId($ip, $sub_id);
-                    error_log("    Calling event data: date = " . $row['date'] . "; ip = " . $ip . "; sub_id = " . $sub_id . "; domophone_id = $domophone_id");
+                    debugMsg("Calling event data: date = " . $row['date'] . "; ip = " . $ip . "; sub_id = " . $sub_id . "; domophone_id = $domophone_id");
 
                     // skip the event from an unknown domophone
                     if ($domophone_id === null) {
-                        error_log("    Skip the event from an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id . "\n");
+                        debugMsg("Skip the event from an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id . "\n");
                         continue;
                     }
 
@@ -1591,7 +1587,7 @@
                     $this->writeEventData($event_data);
                 }
 
-                error_log("  End of processing data from plog_call_done");
+                debugMsg("End of processing data from plog_call_done");
 
                 //удаление данных из таблицы plog_call_done
                 $query = "
@@ -1602,7 +1598,7 @@
                         date <= $end_date
                 ";
                 $this->db->query($query);
-                error_log("  The processed data has been removed from plog_call_done");
+                debugMsg("The processed data has been removed from plog_call_done");
             }
         }
     }
