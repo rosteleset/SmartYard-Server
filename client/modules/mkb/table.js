@@ -308,6 +308,7 @@
                                     },
                                     {
                                         data: r.cards[i].done ? i18n("yes") : i18n("no"),
+                                        class: "center",
                                         nowrap: true,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {

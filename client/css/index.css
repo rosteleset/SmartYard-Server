@@ -1127,3 +1127,7 @@ code {
 .tr-no-hover:hover {
   background-color: inherit !important;
 }
+
+.center {
+  text-align: center;
+}
