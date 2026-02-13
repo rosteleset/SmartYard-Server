@@ -42,6 +42,7 @@
     "column": "Column",
     "done": "Done",
     "cardsInbox": "Assigned cards",
+    "send": "Send",
     "methods": {
         "mkb": {
             "_title": "Kanban",

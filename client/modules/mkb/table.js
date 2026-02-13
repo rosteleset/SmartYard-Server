@@ -100,6 +100,13 @@
                     },
                 },
                 {
+                    icon: "fas fa-share-from-square",
+                    title: i18n("mkb.send"),
+                    click: id => {
+                        modules.mkb.cardSend(id);
+                    },
+                },
+                {
                     title: "-",
                     hint: i18n("mkb.moveTo"),
                 },
