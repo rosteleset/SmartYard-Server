@@ -5,7 +5,6 @@
     // asterisk support
 
     $cli = false;
-    $cli_error = false;
 
     require_once "utils/functions.php";
     require_once "utils/polyfills.php";

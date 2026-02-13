@@ -13,10 +13,14 @@
     }
 
     function debugMsg($msg) {
-        global $script_debug;
+        global $script_debug, $cli;
 
         if ($script_debug) {
-            error_log("dbg >>> " . $msg);
+            if ($cli) {
+                error_log(date() . " dbg >>> " . $msg);
+            } else {
+                error_log("dbg >>> " . $msg);
+            }
 
             $accounting = loadBackend('accounting');
             if ($accounting) {

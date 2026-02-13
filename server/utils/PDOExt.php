@@ -126,8 +126,6 @@
          */
 
         function insert($query, $params = [], $options = []) {
-            global $cli, $cli_error;
-
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -142,18 +140,14 @@
             } catch (\PDOException $e) {
                 if (!in_array("silent", $options)) {
                     setLastError($e->errorInfo[2] ?: $e->getMessage());
-                    if ($cli && $cli_error) {
-                        error_log(print_r($e, true));
-                        error_log($query);
-                    }
+                    error_log(print_r($e, true));
+                    error_log($query);
                 }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
-                if ($cli && $cli_error) {
-                    error_log(print_r($e, true));
-                    error_log($query);
-                }
+                error_log(print_r($e, true));
+                error_log($query);
                 return false;
             }
         }

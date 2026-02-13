@@ -7,7 +7,6 @@
     // mobile client API support
 
     $cli = false;
-    $cli_error = false;
     $mobile = true;
 
     if ($_SERVER["REQUEST_METHOD"] == "OPTIONS") {

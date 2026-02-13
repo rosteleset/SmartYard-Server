@@ -1,7 +1,6 @@
 <?php
 
     $cli = false;
-    $cli_error = false;
 
     require_once 'vendor/autoload.php';
 

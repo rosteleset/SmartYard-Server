@@ -29,8 +29,6 @@
     require_once "api/api.php";
 
     $cli = true;
-    $cli_error = false;
-    $cli_errors = [];
 
     $global_cli = [];
 
