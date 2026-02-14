@@ -180,7 +180,7 @@
              * @return mixed
              */
 
-            private function sendTg($tg, $subject, $message, $token) {
+            protected function sendTg($tg, $subject, $message, $token) {
                 if ($tg && $token) {
                     try {
                         $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?parse_mode=HTML&chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
@@ -203,7 +203,7 @@
              * @return mixed
              */
 
-            private function sendEmail($login, $email, $subject, $message, $config) {
+            protected function sendEmail($login, $email, $subject, $message, $config) {
                 try {
                     if ($email && $config && $login != $email) {
                         return eMail($config, $email, $subject ?: "-", $message) === true;
