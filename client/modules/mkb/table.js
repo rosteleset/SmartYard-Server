@@ -245,6 +245,7 @@
                     columns: [
                         {
                             title: "#",
+                            class: "center",
                         },
                         {
                             title: i18n("mkb.date"),
@@ -290,7 +291,8 @@
                                 uid: r.cards[i]._id,
                                 cols: [
                                     {
-                                        data: parseInt(i) + skip + 1,
+                                        data: `<span class="${"bg-" + r.cards[i].color} p-1 pl-2 pr-2 border-no-shadow">${parseInt(i) + skip + 1}</span>`,
+                                        // data: parseInt(i) + skip + 1,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
                                                 modules.mkb.table.renderCards(params);
@@ -298,7 +300,7 @@
                                         },
                                     },
                                     {
-                                        data: `<span class="${"bg-" + r.cards[i].color} p-1 pl-2 pr-2 border-no-shadow">${date("Y-m-d", r.cards[i].date)}</span>`,
+                                        data: date("Y-m-d", r.cards[i].date),
                                         nowrap: true,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {

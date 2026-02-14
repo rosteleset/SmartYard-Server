@@ -161,9 +161,9 @@ function cardTable(params) {
             continue;
         }
         if (params.columns[i].fullWidth) {
-            h += `<th nowrap style="width: 100%">${params.columns[i].title}</th>`;
+            h += `<th class="${params.columns[i].class ? params.columns[i].class : ""}" nowrap style="width: 100%">${params.columns[i].title}</th>`;
         } else {
-            h += `<th nowrap>${params.columns[i].title}</th>`;
+            h += `<th class="${params.columns[i].class ? params.columns[i].class : ""}" nowrap>${params.columns[i].title}</th>`;
         }
         columns++;
     }
