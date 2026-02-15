@@ -80,6 +80,9 @@ function menu(config) {
             if (config.items[i].selected) {
                 c += " text-bold";
             }
+            if (config.items[i].hidden) {
+                c += " hidden";
+            }
             c = c.trim();
             if (config.items[i].data) {
                 h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}', $(this).attr('data-menu'))" data-menu="${config.items[i].data}">`;

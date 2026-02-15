@@ -102,6 +102,7 @@
                 {
                     icon: "fas fa-share-from-square",
                     title: i18n("mkb.send"),
+                    hidden: true,
                     click: id => {
                         modules.mkb.cardSend(id);
                     },

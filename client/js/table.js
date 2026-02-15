@@ -293,6 +293,9 @@ function cardTable(params) {
                             if (rows[i].dropDown.items[j].class) {
                                 t += " " + rows[i].dropDown.items[j].class;
                             }
+                            if (rows[i].dropDown.items[j].hidden) {
+                                t += " hidden";
+                            }
                             if (rows[i].dropDown.items[j].disabled || typeof rows[i].dropDown.items[j].click !== "function") {
                                 t += ` disabled opacity-disabled cursor`;
                             } else {
