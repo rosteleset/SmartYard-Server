@@ -231,7 +231,11 @@ function hashChange() {
                 if (module.menu) {
                     $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="noselect ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${menu(module.menu)}</li>`).removeClass("cut-text");
                 } else {
-                    $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="cut-text ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(c)}</li>`).addClass("cut-text");
+                    $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="cut-text noselect ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(c)}</li>`).addClass("cut-text");
+                    $("#topMenuLeftCaption").off("click").removeClass("pointer");
+                    if (module.captionClick && typeof module.captionClick == "function") {
+                        $("#topMenuLeftCaption").on("click", module.captionClick).addClass("pointer");
+                    }
                 }
 
                 if (currentModule != module) {

@@ -44,7 +44,7 @@ function menu(config) {
         h += '</div>';
     }
 
-    h += '</div>';
+    // h += '</div>';
 
     if (config.right) {
         h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${xid}" style="min-width: 250px!important;">`;

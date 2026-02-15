@@ -7,6 +7,10 @@
         moduleLoaded("mkb.table", this);
     },
 
+    captionClick: function () {
+        navigateUrl("mkb", false, { run: true })
+    },
+
     renderCards: function (params) {
         loadingStart();
 
