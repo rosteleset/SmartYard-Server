@@ -1,3 +1,5 @@
+const run = true;
+
 let modules = {};
 let moduleLoadQueue = [];
 

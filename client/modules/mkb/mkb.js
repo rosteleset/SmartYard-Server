@@ -69,7 +69,7 @@
         click: (id) => {
             switch (id) {
                 case "mkbTableView":
-                    navigateUrl("mkb.table", { desk: modules.mkb.desk().name }, { run: true });
+                    navigateUrl("mkb.table", { desk: modules.mkb.desk().name }, { run });
                     break;
 
                 case "mkbAddColumn":
@@ -1209,15 +1209,15 @@
         });
 
         $(".cardsInbox").off("click").on("click", () => {
-            navigateUrl("mkb.table", { inbox: true }, { run: true });
+            navigateUrl("mkb.table", { inbox: true }, { run });
         });
 
         $(".cardsArchive").off("click").on("click", () => {
-            navigateUrl("mkb.table", { archive: true }, { run: true });
+            navigateUrl("mkb.table", { archive: true }, { run });
         });
 
         $(".cardsAll").off("click").on("click", () => {
-            navigateUrl("mkb.table", { all: true }, { run: true });
+            navigateUrl("mkb.table", { all: true }, { run });
         });
     },
 
@@ -1547,6 +1547,6 @@
     },
 
     search: function (search) {
-        navigateUrl("mkb.table", { search }, { run: true });
+        navigateUrl("mkb.table", { search }, { run });
     }
 }).init();

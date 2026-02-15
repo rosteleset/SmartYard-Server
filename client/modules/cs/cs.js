@@ -153,7 +153,7 @@
                 }).
                 done(() => {
                     message(i18n("cs.sheetWasSaved"));
-                    navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight }, { run });
                 }).
                 fail(FAIL).
                 fail(loadingDone);
@@ -201,14 +201,14 @@
                 },
             ],
             callback: result => {
-                navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
+                navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight }, { run });
             },
         });
     },
 
     editCSsheet: function () {
         if ($("#csSheet").val() && $("#csDate").val()) {
-            navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
+            navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight }, { run });
         }
     },
 
@@ -223,7 +223,7 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
-                    navigateUrl("cs", { highlight: modules.cs.highlight }, { run: true });
+                    navigateUrl("cs", { highlight: modules.cs.highlight }, { run });
                 });
             })
         }
@@ -1279,7 +1279,7 @@
                         markers += issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[1] + "," + issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[0] + "," + issues[i][modules.cs.currentSheet.sheet.fields.row] + "|";
                     }
 
-                    navigateUrl("map", { markersLine: markers }, { run: true });
+                    navigateUrl("map", { markersLine: markers }, { run });
                 });
 
                 $(".cs-data-cell").off("click").on("click", function (e) {
@@ -1472,7 +1472,7 @@
                 });
 
                 $(".unhighlight").off("click").on("click", e => {
-                    navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date }, { run: true });
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date }, { run });
                     e.stopPropagation();
                 });
 
@@ -1551,11 +1551,11 @@
                 }
 
                 $("#csSheet").off("change").on("change", () => {
-                    navigateUrl("cs", { sheet: $("#csSheet").val(), date: modules.cs.date, highlight: modules.cs.highlight }, { run: true });
+                    navigateUrl("cs", { sheet: $("#csSheet").val(), date: modules.cs.date, highlight: modules.cs.highlight }, { run });
                 });
 
                 $("#csDate").off("change").on("change", () => {
-                    navigateUrl("cs", { sheet: modules.cs.sheet, date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: $("#csDate").val(), highlight: modules.cs.highlight }, { run });
                 });
 
                 if ($("#csSheet").val() && $("#csDate").val()) {

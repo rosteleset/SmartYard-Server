@@ -1396,14 +1396,14 @@
             limit: limit ? limit : modules.tt.defaultIssuesPerPage,
             search: ($.trim(search) && typeof search === "string") ? $.trim(search) : "",
             scroll: ($.trim(scroll) && typeof scroll === "string") ? $.trim(scroll) : "",
-        }, { run: true });
+        }, { run });
     },
 
     selectProject: function (project) {
         lStore("ttProject", project);
         navigateUrl("tt", {
             project: project,
-        }, { run: true });
+        }, { run });
     },
 
     renderIssues: function (params, target, issuesListId, callback, fail) {
@@ -2204,7 +2204,7 @@
                                     message(i18n("tt.filterWasSaved"));
                                     lStore("ttIssueFilter:" + currentProject, n);
                                     window.onbeforeunload = null;
-                                    navigateUrl("tt", { filter: n, customFilter: "yes", owner: myself.login }, { run: true })
+                                    navigateUrl("tt", { filter: n, customFilter: "yes", owner: myself.login }, { run })
                                 }).
                                 fail(FAIL).
                                 fail(loadingDone);
@@ -2442,10 +2442,10 @@
                                     if (id.substring(0, 6) == "items-") {
                                         modules.tt.defaultIssuesPerPage = parseInt(data);
                                         lStore("defaultIssuesPerPage", parseInt(data));
-                                        navigateUrl("tt", false, { run: true });
+                                        navigateUrl("tt", false, { run });
                                     }
                                     if (id == "customFilterEdit") {
-                                        navigateUrl("tt", { filter: filterName, customFilter: "yes" }, { run: true });
+                                        navigateUrl("tt", { filter: filterName, customFilter: "yes" }, { run });
                                     }
                                     if (id == "customFilterDelete") {
                                         mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), `danger:${i18n("delete")}`, () => {
@@ -2454,7 +2454,7 @@
                                             done(() => {
                                                 message(i18n("tt.filterWasDeleted"));
                                                 lStore("ttIssueFilter:" + currentProject, null);
-                                                navigateUrl("tt", false, { run: true });
+                                                navigateUrl("tt", false, { run });
                                             }).
                                             fail(FAIL).
                                             fail(loadingDone);
@@ -2609,7 +2609,7 @@
                             lStore("ttIssueFilter:" + lStore("ttProject"), null);
                             lStore("ttProject", null);
                             if (params._ != _) {
-                                navigateUrl("tt", { _ }, { run: true });
+                                navigateUrl("tt", { _ }, { run });
                             }
                         }
                     }
@@ -2643,7 +2643,7 @@
                         lStore("ttIssueFilter:" + lStore("ttProject"), null);
                         lStore("ttProject", null);
                         if (params._ != _) {
-                            navigateUrl("tt", { _ }, { run: true });
+                            navigateUrl("tt", { _ }, { run });
                         }
                     }
                 }
@@ -2745,7 +2745,7 @@
                         }).
                         done(r => {
                             message(i18n("tt.bulkActionDone", r));
-                            navigateUrl("tt", false, { run: true });
+                            navigateUrl("tt", false, { run });
                         }).
                         fail(FAIL).
                         always(loadingDone);
@@ -2785,12 +2785,12 @@
         }
 
         if (!parseInt(myself.uid)) {
-            navigateUrl("tt.settings", false, { run: true });
+            navigateUrl("tt.settings", false, { run });
             return;
         }
 
         if (params.issue) {
-            navigateUrl("tt.issue", params, { run: true });
+            navigateUrl("tt.issue", params, { run });
             return;
         }
 
@@ -2833,7 +2833,7 @@
         if (s) {
             let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
             if (i.test(s)) {
-                navigateUrl("tt.issue", { issue: s.toUpperCase(), search: s.toUpperCase() }, { run: true });
+                navigateUrl("tt.issue", { issue: s.toUpperCase(), search: s.toUpperCase() }, { run });
             } else {
                 modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
             }

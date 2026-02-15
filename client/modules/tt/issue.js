@@ -1327,12 +1327,12 @@
 
         $("#stepPrev").off("click").on("click", () => {
             loadingStart();
-            navigateUrl("tt.issue", { issue: prev, filter: filter, search: search, }, { run: true });
+            navigateUrl("tt.issue", { issue: prev, filter: filter, search: search, }, { run });
         });
 
         $("#stepNext").off("click").on("click", () => {
             loadingStart();
-            navigateUrl("tt.issue", { issue: next, filter: filter, search: search, }, { run: true });
+            navigateUrl("tt.issue", { issue: next, filter: filter, search: search, }, { run });
         });
 
         $("#stepOf").off("click").on("click", () => {

@@ -8,7 +8,7 @@
     },
 
     captionClick: function () {
-        navigateUrl("mkb", false, { run: true })
+        navigateUrl("mkb", false, { run });
     },
 
     renderCards: function (params) {
@@ -430,15 +430,15 @@
         }
 
         $(".cardsInbox").off("click").on("click", () => {
-            navigateUrl("mkb.table", { inbox: true }, { run: true });
+            navigateUrl("mkb.table", { inbox: true }, { run });
         });
 
         $(".cardsArchive").off("click").on("click", () => {
-            navigateUrl("mkb.table", { archive: true }, { run: true });
+            navigateUrl("mkb.table", { archive: true }, { run });
         });
 
         $(".cardsAll").off("click").on("click", () => {
-            navigateUrl("mkb.table", { all: true }, { run: true });
+            navigateUrl("mkb.table", { all: true }, { run });
         });
 
         modules.users.loadUsers(() => {
@@ -447,6 +447,6 @@
     },
 
     search: function (search) {
-        navigateUrl("mkb.table", { search }, { run: true });
+        navigateUrl("mkb.table", { search }, { run });
     },
 }).init();
