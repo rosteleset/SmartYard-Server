@@ -1547,7 +1547,7 @@
 
                 let filtersTree = {};
                 for (let i in project.filters) {
-                    let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter).escapedSplit("/");
+                    let tree = ((project.filters[i].filter && modules.tt.meta.filters[project.filters[i].filter]) ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter).escapedSplit("/");
                     let f = filtersTree;
                     for (let j = 0; j < tree.length - 1; j++) {
                         tree[j] = tree[j].trim();
