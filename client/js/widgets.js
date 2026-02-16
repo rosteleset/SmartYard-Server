@@ -370,8 +370,8 @@ function page404() {
     document.title = `${i18n("windowTitle")} :: 404`;
     $("#pageError").html(`
         <section class="content">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                <img src="img/404.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 40px;">
+                <img src="img/404.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px; filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5));">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("errors.404caption")}</b></h3>
                     <p>${i18n("errors.404message")}</p>
@@ -389,8 +389,8 @@ function pageError(error) {
     document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
     $("#pageError").html(`
         <section class="content">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                <img src="img/error.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 40px;">
+                <img src="img/error.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px; filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5));">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("error")}</b></h3>
                     <p>${error ? error : i18n("errors.unknownMessage")}</p>
@@ -408,8 +408,8 @@ function pageMaintenance() {
     document.title = `${i18n("windowTitle")} :: ${i18n("maintenanceCaption")}`;
     $("#pageError").html(`
         <section class="content">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                <img src="img/${i18n("images.maintenance")}" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 40px;">
+                <img src="img/${i18n("images.maintenance")}" style="border: none; width: 200px; height: 200px; border-radius: 10px; filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5));">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("maintenanceCaption")}</b></h3>
                     <p>${i18n("maintenanceMessage")}</p>
