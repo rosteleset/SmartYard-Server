@@ -375,6 +375,15 @@
                         $q = "select house_flat_id from houses_flats where house_flat_id in ($t)";
 
                         break;
+
+                    case "houseIdAndFlat":
+                        $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id  and flat = :flat group by house_flat_id";
+                        $p = [
+                            "address_house_id" => $params["houseId"],
+                            "flat" => $params["flat"]
+                        ];
+
+                        break;
                 }
 
                 $flats = $this->db->get($q, $p);
