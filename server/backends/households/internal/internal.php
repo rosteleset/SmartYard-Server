@@ -774,8 +774,8 @@
                         $params["openCode"] = 11000 + rand(0, 88999);
                     }
 
-                    if ($openCode == "00000") {
-                        $openCode = false;
+                    if (@$params["openCode"] == "00000") {
+                        $params["openCode"] = false;
                     }
 
                     $params["openCode"] = $params["openCode"] ?: '';
