@@ -769,16 +769,16 @@
                         $params["code"] = md5(GUIDv4());
                     }
 
-                    if (@$params["openCode"] == "!") {
-                        // TODO add unique check !!!
-                        $params["openCode"] = 11000 + rand(0, 88999);
-                    }
+                    if (array_key_exists("openCode", $params)) {
+                        if ($params["openCode"] == "!") {
+                            // TODO add unique check !!!
+                            $params["openCode"] = 11000 + rand(0, 88999);
+                        }
 
-                    if ($params["openCode"] == "00000") {
-                        $params["openCode"] = false;
+                        if ($params["openCode"] == "00000") {
+                            $params["openCode"] = false;
+                        }
                     }
-
-                    $params["openCode"] = $params["openCode"] ?: '';
 
                     if (array_key_exists("contract", $params) && !checkStr($params["contract"])) {
                         setLastError("invalidParams");
