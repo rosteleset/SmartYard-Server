@@ -2007,7 +2007,7 @@
                                         data: modules.tt.meta.tags[i].tagId,
                                     },
                                     {
-                                        data: `<span class="mr-1 text-bold bg-${modules.tt.meta.tags[i].color ? modules.tt.meta.tags[i].color : systemColor(modules.tt.meta.tags[i].tag)}" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; border-radius: 8px;'></i>${modules.tt.meta.tags[i].tag}</span>`,
+                                        data: `<span class="text-bold bg-maroon kanban-badge pr-2 pl-2 noselect bg-${modules.tt.meta.tags[i].color ? modules.tt.meta.tags[i].color : systemColor(modules.tt.meta.tags[i].tag)}" style="border: solid thin #60686f; border-radius: .25rem;">${modules.tt.meta.tags[i].tag}</span>`,
                                     },
                                     {
                                         data: modules.tt.meta.tags[i].comments,
