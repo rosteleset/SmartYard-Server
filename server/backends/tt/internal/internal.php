@@ -2859,6 +2859,7 @@
                         "tag_id" => "tagId",
                         "tag" => "tag",
                         "color" => "color",
+                        "comments" => "comments",
                     ]);
 
                     $this->cacheSet($key, $_tags);
@@ -2869,6 +2870,7 @@
                         "project_id" => "projectId",
                         "tag" => "tag",
                         "color" => "color",
+                        "comments" => "comments",
                     ]);
 
                     $this->cacheSet($key, $_tags);
@@ -2880,19 +2882,24 @@
              * @inheritDoc
              */
 
-            public function addTag($projectId, $tag, $color) {
+            public function addTag($projectId, $tag, $color, $comments) {
                 $this->clearCache();
 
                 if (!checkInt($projectId) || !checkStr($tag)) {
                     return false;
                 }
 
+                if (!checkStr($comments)) {
+                    return false;
+                }
+
                 try {
-                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag, color) values (:project_id, :tag, :color)");
+                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag, color, comments) values (:project_id, :tag, :color, :comments)");
                     if (!$sth->execute([
                         "project_id" => $projectId,
                         "tag" => $tag,
                         "color" => $color,
+                        "comments" => $comments,
                     ])) {
                         return false;
                     }
@@ -2908,18 +2915,23 @@
              * @inheritDoc
              */
 
-            public function modifyTag($tagId, $tag, $color) {
+            public function modifyTag($tagId, $tag, $color, $comments) {
                 $this->clearCache();
 
                 if (!checkInt($tagId) || !checkStr($tag)) {
                     return false;
                 }
 
+                if (!checkStr($comments)) {
+                    return false;
+                }
+
                 try {
-                    $sth = $this->db->prepare("update tt_tags set tag = :tag, color = :color where tag_id = $tagId");
+                    $sth = $this->db->prepare("update tt_tags set tag = :tag, color = :color, comments = :comments where tag_id = $tagId");
                     $sth->execute([
                         "tag" => $tag,
                         "color" => $color,
+                        "comments" => $comments,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

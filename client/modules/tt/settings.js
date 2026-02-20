@@ -1862,6 +1862,12 @@
                                         placeholder: i18n("tt.tag"),
                                     },
                                     {
+                                        id: "comments",
+                                        type: "text",
+                                        title: i18n("tt.comments"),
+                                        placeholder: i18n("tt.comments"),
+                                    },
+                                    {
                                         id: "color",
                                         type: "color",
                                         title: i18n("tt.color"),
@@ -1873,6 +1879,7 @@
                                     POST("tt", "tag", false, {
                                         projectId: projectId,
                                         tag: f.tag,
+                                        comments: f.comments,
                                         color: f.color,
                                     }).
                                     fail(FAIL).
@@ -1896,10 +1903,12 @@
                 edit: tagId => {
                     let tag = "";
                     let color = "";
+                    let comments = "";
                     for (let i in modules.tt.meta.tags) {
                         if (modules.tt.meta.tags[i].projectId == projectId && modules.tt.meta.tags[i].tagId == tagId) {
                             tag = modules.tt.meta.tags[i].tag;
                             color = modules.tt.meta.tags[i].color;
+                            comments = modules.tt.meta.tags[i].comments;
                         }
                     }
                     cardForm({
@@ -1923,6 +1932,13 @@
                                 title: i18n("tt.tag"),
                                 placeholder: i18n("tt.tag"),
                                 value: tag,
+                            },
+                            {
+                                id: "comments",
+                                type: "text",
+                                title: i18n("tt.comments"),
+                                placeholder: i18n("tt.comments"),
+                                value: comments,
                             },
                             {
                                 id: "color",
@@ -1951,6 +1967,7 @@
                                 PUT("tt", "tag", tagId, {
                                     tag: f.tag,
                                     color: f.color,
+                                    comments: f.comments,
                                 }).
                                 fail(FAIL).
                                 fail(loadingDone).
@@ -1986,7 +2003,7 @@
                                         data: modules.tt.meta.tags[i].tagId,
                                     },
                                     {
-                                        data: `<span class="mr-1 text-bold ${modules.tt.meta.tags[i].color ? ("bg-" + modules.tt.meta.tags[i].color) : ""}" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; border-radius: 8px;'><i class="fas fa-tag mr-2"></i>${modules.tt.meta.tags[i].tag}</span>`,
+                                        data: `<span class="mr-1 text-bold bg-${modules.tt.meta.tags[i].color ? modules.tt.meta.tags[i].color : systemColor(modules.tt.meta.tags[i].tag)}" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; border-radius: 8px;'></i>${modules.tt.meta.tags[i].tag}</span>`,
                                     },
                                 ],
                             });
