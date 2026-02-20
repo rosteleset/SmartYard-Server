@@ -196,7 +196,7 @@ abstract class rubetek extends domophone implements
             'Acc1Password' => $password,
             'Acc1SipServer' => $server,
             'Acc1SipServerPort' => $port,
-            'Acc1SipTransport' => 'tcp',
+            'Acc1SipTransport' => 'udp',
             'Acc1RegInterval' => 1200,
             'RegTimeout' => 5,
             'RegCycleInterval' => 60,
