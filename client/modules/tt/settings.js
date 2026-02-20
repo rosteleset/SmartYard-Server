@@ -1988,6 +1988,10 @@
                     {
                         title: i18n("tt.tag"),
                         nowrap: true,
+                    },
+                    {
+                        title: i18n("tt.comments"),
+                        nowrap: true,
                         fullWidth: true,
                     },
                 ],
@@ -2004,6 +2008,10 @@
                                     },
                                     {
                                         data: `<span class="mr-1 text-bold bg-${modules.tt.meta.tags[i].color ? modules.tt.meta.tags[i].color : systemColor(modules.tt.meta.tags[i].tag)}" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; border-radius: 8px;'></i>${modules.tt.meta.tags[i].tag}</span>`,
+                                    },
+                                    {
+                                        data: modules.tt.meta.tags[i].comments,
+                                        fullWidth: true,
                                     },
                                 ],
                             });
