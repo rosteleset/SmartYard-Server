@@ -2843,7 +2843,7 @@
              */
 
             public function getTags($projectId = false) {
-                $key = $projectId?"TAGS:$projectId":"TAGS";
+                $key = $projectId ? "TAGS:$projectId" : "TAGS";
 
                 $cache = $this->cacheGet($key);
                 if ($cache) {

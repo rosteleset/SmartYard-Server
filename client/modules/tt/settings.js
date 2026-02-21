@@ -1938,7 +1938,7 @@
                                 type: "text",
                                 title: i18n("tt.comments"),
                                 placeholder: i18n("tt.comments"),
-                                value: comments,
+                                value: comments ? comments : "",
                             },
                             {
                                 id: "color",
@@ -2010,7 +2010,7 @@
                                         data: `<span class="text-bold bg-maroon kanban-badge pr-2 pl-2 noselect bg-${modules.tt.meta.tags[i].color ? modules.tt.meta.tags[i].color : systemColor(modules.tt.meta.tags[i].tag)}" style="border: solid thin #60686f; border-radius: .25rem;">${modules.tt.meta.tags[i].tag}</span>`,
                                     },
                                     {
-                                        data: modules.tt.meta.tags[i].comments,
+                                        data: modules.tt.meta.tags[i].comments ? modules.tt.meta.tags[i].comments : "&nbsp;",
                                         fullWidth: true,
                                     },
                                 ],

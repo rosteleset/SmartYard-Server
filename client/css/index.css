@@ -533,6 +533,10 @@ select {
   display: none !important;
 }
 
+.select2-selection__choice {
+  font-size: 96%;
+}
+
 .text-decoration-line-through {
   text-decoration: line-through;
 }
