@@ -7,7 +7,7 @@
         moduleLoaded("tt.createIssue", this);
     },
 
-    createIssue: function (currentProject, parent, catalogByIssue) {
+    createIssue: function (currentProject, parent, catalogByIssue, params) {
         let projects = [];
 
         projects.push({
@@ -190,9 +190,7 @@
                     lStore("ttProject", result.project);
                     lStore("ttWorkflow", result.workflow);
                 }
-                modules.tt.createIssue.createIssueForm(result.project, result.workflow, result.catalog, false);
-                // loadingStart();
-                // navigateUrl("tt.createIssue", { project: result.project, workflow: result.workflow, catalog: result.catalog, parent: !!parent ? parent["issueId"] : false }, { run });
+                modules.tt.createIssue.createIssueForm(result.project, result.workflow, result.catalog, false, params);
             },
             cancel: () => {
                 window.history.back();
@@ -200,7 +198,7 @@
         });
     },
 
-    createIssueForm: function (currentProject, workflow, catalog, parent) {
+    createIssueForm: function (currentProject, workflow, catalog, parent, params) {
         subTop();
 
         $("#leftTopDynamic").html("");
@@ -306,6 +304,9 @@
                 for (let i in kx) {
                     let fi = modules.tt.issueField2FormFieldEditor(false, kx[i], projectId, ky[kx[i]]);
                     if (fi && kx[i] !== "comment" && kx[i] !== "optionalComment") {
+                        if (params.autofill && params[kx[i]]) {
+                            fi.value = params[kx[i]];
+                        }
                         fields.push(fi);
                     }
                 }
@@ -366,10 +367,10 @@
         done(modules.tt.tt).
         done(() => {
             if (params.project && params.workflow) {
-                modules.tt.createIssue.createIssueForm(params.project, params.workflow, params.catalog, params.parent);
+                modules.tt.createIssue.createIssueForm(params.project, params.workflow, params.catalog, params.parent, params);
             } else {
                 loadingDone();
-                modules.tt.createIssue.createIssue($("#ttProjectSelect").val() ? $("#ttProjectSelect").val() : lStore("ttProject"));
+                modules.tt.createIssue.createIssue($("#ttProjectSelect").val() ? $("#ttProjectSelect").val() : lStore("ttProject"), false, false, params);
             }
         }).
         fail(FAIL).
