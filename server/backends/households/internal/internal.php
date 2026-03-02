@@ -800,7 +800,10 @@
                         $params["password"] = null;
                     }
 
-                    $params["floor"] = (int)@$params["floor"];
+                    if (array_key_exists("floor", $params) && !checkInt($params["floor"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
 
                     if (array_key_exists("cars", $params)) {
                         $cars = $params["cars"];
