@@ -3467,7 +3467,7 @@
                         $sibling["children"] = !!(int)$sibling["children"];
                     }
 
-                    if ($childrens && count($childrens)) {
+                    if ($childrens && is_countable($childrens) && count($childrens)) {
                         foreach ($siblings as &$sibling) {
                             if ($sibling["id"] == $childrens[0]["parentId"]) {
                                 $sibling["children"] = $childrens;
