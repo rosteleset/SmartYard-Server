@@ -30,7 +30,8 @@
         "DownloadConfigFile",
         "GetRemoteUserNameByRPID",
         "GetRemoteDisplayNameByRPID",
-        "audio buf is full"
+        "audio buf is full",
+        "serial_send error"
     ],
     "beward": [
         "RTSP",
