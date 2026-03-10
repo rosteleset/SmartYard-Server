@@ -464,6 +464,9 @@ function handleOtherCases(context, extension)
     if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
         domophoneId = tonumber(from:sub(2))
 
+        app.Ringing()
+        app.Progress()
+
         -- sokol's crutch
         if extension:len() < 5 then
             logDebug("bad extension, replacing...")
