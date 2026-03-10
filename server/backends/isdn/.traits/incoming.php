@@ -27,7 +27,16 @@
              */
 
             function checkIncoming($id) {
-                return trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkIncoming&mobile=$id&secret=" . $this->config["backends"]["isdn"]["common_secret"]));
+                $params = [
+                    'action' => 'checkIncoming',
+                    'mobile' => $id,
+                    'secret' => $this->config["backends"]["isdn"]["common_secret"],
+                ];
+                $url = "https://isdn.lanta.me/isdn_api.php?" . http_build_query($params);
+                $context = stream_context_create(['http' => ['timeout' => 5, 'ignore_errors' => true]]);
+                $response = (string)@file_get_contents($url, false, $context);
+
+                return filter_var(trim($response), FILTER_VALIDATE_BOOLEAN);
             }
         }
     }
