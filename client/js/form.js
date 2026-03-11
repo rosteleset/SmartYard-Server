@@ -87,10 +87,13 @@ function cardForm(params) {
 
     let _prefix = "form-" + md5(guid()) + "-";
 
-    let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;
-    h += `<input autocomplete="off" name="${_prefix}hiddenText" type="text" style="display: none;">`;
-    h += `<input autocomplete="off" name="${_prefix}hiddenPassword" type="password" style="display: none;">`;
-    h += `<input autocomplete="new-password" name="${_prefix}hiddenNewPassword" type="password" style="display: none;">`;
+    let h = `
+        <form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">
+            <input autocomplete="off" name="${_prefix}hiddenText" type="text" style="display: none;">
+            <input autocomplete="off" name="${_prefix}hiddenPassword" type="password" style="display: none;">
+            <input autocomplete="new-password" name="${_prefix}hiddenNewPassword" type="password" style="display: none;">
+        </form>
+    `.replace(/\n\s+/g, "").trim();
 
     let files = {};
 
