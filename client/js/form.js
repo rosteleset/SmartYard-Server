@@ -188,9 +188,9 @@ function cardForm(params) {
         h += `
             <ul class="nav nav-tabs mt-1 ml-1" id="jsform-content-tab" role="tablist">
                 ${tabs.map((tab, i) => `
-                <li class="nav-item">
-                    <a class="nav-link jsform-nav-link ${i == 0 ? "active text-bold" : ""} jsform-tab-link" id="jsform-content-tab-${md5(tab)}" data-toggle="pill" href="#" role="tab" aria-selected="${i == 0 ? "true" : "false"}" aria-controls="jsform-content-${md5(tab)}" data-tab-index="${i}">${tab}</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link jsform-nav-link ${i == 0 ? "active text-bold" : ""} jsform-tab-link" id="jsform-content-tab-${md5(tab)}" data-toggle="pill" href="#" role="tab" aria-selected="${i == 0 ? "true" : "false"}" aria-controls="jsform-content-${md5(tab)}" data-tab-index="${i}">${tab}</a>
+                    </li>
                 `).join("")}
             </ul>
         `.trim();
