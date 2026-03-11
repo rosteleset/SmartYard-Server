@@ -93,7 +93,7 @@ function cardForm(params) {
             <input autocomplete="off" name="${_prefix}hiddenPassword" type="password" style="display: none;">
             <input autocomplete="new-password" name="${_prefix}hiddenNewPassword" type="password" style="display: none;">
         </form>
-    `.replace(/\n\s+/g, "").trim();
+    `.trim();
 
     let files = {};
 
@@ -112,15 +112,14 @@ function cardForm(params) {
     }
 
     if (params.title) {
-        h += `<div class="card-header pointer" id="modalHeader">`;
-        h += `<h3 class="card-title text-bold">`;
-        if (params.topApply) {
-            h += `<button class="btn btn-primary btn-xs btn-tool-rbt-left mr-2 formOk" data-prefix=${_prefix} id="formApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> `;
-        }
-        h += params.title;
-        h += `</h3>`;
-        h += `<button type="button" class="btn btn-default btn-xs btn-tool-rbt-right ml-2 float-right formCancel" data-prefix=${_prefix} data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
-        h += `</div>`;
+        h += `
+            <div class="card-header pointer" id="modalHeader">
+                <h3 class="card-title text-bold">
+                    ${params.topApply ? `<button class="btn btn-primary btn-xs btn-tool-rbt-left mr-2 formOk" data-prefix=${_prefix} id="formApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> ` : ""}${params.title}
+                </h3>
+                <button type="button" class="btn btn-default btn-xs btn-tool-rbt-right ml-2 float-right formCancel" data-prefix=${_prefix} data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>
+            </div>
+        `.trim();
     }
 
     h += `<div class="card-body table-responsive p-0" style="overflow-x: hidden!important;">`;
