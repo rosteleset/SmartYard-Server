@@ -532,50 +532,41 @@ function cardForm(params) {
                 }
                 break;
 
-            case "select2":
-                h += `<div class="${params.fields[i].color ? ("select2-" + params.fields[i].color) : ""} formField ${params.fields[i].multiple ? "input-group" : ""}">`;
-                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="form-control select2`;
-                h += `"`;
-                if (params.fields[i].readonly) {
-                    h += ` readonly="readonly"`;
-                    h += ` disabled="disabled"`;
-                }
-                if (params.fields[i].multiple) {
-                    h += ` multiple="multiple"`;
-                }
-                h += `>`;
-                if (typeof params.fields[i].options === "object") {
-                    for (let j in params.fields[i].options) {
-                        if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}" data-font="${params.fields[i].options[j].font}" selected>${escapeHTML(params.fields[i].options[j].text)}</option>`;
-                        } else {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}" data-font="${params.fields[i].options[j].font}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
-                        }
-                    }
-                } else {
-                    h += params.fields[i].options;
-                }
-                h += `</select>`;
-                if (params.fields[i].multiple) {
-                    h += `<div class="input-group-append">`;
-                    if (params.fields[i].readonly) {
-                        h += `<span class="input-group-text disabled" disabled="disabled"><i class="fas fa-fw fa-x" style="font-size: x-small;"></i></span>`;
-                    } else {
-                        h += `<span class="input-group-text pointer select2Clear" data-for="${_prefix}${params.fields[i].id}"><i class="fas fa-fw fa-x" style="font-size: x-small;"></i></span>`;
-                    }
-                    h += `</div>`;
-                }
-                h += `</div>`;
+            case "select2": {
+                const f = params.fields[i];
+                h += `
+                    <div class="${f.color ? "select2-" + f.color : ""} formField ${f.multiple ? "input-group" : ""}">
+                        <select name="${_prefix}${f.id}" id="${_prefix}${f.id}" class="form-control select2"${f.readonly ? ` readonly="readonly" disabled="disabled"` : ""}${f.multiple ? ` multiple="multiple"` : ""}>
+                            ${typeof f.options === "object"
+                                ? Object.keys(f.options).map(j => {
+                                    const o = f.options[j];
+                                    const sel = o.value == f.value || o.selected;
+                                    return `<option label="${escapeHTML(o.text)}" value="${escapeHTML(o.value)}" data-icon="${o.icon}" data-class="${o.class}" data-font="${o.font}"${sel ? " selected" : ""}>${escapeHTML(o.text)}</option>`;
+                                }).join("")
+                                : f.options}
+                        </select>
+                        ${f.multiple ? `
+                        <div class="input-group-append">
+                            ${f.readonly
+                                ? `<span class="input-group-text disabled" disabled="disabled"><i class="fas fa-fw fa-x" style="font-size: x-small;"></i></span>`
+                                : `<span class="input-group-text pointer select2Clear" data-for="${_prefix}${f.id}"><i class="fas fa-fw fa-x" style="font-size: x-small;"></i></span>`}
+                        </div>
+                        ` : ""}
+                    </div>
+                `.trim();
                 break;
+            }
 
             case "multiselect":
                 if (params.fields[i].filter) {
-                    h += `<div class="input-group mb-2">`;
-                    h += `<input name="${_prefix}${params.fields[i].id}-filter" id="${_prefix}${params.fields[i].id}-filter" type="text" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${i18n("filter")}">`;
-                    h += `<div class="input-group-append">`;
-                    h += `<span id="${_prefix}${params.fields[i].id}-filter-button" title="${i18n("filter")}" class="input-group-text pointer"><i class="fas fa-fw fa-filter"></i></span>`;
-                    h += `</div>`;
-                    h += `</div>`;
+                    h += `
+                        <div class="input-group mb-2">
+                            <input name="${_prefix}${params.fields[i].id}-filter" id="${_prefix}${params.fields[i].id}-filter" type="text" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${i18n("filter")}">
+                            <div class="input-group-append">
+                                <span id="${_prefix}${params.fields[i].id}-filter-button" title="${i18n("filter")}" class="input-group-text pointer"><i class="fas fa-fw fa-filter"></i></span>
+                            </div>
+                        </div>
+                    `.trim();
                     if (focus == _prefix + params.fields[i].id) {
                         focus = _prefix + params.fields[i].id + "-filter";
                     };
