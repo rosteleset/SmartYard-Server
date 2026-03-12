@@ -613,11 +613,15 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
             return;
         }
 
-        $this->apiCall(
-            '/filetool/import?' . http_build_query(['destFile' => 'VoicePrompt', 'index' => 0]),
-            'POST',
-            ['file' => new CURLFile($pathToSound)],
-        );
+        $curlFile = new CURLFile($pathToSound);
+
+        foreach ([0, 1] as $index) { // 0 - access granted from outside, 1 - access granted from inside
+            $this->apiCall(
+                '/filetool/import?' . http_build_query(['destFile' => 'VoicePrompt', 'index' => $index]),
+                'POST',
+                ['file' => $curlFile],
+            );
+        }
     }
 
     /**
