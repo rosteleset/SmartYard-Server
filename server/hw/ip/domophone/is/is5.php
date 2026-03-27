@@ -3,12 +3,21 @@
 namespace hw\ip\domophone\is;
 
 use hw\ip\domophone\domophone;
+use hw\ip\domophone\is\HttpClient\HttpClient;
 
 /**
  * Represents an Intersvyaz ISCOM X1 rev.5 (Sokol Plus) intercom.
  */
 class is5 extends domophone
 {
+    protected HttpClient $client;
+
+    public function __construct(string $url, string $password, bool $firstTime = false)
+    {
+        $this->client = new HttpClient(rtrim($url, '/'), $firstTime ? '123456' : $password);
+        parent::__construct($url, $password, $firstTime);
+    }
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         // TODO: Implement addRfid() method.
@@ -86,8 +95,15 @@ class is5 extends domophone
 
     public function getSysinfo(): array
     {
-        // TODO: Implement getSysinfo() method.
-        return [];
+        $info = $this->client->request('/system/info', timeout: 3);
+        $versions = $this->client->request('/v2/system/versions', timeout: 3);
+
+        return [
+            'DeviceID' => $info['deviceID'] ?? null,
+            'DeviceModel' => $info['deviceModel'] ?? null,
+            'HardwareVersion' => $versions['opt']['versions']['hw']['name'] ?? null,
+            'SoftwareVersion' => $versions['opt']['name'] ?? null,
+        ];
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -107,7 +123,9 @@ class is5 extends domophone
 
     public function setAdminPassword(string $password): void
     {
-        // TODO: Implement setAdminPassword() method.
+        $this->client->request('/user/change_password', 'PUT', ['newPassword' => $password]);
+        $this->client->setPassword($password);
+        $this->password = $password;
     }
 
     public function setAudioLevels(array $levels): void
@@ -227,6 +245,7 @@ class is5 extends domophone
 
     protected function initializeProperties(): void
     {
-        // TODO: Implement initializeProperties() method.
+        $this->login = 'root';
+        $this->defaultPassword = '123456';
     }
 }
