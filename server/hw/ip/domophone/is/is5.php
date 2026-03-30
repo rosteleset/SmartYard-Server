@@ -69,7 +69,22 @@ class is5 extends domophone
         int    $stunPort = 3478,
     ): void
     {
-        // TODO: Implement configureSip() method.
+        $this->client->request('/v1/sip/settings', 'PUT', [
+            'videoEnable' => true,
+            'videoStreamId' => 1, // Second stream
+            'remote' => [
+                'username' => $login,
+                'password' => $password,
+                'domain' => $server,
+                'domainRegister' => $server,
+                'port' => $port,
+                'portRegister' => $port,
+                'transport' => [
+                    'udp' => true,
+                    'tcp' => false,
+                ],
+            ],
+        ]);
     }
 
     public function configureUserAccount(string $password): void
@@ -146,7 +161,7 @@ class is5 extends domophone
 
     public function setCallTimeout(int $timeout): void
     {
-        // TODO: Implement setCallTimeout() method.
+        $this->client->request('/sip/options', 'PUT', ['ringDuration' => $timeout]);
     }
 
     public function setCmsModel(string $model = ''): void
@@ -166,7 +181,12 @@ class is5 extends domophone
         string $codeCms = '1',
     ): void
     {
-        // TODO: Implement setDtmfCodes() method.
+        $this->client->request('/sip/options', 'PUT', [
+            'dtmf' => [
+                '1' => $code1,
+                '2' => $code2,
+            ],
+        ]);
     }
 
     public function setPublicCode(int $code = 0): void
@@ -181,7 +201,7 @@ class is5 extends domophone
 
     public function setTalkTimeout(int $timeout): void
     {
-        // TODO: Implement setTalkTimeout() method.
+        $this->client->request('/sip/options', 'PUT', ['talkDuration' => $timeout]);
     }
 
     public function setUnlockTime(int $time = 3): void
@@ -196,7 +216,9 @@ class is5 extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        // TODO: Implement transformDbConfig() method.
+        $dbConfig['sip']['stunEnabled'] = false;
+        $dbConfig['sip']['stunServer'] = '';
+        $dbConfig['sip']['stunPort'] = 3478;
         return $dbConfig;
     }
 
@@ -245,8 +267,14 @@ class is5 extends domophone
 
     protected function getDtmfConfig(): array
     {
-        // TODO: Implement getDtmfConfig() method.
-        return [];
+        $dtmf = $this->client->request('/sip/options')['dtmf'];
+
+        return [
+            'code1' => $dtmf['1'],
+            'code2' => $dtmf['2'],
+            'code3' => '3',
+            'codeCms' => '1',
+        ];
     }
 
     protected function getEventServer(): string
@@ -264,7 +292,11 @@ class is5 extends domophone
     protected function getNtpConfig(): array
     {
         // TODO: Implement getNtpConfig() method.
-        return [];
+        return [
+            'server' => '',
+            'port' => 123,
+            'timezone' => '',
+        ];
     }
 
     protected function getRfids(): array
@@ -275,8 +307,17 @@ class is5 extends domophone
 
     protected function getSipConfig(): array
     {
-        // TODO: Implement getSipConfig() method.
-        return [];
+        $config = $this->client->request('/v1/sip/settings')['remote'];
+
+        return [
+            'server' => $config['domain'],
+            'port' => $config['port'],
+            'login' => $config['username'],
+            'password' => $config['password'],
+            'stunEnabled' => false,
+            'stunServer' => '',
+            'stunPort' => 3478,
+        ];
     }
 
     protected function initializeProperties(): void
