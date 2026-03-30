@@ -108,7 +108,18 @@ class is5 extends domophone
 
     public function openLock(int $lockNumber = 0): void
     {
-        // TODO: Implement openLock() method.
+        $resource = $lockNumber < 2
+            ? '/relay/' . ($lockNumber + 1) . '/open'
+            : '/relay/external/' . ($lockNumber - 2) . '/open';
+
+        $this->client->request($resource, 'PUT', [], 3);
+    }
+
+    public function prepare(): void
+    {
+        parent::prepare();
+        $this->setServiceCode();
+        $this->enableExternalControllers();
     }
 
     public function reboot(): void
@@ -189,6 +200,31 @@ class is5 extends domophone
         return $dbConfig;
     }
 
+    /**
+     * Enables external door controllers.
+     *
+     * Configures controller addresses on the RS-485 bus
+     * and sets the default door opening time for each controller.
+     *
+     * @return void
+     */
+    protected function enableExternalControllers(): void
+    {
+        for ($address = 0; $address < 4; $address++) {
+            $modules[] = [
+                'enabled' => true,
+                'address' => $address,
+                'openTime' => 5,
+            ];
+        }
+
+        $this->client->request('/relay/door_controller', 'PUT', [
+            'timeout' => 170,
+            'busErrors' => 0,
+            'modules' => $modules,
+        ]);
+    }
+
     protected function getApartments(): array
     {
         // TODO: Implement getApartments() method.
@@ -247,5 +283,24 @@ class is5 extends domophone
     {
         $this->login = 'root';
         $this->defaultPassword = '123456';
+    }
+
+    /**
+     * Set service code.
+     * This code is used to access the service menu from the front panel of the device.
+     *
+     * @param int $code The service code to be set. If set to 0, the service code will be disabled.
+     * Otherwise, it will be enabled with the provided code. 0 by default.
+     * @return void
+     */
+    protected function setServiceCode(int $code = 0): void
+    {
+        $enabled = $code !== 0;
+        $pass = $enabled ? $code : 123456;
+
+        $this->client->request('/serviceCode/settings', 'PUT', [
+            'enabled' => $enabled,
+            'pass' => $pass,
+        ]);
     }
 }

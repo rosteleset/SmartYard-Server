@@ -4,7 +4,7 @@
     "model": "Sokol rev.5",
     "class": "is5",
     "eventServer": "is",
-    "outputs": 2,
+    "outputs": 6,
     "camera": "is",
     "useSmartConfigurator": true,
     "cmses": [
