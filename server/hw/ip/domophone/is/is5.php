@@ -142,6 +142,7 @@ class is5 extends domophone
         parent::prepare();
         $this->setServiceCode();
         $this->enableExternalControllers();
+        $this->disableDdns();
     }
 
     public function reboot(): void
@@ -240,6 +241,16 @@ class is5 extends domophone
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
         return $dbConfig;
+    }
+
+    /**
+     * Disables DDNS on the device.
+     *
+     * @return void
+     */
+    protected function disableDdns(): void
+    {
+        $this->client->request('/v1/ddns', 'PUT', ['enabled' => false]);
     }
 
     /**
