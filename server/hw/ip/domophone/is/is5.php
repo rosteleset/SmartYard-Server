@@ -56,7 +56,10 @@ class is5 extends domophone
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        // TODO: Implement configureNtp() method.
+        $this->client->request('/system/settings', 'PUT', [
+            'tz' => $timezone,
+            'ntp' => ["$server:$port"],
+        ]);
     }
 
     public function configureSip(
@@ -308,11 +311,14 @@ class is5 extends domophone
 
     protected function getNtpConfig(): array
     {
-        // TODO: Implement getNtpConfig() method.
+        $settings = $this->client->request('/system/settings');
+        $ntpUrl = $settings['ntp'][0] ?? '';
+        [$server, $port] = array_pad(explode(':', $ntpUrl, 2), 2, 123);
+
         return [
-            'server' => '',
-            'port' => 123,
-            'timezone' => '',
+            'server' => $server,
+            'port' => $port,
+            'timezone' => $settings['tz'],
         ];
     }
 
