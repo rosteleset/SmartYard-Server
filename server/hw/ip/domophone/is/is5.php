@@ -85,11 +85,15 @@ class is5 extends domophone
                 ],
             ],
         ]);
+
+        // Rewrite SOS and concierge targets after changing the SIP server.
+        $this->setSosNumber(112);
+        $this->setConciergeNumber(9999);
     }
 
     public function configureUserAccount(string $password): void
     {
-        // TODO: Implement configureUserAccount() method.
+        // Empty implementation
     }
 
     public function deleteApartment(int $apartment = 0): void
@@ -139,12 +143,12 @@ class is5 extends domophone
 
     public function reboot(): void
     {
-        // TODO: Implement reboot() method.
+        $this->client->request('/system/reboot', 'PUT');
     }
 
     public function reset(): void
     {
-        // TODO: Implement reset() method.
+        $this->client->request('/system/factory-reset', 'PUT');
     }
 
     public function setAdminPassword(string $password): void
@@ -171,7 +175,11 @@ class is5 extends domophone
 
     public function setConciergeNumber(int $sipNumber): void
     {
-        // TODO: Implement setConciergeNumber() method.
+        ['server' => $sipServer, 'port' => $sipPort] = $this->getSipConfig();
+
+        $this->client->request('/panelCode/settings', 'PUT', [
+            'consiergeRoom' => "$sipNumber@$sipServer:$sipPort",
+        ]);
     }
 
     public function setDtmfCodes(
@@ -191,12 +199,16 @@ class is5 extends domophone
 
     public function setPublicCode(int $code = 0): void
     {
-        // TODO: Implement setPublicCode() method.
+        // Empty implementation
     }
 
     public function setSosNumber(int $sipNumber): void
     {
-        // TODO: Implement setSosNumber() method.
+        ['server' => $sipServer, 'port' => $sipPort] = $this->getSipConfig();
+
+        $this->client->request('/panelCode/settings', 'PUT', [
+            'sosRoom' => "$sipNumber@$sipServer:$sipPort",
+        ]);
     }
 
     public function setTalkTimeout(int $timeout): void
@@ -206,12 +218,17 @@ class is5 extends domophone
 
     public function setUnlockTime(int $time = 3): void
     {
-        // TODO: Implement setUnlockTime() method.
+        foreach ([1, 2] as $relayId) {
+            $this->client->request("/relay/$relayId/settings", 'PUT', [
+                'switchTime' => $time,
+                'alwaysOpen' => false,
+            ]);
+        }
     }
 
     public function syncData(): void
     {
-        // TODO: Implement syncData() method.
+        // Empty implementation
     }
 
     public function transformDbConfig(array $dbConfig): array
