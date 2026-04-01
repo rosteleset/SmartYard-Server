@@ -46,7 +46,14 @@ class is5 extends domophone
 
     public function configureEventServer(string $url): void
     {
-        // TODO: Implement configureEventServer() method.
+        $syslogUrl = parse_url_ext($url);
+
+        $this->client->request('/v1/network/syslog', 'PUT', [
+            'addr' => $syslogUrl['host'],
+            'port' => (int)$syslogUrl['port'],
+            'severity' => 6, // Info
+            'transport' => 1, // UDP
+        ]);
     }
 
     public function configureMatrix(array $matrix): void
@@ -310,8 +317,8 @@ class is5 extends domophone
 
     protected function getEventServer(): string
     {
-        // TODO: Implement getEventServer() method.
-        return '';
+        $syslog = $this->client->request('/v1/network/syslog');
+        return 'syslog.udp' . ':' . $syslog['addr'] . ':' . $syslog['port'];
     }
 
     protected function getMatrix(): array

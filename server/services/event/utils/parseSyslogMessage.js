@@ -1,4 +1,4 @@
-import { SERVICE_BROVOTECH, SERVICE_UFANET } from '../constants.js';
+import { SERVICE_BROVOTECH, SERVICE_IS, SERVICE_UFANET } from '../constants.js';
 import { getTimestamp } from './index.js';
 
 const parseSyslogMessage = (str, unit) => {
@@ -7,6 +7,53 @@ const parseSyslogMessage = (str, unit) => {
     }
 
     str = str.trim();
+
+    if (unit === SERVICE_IS) {
+        const messageParts = new RegExp([
+            '<(\\d{1,3})>',
+            '(\\d+) ',
+            '(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?\\w?(?:[+-]\\d{2}:\\d{2})?) ',
+            '(\\S+) ',
+            '(\\S+) ',
+            '(\\S+) ',
+            '(\\S+) ',
+            '((?:-|(?:\\[[^\\]]*\\])+))',
+            '(?: (.*))?$',
+        ].join('')).exec(str);
+
+        if (messageParts) {
+            const [
+                ,
+                priority,
+                version,
+                timestamp,
+                hostname,
+                appName,
+                procId,
+                msgId,
+                structuredData,
+                message,
+            ] = messageParts;
+
+            return {
+                format: 'Intersvyaz',
+                priority: Number(priority),
+                version: Number(version),
+                timestamp: getTimestamp(new Date(timestamp)),
+                hostname,
+                appName,
+                procId,
+                msgId,
+                structuredData,
+                message,
+            };
+        }
+
+        return {
+            hostname: null,
+            message: null,
+        };
+    }
 
     if (unit === SERVICE_UFANET) {
         const index = str.indexOf(': ');
