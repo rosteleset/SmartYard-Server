@@ -41,7 +41,7 @@ final class PanelCode
      * Creates a new entity from raw API response data.
      *
      * @param array<string, mixed> $data
-     * @return static
+     * @return PanelCode
      */
     public static function fromArray(array $data): PanelCode
     {
