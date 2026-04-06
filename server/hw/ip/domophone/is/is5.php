@@ -3,14 +3,33 @@
 namespace hw\ip\domophone\is;
 
 use hw\ip\domophone\domophone;
-use hw\ip\domophone\is\HttpClient\HttpClient;
+use hw\ip\domophone\is\{
+    Entities\OpenCode,
+    Entities\PanelCode,
+    HttpClient\HttpClient,
+};
 
 /**
  * Represents an Intersvyaz ISCOM X1 rev.5 (Sokol Plus) intercom.
  */
 class is5 extends domophone
 {
+    protected const CMS_DEFAULT_VOLTAGE_ERROR = 2.0;
+    protected const CMS_DEFAULT_VOLTAGE_QUIESCENT = 5.0;
+    protected const CMS_DEFAULT_VOLTAGE_ANSWER = 9.0;
+    protected const CMS_DEFAULT_VOLTAGE_BREAK = 9.5;
+
     protected HttpClient $client;
+
+    /**
+     * @var array<int, PanelCode>|null
+     */
+    protected ?array $panelCodes = null;
+
+    /**
+     * @var array<int, OpenCode>|null
+     */
+    protected ?array $openCodes = null;
 
     public function __construct(string $url, string $password, bool $firstTime = false)
     {
@@ -108,7 +127,15 @@ class is5 extends domophone
 
     public function deleteApartment(int $apartment = 0): void
     {
-        // TODO: Implement deleteApartment() method.
+        if ($apartment === 0) {
+            $this->panelCodes = [];
+            $this->openCodes = [];
+        } else {
+            $this->loadPanelCodes();
+            $this->loadOpenCodes();
+            unset($this->panelCodes[$apartment]);
+            unset($this->openCodes[$apartment]);
+        }
     }
 
     public function deleteRfid(string $code = ''): void
@@ -239,7 +266,8 @@ class is5 extends domophone
 
     public function syncData(): void
     {
-        // Empty implementation
+        $this->uploadPanelCodes();
+        $this->uploadOpenCodes();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -287,8 +315,26 @@ class is5 extends domophone
 
     protected function getApartments(): array
     {
-        // TODO: Implement getApartments() method.
-        return [];
+        $this->loadPanelCodes();
+        $this->loadOpenCodes();
+        $flats = [];
+
+        foreach ($this->panelCodes as $panelCode) {
+            $flatNumber = $panelCode->panelCode;
+
+            $flats[$flatNumber] = [
+                'apartment' => $flatNumber,
+                'code' => $this->openCodes[$flatNumber]->code ?? 0,
+                'sipNumbers' => $panelCode->sipAccounts,
+                'cmsEnabled' => $panelCode->handsetCallsEnabled,
+                'cmsLevels' => [
+                    round($panelCode->quiescentResistance ?? self::CMS_DEFAULT_VOLTAGE_QUIESCENT, 2),
+                    round($panelCode->answerResistance ?? self::CMS_DEFAULT_VOLTAGE_ANSWER, 2),
+                ],
+            ];
+        }
+
+        return $flats;
     }
 
     protected function getAudioLevels(): array
@@ -368,6 +414,38 @@ class is5 extends domophone
     }
 
     /**
+     * @return void
+     */
+    protected function loadOpenCodes(): void
+    {
+        if ($this->openCodes === null) {
+            $response = $this->client->request('/v1/openCode');
+            $this->openCodes = [];
+
+            foreach ($response as $item) {
+                $openCode = OpenCode::fromArray($item);
+                $this->openCodes[$openCode->panelCode] = $openCode;
+            }
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function loadPanelCodes(): void
+    {
+        if ($this->panelCodes === null) {
+            $response = $this->client->request('/v1/panelCode');
+            $this->panelCodes = [];
+
+            foreach ($response as $item) {
+                $panelCode = PanelCode::fromArray($item);
+                $this->panelCodes[$panelCode->panelCode] = $panelCode;
+            }
+        }
+    }
+
+    /**
      * Set service code.
      * This code is used to access the service menu from the front panel of the device.
      *
@@ -384,5 +462,17 @@ class is5 extends domophone
             'enabled' => $enabled,
             'pass' => $pass,
         ]);
+    }
+
+    protected function uploadOpenCodes(): void
+    {
+        $this->client->request('/openCode/clear', 'DELETE');
+        // TODO
+    }
+
+    protected function uploadPanelCodes(): void
+    {
+        $this->client->request('/panelCode/clear', 'DELETE');
+        // TODO
     }
 }
