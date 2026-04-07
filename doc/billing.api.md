@@ -10,6 +10,25 @@ Internal PHP handlers are located at:
 - `server/api/billing/addresses.php`
 - `server/api/billing/subscriptions.php`
 
+## Server-side prerequisite
+
+For `/frontend/billing/addresses` and `/frontend/billing/subscriptions` to be available on a
+specific RBT instance, `server/config/config.json` must include the `billing` and
+`customFields` backends:
+
+```json
+"backends": {
+  "billing": {
+    "backend": "internal"
+  },
+  "customFields": {
+    "backend": "internal"
+  }
+}
+```
+
+Without these sections, the billing API will not be available on the instance.
+
 ## General
 
 - All methods require `Authorization: Bearer <TOKEN>`.

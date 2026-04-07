@@ -10,6 +10,25 @@
 - `server/api/billing/addresses.php`
 - `server/api/billing/subscriptions.php`
 
+## Предварительная настройка сервера
+
+Чтобы методы `/frontend/billing/addresses` и `/frontend/billing/subscriptions` были доступны на
+конкретном инстансе RBT, в `server/config/config.json` должны быть включены backend'ы `billing`
+и `customFields`:
+
+```json
+"backends": {
+  "billing": {
+    "backend": "internal"
+  },
+  "customFields": {
+    "backend": "internal"
+  }
+}
+```
+
+Без этих секций billing API на инстансе не будет доступен.
+
 ## Общее
 
 - Все методы требуют `Authorization: Bearer <TOKEN>`.
