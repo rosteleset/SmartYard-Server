@@ -311,6 +311,10 @@
             "backend": "internal",
         },
 
+        "billing": {
+            "backend": "internal",
+        },
+
         "wg": {
             "backend": "internal",
             "api": "<!-- WGDashboard URL -->",
