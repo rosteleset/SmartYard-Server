@@ -13,17 +13,21 @@ Internal PHP handlers are located at:
 ## Server-side prerequisite
 
 For `/frontend/billing/addresses` and `/frontend/billing/subscriptions` to be available on a
-specific RBT instance, `server/config/config.json` must include the billing backend:
+specific RBT instance, `server/config/config.json` must include the `billing` and
+`customFields` backends:
 
 ```json
 "backends": {
   "billing": {
     "backend": "internal"
+  },
+  "customFields": {
+    "backend": "internal"
   }
 }
 ```
 
-Without this section, the billing API will not be available on the instance.
+Without these sections, the billing API will not be available on the instance.
 
 ## General
 

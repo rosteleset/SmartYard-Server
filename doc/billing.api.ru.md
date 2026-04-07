@@ -13,17 +13,21 @@
 ## Предварительная настройка сервера
 
 Чтобы методы `/frontend/billing/addresses` и `/frontend/billing/subscriptions` были доступны на
-конкретном инстансе RBT, в `server/config/config.json` должен быть включён billing backend:
+конкретном инстансе RBT, в `server/config/config.json` должны быть включены backend'ы `billing`
+и `customFields`:
 
 ```json
 "backends": {
   "billing": {
     "backend": "internal"
+  },
+  "customFields": {
+    "backend": "internal"
   }
 }
 ```
 
-Без этой секции billing API на инстансе не будет доступен.
+Без этих секций billing API на инстансе не будет доступен.
 
 ## Общее
 
