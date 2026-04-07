@@ -26,6 +26,18 @@ abstract class akuvox extends domophone
      */
     abstract protected static function getMaxUsers(): int;
 
+    /**
+     * Converts an RFID code to the device's standard format.
+     *
+     * @param string $code The raw RFID code.
+     * @return string The normalized RFID code.
+     */
+    protected static function getNormalizedRfid(string $code): string
+    {
+        $trimmedCode = ltrim($code, '0');
+        return strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode;
+    }
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         // Refactor when adding an interface
@@ -156,7 +168,7 @@ abstract class akuvox extends domophone
             return;
         }
 
-        $normalizedCode = ltrim($code, '0');
+        $normalizedCode = self::getNormalizedRfid($code);
         $remainingRfids = [];
 
         foreach ($this->getUsers() as $user) {
@@ -517,7 +529,7 @@ abstract class akuvox extends domophone
         $rfidChunks = array_chunk($rfids, self::MAX_RFIDS_PER_USER);
 
         foreach ($rfidChunks as $chunk) {
-            $normalizedChunk = array_map(static fn($code): string => ltrim($code, '0'), $chunk);
+            $normalizedChunk = array_map(self::getNormalizedRfid(...), $chunk);
 
             $items[] = [
                 'CardCode' => implode(';', $normalizedChunk),

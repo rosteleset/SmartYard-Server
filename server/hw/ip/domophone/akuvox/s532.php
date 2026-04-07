@@ -80,18 +80,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
     }
 
     /**
-     * Converts an RFID code to the device's standard format.
-     *
-     * @param string $code The raw RFID code.
-     * @return string The normalized RFID code.
-     */
-    protected static function getNormalizedRfid(string $code): string
-    {
-        $trimmedCode = ltrim($code, '0');
-        return strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode;
-    }
-
-    /**
      * Extracts apartment number from {@see User} object.
      *
      * @param User $user User instance containing userId.
