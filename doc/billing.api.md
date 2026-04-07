@@ -10,6 +10,36 @@ Internal PHP handlers are located at:
 - `server/api/billing/addresses.php`
 - `server/api/billing/subscriptions.php`
 
+## Server-side prerequisite
+
+For `/frontend/billing/addresses` and `/frontend/billing/subscriptions` to be available on a
+specific RBT instance, the billing backend must be explicitly enabled in the server config.
+
+At minimum, `server/config/config.json` must contain:
+
+```json
+"backends": {
+  "billing": {
+    "backend": "internal"
+  }
+}
+```
+
+Important:
+
+- both billing endpoints call `loadBackend("billing")` internally;
+- if `backends.billing` is not defined in `server/config/config.json`, the integration will not
+  work;
+- in practice this may show up as the `billing` group being absent from
+  `/frontend/authorization/methods` and/or a `{"error":"methodNotFound"}` response when calling
+  `/frontend/billing/*`;
+- this is a server-side prerequisite, separate from the client `/config/config.json`.
+
+If the deployment also uses the `providers` integration layer, it must be configured separately:
+
+- on the server side — via `backends.providers`;
+- in the client runtime config — via the `providers` module, if UI support is needed.
+
 ## General
 
 - All methods require `Authorization: Bearer <TOKEN>`.

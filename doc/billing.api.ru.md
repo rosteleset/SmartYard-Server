@@ -10,6 +10,35 @@
 - `server/api/billing/addresses.php`
 - `server/api/billing/subscriptions.php`
 
+## Предварительная настройка сервера
+
+Чтобы методы `/frontend/billing/addresses` и `/frontend/billing/subscriptions` были доступны на
+конкретном инстансе RBT, в серверном конфиге должен быть явно включён billing backend.
+
+Минимально требуется секция в `server/config/config.json`:
+
+```json
+"backends": {
+  "billing": {
+    "backend": "internal"
+  }
+}
+```
+
+Важно:
+
+- оба billing endpoint'а внутри вызывают `loadBackend("billing")`;
+- если `backends.billing` не описан в `server/config/config.json`, интеграция не будет работать;
+- на практике это может проявляться как отсутствие группы `billing` в
+  `/frontend/authorization/methods` и/или ошибка вида `{"error":"methodNotFound"}` при вызове
+  `/frontend/billing/*`;
+- это именно серверная предпосылка, отдельная от клиентского `/config/config.json`.
+
+Если во внедрении дополнительно используется контур `providers`, он настраивается отдельно:
+
+- на сервере — через `backends.providers`;
+- в клиентском runtime config — через модуль `providers`, если нужен UI.
+
 ## Общее
 
 - Все методы требуют `Authorization: Bearer <TOKEN>`.
