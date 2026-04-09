@@ -2966,6 +2966,7 @@
                                 },
                                 {
                                     data: modules.tt.meta.customFields[i].catalog ? modules.tt.meta.customFields[i].catalog : "-",
+                                    nowrap: true,
                                 },
                                 {
                                     data: modules.tt.meta.customFields[i].field + (parseInt(modules.tt.meta.customFields[i].readonly) ? '&nbsp;<sup class="text-danger">R</sup>' : ''),
