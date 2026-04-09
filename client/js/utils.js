@@ -200,7 +200,7 @@ function escapeHTML(str) {
         '£': 'pound',
         '¥': 'yen',
         '€': 'euro',
-        '©':'copy',
+        '©': 'copy',
         '®': 'reg',
         '<': 'lt',
         '>': 'gt',
