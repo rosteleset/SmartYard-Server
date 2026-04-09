@@ -11,6 +11,28 @@
     fiases: {},
     marker: false,
 
+    isLprsServer: function (serverUrl) {
+        if (!serverUrl || serverUrl === "-") {
+            return false;
+        }
+
+        for (let i in modules.addresses.cameras.meta.frsServers) {
+            if (modules.addresses.cameras.meta.frsServers[i].url === serverUrl) {
+                return modules.addresses.cameras.meta.frsServers[i].api === "lprs";
+            }
+        }
+
+        return false;
+    },
+
+    syncFrsModeVisibility: function (prefix) {
+        if (modules.addresses.cameras.isLprsServer($("#" + prefix + "frs").val())) {
+            $("#" + prefix + "frsMode-container").attr("data-form-runtime-hide", "0").show();
+        } else {
+            $("#" + prefix + "frsMode-container").attr("data-form-runtime-hide", "1").hide();
+        }
+    },
+
     doAddCamera: function (camera) {
         loadingStart();
         POST("cameras", "camera", false, camera).
@@ -223,6 +245,9 @@
                     value: "-",
                     options: frss,
                     tab: i18n("addresses.primary"),
+                    select: (el, id, prefix) => {
+                        modules.addresses.cameras.syncFrsModeVisibility(prefix);
+                    },
                 },
                 {
                     id: "frsMode",
@@ -376,6 +401,8 @@
                 },
             ],
             done: function (prefix) {
+                modules.addresses.cameras.syncFrsModeVisibility(prefix);
+
                 $("#" + prefix + "geoSuggestion").off("change").on("change", e => {
                     let fias = $("#" + prefix + "geoSuggestion").val();
                     if (modules.addresses.cameras.fiases[fias] && modules.addresses.cameras.fiases[fias].geo_lat && modules.addresses.cameras.fiases[fias].geo_lon) {
@@ -638,6 +665,9 @@
                         value: camera.frs,
                         options: frss,
                         tab: i18n("addresses.primary"),
+                        select: (el, id, prefix) => {
+                            modules.addresses.cameras.syncFrsModeVisibility(prefix);
+                        },
                     },
                     {
                         id: "frsMode",
@@ -901,6 +931,8 @@
                     },
                 ],
                 done: function (prefix) {
+                    modules.addresses.cameras.syncFrsModeVisibility(prefix);
+
                     $("#" + prefix + "geoSuggestion").off("change").on("change", e => {
                         let fias = $("#" + prefix + "geoSuggestion").val();
                         if (modules.addresses.cameras.fiases[fias] && modules.addresses.cameras.fiases[fias].geo_lat && modules.addresses.cameras.fiases[fias].geo_lon) {
