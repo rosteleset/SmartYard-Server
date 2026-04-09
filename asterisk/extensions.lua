@@ -468,6 +468,9 @@ function handleOtherCases(context, extension)
     if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
         domophoneId = tonumber(from:sub(2))
 
+        app.Ringing()
+        app.Progress()
+
         -- sokol's crutch
         -- TODO: delete after fixing SIP numbers for flats
         if extension:len() < 5 and not extension:find('#', 1, true) then
