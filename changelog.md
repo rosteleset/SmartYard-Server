@@ -19,6 +19,9 @@
 ! changed SIP transport from TCP to UDP for Rubetek
 - fixed user dropdown menu
 + added support for Akuvox S532
+- fixed number of outputs for Sokol and Sokol+ intercoms
+- fixed RFID normalization for Akuvox E12 and Akuvox R20A when uploading codes starting with zero
+! improved UI/UX of recognition options in camera settings
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
