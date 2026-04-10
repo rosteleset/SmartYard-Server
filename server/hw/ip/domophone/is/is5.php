@@ -31,6 +31,13 @@ class is5 extends domophone
      */
     protected ?array $openCodes = null;
 
+    /**
+     * Real SIP numbers to upload.
+     *
+     * @var array<int, string[]>
+     */
+    protected array $sipNumbersToUpload = [];
+
     public function __construct(string $url, string $password, bool $firstTime = false)
     {
         $this->client = new HttpClient(rtrim($url, '/'), $firstTime ? '123456' : $password);
@@ -59,7 +66,7 @@ class is5 extends domophone
         $this->loadOpenCodes();
 
         $panelCode = $this->panelCodes[$apartment] ?? new PanelCode($apartment);
-        $panelCode->sipAccounts = array_map('strval', $sipNumbers);
+        $panelCode->sipAccounts = [(string)$apartment];
         $panelCode->sipCallsEnabled = $sipNumbers !== [];
         $panelCode->handsetCallsEnabled = $cmsEnabled;
         $panelCode->quiescentResistance = null;
@@ -71,6 +78,7 @@ class is5 extends domophone
         }
 
         $this->panelCodes[$apartment] = $panelCode;
+        $this->sipNumbersToUpload[$apartment] = array_map('strval', $sipNumbers);
 
         if ($code === 0) {
             unset($this->openCodes[$apartment]);
@@ -152,11 +160,13 @@ class is5 extends domophone
         if ($apartment === 0) {
             $this->panelCodes = [];
             $this->openCodes = [];
+            $this->sipNumbersToUpload = [];
         } else {
             $this->loadPanelCodes();
             $this->loadOpenCodes();
             unset($this->panelCodes[$apartment]);
             unset($this->openCodes[$apartment]);
+            unset($this->sipNumbersToUpload[$apartment]);
         }
     }
 
@@ -501,13 +511,45 @@ class is5 extends domophone
     {
         // Full re-upload is faster than syncing individual changes
         $this->client->request('/openCode/clear', 'DELETE');
-        $this->client->request('/v1/openCode', 'POST', array_values($this->openCodes));
+
+        if ($this->openCodes === []) {
+            return;
+        }
+
+        $payload = array_map(
+            static fn(OpenCode $openCode): array => $openCode->toArray(),
+            array_values($this->openCodes),
+        );
+
+        $this->client->request('/v1/openCode', 'POST', $payload);
     }
 
     protected function uploadPanelCodes(): void
     {
         // Full re-upload is faster than syncing individual changes
         $this->client->request('/panelCode/clear', 'DELETE');
-        $this->client->request('/panelCode/rooms_update', 'PUT', array_values($this->panelCodes));
+
+        if ($this->panelCodes === []) {
+            return;
+        }
+
+        /*
+         * FIXME: wait for fix.
+         * The device returns apartment numbers in sipAccounts instead of real SIP targets,
+         * so the cached PanelCode entities keep the device view while upload temporarily
+         * restores the real SIP numbers from $this->sipNumbersToUpload.
+         */
+        $payload = [];
+        foreach ($this->panelCodes as $apartment => $panelCode) {
+            $panelCodeToUpload = clone $panelCode;
+
+            if (isset($this->sipNumbersToUpload[$apartment])) {
+                $panelCodeToUpload->sipAccounts = $this->sipNumbersToUpload[$apartment];
+            }
+
+            $payload[] = $panelCodeToUpload->toArray();
+        }
+
+        $this->client->request('/panelCode/rooms_update', 'PUT', $payload);
     }
 }
