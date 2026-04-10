@@ -55,7 +55,29 @@ class is5 extends domophone
         array $cmsLevels = [],
     ): void
     {
-        // TODO: Implement configureApartment() method.
+        $this->loadPanelCodes();
+        $this->loadOpenCodes();
+
+        $panelCode = $this->panelCodes[$apartment] ?? new PanelCode($apartment);
+        $panelCode->sipAccounts = array_map('strval', $sipNumbers);
+        $panelCode->sipCallsEnabled = $sipNumbers !== [];
+        $panelCode->handsetCallsEnabled = $cmsEnabled;
+        $panelCode->quiescentResistance = null;
+        $panelCode->answerResistance = null;
+
+        if (count($cmsLevels) === 2) {
+            $panelCode->quiescentResistance = $cmsLevels[0];
+            $panelCode->answerResistance = $cmsLevels[1];
+        }
+
+        $this->panelCodes[$apartment] = $panelCode;
+
+        if ($code === 0) {
+            unset($this->openCodes[$apartment]);
+            return;
+        }
+
+        $this->openCodes[$apartment] = new OpenCode($code, $apartment);
     }
 
     public function configureEncoding(): void
@@ -275,6 +297,17 @@ class is5 extends domophone
         $dbConfig['sip']['stunEnabled'] = false;
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
+
+        /*
+         * FIXME: wait for fix.
+         * The device does not expose the real apartment SIP numbers via GET /panelCode.
+         * It returns the apartment number itself in sipAccounts, so the DB config is normalized
+         * here to avoid false differences between the desired config and the device state.
+         */
+        foreach ($dbConfig['apartments'] as &$flat) {
+            $flat['sipNumbers'] = [$flat['apartment']];
+        }
+
         return $dbConfig;
     }
 
@@ -466,13 +499,15 @@ class is5 extends domophone
 
     protected function uploadOpenCodes(): void
     {
+        // Full re-upload is faster than syncing individual changes
         $this->client->request('/openCode/clear', 'DELETE');
-        // TODO
+        $this->client->request('/v1/openCode', 'POST', array_values($this->openCodes));
     }
 
     protected function uploadPanelCodes(): void
     {
+        // Full re-upload is faster than syncing individual changes
         $this->client->request('/panelCode/clear', 'DELETE');
-        // TODO
+        $this->client->request('/panelCode/rooms_update', 'PUT', array_values($this->panelCodes));
     }
 }
