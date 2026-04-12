@@ -3255,6 +3255,25 @@
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
                                     },
+                                    {
+                                        icon: "fas fa-home",
+                                        class: "sipIdle",
+                                        title: i18n("addresses.flatSipCall"),
+                                        click: flatId => {
+                                            loadingStart();
+                                            setTimeout(() => {
+                                                let n = 4000000000 + parseInt(flatId);
+                                                if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
+                                                    modules.asterisk.call(n);
+                                                    message(i18n("asterisk.dialing", n), i18n("asterisk.outgoingCall"), 5);
+                                                } else {
+                                                    error(i18n("asterisk.dialFail"), i18n("asterisk.outgoingCall"), 5);
+                                                }
+                                                loadingDone();
+                                            }, 500);
+                                        },
+                                        disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
+                                    },
                                 ],
                             },
                         });
