@@ -26,6 +26,7 @@
     require_once "utils/i18n.php";
 
     require_once "backends/backend.php";
+    require_once "extensions/extension.php";
 
     $RBTServices = [
         'internet' => [

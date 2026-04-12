@@ -5,6 +5,7 @@
     mb_internal_encoding("UTF-8");
 
     require_once "backends/backend.php";
+    require_once "extensions/extension.php";
 
     require_once "utils/functions.php";
     require_once "utils/polyfills.php";
