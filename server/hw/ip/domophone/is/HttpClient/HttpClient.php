@@ -48,7 +48,6 @@ class HttpClient
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_USERPWD => "$this->login:$this->password",
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_VERBOSE => false,
             CURLOPT_TIMEOUT => $timeout,
         ]);
 

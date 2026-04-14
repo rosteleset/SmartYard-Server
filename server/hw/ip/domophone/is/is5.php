@@ -4,6 +4,7 @@ namespace hw\ip\domophone\is;
 
 use hw\ip\domophone\domophone;
 use hw\ip\domophone\is\{
+    Entities\Key,
     Entities\OpenCode,
     Entities\PanelCode,
     HttpClient\HttpClient,
@@ -25,11 +26,19 @@ class is5 extends domophone
      * @var array<int, PanelCode>|null
      */
     protected ?array $panelCodes = null;
+    protected bool $panelCodesChanged = false;
 
     /**
      * @var array<int, OpenCode>|null
      */
     protected ?array $openCodes = null;
+    protected bool $openCodesChanged = false;
+
+    /**
+     * @var array<string, Key>|null
+     */
+    protected ?array $keys = null;
+    protected bool $keysChanged = false;
 
     /**
      * Real SIP numbers to upload.
@@ -46,12 +55,22 @@ class is5 extends domophone
 
     public function addRfid(string $code, int $apartment = 0): void
     {
-        // TODO: Implement addRfid() method.
+        // Empty implementation
     }
 
     public function addRfids(array $rfids): void
     {
-        // TODO: Implement addRfids() method.
+        if ($rfids === []) {
+            return;
+        }
+
+        $this->loadKeys();
+
+        foreach ($rfids as $rfid) {
+            $this->keys[$rfid] ??= new Key($rfid);
+        }
+
+        $this->keysChanged = true;
     }
 
     public function configureApartment(
@@ -79,13 +98,16 @@ class is5 extends domophone
 
         $this->panelCodes[$apartment] = $panelCode;
         $this->sipNumbersToUpload[$apartment] = array_map('strval', $sipNumbers);
+        $this->panelCodesChanged = true;
 
         if ($code === 0) {
             unset($this->openCodes[$apartment]);
+            $this->openCodesChanged = true;
             return;
         }
 
         $this->openCodes[$apartment] = new OpenCode($code, $apartment);
+        $this->openCodesChanged = true;
     }
 
     public function configureEncoding(): void
@@ -168,11 +190,22 @@ class is5 extends domophone
             unset($this->openCodes[$apartment]);
             unset($this->sipNumbersToUpload[$apartment]);
         }
+
+        $this->panelCodesChanged = true;
+        $this->openCodesChanged = true;
     }
 
     public function deleteRfid(string $code = ''): void
     {
-        // TODO: Implement deleteRfid() method.
+        if ($code === '') {
+            $this->keys = [];
+            $this->keysChanged = true;
+            return;
+        }
+
+        $this->loadKeys();
+        unset($this->keys[$code]);
+        $this->keysChanged = true;
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -300,6 +333,7 @@ class is5 extends domophone
     {
         $this->uploadPanelCodes();
         $this->uploadOpenCodes();
+        $this->uploadKeys();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -431,8 +465,8 @@ class is5 extends domophone
 
     protected function getRfids(): array
     {
-        // TODO: Implement getRfids() method.
-        return [];
+        $this->loadKeys();
+        return array_combine(array_keys($this->keys), array_keys($this->keys));
     }
 
     protected function getSipConfig(): array
@@ -454,6 +488,22 @@ class is5 extends domophone
     {
         $this->login = 'root';
         $this->defaultPassword = '123456';
+    }
+
+    /**
+     * @return void
+     */
+    protected function loadKeys(): void
+    {
+        if ($this->keys === null) {
+            $response = $this->client->request('/key/store');
+            $this->keys = [];
+
+            foreach ($response as $item) {
+                $key = Key::fromArray($item);
+                $this->keys[$key->uuid] = $key;
+            }
+        }
     }
 
     /**
@@ -507,12 +557,40 @@ class is5 extends domophone
         ]);
     }
 
+    protected function uploadKeys(): void
+    {
+        if (!$this->keysChanged) {
+            return;
+        }
+
+        // Full re-upload is faster than syncing individual changes
+        $this->client->request('/key/store/clear', 'DELETE');
+
+        if ($this->keys === []) {
+            $this->keysChanged = false;
+            return;
+        }
+
+        $payload = array_map(
+            static fn(Key $key): array => $key->toArray(),
+            array_values($this->keys),
+        );
+
+        $this->client->request('/key/store/merge', 'PUT', $payload);
+        $this->keysChanged = false;
+    }
+
     protected function uploadOpenCodes(): void
     {
+        if (!$this->openCodesChanged) {
+            return;
+        }
+
         // Full re-upload is faster than syncing individual changes
         $this->client->request('/openCode/clear', 'DELETE');
 
         if ($this->openCodes === []) {
+            $this->openCodesChanged = false;
             return;
         }
 
@@ -522,14 +600,20 @@ class is5 extends domophone
         );
 
         $this->client->request('/v1/openCode', 'POST', $payload);
+        $this->openCodesChanged = false;
     }
 
     protected function uploadPanelCodes(): void
     {
+        if (!$this->panelCodesChanged) {
+            return;
+        }
+
         // Full re-upload is faster than syncing individual changes
         $this->client->request('/panelCode/clear', 'DELETE');
 
         if ($this->panelCodes === []) {
+            $this->panelCodesChanged = false;
             return;
         }
 
@@ -551,5 +635,6 @@ class is5 extends domophone
         }
 
         $this->client->request('/panelCode/rooms_update', 'PUT', $payload);
+        $this->panelCodesChanged = false;
     }
 }
