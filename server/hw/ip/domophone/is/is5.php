@@ -2,6 +2,7 @@
 
 namespace hw\ip\domophone\is;
 
+use hw\Interface\FreePassInterface;
 use hw\ip\domophone\domophone;
 use hw\ip\domophone\is\{
     Entities\Key,
@@ -13,7 +14,7 @@ use hw\ip\domophone\is\{
 /**
  * Represents an Intersvyaz ISCOM X1 rev.5 (Sokol Plus) intercom.
  */
-class is5 extends domophone
+class is5 extends domophone implements FreePassInterface
 {
     protected const CMS_DEFAULT_VOLTAGE_ERROR = 2.0;
     protected const CMS_DEFAULT_VOLTAGE_QUIESCENT = 5.0;
@@ -227,6 +228,11 @@ class is5 extends domophone
         ];
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        return $this->client->request('/relay/settings')['alwaysOpen'];
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $resource = $lockNumber < 2
@@ -298,6 +304,26 @@ class is5 extends domophone
                 '2' => $code2,
             ],
         ]);
+    }
+
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        // Internal outputs
+        $this->client->request('/relay/settings', 'PUT', [
+            'alwaysOpen' => $enabled,
+            'alwaysOpenNetMode' => false, // Required parameter
+        ]);
+
+        // External outputs
+        foreach (range(0, 3) as $address) {
+            $modules[] = [
+                'enabled' => true,
+                'address' => $address,
+                'alwaysOpen' => $enabled,
+            ];
+        }
+
+        $this->client->request('/relay/door_controller', 'PUT', ['modules' => $modules]);
     }
 
     public function setPublicCode(int $code = 0): void
