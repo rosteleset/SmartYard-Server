@@ -8,6 +8,8 @@
     registered: false,
     beepBeep: 0,
     beepAmplify: 500,
+    reconnectTimer: false,
+    reconnectDelayMs: 5000,
 
     init: function () {
         if (config.asterisk && config.asterisk.ws && config.asterisk.ice && config.asterisk.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
@@ -37,25 +39,41 @@
 
             JsSIP.debug.disable('JsSIP:*');
 
-            modules.asterisk.ua = new JsSIP.UA({
-                sockets: [ new JsSIP.WebSocketInterface(config.asterisk.ws) ],
-                uri: "sip:" + myself.webRtcExtension + "@" + config.asterisk.sipDomain,
-                password : myself.webRtcPassword,
-            });
-
-            modules.asterisk.ua.on('newRTCSession', modules.asterisk.newRTCSession);
-
-            modules.asterisk.ua.on('connected', modules.asterisk.onConnectionBroken);
-            modules.asterisk.ua.on('disconnected', modules.asterisk.onConnectionBroken);
-            modules.asterisk.ua.on('unregistered', modules.asterisk.onConnectionBroken);
-
-            modules.asterisk.ua.on('registered', modules.asterisk.onRegistered);
-            modules.asterisk.ua.on('registrationFailed', modules.asterisk.onRegistrationFailed);
-
+            modules.asterisk.createUA();
             modules.asterisk.ua.start();
         } else {
             moduleLoaded("asterisk");
         }
+    },
+
+    createUA: function () {
+        modules.asterisk.destroyUA();
+
+        modules.asterisk.ua = new JsSIP.UA({
+            sockets: [ new JsSIP.WebSocketInterface(config.asterisk.ws) ],
+            uri: "sip:" + myself.webRtcExtension + "@" + config.asterisk.sipDomain,
+            password : myself.webRtcPassword,
+        });
+
+        modules.asterisk.ua.on('newRTCSession', modules.asterisk.newRTCSession);
+
+        modules.asterisk.ua.on('connected', modules.asterisk.onConnected);
+        modules.asterisk.ua.on('disconnected', modules.asterisk.onConnectionBroken);
+        modules.asterisk.ua.on('unregistered', modules.asterisk.onConnectionBroken);
+
+        modules.asterisk.ua.on('registered', modules.asterisk.onRegistered);
+        modules.asterisk.ua.on('registrationFailed', modules.asterisk.onRegistrationFailed);
+    },
+
+    destroyUA: function () {
+        if (modules.asterisk.ua) {
+            try {
+                modules.asterisk.ua.stop();
+            } catch (_) {
+                //
+            }
+        }
+        modules.asterisk.ua = false;
     },
 
     newRTCSession: function (e) {
@@ -122,12 +140,28 @@
         }
     },
 
+    onConnected: function () {
+        modules.asterisk.updateButton();
+    },
+
     onConnectionBroken: function () {
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
         modules.asterisk.holdedSession = false;
         modules.asterisk.registered = false;
         modules.asterisk.updateButton();
+    },
+
+    scheduleReconnect: function (delayMs) {
+        if (modules.asterisk.reconnectTimer) {
+            return;
+        }
+
+        modules.asterisk.reconnectTimer = setTimeout(() => {
+            modules.asterisk.reconnectTimer = false;
+            modules.asterisk.createUA();
+            modules.asterisk.ua.start();
+        }, delayMs || modules.asterisk.reconnectDelayMs);
     },
 
     onRegistrationFailed: function () {
@@ -140,41 +174,22 @@
                 modules.asterisk.currentSession = false;
                 modules.asterisk.holdedSession = false;
                 modules.asterisk.registered = false;
-
-                try {
-                    modules.asterisk.ua.stop();
-                } catch (_) {
-                    //
-                }
-
-                setTimeout(() => {
-                    modules.asterisk.ua = new JsSIP.UA({
-                        sockets: [ new JsSIP.WebSocketInterface(config.asterisk.ws) ],
-                        uri: "sip:" + myself.webRtcExtension + "@" + config.asterisk.sipDomain,
-                        password : myself.webRtcPassword,
-                    });
-
-                    modules.asterisk.ua.on('newRTCSession', modules.asterisk.newRTCSession);
-
-                    modules.asterisk.ua.on('connected', modules.asterisk.onConnectionBroken);
-                    modules.asterisk.ua.on('disconnected', modules.asterisk.onConnectionBroken);
-                    modules.asterisk.ua.on('unregistered', modules.asterisk.onConnectionBroken);
-
-                    modules.asterisk.ua.on('registered', modules.asterisk.onRegistered);
-                    modules.asterisk.ua.on('registrationFailed', modules.asterisk.onRegistrationFailed);
-
-                    modules.asterisk.ua.start();
-                }, 5000);
-
+                modules.asterisk.destroyUA();
+                modules.asterisk.scheduleReconnect();
                 modules.asterisk.updateButton();
             }
         }).fail(() => {
-            setTimeout(modules.asterisk.onRegistrationFailed, 10000);
+            modules.asterisk.scheduleReconnect(10000);
         });
     },
 
     onRegistered: function () {
         modules.asterisk.ready = true;
+        modules.asterisk.registered = true;
+        if (modules.asterisk.reconnectTimer) {
+            clearTimeout(modules.asterisk.reconnectTimer);
+            modules.asterisk.reconnectTimer = false;
+        }
         modules.asterisk.updateButton()
     },
 
@@ -195,7 +210,7 @@
         }
         if (number) {
             if (modules.asterisk.currentSession && modules.asterisk.extension(modules.asterisk.currentSession.remote_identity.uri) == number) {
-                hmodules.asterisk.hangup();
+                modules.asterisk.hangup();
             } else {
                 if (!modules.asterisk.currentSession) {
                     modules.asterisk.ua.call(number, modules.asterisk.options);
@@ -214,9 +229,11 @@
     },
 
     end: function (callback) {
-        if (modules.asterisk.ua) {
-            modules.asterisk.ua.stop();
+        if (modules.asterisk.reconnectTimer) {
+            clearTimeout(modules.asterisk.reconnectTimer);
+            modules.asterisk.reconnectTimer = false;
         }
+        modules.asterisk.destroyUA();
         if (typeof callback == "function") {
             callback();
         }
@@ -245,7 +262,7 @@
             modules.asterisk.holdedSession = modules.asterisk.currentSession;
             modules.asterisk.currentSession = false;
             if (dialAfterHold) {
-                ua.call(dialAfterHold, options);
+                modules.asterisk.ua.call(dialAfterHold, modules.asterisk.options);
             }
             modules.asterisk.updateButton();
         }
@@ -279,7 +296,7 @@
         if (modules.asterisk.currentSession && modules.asterisk.currentSession.data == 'incoming') {
             modules.asterisk.currentSession.data = 'accepted';
             modules.asterisk.currentSession.answered = true;
-            modules.asterisk.currentSession.answer(options);
+            modules.asterisk.currentSession.answer(modules.asterisk.options);
             modules.asterisk.currentSession.connection.addEventListener('addstream', modules.asterisk.addStream);
         }
         modules.asterisk.updateButton();
