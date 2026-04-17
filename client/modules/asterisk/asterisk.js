@@ -45,7 +45,7 @@
 
             modules.asterisk.ua.on('newRTCSession', modules.asterisk.newRTCSession);
 
-            modules.asterisk.ua.on('connected', modules.asterisk.onConnectionBroken);
+            modules.asterisk.ua.on('connected', modules.asterisk.onConnected);
             modules.asterisk.ua.on('disconnected', modules.asterisk.onConnectionBroken);
             modules.asterisk.ua.on('unregistered', modules.asterisk.onConnectionBroken);
 
@@ -120,6 +120,10 @@
                 });
             });
         }
+    },
+
+    onConnected: function () {
+        modules.asterisk.updateButton();
     },
 
     onConnectionBroken: function () {
