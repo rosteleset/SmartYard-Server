@@ -1,3 +1,32 @@
+# 2026-04-21
+
+Update crontab entries to add the weekly schedule:
+
+```bash
+php /opt/rbt/server/cli.php --update-crontabs
+```
+
+You should see a message like:
+
+```text
+7 crontabs lines removed and 8 crontabs lines added
+```
+
+Then add the recommended `autocompact` value for the `files` backend in `/opt/rbt/server/config/config.json`:
+
+```json
+{
+    "backends": {
+        "files": {
+            "backend": "mongo",
+            "autocompact": "weekly"
+        }
+    }
+}
+```
+
+This enables automatic weekly disk space reclamation in MongoDB after file deletions and helps reduce long-term GridFS fragmentation.
+
 # 2026-01-05
 
 Since version 0.0.19e, backend tt type "mongo" renamed to "internal" (need modify server/config/config.json)
