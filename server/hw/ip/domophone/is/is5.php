@@ -2,7 +2,10 @@
 
 namespace hw\ip\domophone\is;
 
-use hw\Interface\FreePassInterface;
+use hw\Interface\{
+    FreePassInterface,
+    GateModeInterface,
+};
 use hw\ip\domophone\domophone;
 use hw\ip\domophone\is\{
     Entities\Key,
@@ -14,7 +17,7 @@ use hw\ip\domophone\is\{
 /**
  * Represents an Intersvyaz ISCOM X1 rev.5 (Sokol Plus) intercom.
  */
-class is5 extends domophone implements FreePassInterface
+class is5 extends domophone implements FreePassInterface, GateModeInterface
 {
     protected const CMS_DEFAULT_VOLTAGE_ERROR = 2.0;
     protected const CMS_DEFAULT_VOLTAGE_QUIESCENT = 5.0;
@@ -233,6 +236,11 @@ class is5 extends domophone implements FreePassInterface
         return $this->client->request('/relay/settings')['alwaysOpen'];
     }
 
+    public function isGateModeEnabled(): bool
+    {
+        return $this->client->request('/gate/settings')['gateMode'];
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $resource = $lockNumber < 2
@@ -324,6 +332,14 @@ class is5 extends domophone implements FreePassInterface
         }
 
         $this->client->request('/relay/door_controller', 'PUT', ['modules' => $modules]);
+    }
+
+    public function setGateModeEnabled(bool $enabled): void
+    {
+        $this->client->request('/gate/settings', 'PUT', [
+            'gateMode' => $enabled,
+            'prefixHouse' => $enabled,
+        ]);
     }
 
     public function setPublicCode(int $code = 0): void
