@@ -11,6 +11,7 @@
                         "5min",
                         "hourly",
                         "daily",
+                        "weekly",
                         "monthly",
                     ],
                     "description" => "Run cronpart",
@@ -48,7 +49,7 @@
                     }
                 }
 
-                if (!checkStr($part, [ "variants" => [ "minutely", "5min", "hourly", "daily", "monthly", ] ])) {
+                if (!checkStr($part, [ "variants" => [ "minutely", "5min", "hourly", "daily", "weekly", "monthly", ] ])) {
                     cliUsage();
                 }
 

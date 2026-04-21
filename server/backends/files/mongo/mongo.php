@@ -276,29 +276,34 @@
 
                 if (@$this->bconfig["autocompact"] && $part == $this->bconfig["autocompact"]) {
                     $db = $this->dbName;
+                    $toGiB = fn($bytes) => round($bytes / 1024 / 1024 / 1024, 2);
 
                     try {
                         $cursor = $this->mongo->$db->command([ "compact" => "fs.chunks", "dryRun" => false, "force" => true ]);
                     } catch(\Exception $e) {
-                        die($e->getMessage() . "\n");
+                        throw $e;
                     }
 
                     $response = object_to_array($cursor->toArray()[0]);
 
                     if (!$response || !array_key_exists("bytesFreed", $response)) {
                         print_r($response);
+                    } else {
+                        echo "files [$part] fs.chunks bytesFreed: {$response["bytesFreed"]} (" . $toGiB($response["bytesFreed"]) . " GiB)\n";
                     }
 
                     try {
                         $cursor = $this->mongo->$db->command([ "compact" => "fs.files", "dryRun" => false, "force" => true ]);
                     } catch(\Exception $e) {
-                        die($e->getMessage() . "\n");
+                        throw $e;
                     }
 
                     $response = object_to_array($cursor->toArray()[0]);
 
                     if (!$response || !array_key_exists("bytesFreed", $response)) {
                         print_r($response);
+                    } else {
+                        echo "files [$part] fs.files bytesFreed: {$response["bytesFreed"]} (" . $toGiB($response["bytesFreed"]) . " GiB)\n";
                     }
                 }
 
