@@ -27,11 +27,12 @@
              * @param string applyTo
              * @param integer id
              * @param mixed $set
+             * @param string $mode replace|patch
              *
              * @return mixed
              */
 
-            abstract function modifyValues($applyTo, $id, $set);
+            abstract function modifyValues($applyTo, $id, $set, $mode = "replace");
 
             /**
              * @param string applyTo

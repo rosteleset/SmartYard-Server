@@ -438,7 +438,7 @@
             h += "<div class='pt-1 pb-1 small'>";
             for (let i in issue.issue.tags) {
                 h +=`
-                    <span class="badge ${(tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].color) ? ("bg-" + tags[issue.issue.tags[i]].color) : ""} kanban-badge pr-2 pl-2 mt-1 noselect" style="border: solid thin #60686f" title="${$.trim(escapeHTML(issue.issue.tags[i]))}">
+                    <span class="badge bg-${(tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].color) ? tags[issue.issue.tags[i]].color : systemColor(issue.issue.tags[i])} kanban-badge pr-2 pl-2 mt-1 noselect" style="border: solid thin #60686f" title="${$.trim(escapeHTML(issue.issue.tags[i]))}">
                         ${$.trim(escapeHTML(issue.issue.tags[i]))}
                     </span>
                 `;

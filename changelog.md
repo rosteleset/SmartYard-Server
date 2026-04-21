@@ -8,11 +8,20 @@
 ```
 
 ```diff
++ 2faName and 2faTitle (in config) renamed to two_fa_name and two_fa_title
 + encrypted password authentications (requires "cli.php --keys" and pubKey in client's config)
 + tt workflow new method api.call("GET|POST|PUT|DELETE", "api", "method", "refresh", "data")
 + expanded RODOS support, the entire line should work, from 1 to 16 outputs
 + markdown in comments and description in TT
 + dial to analog intercom by cms matrix (useAnalogNumber)
++ added support for BasIP AA-07BD
+- fixed openCode and floor clearing in modifyFlat() when params missing
+! changed SIP transport from TCP to UDP for Rubetek
+- fixed user dropdown menu
++ added support for Akuvox S532
+- fixed number of outputs for Sokol and Sokol+ intercoms
+- fixed RFID normalization for Akuvox E12 and Akuvox R20A when uploading codes starting with zero
+! improved UI/UX of recognition options in camera settings
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8

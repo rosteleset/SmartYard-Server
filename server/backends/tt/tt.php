@@ -897,21 +897,23 @@
              * @param $projectId
              * @param $tag
              * @param $color
+             * @param $comments
              *
              * @return false|integer
              */
 
-            abstract public function addTag($projectId, $tag, $fcolor);
+            abstract public function addTag($projectId, $tag, $fcolor, $comments);
 
             /**
              * @param $tagId
              * @param $tag
              * @param $color
+             * @param $comments
              *
              * @return boolean
              */
 
-            abstract public function modifyTag($tagId, $tag, $color);
+            abstract public function modifyTag($tagId, $tag, $color, $comments);
 
             /**
              * @return boolean
@@ -1666,7 +1668,7 @@
                     return false;
                 }
 
-                if (!in_array($this->login, $issue["assigned"])) {
+                if (!in_array($this->login, $issue["assigned"] ?? [])) {
                     $issue["assigned"] = [ $this->login ];
                     return $this->modifyIssue($issue);
                 }

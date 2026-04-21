@@ -27,6 +27,7 @@
      * @apiParam {String="flat"} applyTo
      * @apiBody {Number} id
      * @apiBody {Object[]} customFields
+     * @apiBody {String="replace","patch"} [mode="replace"]
      *
      * @apiSuccess {Object[]} customFields
      */
@@ -68,9 +69,14 @@
                     return api::ERROR();
                 } else {
                     $success = false;
+                    $mode = @$params["mode"];
+
+                    if (!checkStr($mode)) {
+                        $mode = "replace";
+                    }
 
                     if ($params["_id"] == "flat") {
-                        $success = $customFields->modifyValues("flat", @$params["id"], @$params["customFields"]);
+                        $success = $customFields->modifyValues("flat", @$params["id"], @$params["customFields"], $mode);
                     }
 
                     return api::ANSWER($success);

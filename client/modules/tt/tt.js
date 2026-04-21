@@ -388,7 +388,6 @@
                 tags.push({
                     id: modules.tt.meta.tags[i].tag,
                     text: modules.tt.meta.tags[i].tag,
-                    icon: "fas fa-fw fa-tag",
                 });
             }
         }
@@ -514,8 +513,8 @@
                         options: select2Filter(tags, filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.tags) ? Object.values(issue.tags) : []),
                         colorizeTags: (item, container) => {
-                            container.addClass("bg-" + tagss[item.text].color);
-                            return $(`<span class="bg-${tagss[item.text].color}">${item.text}</span>`);
+                            container.addClass("bg-" + (tagss[item.text].color ? tagss[item.text].color : systemColor(tagss[item.text].text)));
+                            return $(`<span class="bg-${tagss[item.text].color ? tagss[item.text].color : systemColor(tagss[item.text].text)}" >${item.text}</span>`);
                         }
                     };
 

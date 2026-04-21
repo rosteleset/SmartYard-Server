@@ -34,5 +34,5 @@
     * 424 неверный токен
     */
 
-    auth();
-    response();
+   auth();
+   response();

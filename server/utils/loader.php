@@ -41,6 +41,15 @@
         }
     }
 
+    function loadExtension($extension, $login = false) {
+        if (file_exists(__DIR__ . "/../extensions/$extension/$extension.php")) {
+            require_once __DIR__ . "/../extensions/$extension/$extension.php";
+            return new $extension();
+        } else {
+            return false;
+        }
+    }
+
     /**
     * Loads a device class and returns an instance of the class, or false if not found.
     *

@@ -20,8 +20,8 @@
 
     "cantLoadBackend": "Ошибка загрузки модуля %s",
 
-    "2faName": "SmartYard",
-    "2faTitle": "RBT",
+    "two_fa_name": "SmartYard",
+    "two_fa_title": "RBT",
 
     "generationError": "Ошибка генерации ключей: %s",
     "publicKey": "Открытый ключ: %s",

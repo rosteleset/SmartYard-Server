@@ -28,6 +28,11 @@
                                 "optional" => true,
                             ],
                         ],
+                        [
+                            "no-backup" => [
+                                "optional" => true,
+                            ],
+                        ]
                     ],
                     "exec" => [ $this, "init" ],
                     "description" => "Initialize (update) main database",
@@ -114,8 +119,12 @@
                     echo "\n";
                 }
 
-                backupDB(false);
-                echo "\n";
+                if (!array_key_exists("--no-backup", $args)) {
+                    backupDB(false);
+                    echo "\n";
+                } else {
+                    echo "backup skipped\n\n";
+                }
 
                 if (@$args["--set-version"]) {
                     $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");

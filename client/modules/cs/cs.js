@@ -983,6 +983,8 @@
 
                     let colHidden = false;
 
+                    let colClass = 'font-weight-bold bg-gray';
+
                     $(".timeCell").each(function () {
                         t[$(this).text()] = true;
                     });
@@ -998,6 +1000,7 @@
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                             colName = modules.cs.currentSheet.sheet.data[i].col;
                             colPart = modules.cs.currentSheet.sheet.data[i].part;
+                            colClass = modules.cs.currentSheet.sheet.data[i].class;
                             colHidden = modules.cs.currentSheet.sheet.data[i].hidden === true;
                             for (let j in t) {
                                 rows.push({
@@ -1018,6 +1021,7 @@
                         footer: true,
                         borderless: true,
                         topApply: true,
+                        size: "lg",
                         fields: [
                             {
                                 id: "colPart",
@@ -1035,6 +1039,16 @@
                                 title: i18n("cs.colName"),
                                 placeholder: i18n("cs.colName"),
                                 value: colName,
+                                validate: v => {
+                                    return $.trim(v) !== "" && !cols[$.trim(v)];
+                                },
+                            },
+                            {
+                                id: "colClass",
+                                type: "text",
+                                title: i18n("cs.colClass"),
+                                placeholder: i18n("cs.colClass"),
+                                value: colClass,
                                 validate: v => {
                                     return $.trim(v) !== "" && !cols[$.trim(v)];
                                 },
@@ -1065,6 +1079,7 @@
                                     modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
                                     modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
                                     modules.cs.currentSheet.sheet.data[i].part = $.trim(result.colPart);
+                                    modules.cs.currentSheet.sheet.data[i].class = $.trim(result.colClass);
                                     modules.cs.currentSheet.sheet.data[i].hidden = parseInt(result.colHidden) === 1;
                                     try {
                                         if (!modules.cs.currentSheet.sheet.weights) {

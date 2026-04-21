@@ -334,10 +334,14 @@ function handleCMSIntercom(context, extension)
         end
         if dest ~= "" then
             dest = dest:sub(2)
+
+            -- Add a header so that the Akuvox intercom forwards an incoming call to an analog handset
+            local dialOptions = "b(analog_proxy_header^s^1)"
+
             if channel.CALLERID("num"):get():sub(1, 1) == "7" then
-                app.Dial(dest, 120, "m")
+                app.Dial(dest, 120, "m" .. dialOptions)
             else
-                app.Dial(dest, 120)
+                app.Dial(dest, 120, dialOptions)
             end
         end
     end
@@ -464,8 +468,12 @@ function handleOtherCases(context, extension)
     if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
         domophoneId = tonumber(from:sub(2))
 
+        app.Ringing()
+        app.Progress()
+
         -- sokol's crutch
-        if extension:len() < 5 then
+        -- TODO: delete after fixing SIP numbers for flats
+        if extension:len() < 5 and not extension:find('#', 1, true) then
             logDebug("bad extension, replacing...")
             local flats = dm("apartment", {
                 domophoneId = domophoneId,
@@ -490,12 +498,23 @@ function handleOtherCases(context, extension)
             end
         else
             logDebug("more than one house, has prefix")
-            flatNumber = tonumber(extension:sub(5))
-            if flatNumber ~= nil then
+
+            local prefix
+
+            local hashPosition = extension:find('#')
+            if hashPosition then -- With # delimiter (Akuvox S532)
+                prefix = tonumber(extension:sub(1, hashPosition - 1))
+                flatNumber = tonumber(extension:sub(hashPosition + 1))
+            else -- Default XXXXYYYY format
+                prefix = tonumber(extension:sub(1, 4))
+                flatNumber = tonumber(extension:sub(5))
+            end
+
+            if flatNumber ~= nil and prefix ~= nil then
                 local flats = dm("flatIdByPrefix", {
                     domophoneId = domophoneId,
                     flatNumber = flatNumber,
-                    prefix = tonumber(extension:sub(1, 4)),
+                    prefix = prefix,
                 })
                 if #flats == 1 then
                     flat = flats[1]
@@ -630,6 +649,13 @@ extensions = {
 
         -- terminate active call
         [ "h" ] = handleCallTermination,
+    },
+
+    -- add ANALOG-PROXY header
+    ["analog_proxy_header"] = {
+        [ "s" ] = function()
+            app.Set("PJSIP_HEADER(add,ANALOG-PROXY)=1")
+        end
     },
 }
 

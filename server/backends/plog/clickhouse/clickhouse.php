@@ -1106,68 +1106,100 @@
                             }
                         }
 
-                        if ($unit == "akuvox") {
+                        if ($unit == 'akuvox') {
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
-                                ["SIP_LOG:MSG_S2P_TRYING", true, false, false, 1],
-                                ["SIP_LOG:MSG_S2P_RINGBACK", true, false, false, 1],
-                                ["SIP_LOG:MSG_S2P_ESTABLISHED_CALL", false, true, false, 1],
-                                ["DTMF_LOG:Receive", false, false, true, 1],
-                                ["DTMF_LOG:From", false, false, true, 1],
-                                ["DTMF_LOG:Successful", false, false, true, 1],
-                                ["SIP_LOG:Call Finished", false, false, false, 1],
-                                ["SIP_LOG:Call Failed", false, false, false, 1],
+                                ['MakeCall-', true, false, false, 1],
+                                ['SIP_LOG:MSG_S2P_TRYING', false, false, false, 1],
+                                ['SIP_LOG:MSG_S2P_RINGBACK', false, false, false, 1],
+                                ['SIP_LOG:MSG_S2P_ESTABLISHED_CALL', false, true, false, 0],
+                                ['Analog Established Call', false, true, false, 0],
+                                ['DTMF_LOG:Receive', false, true, true, 1],
+                                ['DTMF_LOG:From', false, true, true, 1],
+                                ['DTMF_LOG:Successful', false, true, true, 1],
+                                ['Analog HandSet OpenDoor', false, true, true, 0],
+                                ['OPENDOOR_LOG:Type:Analog', false, true, true, 1],
+                                ['SIP_LOG:Call Finished', false, false, false, 1],
+                                ['SIP_LOG:Call Failed', false, false, false, 1],
+                                ['Analog Finished Call', false, false, false, 0],
+                                ['Analog Call Hang Up', false, false, false, 0],
+
+                                // Incoming call patterns
+                                ['SIP_LOG:MSG_S2P_INCOMING', false, false, false, -1],
+                                ['Incoming Call', false, false, false, -1],
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
-                                unset($now_flat_id);
-                                unset($now_flat_number);
-                                unset($now_call_id);
-                                unset($now_sip_call_id);
+                                unset($now_flat_id, $now_flat_number, $now_call_id, $now_sip_call_id);
 
-                                if (strpos($msg, $pattern) !== false) {
-                                    // Check if call started from this panel
-                                    if ($now_call_from_panel > 0) {
-                                        $call_from_panel = 1;
+                                if (!str_contains($msg, $pattern)) {
+                                    continue;
+                                }
+
+                                // Check if call started from this panel
+                                if ($now_call_from_panel > 0) {
+                                    $call_from_panel = 1;
+                                } elseif ($now_call_from_panel < 0) {
+                                    $call_from_panel = -1;
+                                    break;
+                                }
+
+                                // Get number from MakeCall message
+                                if (preg_match('/MakeCall-.*?CallNum:([^,]+)(?:,\s*DisplayName:([^,]+))?,/', $msg, $matches) === 1) {
+                                    $callNum = trim($matches[1]);
+                                    $displayName = trim($matches[2] ?? '');
+
+                                    if (strlen($callNum) === 10 && $callNum[0] === '1' && ctype_digit($callNum)) {
+                                        $now_flat_id = substr($callNum, 1);
+                                    } elseif (str_contains($callNum, '#')) {
+                                        [$prefix, $now_flat_number] = explode('#', $callNum, 2);
+                                    } elseif (
+                                        $callNum !== '' &&
+                                        strlen($callNum) < 10 &&
+                                        $displayName !== '' &&
+                                        ctype_digit($displayName)
+                                    ) {
+                                        $now_flat_number = (int)$displayName;
                                     }
+                                }
 
-                                    // Get call ID
-                                    if (strpos($msg, 'SIP_LOG') !== false) {
-                                        $now_call_id = explode('=', $msg)[1];
-                                    }
+                                // Get number from DTMF message
+                                if (str_contains($msg, 'DTMF_LOG:From')) {
+                                    $msgParts = explode(' ', $msg);
+                                    $number = trim($msgParts[count($msgParts) - 1]);
 
-                                    // Get flat ID
-                                    if (strpos($msg, 'DTMF_LOG:From') !== false) {
-                                        $msgParts = explode(' ', $msg);
-                                        $number = $msgParts[count($msgParts) - 1];
+                                    if (str_contains($number, '#')) {
+                                        [$prefix, $now_flat_number] = explode('#', $number, 2);
+                                    } elseif (strlen($number) === 10 && $number[0] === '1' && ctype_digit($number)) {
                                         $now_flat_id = substr($number, 1);
                                     }
+                                }
 
-                                    $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
-                                        || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+                                $call_start_lost =
+                                    isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id ||
+                                    isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number;
 
-                                    if ($call_start_lost) {
-                                        break;
-                                    }
+                                if ($call_start_lost) {
+                                    break;
+                                }
 
-                                    $event_data[self::COLUMN_DATE] = $item["date"];
+                                $event_data[self::COLUMN_DATE] = $item['date'];
 
-                                    if (isset($now_call_id) && !isset($call_id)) {
-                                        $call_id = $now_call_id;
-                                    }
-                                    if (isset($now_flat_id) && !isset($flat_id)) {
-                                        $flat_id = $now_flat_id;
-                                    }
-                                    if ($flag_talk_started) {
-                                        $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
-                                    }
-                                    if ($flag_door_opened) {
-                                        $event_data[self::COLUMN_OPENED] = 1;
-                                    }
-                                    if ($flag_start) {
-                                        $call_start_found = true;
-                                        break;
-                                    }
+                                if (isset($now_flat_number) && !isset($flat_number)) {
+                                    $flat_number = $now_flat_number;
+                                }
+                                if (isset($now_flat_id) && !isset($flat_id)) {
+                                    $flat_id = $now_flat_id;
+                                }
+                                if ($flag_talk_started) {
+                                    $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                }
+                                if ($flag_door_opened) {
+                                    $event_data[self::COLUMN_OPENED] = 1;
+                                }
+                                if ($flag_start) {
+                                    $call_start_found = true;
+                                    break;
                                 }
                             }
                         }

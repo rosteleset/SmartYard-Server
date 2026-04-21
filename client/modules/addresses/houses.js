@@ -12,6 +12,383 @@
     fiases: {},
     marker: false,
 
+    getFlatCustomFieldsConfiguration: function () {
+        if (modules.addresses.houses.customFieldsConfiguration && Array.isArray(modules.addresses.houses.customFieldsConfiguration.flat)) {
+            return modules.addresses.houses.customFieldsConfiguration.flat;
+        }
+
+        return [];
+    },
+
+    hasFlatCustomFieldValues: function (customFields) {
+        if (!customFields || typeof customFields !== "object") {
+            return false;
+        }
+
+        for (let field in customFields) {
+            if (!Object.prototype.hasOwnProperty.call(customFields, field)) {
+                continue;
+            }
+
+            if ($.trim(`${customFields[field]}`) !== "") {
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    flatCustomFieldFormat: function (customField) {
+        return customField && customField.format ? customField.format : "";
+    },
+
+    localizeFlatCustomFieldText: function (value) {
+        if (!value) {
+            return value;
+        }
+
+        let localized = i18n(value);
+
+        return localized ? localized : value;
+    },
+
+    resolveFlatCustomFieldTab: function (customField) {
+        if (customField && customField.tab) {
+            return modules.addresses.houses.localizeFlatCustomFieldText(customField.tab);
+        }
+
+        return i18n("customFields");
+    },
+
+    isFlatCustomFieldMultiple: function (customField) {
+        return customField && customField.type === "select" && modules.addresses.houses.flatCustomFieldFormat(customField).indexOf("multiple") >= 0;
+    },
+
+    parseFlatCustomFieldValue: function (customField, customFields) {
+        let value = "";
+
+        if (customFields && Object.prototype.hasOwnProperty.call(customFields, customField.field) && customFields[customField.field] !== null && typeof customFields[customField.field] !== "undefined") {
+            value = customFields[customField.field];
+        }
+
+        if (!modules.addresses.houses.isFlatCustomFieldMultiple(customField)) {
+            return value;
+        }
+
+        if (Array.isArray(value)) {
+            return value;
+        }
+
+        if (!value) {
+            return [];
+        }
+
+        if (typeof value === "string") {
+            try {
+                let parsed = JSON.parse(value);
+
+                if (Array.isArray(parsed)) {
+                    return parsed.map(v => `${v}`);
+                }
+            } catch (e) {
+            }
+
+            return value.split(",").map(v => $.trim(v)).filter(v => v !== "");
+        }
+
+        return [];
+    },
+
+    buildFlatCustomFieldOptions: function (customField, value) {
+        let options = [];
+        let added = {};
+        let customFieldOptions = Array.isArray(customField.options) ? customField.options : [];
+        let values = Array.isArray(value) ? value : [ value ];
+
+        if (!parseInt(customField.required) && !modules.addresses.houses.isFlatCustomFieldMultiple(customField)) {
+            options.push({
+                id: "",
+                text: "",
+            });
+            added[""] = true;
+        }
+
+        for (let i in customFieldOptions) {
+            let optionValue = `${customFieldOptions[i].option}`;
+            if (!added[optionValue]) {
+                added[optionValue] = true;
+                options.push({
+                    id: optionValue,
+                    text: customFieldOptions[i].optionDisplay ? customFieldOptions[i].optionDisplay : optionValue,
+                });
+            }
+        }
+
+        for (let i in values) {
+            let optionValue = values[i];
+
+            if (optionValue === null || typeof optionValue === "undefined") {
+                continue;
+            }
+
+            optionValue = `${optionValue}`;
+
+            if (optionValue !== "" && !added[optionValue]) {
+                added[optionValue] = true;
+                options.push({
+                    id: optionValue,
+                    text: optionValue,
+                });
+            }
+        }
+
+        return options;
+    },
+
+    validateFlatCustomField: function (customField, value) {
+        if (customField.type === "button") {
+            return true;
+        }
+
+        let stringValue = "";
+
+        if (modules.addresses.houses.isFlatCustomFieldMultiple(customField)) {
+            if (parseInt(customField.required) && (!Array.isArray(value) || !value.length)) {
+                return false;
+            }
+
+            stringValue = Array.isArray(value) ? JSON.stringify(value) : "";
+        } else {
+            if (value === null || typeof value === "undefined") {
+                stringValue = "";
+            } else {
+                stringValue = `${value}`;
+            }
+
+            if (parseInt(customField.required) && $.trim(stringValue) === "") {
+                return false;
+            }
+        }
+
+        if (customField.editor === "json" && $.trim(stringValue) !== "") {
+            try {
+                JSON.parse(stringValue);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        if (customField.editor === "number" && $.trim(stringValue) !== "") {
+            if (isNaN(parseFloat(`${stringValue}`.replaceAll(",", ".")))) {
+                return false;
+            }
+        }
+
+        if (customField.regex && $.trim(stringValue) !== "") {
+            try {
+                if (!(new RegExp(customField.regex)).test(stringValue)) {
+                    return false;
+                }
+            } catch (e) {
+                console.warn("Invalid custom field regex", customField.field, e);
+            }
+        }
+
+        return true;
+    },
+
+    makeFlatCustomFieldFormField: function (customField, customFields) {
+        let fieldId = "_cf_" + customField.field;
+        let title = modules.addresses.houses.localizeFlatCustomFieldText(customField.fieldDisplay ? customField.fieldDisplay : customField.field);
+        let hint = customField.fieldDescription ? modules.addresses.houses.localizeFlatCustomFieldText(customField.fieldDescription) : false;
+        let tab = modules.addresses.houses.resolveFlatCustomFieldTab(customField);
+        let value = modules.addresses.houses.parseFlatCustomFieldValue(customField, customFields);
+        let field = false;
+
+        if (customField.type === "button") {
+            if (!customField.magicFunction || !modules.custom || !modules.custom[customField.magicFunction]) {
+                return false;
+            }
+
+            return {
+                id: fieldId,
+                type: "button",
+                title: title,
+                tab: tab,
+                button: {
+                    hint: customField.magicHint ? modules.addresses.houses.localizeFlatCustomFieldText(customField.magicHint) : title,
+                    class: customField.magicClass ? customField.magicClass : "btn-secondary",
+                    click: modules.custom[customField.magicFunction],
+                },
+            };
+        }
+
+        if (customField.type === "select") {
+            return {
+                id: fieldId,
+                type: "select2",
+                title: title,
+                placeholder: title,
+                tab: tab,
+                hint: hint,
+                options: modules.addresses.houses.buildFlatCustomFieldOptions(customField, value),
+                multiple: modules.addresses.houses.isFlatCustomFieldMultiple(customField),
+                tags: modules.addresses.houses.flatCustomFieldFormat(customField).indexOf("editable") >= 0,
+                createTags: modules.addresses.houses.flatCustomFieldFormat(customField).indexOf("editable") >= 0,
+                value: value,
+                validate: v => {
+                    return modules.addresses.houses.validateFlatCustomField(customField, v);
+                },
+            };
+        }
+
+        if (customField.editor === "yesno" || customField.editor === "noyes") {
+            let options = [];
+
+            if (!parseInt(customField.required)) {
+                options.push({
+                    id: "",
+                    text: "",
+                });
+            }
+
+            if (customField.editor === "yesno") {
+                options.push({
+                    id: "1",
+                    text: i18n("yes"),
+                });
+                options.push({
+                    id: "0",
+                    text: i18n("no"),
+                });
+            } else {
+                options.push({
+                    id: "0",
+                    text: i18n("no"),
+                });
+                options.push({
+                    id: "1",
+                    text: i18n("yes"),
+                });
+            }
+
+            return {
+                id: fieldId,
+                type: "select",
+                title: title,
+                placeholder: title,
+                tab: tab,
+                hint: hint,
+                options: options,
+                value: (value === null || typeof value === "undefined") ? "" : `${value}`,
+                validate: v => {
+                    return modules.addresses.houses.validateFlatCustomField(customField, v);
+                },
+            };
+        }
+
+        field = {
+            id: fieldId,
+            type: "text",
+            title: title,
+            placeholder: title,
+            tab: tab,
+            hint: hint,
+            value: value,
+            validate: v => {
+                return modules.addresses.houses.validateFlatCustomField(customField, v);
+            },
+        };
+
+        switch (customField.editor) {
+            case "area":
+                field.type = "area";
+                break;
+
+            case "email":
+            case "tel":
+                field.type = customField.editor;
+                break;
+
+            case "json":
+                field.type = "area";
+                break;
+        }
+
+        if (customField.magicFunction && customField.magicClass && modules.custom && modules.custom[customField.magicFunction]) {
+            field.button = {
+                click: modules.custom[customField.magicFunction],
+                class: customField.magicClass,
+            };
+
+            if (customField.magicHint) {
+                field.button.hint = modules.addresses.houses.localizeFlatCustomFieldText(customField.magicHint);
+            }
+        }
+
+        return field;
+    },
+
+    appendFlatCustomFields: function (fields, customFields, mode) {
+        let configuration = modules.addresses.houses.getFlatCustomFieldsConfiguration();
+
+        for (let i in configuration) {
+            let customField = configuration[i];
+            let allowed = mode === "add" ? parseInt(customField.add) : parseInt(customField.modify);
+
+            if (!allowed) {
+                continue;
+            }
+
+            let field = modules.addresses.houses.makeFlatCustomFieldFormField(customField, customFields);
+
+            if (field) {
+                fields.push(field);
+            }
+        }
+    },
+
+    serializeFlatCustomFieldValue: function (customField, value) {
+        if (customField.type === "button") {
+            return undefined;
+        }
+
+        if (modules.addresses.houses.isFlatCustomFieldMultiple(customField)) {
+            return (Array.isArray(value) && value.length) ? JSON.stringify(value) : "";
+        }
+
+        if (value === null || typeof value === "undefined") {
+            return "";
+        }
+
+        return `${value}`;
+    },
+
+    extractFlatCustomFields: function (result, mode) {
+        let customFields = {};
+        let configuration = modules.addresses.houses.getFlatCustomFieldsConfiguration();
+
+        for (let i in configuration) {
+            let customField = configuration[i];
+            let allowed = mode === "add" ? parseInt(customField.add) : parseInt(customField.modify);
+            let fieldId = "_cf_" + customField.field;
+
+            if (!allowed || !Object.prototype.hasOwnProperty.call(result, fieldId)) {
+                continue;
+            }
+
+            let value = modules.addresses.houses.serializeFlatCustomFieldValue(customField, result[fieldId]);
+
+            if (typeof value !== "undefined") {
+                customFields[customField.field] = value;
+            }
+
+            delete result[fieldId];
+        }
+
+        return customFields;
+    },
+
     houseMagic: function () {
         cardForm({
             title: i18n("addresses.address"),
@@ -217,14 +594,26 @@
         });
     },
 
-    doAddFlat: function (flat) {
+    doAddFlat: function (flat, customFields) {
         loadingStart();
         POST("houses", "flat", false, flat).
         fail(FAIL).
-        done(() => {
+        done(result => {
             message(i18n("addresses.flatWasAdded"));
+            if (modules.addresses.houses.hasFlatCustomFieldValues(customFields)) {
+                PUT("houses", "customFields", "flat", {
+                    id: result.flatId,
+                    customFields: customFields,
+                }).
+                fail(FAIL).
+                always(() => {
+                    modules.addresses.houses.renderHouse(flat.houseId);
+                });
+            } else {
+                modules.addresses.houses.renderHouse(flat.houseId);
+            }
         }).
-        always(() => {
+        fail(() => {
             modules.addresses.houses.renderHouse(flat.houseId);
         });
     },
@@ -1243,32 +1632,7 @@
                 },
             ];
 
-            if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
-                for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
-                    let cf;
-                    if (parseInt(modules.addresses.houses.customFieldsConfiguration.flat[i].add)) {
-                        switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
-                            case "text":
-                                cf = {};
-                                cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
-                                cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
-                                cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                cf.tab = i18n("customFields");
-                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
-                                    cf.button = {};
-                                    cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                    cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
-                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
-                                        cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
-                                    }
-                                }
-                                fields.push(cf);
-                                break;
-                        }
-                    }
-                }
-            }
+            modules.addresses.houses.appendFlatCustomFields(fields, {}, "add");
 
             loadingDone();
 
@@ -1281,6 +1645,7 @@
                 size: "lg",
                 fields: fields,
                 callback: result => {
+                    let customFields = modules.addresses.houses.extractFlatCustomFields(result, "add");
                     let apartmentsAndLevels = {};
                     for (let i in entrances) {
                         if ($(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).length) {
@@ -1292,7 +1657,7 @@
                     }
                     result.houseId = houseId;
                     result.apartmentsAndLevels = apartmentsAndLevels;
-                    modules.addresses.houses.doAddFlat(result);
+                    modules.addresses.houses.doAddFlat(result, customFields);
                 },
             });
 
@@ -2561,40 +2926,7 @@
                     },
                 ];
 
-                if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
-                    for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
-                        let cf;
-                        if (parseInt(modules.addresses.houses.customFieldsConfiguration.flat[i].modify)) {
-                            switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
-                                case "text":
-                                case "button":
-                                    cf = {};
-                                    cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
-                                    cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
-                                    cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                    cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                    cf.tab = modules.addresses.houses.customFieldsConfiguration.flat[i].tab ? modules.addresses.houses.customFieldsConfiguration.flat[i].tab : i18n("customFields");
-                                    cf.value = customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] ? customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] : "";
-                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
-                                        cf.button = {};
-                                        cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                        cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicClass;
-                                        if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
-                                            cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
-                                        }
-                                    }
-                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].type == "button") {
-                                        cf.button = {};
-                                        cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
-                                        cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                        cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicClass;
-                                    }
-                                    fields.push(cf);
-                                    break;
-                            }
-                        }
-                    }
-                }
+                modules.addresses.houses.appendFlatCustomFields(fields, customFields ? customFields : {}, "modify");
 
                 loadingDone();
 
@@ -2609,18 +2941,7 @@
                     size: "lg",
                     fields: fields,
                     callback: result => {
-                        let cf = {};
-                        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
-                            for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
-                                switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
-                                    case "text":
-                                        let id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
-                                        cf[id.substring(4)] = result[id];
-                                        delete result[id];
-                                        break;
-                                }
-                            }
-                        }
+                        let cf = modules.addresses.houses.extractFlatCustomFields(result, "modify");
                         delete result.autoBlock;
                         let apartmentsAndLevels = {};
                         for (let i in entrances) {
@@ -2641,6 +2962,7 @@
                                 if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
                                     PUT("houses", "customFields", "flat", {
                                         id: flatId,
+                                        mode: "patch",
                                         customFields: cf,
                                     }).
                                     fail(FAIL);
@@ -2922,6 +3244,25 @@
                                             loadingStart();
                                             setTimeout(() => {
                                                 let n = 3000000000 + parseInt(flatId);
+                                                if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
+                                                    modules.asterisk.call(n);
+                                                    message(i18n("asterisk.dialing", n), i18n("asterisk.outgoingCall"), 5);
+                                                } else {
+                                                    error(i18n("asterisk.dialFail"), i18n("asterisk.outgoingCall"), 5);
+                                                }
+                                                loadingDone();
+                                            }, 500);
+                                        },
+                                        disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
+                                    },
+                                    {
+                                        icon: "fas fa-home",
+                                        class: "sipIdle",
+                                        title: i18n("addresses.flatSipCall"),
+                                        click: flatId => {
+                                            loadingStart();
+                                            setTimeout(() => {
+                                                let n = 4000000000 + parseInt(flatId);
                                                 if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
                                                     modules.asterisk.call(n);
                                                     message(i18n("asterisk.dialing", n), i18n("asterisk.outgoingCall"), 5);

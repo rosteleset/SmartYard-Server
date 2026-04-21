@@ -21,7 +21,9 @@
     },
 
     allLoaded: function () {
-        modules.mkb.refreshInbox();
+        if (parseInt(myself.uid) && AVAIL("mkb")) {
+            modules.mkb.refreshInbox();
+        }
     },
 
     mdr: function (str) {
@@ -1222,15 +1224,17 @@
     },
 
     refreshInbox: function () {
-        POST("mkb", "cards", false, { query: { inbox: true }, countOnly: true }).
-        done(r => {
-            if (r.count) {
-                $(".kanban-inbox-count").show().text(r.count > 9 ? "+" : r.count);
-            } else {
-                $(".kanban-inbox-count").hide();
-            }
-        }).
-        fail(FAIL);
+        if (parseInt(myself.uid) && AVAIL("mkb")) {
+            POST("mkb", "cards", false, { query: { inbox: true }, countOnly: true }).
+            done(r => {
+                if (r.count) {
+                    $(".kanban-inbox-count").show().text(r.count > 9 ? "+" : r.count);
+                } else {
+                    $(".kanban-inbox-count").hide();
+                }
+            }).
+            fail(FAIL);
+        }
     },
 
     renderCard: function (card) {

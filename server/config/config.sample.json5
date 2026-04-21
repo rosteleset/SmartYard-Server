@@ -74,8 +74,8 @@
     "backends": {
         "authentication": {
             "backend": "internal",
-            "2faName": "SmartYard",
-            "2faTitle": "RBT",
+            "two_fa_name": "SmartYard",
+            "two_fa_title": "RBT",
             "max_allowed_tokens": 15,
             "token_idle_ttl": 3600,
         },
@@ -148,7 +148,7 @@
             "backend": "lanta",
             "common_secret": "<!-- your secret here --!>",
             "confirm_method": "outgoingCall",
-            "confirm_number": "88002220374",
+            "confirm_number": "+74752637845",
         },
 
         "inbox": {
@@ -308,6 +308,10 @@
         },
 
         "customFields": {
+            "backend": "internal",
+        },
+
+        "billing": {
             "backend": "internal",
         },
 

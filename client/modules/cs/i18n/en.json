@@ -41,6 +41,7 @@
     "map": "Issues on map",
     "unhighlight": "Deselect",
     "verticalGrowth": "Vertical growth",
+    "class": "Class",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",

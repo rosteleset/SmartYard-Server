@@ -25,13 +25,15 @@ class akuvox extends camera
             'Config.DoorSetting.MOTION_DETECT.Enable' => $firstZone !== null ? '2' : '0', // 2 - video detection
             'Config.DoorSetting.MOTION_DETECT.Interval' => '1', // Motion duration
             'Config.DoorSetting.MOTION_DETECT.TFTPEnable' => '0',
-            'Config.DoorSetting.MOTION_DETECT.FTPEnable' => '1',
+            'Config.DoorSetting.MOTION_DETECT.FTPEnable' => '0',
+            'Config.DoorSetting.MOTION_DETECT.HttpEnable' => '1',
             'Config.DoorSetting.MOTION_DETECT.SendType' => '0',
-            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => "3",
-            'Config.DoorSetting.MOTION_DETECT.AreaStartWidth' => "$areaStartWidth",
-            'Config.DoorSetting.MOTION_DETECT.AreaEndWidth' => "$areaEndWidth",
-            'Config.DoorSetting.MOTION_DETECT.AreaStartHeight' => "$areaStartHeight",
-            'Config.DoorSetting.MOTION_DETECT.AreaEndHeight' => "$areaEndHeight",
+            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => '3',
+            'Config.DoorSetting.MOTION_DETECT.AreaStartWidth' => (string)$areaStartWidth,
+            'Config.DoorSetting.MOTION_DETECT.AreaEndWidth' => (string)$areaEndWidth,
+            'Config.DoorSetting.MOTION_DETECT.AreaStartHeight' => (string)$areaStartHeight,
+            'Config.DoorSetting.MOTION_DETECT.AreaEndHeight' => (string)$areaEndHeight,
+            'Config.Features.ACTIONURL.MotionDetect' => 'start motion',
         ]);
     }
 

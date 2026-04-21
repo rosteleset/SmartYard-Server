@@ -13,6 +13,7 @@
      * @apiBody {Number} projectId
      * @apiBody {String} tag
      * @apiBody {String} color
+     * @apiBody {String} comments
      *
      * @apiSuccess {Number} tagId
      */
@@ -30,6 +31,7 @@
      * @apiParam {Number} tagId
      * @apiBody {String} tag
      * @apiBody {String} color
+     * @apiBody {String} comments
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -64,13 +66,13 @@
         class tag extends api {
 
             public static function POST($params) {
-                $tagId = loadBackend("tt")->addTag($params["projectId"], $params["tag"], $params["color"]);
+                $tagId = loadBackend("tt")->addTag($params["projectId"], $params["tag"], $params["color"], $params["comments"]);
 
                 return api::ANSWER($tagId, ($tagId !== false) ? "tagId" : "notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyTag($params["_id"], $params["tag"], $params["color"]);
+                $success = loadBackend("tt")->modifyTag($params["_id"], $params["tag"], $params["color"], $params["comments"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

@@ -280,7 +280,7 @@
 
                         $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : (@$this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
 
-                        return $ga->getQRCodeText(@$this->config["backends"]["authentication"]["2faName"] ?: i18n("2faName"), $secret, @$this->config["backends"]["authentication"]["2faTitle"] ?: i18n("2faTitle"));
+                        return $ga->getQRCodeText(@$this->config["backends"]["authentication"]["two_fa_name"] ?: i18n("two_fa_name"), $secret, @$this->config["backends"]["authentication"]["two_fa_title"] ?: i18n("two_fa_title"));
                     }
                 }
             }

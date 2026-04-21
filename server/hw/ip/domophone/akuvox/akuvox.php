@@ -26,6 +26,18 @@ abstract class akuvox extends domophone
      */
     abstract protected static function getMaxUsers(): int;
 
+    /**
+     * Converts an RFID code to the device's standard format.
+     *
+     * @param string $code The raw RFID code.
+     * @return string The normalized RFID code.
+     */
+    protected static function getNormalizedRfid(string $code): string
+    {
+        $trimmedCode = ltrim($code, '0');
+        return strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode;
+    }
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         // Refactor when adding an interface
@@ -156,7 +168,7 @@ abstract class akuvox extends domophone
             return;
         }
 
-        $normalizedCode = ltrim($code, '0');
+        $normalizedCode = self::getNormalizedRfid($code);
         $remainingRfids = [];
 
         foreach ($this->getUsers() as $user) {
@@ -293,6 +305,7 @@ abstract class akuvox extends domophone
             'target' => 'relay',
             'action' => 'set',
             'data' => [
+                'Config.DoorSetting.RELAY.DTMFUnlock' => '2', // Assigned the authority for all numbers
                 'Config.DoorSetting.DTMF.Code1' => $code1,
                 'Config.DoorSetting.DTMF.Code2' => $code2,
             ],
@@ -516,7 +529,7 @@ abstract class akuvox extends domophone
         $rfidChunks = array_chunk($rfids, self::MAX_RFIDS_PER_USER);
 
         foreach ($rfidChunks as $chunk) {
-            $normalizedChunk = array_map(static fn($code): string => ltrim($code, '0'), $chunk);
+            $normalizedChunk = array_map(self::getNormalizedRfid(...), $chunk);
 
             $items[] = [
                 'CardCode' => implode(';', $normalizedChunk),
@@ -547,6 +560,17 @@ abstract class akuvox extends domophone
             'Config.DoorSetting.GENERAL.WiegandOpenRelayA' => $openRelayA ? '1' : '0',
             'Config.DoorSetting.GENERAL.WiegandOpenRelayB' => $openRelayB ? '1' : '0',
         ]);
+    }
+
+    /**
+     * Enables or disables HTTPS access for the web server.
+     *
+     * @param bool $enabled Whether to enable HTTPS. Defaults to true.
+     * @return void
+     */
+    protected function setHttpsEnabled(bool $enabled = true): void
+    {
+        $this->setConfigParams(['Config.Network.WEBSERVER.HttpsEnable' => $enabled ? '1' : '0']);
     }
 
     /**

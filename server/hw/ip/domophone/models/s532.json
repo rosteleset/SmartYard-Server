@@ -1,0 +1,24 @@
+{
+    "title": "AKUVOX S532",
+    "vendor": "AKUVOX",
+    "model": "S532",
+    "class": "s532",
+    "eventServer": "akuvox",
+    "outputs": 2,
+    "camera": "akuvox",
+    "useSmartConfigurator": true,
+    "useAnalogNumber": true,
+    "cmses": [
+        "bk-100",
+        "bk-400",
+        "com-25u",
+        "com-100u",
+        "digital",
+        "km20-1",
+        "km100-7.1",
+        "km100-7.2",
+        "km100-7.3",
+        "km100-7.5",
+        "kmg-100"
+    ]
+}

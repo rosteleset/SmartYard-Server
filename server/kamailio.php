@@ -12,7 +12,10 @@
     require_once "utils/PDOExt.php";
     require_once "utils/apiExec.php";
     require_once "utils/apiResponse.php";
+
     require_once "backends/backend.php";
+    require_once "extensions/extension.php";
+
     require_once "utils/i18n.php";
 
     use kamailio\kamailio;

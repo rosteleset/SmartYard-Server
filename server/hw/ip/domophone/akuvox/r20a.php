@@ -19,15 +19,4 @@ class r20a extends akuvox
         $this->bindInputsToRelays();
         $this->setExternalReader(openRelayB: true);
     }
-
-    /**
-     * Enables or disables HTTPS access for the web server.
-     *
-     * @param bool $enabled Whether to enable HTTPS. Defaults to true.
-     * @return void
-     */
-    protected function setHttpsEnabled(bool $enabled = true): void
-    {
-        $this->setConfigParams(['Config.Network.WEBSERVER.HttpsEnable' => $enabled ? '1' : '0']);
-    }
 }
