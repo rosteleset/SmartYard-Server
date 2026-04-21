@@ -22,6 +22,7 @@
 - fixed number of outputs for Sokol and Sokol+ intercoms
 - fixed RFID normalization for Akuvox E12 and Akuvox R20A when uploading codes starting with zero
 ! improved UI/UX of recognition options in camera settings
++ added weekly cron support for MongoDB files autocompact
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
