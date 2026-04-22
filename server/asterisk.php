@@ -70,6 +70,39 @@
         return $r;
     }
 
+    function isTlsEnabled() {
+        static $tlsEnabled = null;
+
+        if ($tlsEnabled === null) {
+            $tlsEnabled = false;
+            $sip = loadBackend("sip");
+
+            if ($sip) {
+                $servers = $sip->server("all");
+
+                if (is_array($servers)) {
+                    foreach ($servers as $server) {
+                        if (!empty($server["sip_tls_port"])) {
+                            $tlsEnabled = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $tlsEnabled;
+    }
+
+    function addMediaEncryptionIfNeeded(array $params) {
+        if (isTlsEnabled()) {
+            $params["media_encryption"] = "srtp";
+            $params["media_encryption_optimistic"] = "yes";
+        }
+
+        return $params;
+    }
+
     function getExtension($extension, $section) {
         global $redis;
 
@@ -103,7 +136,7 @@
 
                 case "endpoints":
                     if ($panel && $panel["credentials"]) {
-                        return [
+                        $params = [
                             "id" => $extension,
                             "auth" => $extension,
                             "outbound_auth" => $extension,
@@ -121,6 +154,8 @@
                             "dtmf_mode" => "rfc4733",
                             "ice_support" => "no",
                         ];
+
+                        return addMediaEncryptionIfNeeded($params);
                     }
                     break;
             }
@@ -160,7 +195,7 @@
                     $cred = $redis->get("mobile_extension_" . $extension);
 
                     if ($cred) {
-                        return [
+                        $params = [
                             "id" => $extension,
                             "auth" => $extension,
                             "outbound_auth" => $extension,
@@ -177,7 +212,10 @@
                             "allow_subscribe" => "yes",
                             "dtmf_mode" => "rfc4733",
                             "ice_support" => "yes",
+                            "transport" => "transport-tls",
                         ];
+
+                        return addMediaEncryptionIfNeeded($params);
                     }
 
                     break;
@@ -217,7 +255,7 @@
 
                 case "endpoints":
                     if ($cred) {
-                        return [
+                        $params = [
                             "id" => $extension,
                             "auth" => $extension,
                             "outbound_auth" => $extension,
@@ -235,6 +273,8 @@
                             "dtmf_mode" => "rfc4733",
                             "ice_support" => "no",
                         ];
+
+                        return addMediaEncryptionIfNeeded($params);
                     }
 
                     break;
@@ -472,8 +512,8 @@
                         "hash" => $params["hash"],
                         "extension" => $params["extension"],
                         "server" => $server["ip"],
-                        "port" => @$server["sip_tcp_port"] ?: 5060,
-                        "transport" => "tcp",
+                        "transport" => isset($server["sip_tls_port"])? "tls" : "tcp",//usage TLS protocol if enabled
+                        "port" => $server["sip_tls_port"] ?? $server["sip_tcp_port"] ?? 5060, //usage TLS port, default usage TCP port
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
                         "ttl" => 30,
