@@ -116,7 +116,43 @@ class is5 extends domophone implements FreePassInterface, GateModeInterface
 
     public function configureEncoding(): void
     {
-        // TODO: Implement configureEncoding() method.
+        $this->client->request('/camera/audio', 'PUT', [
+            'aac_enable' => true,
+            'format' => 'AAC',
+        ]);
+
+        $this->client->request('/camera/codec', 'PUT', [
+            'Channels' => [
+                [
+                    'Channel' => 0,
+                    'Type' => 'H264',
+                    'Profile' => 0,
+                    'ByFrame' => true,
+                    'Width' => 1280,
+                    'Height' => 720,
+                    'GopMode' => 'NormalP',
+                    'IPQpDelta' => 2,
+                    'RcMode' => 'AVBR',
+                    'IFrameInterval' => 30,
+                    'MaxBitrate' => 4096,
+                    'Framerate' => 30,
+                ],
+                [
+                    'Channel' => 1,
+                    'Type' => 'H264',
+                    'Profile' => 0,
+                    'ByFrame' => true,
+                    'Width' => 640,
+                    'Height' => 480,
+                    'GopMode' => 'NormalP',
+                    'IPQpDelta' => 2,
+                    'RcMode' => 'AVBR',
+                    'IFrameInterval' => 30,
+                    'MaxBitrate' => 1536,
+                    'Framerate' => 30,
+                ],
+            ],
+        ]);
     }
 
     public function configureEventServer(string $url): void
