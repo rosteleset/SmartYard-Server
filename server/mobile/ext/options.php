@@ -24,6 +24,7 @@
      * @apiSuccess {String="turnOnOnly","turnOnAndOff"} [guestAccess = "turnOnOnly"] Тип гостевого доступа.
      * @apiSuccess {Number} [version] Версия API
      * @apiSuccess {String="list","tree","userDefined"} [cctvView="list"] How to show cameras in the mobile app. list(default) - cameras are shown on the map; tree - cameras are shown as a tree structure; userDefined - user has a switch in the common settings
+     * @apiSuccess {String="list","preview"} [entrancesView="list"] How to show entrances on the main screen. list(default) - entrances are shown as a list; preview - entrances are shown with previews
      * @apiSuccess {String="addresses", "notifications", "chat", "pay", "menu"} [activeTab="addresses"] Active app's tab at start.
      * @apiSuccess {String} [validationNamePattern=""] Regex validation pattern for a name
      * @apiSuccess {String} [validationPatronymicPattern=""] Regex validation pattern for a patronymic
@@ -86,6 +87,9 @@
     if (@$config["mobile"]["cctv_view"]) {
         $response["cctvView"] = $config["mobile"]["cctv_view"];
     }
+
+    $entrancesView = @$config["mobile"]["entrances_view"] ?: "list";
+    $response["entrancesView"] = in_array($entrancesView, [ "list", "preview" ]) ? $entrancesView : "list";
 
     if (@$config["mobile"]["active_tab"]) {
         $response["activeTab"] = $config["mobile"]["active_tab"];
