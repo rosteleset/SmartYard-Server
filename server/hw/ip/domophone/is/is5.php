@@ -313,7 +313,21 @@ class is5 extends domophone implements FreePassInterface, GateModeInterface
 
     public function setAudioLevels(array $levels): void
     {
-        // TODO: Implement setAudioLevels() method.
+        if (count($levels) !== 7) {
+            return;
+        }
+
+        $this->client->request('/v1/levels', 'PUT', [
+            'volumes' => [
+                'panelCall' => $levels[0],
+                'uartFrom' => $levels[1],
+                'uartTo' => $levels[2],
+                'panelTalk' => $levels[3],
+                'thTalk' => $levels[4],
+                'thCall' => $levels[5],
+                'thGate' => $levels[6],
+            ],
+        ]);
     }
 
     public function setCallTimeout(int $timeout): void
@@ -494,8 +508,7 @@ class is5 extends domophone implements FreePassInterface, GateModeInterface
 
     protected function getAudioLevels(): array
     {
-        // TODO: Implement getAudioLevels() method.
-        return [];
+        return array_values($this->client->request('/v1/levels')['volumes']);
     }
 
     protected function getCmsModel(): string
