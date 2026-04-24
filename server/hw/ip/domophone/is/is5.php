@@ -20,6 +20,34 @@ use hw\ip\domophone\is\{
  */
 class is5 extends domophone implements DisplayTextInterface, FreePassInterface, GateModeInterface
 {
+    /**
+     * Mapping of project CMS model names to Sokol Plus switch type codes.
+     *
+     * @var array<string, int>
+     */
+    protected const CMS_MODEL_MAP = [
+        'FACTORIAL 8x8' => 0,
+        'KU-100' => 6,
+        'KU-100-LINE' => 7,
+        'ACT-25TM' => 8,
+        'KKM-105' => 11,
+        'KKM-108' => 12,
+        'KKM-100S2' => 13,
+        'KMG-100' => 20,
+        'KM100-7.2' => 30,
+        'DP-K2D' => 40,
+        'BK-4' => 50,
+        'BK-10' => 51,
+        'BK-100' => 52,
+        'COM-80' => 60,
+        'COM-80U' => 61,
+        'COM-80UD' => 62,
+        'COM-160U' => 63,
+        'COM-160UD' => 64,
+        'COM-220U' => 65,
+        'COM-220UD' => 66,
+    ];
+
     protected const CMS_DEFAULT_VOLTAGE_ERROR = 2.0;
     protected const CMS_DEFAULT_VOLTAGE_QUIESCENT = 5.0;
     protected const CMS_DEFAULT_VOLTAGE_ANSWER = 9.0;

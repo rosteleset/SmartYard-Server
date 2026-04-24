@@ -8,11 +8,25 @@
     "camera": "is",
     "useSmartConfigurator": true,
     "cmses": [
+        "act-25tm",
+        "bk-4",
+        "bk-10",
         "bk-100",
-        "com-100u",
+        "com-80",
+        "com-80u",
+        "com-80ud",
+        "com-160u",
+        "com-160ud",
         "com-220u",
+        "com-220ud",
+        "dp-k2d",
         "factorial_8x8",
-        "km100-7.1",
-        "kmg-100"
+        "kkm-100s2",
+        "kkm-105",
+        "kkm-108",
+        "km100-7.2",
+        "kmg-100",
+        "ku-100",
+        "ku-100-line"
     ]
 }

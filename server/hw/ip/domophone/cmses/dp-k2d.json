@@ -1,9 +1,9 @@
 {
-    "title": "QTECH QAD-100",
-    "model": "QAD-100",
+    "title": "DACSYS DP-K2D",
+    "model": "DP-K2D",
     "dozen_start": 0,
     "cms": {
-        "QAD-100": {
+        "DP-K2D": {
             "1": 26,
             "2": 26,
             "3": 26,
