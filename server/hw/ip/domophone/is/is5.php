@@ -3,6 +3,7 @@
 namespace hw\ip\domophone\is;
 
 use hw\Interface\{
+    DisplayTextInterface,
     FreePassInterface,
     GateModeInterface,
 };
@@ -17,7 +18,7 @@ use hw\ip\domophone\is\{
 /**
  * Represents an Intersvyaz ISCOM X1 rev.5 (Sokol Plus) intercom.
  */
-class is5 extends domophone implements FreePassInterface, GateModeInterface
+class is5 extends domophone implements DisplayTextInterface, FreePassInterface, GateModeInterface
 {
     protected const CMS_DEFAULT_VOLTAGE_ERROR = 2.0;
     protected const CMS_DEFAULT_VOLTAGE_QUIESCENT = 5.0;
@@ -248,6 +249,17 @@ class is5 extends domophone implements FreePassInterface, GateModeInterface
         $this->keysChanged = true;
     }
 
+    public function getDisplayText(): array
+    {
+        $displayText = $this->client->request('/v1/display')['text'];
+        return $displayText === '' ? [] : [$displayText];
+    }
+
+    public function getDisplayTextLinesCount(): int
+    {
+        return 1;
+    }
+
     public function getLineDiagnostics(int $apartment): string|int|float
     {
         // TODO: Implement getLineDiagnostics() method.
@@ -346,6 +358,14 @@ class is5 extends domophone implements FreePassInterface, GateModeInterface
 
         $this->client->request('/panelCode/settings', 'PUT', [
             'consiergeRoom' => "$sipNumber@$sipServer:$sipPort",
+        ]);
+    }
+
+    public function setDisplayText(array $textLines): void
+    {
+        $this->client->request('/v1/display', 'PUT', [
+            'enable' => $textLines !== [],
+            'text' => $textLines[0] ?? '',
         ]);
     }
 
