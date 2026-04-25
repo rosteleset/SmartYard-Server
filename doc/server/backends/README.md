@@ -7,6 +7,7 @@ This section documents the backend subsystem implemented under `server/backends/
 - [Base backend class (`backend.php`)](./backend.md)
 - [Custom backend variant pattern](../utils/loader.md#custom-variant-project-customization)
 - [Backends for Accounts](./accounts/README.md)
+- [Addresses backend](./addresses/README.md)
 - [Authorization](./authorization/README.md)
 - [CDR](./cdr/README.md)
 

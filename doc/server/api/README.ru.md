@@ -7,5 +7,6 @@
 - [Базовый класс `api.php`](./api.ru.md)
 - [Authorization](./authorization/README.ru.md)
 - [Accounts](./accounts/README.ru.md)
+- [Addresses](./addresses/README.ru.md)
 - [CDR](./cdr/README.ru.md)
 
