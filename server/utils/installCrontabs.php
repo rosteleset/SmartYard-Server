@@ -5,7 +5,7 @@
      *
      * This function retrieves the current crontab, removes any existing RBT cron entries,
      * and installs a fresh set of RBT cron jobs at various intervals (minutely, 5-minute,
-     * hourly, daily, and monthly). The existing crontab entries outside the RBT section
+     * hourly, daily, weekly, and monthly). The existing crontab entries outside the RBT section
      * are preserved.
      *
      * The function uses markers ("## RBT crons start, dont touch!!!" and
@@ -13,7 +13,7 @@
      *
      * @global string $script_filename The path to the main script file to be executed by cron.
      *
-     * @return int The number of cron job lines added (5 cron jobs + 2 marker lines = 7).
+     * @return int The number of cron job lines added (6 cron jobs + 2 marker lines = 8).
      *
      * @uses PHP_BINARY To get the PHP executable path.
      * @uses exec() To retrieve the current crontab entries.
@@ -61,6 +61,8 @@
         $clean[] = "1 */1 * * * $cli=hourly";
         $lines++;
         $clean[] = "1 1 */1 * * $cli=daily";
+        $lines++;
+        $clean[] = "1 1 * * 1   $cli=weekly";
         $lines++;
         $clean[] = "1 1 1 */1 * $cli=monthly";
         $lines++;

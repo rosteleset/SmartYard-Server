@@ -29,6 +29,8 @@
         "guest_access": "turnOnOnly",
         // How to show cameras in the mobile app. One of: list, tree, userDefined. List(default) - cameras are shown on the map; tree - cameras are shown as a tree structure; userDefined - user has a switch in the common settings
         "cctv_view": "list",
+        // How to show entrances on the main screen. One of: list, preview. List(default) - entrances are shown as a list; preview - entrances are shown with previews
+        "entrances_view": "list",
         // Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
         "active_tab": "addresses",
 
@@ -100,7 +102,7 @@
 
         "files": {
             "backend": "mongo",
-            // value must be cron compatible: minutely, 5min, daily, weekly, monthly
+            // value must be cron compatible: hourly, minutely, 5min, daily, weekly, monthly
             "autocompact": "weekly",
         },
 
