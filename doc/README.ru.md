@@ -49,9 +49,12 @@
   - [qr.php (QR endpoint)](./server/entrypoints/qr.ru.md)
   - [test.php (локальные тесты)](./server/entrypoints/test.ru.md)
 - [Реализация API (server/api)](./server/api/README.ru.md)
+- [Базовый класс API (`server/api/api.php`)](./server/api/api.ru.md)
 - [Бэкенды (server/backends)](./server/backends/README.ru.md)
+- [Базовый класс backend’ов (`server/backends/backend.php`)](./server/backends/backend.ru.md)
 - [Утилиты (server/utils)](./server/utils/README.ru.md)
   - [PDOExt](./server/utils/PDOExt.ru.md)
+  - [loader.php (загрузчики)](./server/utils/loader.ru.md)
 
 ### Хранилища и сервисы
 

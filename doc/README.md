@@ -49,9 +49,12 @@ The items below are the documentation structure we aim to complete. Some pages m
   - [qr.php (QR endpoint)](./server/entrypoints/qr.md)
   - [test.php (Local testing)](./server/entrypoints/test.md)
 - [API implementation (server/api)](./server/api/README.md)
+- [Base API class (`server/api/api.php`)](./server/api/api.md)
 - [Backends (server/backends)](./server/backends/README.md)
+- [Base backend class (`server/backends/backend.php`)](./server/backends/backend.md)
 - [Utilities (server/utils)](./server/utils/README.md)
   - [PDOExt (PDO helper)](./server/utils/PDOExt.md)
+  - [loader.php (dynamic loaders)](./server/utils/loader.md)
 
 ### Storage and services
 
