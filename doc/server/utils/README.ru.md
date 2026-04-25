@@ -6,4 +6,5 @@
 
 - [`PDOExt.php` (PDO helper)](./PDOExt.ru.md)
 - [`loader.php` (загрузчики)](./loader.ru.md)
+- [`reindex.php` (индексация API методов)](./reindex.ru.md)
 

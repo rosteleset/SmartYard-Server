@@ -5,5 +5,6 @@
 ## Содержание
 
 - [Базовый класс `api.php`](./api.ru.md)
+- [Authorization](./authorization/README.ru.md)
 - [CDR](./cdr/README.ru.md)
 
