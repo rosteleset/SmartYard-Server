@@ -19,9 +19,10 @@
              */
 
             public function checkAuth($login, $password) {
-                $sth = $this->db->prepare("select uid, password from core_users where login = :login and enabled = 1");
-                $sth->execute([ ":login" => $login ]);
-                $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                $res = $this->db->get(
+                    "select uid, password from core_users where login = :login and enabled = 1",
+                    [ ":login" => $login ]
+                );
                 if (count($res) == 1 && password_verify($password, $res[0]["password"])) {
                     return $res[0]["uid"];
                 } else {

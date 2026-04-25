@@ -98,12 +98,14 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update core_groups set acronym = :acronym, name = :name, admin = :admin where gid = $gid");
-                    return $sth->execute([
-                        ":acronym" => trim($acronym),
-                        ":name" => trim($name),
-                        ":admin" => (int)$admin,
-                    ]);
+                    return $this->db->modify(
+                        "update core_groups set acronym = :acronym, name = :name, admin = :admin where gid = $gid",
+                        [
+                            ":acronym" => trim($acronym),
+                            ":name" => trim($name),
+                            ":admin" => (int)$admin,
+                        ]
+                    ) !== false;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -125,15 +127,11 @@
                 $acronym = trim($acronym);
 
                 try {
-                    $sth = $this->db->prepare("insert into core_groups (acronym, name) values (:acronym, :name)");
-                    if ($sth->execute([
+                    $gid = $this->db->insert("insert into core_groups (acronym, name) values (:acronym, :name)", [
                         ":acronym" => $acronym,
                         ":name" => trim($name),
-                    ])) {
-                        return $this->db->lastInsertId();
-                    } else {
-                        return false;
-                    }
+                    ]);
+                    return $gid;
                 } catch (\Exception $e) {
                     return false;
                 }
@@ -209,14 +207,9 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into core_users_groups (uid, gid) values (:uid, :gid)");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                try {
-                    $this->db->exec("delete from core_users_groups where gid = $gid");
+                    if ($this->db->modify("delete from core_users_groups where gid = $gid") === false) {
+                        return false;
+                    }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -227,10 +220,13 @@
                         return false;
                     }
 
-                    if (!$sth->execute([
-                        ":uid" => $uid,
-                        ":gid" => $gid,
-                    ])) {
+                    if ($this->db->insert(
+                        "insert into core_users_groups (uid, gid) values (:uid, :gid)",
+                        [
+                            ":uid" => $uid,
+                            ":gid" => $gid,
+                        ]
+                    ) === false) {
                         return false;
                     }
                 }
@@ -256,14 +252,9 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into core_users_groups (uid, gid) values (:uid, :gid)");
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    return false;
-                }
-
-                try {
-                    $this->db->exec("delete from core_users_groups where uid = $uid");
+                    if ($this->db->modify("delete from core_users_groups where uid = $uid") === false) {
+                        return false;
+                    }
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -274,10 +265,13 @@
                         return false;
                     }
 
-                    if (!$sth->execute([
-                        ":uid" => $uid,
-                        ":gid" => $gid,
-                    ])) {
+                    if ($this->db->insert(
+                        "insert into core_users_groups (uid, gid) values (:uid, :gid)",
+                        [
+                            ":uid" => $uid,
+                            ":gid" => $gid,
+                        ]
+                    ) === false) {
                         return false;
                     }
                 }
@@ -325,9 +319,11 @@
                 ];
 
                 for ($i = 0; $i < count($c); $i++) {
-                    $del = $this->db->prepare($c[$i]);
-                    $del->execute();
-                    $n += $del->rowCount();
+                    $mod = $this->db->modify($c[$i]);
+                    if ($mod === false) {
+                        continue;
+                    }
+                    $n += $mod;
                 }
 
                 return $n;
