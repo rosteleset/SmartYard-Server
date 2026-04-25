@@ -1,3 +1,46 @@
+# `/api/addresses/favorites` — favorites
+
+Implemented in `server/api/addresses/favorites.php`.
+
+## Auth and permissions
+
+- Requires `Authorization: Bearer <token>`.
+- Access is controlled by `authorization->allow()` in `server/frontend.php`.
+
+## Dependencies
+
+- **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/favorites.php` → class `\api\addresses\favorites`.
+- **Backends**: `addresses` backend:
+  - `getFavorites()`
+  - `addFavorite(object, id, title, icon, color)`
+  - `deleteFavorite(object, id)`
+- **Storage**:
+  - internal variant persists favorites in DB (exact table names are in `server/backends/addresses/internal/internal.php`).
+
+## GET `/api/addresses/favorites`
+
+- **Success 200**: `{"favorites":[ ... ]}`
+- **Error 400**: `{"error":"badRequest"}`
+
+## POST `/api/addresses/favorites`
+
+- **Body**:
+  - `object` (string): one of `area|region|city|settlement|street|house`
+  - `id` (number)
+  - `title` (string)
+  - `icon` (string)
+  - `color` (string)
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
+## DELETE `/api/addresses/favorites`
+
+- **Body**:
+  - `object` (string): one of `area|region|city|settlement|street|house`
+  - `id` (number)
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
 # `/api/addresses/favorites` — favorites CRUD
 
 Implemented in `server/api/addresses/favorites.php`.

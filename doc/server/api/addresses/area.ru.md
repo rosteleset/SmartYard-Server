@@ -1,3 +1,41 @@
+# `/api/addresses/area` — CRUD района/области
+
+Реализация: `server/api/addresses/area.php`.
+
+## Авторизация и права
+
+- Требуется `Authorization: Bearer <token>`.
+- Доступ проверяется через `authorization->allow()` в `server/frontend.php`.
+- Права на запись привязаны к `/api/addresses/house` через `#same(addresses,house,POST/PUT/DELETE)` в `index()`.
+
+## Зависимости
+
+- **Точка входа / dispatch**: `server/frontend.php` → `server/api/addresses/area.php` → класс `\api\addresses\area`.
+- **Backend’и**: backend `addresses`:
+  - `modifyArea(areaId, regionId, ...)`
+  - `addArea(regionId, ...)`
+  - `deleteArea(areaId)`
+- **Хранилище**: в internal-variant используется таблица `addresses_areas`.
+
+## PUT `/api/addresses/area/:areaId`
+
+- **Параметр**: `areaId` (number)
+- **Body**: `regionId`, `areaUuid`, `areaWithType`, `areaType`, `areaTypeFull`, `area`, `timezone`
+- **Успех 204**
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
+## POST `/api/addresses/area`
+
+- **Body**: `regionId`, `areaUuid`, `areaWithType`, `areaType`, `areaTypeFull`, `area`, `timezone`
+- **Успех 200**: `{"areaId": <number>}`
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
+## DELETE `/api/addresses/area/:areaId`
+
+- **Параметр**: `areaId` (number)
+- **Успех 204**
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
 # `/api/addresses/area` — CRUD районов/областей
 
 Реализация: `server/api/addresses/area.php`.

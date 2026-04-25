@@ -1,3 +1,19 @@
+# Addresses API (`/api/addresses/*`)
+
+This section documents API endpoints under `server/api/addresses/*`.
+
+## Index
+
+- [`/api/addresses/addresses` — address hierarchy lookup](./addresses.md)
+- [`/api/addresses/region` — region CRUD](./region.md)
+- [`/api/addresses/area` — area CRUD](./area.md)
+- [`/api/addresses/city` — city CRUD](./city.md)
+- [`/api/addresses/settlement` — settlement CRUD](./settlement.md)
+- [`/api/addresses/street` — street CRUD](./street.md)
+- [`/api/addresses/house` — house CRUD](./house.md)
+- [`/api/addresses/search` — full-text address search](./search.md)
+- [`/api/addresses/favorites` — favorites](./favorites.md)
+
 # Addresses (`addresses/*`)
 
 This section documents the addresses-related API endpoints implemented under `server/api/addresses/*`.

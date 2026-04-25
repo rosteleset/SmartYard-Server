@@ -1,3 +1,52 @@
+# `addresses` backend — base interface
+
+Base class: `server/backends/addresses/addresses.php` (`backends\addresses\addresses`).
+
+## Purpose
+
+Provides CRUD-like operations for address hierarchy entities:
+
+- regions
+- areas
+- cities
+- settlements
+- streets
+- houses
+
+The API endpoint `/api/addresses/addresses` uses this backend to return lists and single objects.
+
+## Dependencies
+
+- **Entry points / callers**:
+  - API:
+    - `server/api/addresses/addresses.php` calls list and single-object methods based on filters
+  - Other backends:
+    - `backends\billing\billing::importAddressHierarchy()` loads `addresses` to upsert imported hierarchy (see `server/backends/billing/billing.php`)
+- **Storage**:
+  - Implementation-specific:
+    - internal variant uses SQL tables prefixed with `addresses_*` (see `internal.md`)
+  - Backend cache:
+    - inherits Redis + in-memory cache helpers from `backends\backend` (`CACHE:ADDRESSES:<key>:<uid>`)
+- **Config**:
+  - no required config keys are defined at the base interface level; variant determines actual requirements.
+
+## Public interface (selected)
+
+This base class defines a large set of abstract methods. Commonly used by the API:
+
+- `getRegions()`
+- `getAreas($regionId)`
+- `getCities($regionId = false, $areaId = false)`
+- `getSettlements($areaId = false, $cityId = false)`
+- `getStreets($cityId = false, $settlementId = false)`
+- `getHouses($settlementId = false, $streetId = false)`
+
+Single-item accessors:
+
+- `getArea($areaId)`, `getCity($cityId)`, `getSettlement($settlementId)`, `getStreet($streetId)`, `getHouse($houseId)`
+
+Also includes add/modify/delete methods for each entity type.
+
 # `addresses` backend (overview)
 
 Base class: `server/backends/addresses/addresses.php` (`backends\addresses\addresses`).

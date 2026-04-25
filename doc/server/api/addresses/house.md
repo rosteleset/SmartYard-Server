@@ -1,3 +1,51 @@
+# `/api/addresses/house` — house CRUD
+
+Implemented in `server/api/addresses/house.php`.
+
+## Auth and permissions
+
+- Requires `Authorization: Bearer <token>`.
+- Access is controlled by `authorization->allow()` in `server/frontend.php`.
+- This endpoint defines the permission “anchor” for other write endpoints in this API group via `#same(addresses,house,...)`.
+
+## Dependencies
+
+- **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/house.php` → class `\api\addresses\house`.
+- **Backends**: `addresses` backend:
+  - `getHouse(houseId)`
+  - `modifyHouse(houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyId)`
+  - `addHouse(...)` or `addHouseByMagic(magic)` if `magic` is provided
+  - `deleteHouse(houseId)`
+- **Storage**:
+  - internal backend uses `addresses_houses` (and related hierarchy tables).
+
+## GET `/api/addresses/house/:houseId`
+
+- **Params**: `houseId` (number)
+- **Success 200**: `{"house": <houseObject>}`
+- **Error 406**: `{"error":"notAcceptable"}`
+
+## PUT `/api/addresses/house/:houseId`
+
+- **Params**: `houseId` (number)
+- **Body**: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
+## POST `/api/addresses/house`
+
+- **Body**:
+  - normal create: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+  - alternative: `magic` (string) triggers `addHouseByMagic(magic)`
+- **Success 200**: `{"houseId": <number>}`
+- **Error 400**: `{"error":"unknown"}` (returned when handler calls `ANSWER(false)` with no explicit error code)
+
+## DELETE `/api/addresses/house/:houseId`
+
+- **Params**: `houseId` (number)
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
 # `/api/addresses/house` — house CRUD (+ magic create)
 
 Implemented in `server/api/addresses/house.php`.

@@ -1,3 +1,26 @@
+# `/api/addresses/search` — full-text address search
+
+Implemented in `server/api/addresses/search.php`.
+
+## Auth and permissions
+
+- Requires `Authorization: Bearer <token>`.
+- Access is controlled by `authorization->allow()` in `server/frontend.php`.
+- Permission is coupled to `GET /api/addresses/house/:houseId` via `#same(addresses,house,GET)` in `index()`.
+
+## Dependencies
+
+- **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/search.php` → class `\api\addresses\search`.
+- **Backends**: `addresses` backend:
+  - `searchAddress(searchString)`
+- **Storage**: backend-defined (internal variant queries `addresses_*` tables).
+
+## GET `/api/addresses/search`
+
+- **Query**: `search` (string)
+- **Success 200**: `{"addresses":[ ... ]}`
+- **Error 400**: `{"error":"unknown"}` (handler returns `ANSWER(false)` without explicit error name)
+
 # `/api/addresses/search` — address search
 
 Implemented in `server/api/addresses/search.php`.

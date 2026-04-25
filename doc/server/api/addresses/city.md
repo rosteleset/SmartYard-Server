@@ -2,6 +2,43 @@
 
 Implemented in `server/api/addresses/city.php`.
 
+## Auth and permissions
+
+- Requires `Authorization: Bearer <token>`.
+- Access is controlled by `authorization->allow()` in `server/frontend.php`.
+- Write permissions are coupled to `/api/addresses/house` via `#same(addresses,house,POST/PUT/DELETE)` in `index()`.
+
+## Dependencies
+
+- **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/city.php` → class `\api\addresses\city`.
+- **Backends**: `addresses` backend:
+  - `modifyCity(cityId, regionId, areaId, ...)`
+  - `addCity(regionId, areaId, ...)`
+  - `deleteCity(cityId)`
+
+## PUT `/api/addresses/city/:cityId`
+
+- **Params**: `cityId` (number)
+- **Body**: `regionId`, `areaId`, `cityUuid`, `cityWithType`, `cityType`, `cityTypeFull`, `city`, `timezone`
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
+## POST `/api/addresses/city`
+
+- **Body**: `regionId`, `areaId`, `cityUuid`, `cityWithType`, `cityType`, `cityTypeFull`, `city`, `timezone`
+- **Success 200**: `{"cityId": <number>}`
+- **Error 406**: `{"error":"notAcceptable"}`
+
+## DELETE `/api/addresses/city/:cityId`
+
+- **Params**: `cityId` (number)
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
+# `/api/addresses/city` — city CRUD
+
+Implemented in `server/api/addresses/city.php`.
+
 ## Dependencies
 
 - **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/city.php` → `\api\addresses\city`.

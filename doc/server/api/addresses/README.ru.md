@@ -1,3 +1,19 @@
+# Addresses API (`/api/addresses/*`)
+
+В этом разделе описаны API endpoint’ы из `server/api/addresses/*`.
+
+## Содержание
+
+- [`/api/addresses/addresses` — получение иерархии адресов](./addresses.ru.md)
+- [`/api/addresses/region` — CRUD региона](./region.ru.md)
+- [`/api/addresses/area` — CRUD района/области](./area.ru.md)
+- [`/api/addresses/city` — CRUD города](./city.ru.md)
+- [`/api/addresses/settlement` — CRUD населённого пункта](./settlement.ru.md)
+- [`/api/addresses/street` — CRUD улицы](./street.ru.md)
+- [`/api/addresses/house` — CRUD дома](./house.ru.md)
+- [`/api/addresses/search` — поиск адресов](./search.ru.md)
+- [`/api/addresses/favorites` — избранное](./favorites.ru.md)
+
 # Addresses (`addresses/*`)
 
 В этом разделе описаны API endpoint’ы для адресов, реализованные в `server/api/addresses/*`.

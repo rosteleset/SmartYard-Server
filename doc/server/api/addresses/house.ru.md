@@ -1,3 +1,51 @@
+# `/api/addresses/house` — CRUD дома
+
+Реализация: `server/api/addresses/house.php`.
+
+## Авторизация и права
+
+- Требуется `Authorization: Bearer <token>`.
+- Доступ проверяется через `authorization->allow()` в `server/frontend.php`.
+- Этот endpoint является “якорем” модели прав для других write-endpoint’ов в группе через `#same(addresses,house,...)`.
+
+## Зависимости
+
+- **Точка входа / dispatch**: `server/frontend.php` → `server/api/addresses/house.php` → класс `\api\addresses\house`.
+- **Backend’и**: backend `addresses`:
+  - `getHouse(houseId)`
+  - `modifyHouse(houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyId)`
+  - `addHouse(...)` или `addHouseByMagic(magic)`, если передан `magic`
+  - `deleteHouse(houseId)`
+- **Хранилище**:
+  - в internal-variant используется `addresses_houses` (и связанные таблицы иерархии).
+
+## GET `/api/addresses/house/:houseId`
+
+- **Параметр**: `houseId` (number)
+- **Успех 200**: `{"house": <houseObject>}`
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
+## PUT `/api/addresses/house/:houseId`
+
+- **Параметр**: `houseId` (number)
+- **Body**: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+- **Успех 204**
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
+## POST `/api/addresses/house`
+
+- **Body**:
+  - обычное создание: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+  - альтернативно: `magic` (string) вызывает `addHouseByMagic(magic)`
+- **Успех 200**: `{"houseId": <number>}`
+- **Ошибка 400**: `{"error":"unknown"}` (когда handler делает `ANSWER(false)` без явного кода ошибки)
+
+## DELETE `/api/addresses/house/:houseId`
+
+- **Параметр**: `houseId` (number)
+- **Успех 204**
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
 # `/api/addresses/house` — CRUD дома (+ magic create)
 
 Реализация: `server/api/addresses/house.php`.

@@ -2,6 +2,29 @@
 
 Реализация: `server/api/addresses/search.php`.
 
+## Авторизация и права
+
+- Требуется `Authorization: Bearer <token>`.
+- Доступ проверяется через `authorization->allow()` в `server/frontend.php`.
+- Право привязано к `GET /api/addresses/house/:houseId` через `#same(addresses,house,GET)` в `index()`.
+
+## Зависимости
+
+- **Точка входа / dispatch**: `server/frontend.php` → `server/api/addresses/search.php` → класс `\api\addresses\search`.
+- **Backend’и**: backend `addresses`:
+  - `searchAddress(searchString)`
+- **Хранилище**: зависит от реализации backend’а (internal-variant работает с таблицами `addresses_*`).
+
+## GET `/api/addresses/search`
+
+- **Query**: `search` (string)
+- **Успех 200**: `{"addresses":[ ... ]}`
+- **Ошибка 400**: `{"error":"unknown"}` (handler возвращает `ANSWER(false)` без явного имени ошибки)
+
+# `/api/addresses/search` — поиск адресов
+
+Реализация: `server/api/addresses/search.php`.
+
 ## Зависимости
 
 - **Точка входа / dispatch**: `server/frontend.php` → `server/api/addresses/search.php` → `\api\addresses\search::GET()`.

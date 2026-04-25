@@ -2,6 +2,44 @@
 
 Implemented in `server/api/addresses/area.php`.
 
+## Auth and permissions
+
+- Requires `Authorization: Bearer <token>`.
+- Access is controlled by `authorization->allow()` in `server/frontend.php`.
+- Write permissions are coupled to `/api/addresses/house` via `#same(addresses,house,POST/PUT/DELETE)` in `index()`.
+
+## Dependencies
+
+- **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/area.php` → class `\api\addresses\area`.
+- **Backends**: `addresses` backend:
+  - `modifyArea(areaId, regionId, ...)`
+  - `addArea(regionId, ...)`
+  - `deleteArea(areaId)`
+- **Storage**: internal backend uses `addresses_areas`.
+
+## PUT `/api/addresses/area/:areaId`
+
+- **Params**: `areaId` (number)
+- **Body**: `regionId`, `areaUuid`, `areaWithType`, `areaType`, `areaTypeFull`, `area`, `timezone`
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
+## POST `/api/addresses/area`
+
+- **Body**: `regionId`, `areaUuid`, `areaWithType`, `areaType`, `areaTypeFull`, `area`, `timezone`
+- **Success 200**: `{"areaId": <number>}`
+- **Error 406**: `{"error":"notAcceptable"}`
+
+## DELETE `/api/addresses/area/:areaId`
+
+- **Params**: `areaId` (number)
+- **Success 204**
+- **Error 406**: `{"error":"notAcceptable"}`
+
+# `/api/addresses/area` — area CRUD
+
+Implemented in `server/api/addresses/area.php`.
+
 ## Dependencies
 
 - **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/area.php` → `\api\addresses\area`.

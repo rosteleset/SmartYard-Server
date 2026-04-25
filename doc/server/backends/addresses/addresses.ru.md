@@ -1,3 +1,52 @@
+# Backend `addresses` — базовый интерфейс
+
+Базовый класс: `server/backends/addresses/addresses.php` (`backends\addresses\addresses`).
+
+## Назначение
+
+Предоставляет операции для сущностей адресной иерархии:
+
+- регионы
+- районы/области
+- города
+- населённые пункты
+- улицы
+- дома
+
+Endpoint `/api/addresses/addresses` использует этот backend для получения списков и единичных объектов.
+
+## Зависимости
+
+- **Точки входа / вызывающие**:
+  - API:
+    - `server/api/addresses/addresses.php` вызывает методы списков/единичных объектов в зависимости от фильтров
+  - Другие backend’и:
+    - `backends\billing\billing::importAddressHierarchy()` подгружает `addresses` для импорта иерархии (см. `server/backends/billing/billing.php`)
+- **Хранилища**:
+  - зависит от реализации:
+    - internal-variant использует SQL-таблицы `addresses_*` (см. `internal.ru.md`)
+  - backend cache:
+    - наследует Redis + in-memory cache из `backends\backend` (`CACHE:ADDRESSES:<key>:<uid>`)
+- **Конфиг**:
+  - на уровне базового интерфейса обязательные ключи не определены; требования задаёт конкретный variant.
+
+## Публичный интерфейс (выборочно)
+
+Базовый класс определяет большой набор abstract-методов. В API чаще всего используются:
+
+- `getRegions()`
+- `getAreas($regionId)`
+- `getCities($regionId = false, $areaId = false)`
+- `getSettlements($areaId = false, $cityId = false)`
+- `getStreets($cityId = false, $settlementId = false)`
+- `getHouses($settlementId = false, $streetId = false)`
+
+Доступ к единичным объектам:
+
+- `getArea($areaId)`, `getCity($cityId)`, `getSettlement($settlementId)`, `getStreet($streetId)`, `getHouse($houseId)`
+
+Также есть add/modify/delete методы для каждого типа сущности.
+
 # Backend `addresses` (обзор)
 
 Базовый класс: `server/backends/addresses/addresses.php` (`backends\addresses\addresses`).
