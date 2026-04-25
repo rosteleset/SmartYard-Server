@@ -1,0 +1,18 @@
+---
+description: When documenting an API endpoint, always document its dependencies
+alwaysApply: true
+---
+
+# API documentation must include dependencies
+
+When documenting any API method/endpoint, **do not document it in isolation**. Always include a short **Dependencies** section that covers, as applicable:
+
+- **Entry points / dispatch**: which entrypoint(s) route to it (e.g. `server/frontend.php`, `server/mobile.php`, `server/internal.php`), and any special-casing (auth bypass, direct function call, etc.).
+- **Auth & permissions**: required headers, token rules, and where the authorization decision is made (e.g. `authorization->allow()`), including “same-as” permission coupling (`#same(...)`).
+- **Backends called**: backend(s) and the concrete backend methods invoked (e.g. `users->getUsers()`, `groups->setUsers()`), including capability gates (`capabilities()["mode"]`).
+- **Storage & side effects**: Redis keys/patterns touched, DB tables if directly referenced, cache behavior, and anything that invalidates sessions or data.
+- **Config dependencies**: config keys that affect behavior (e.g. `$config["email"]`, `$config["api"]["frontend"]`).
+- **Client/UI callers (if present)**: which client modules call it and why (e.g. availability probes).
+
+If any dependency cannot be determined from the code, explicitly state what is unknown and where it should be found.
+

@@ -7,6 +7,17 @@
 - Требуется `Authorization: Bearer <token>`.
 - Доступ проверяется через `authorization->allow()` в `server/frontend.php`.
 
+## Зависимости
+
+- **Точка входа / dispatch**: маршрутизируется в `server/frontend.php` через `server/api/<api>/<method>.php` и класс `\api\accounts\users`.
+- **Backend’и**:
+  - backend `users`: `getUsers(withSessions, withLast)`
+- **Хранилище / side effects**:
+  - GET 200 ответы могут кешироваться в Redis на уровне `server/frontend.php` (frontend cache).
+- **Вызывается из UI**:
+  - `client/modules/users/users.js` (список пользователей, иногда с `withSessions`)
+  - `client/modules/tt/settings.js` (читает список пользователей)
+
 ## GET `/api/accounts/users`
 
 Возвращает список пользователей.

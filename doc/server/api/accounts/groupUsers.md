@@ -10,6 +10,18 @@ Implemented in `server/api/accounts/groupUsers.php`.
   - `GET /api/accounts/groupUsers/:gid` uses the same permission as `GET /api/accounts/group/:gid`
   - `PUT /api/accounts/groupUsers/:gid` uses the same permission as `PUT /api/accounts/group/:gid`
 
+## Dependencies
+
+- **Entry point / dispatch**: routed by `server/frontend.php` via `server/api/<api>/<method>.php` and class `\api\accounts\groupUsers`.
+- **Backends**:
+  - `groups` backend: `getUsers(gid)`, `setUsers(gid, uids)`
+- **Permissions coupling**:
+  - `index()` explicitly declares `#same(accounts,group,GET/PUT)` (i.e. it reuses the permission model from `accounts/group`).
+- **Storage / side effects**:
+  - GET 200 responses may be cached by `server/frontend.php` in Redis (frontend cache).
+- **Client/UI callers**:
+  - `client/modules/groups/groups.js` uses it when editing group members.
+
 ## GET `/api/accounts/groupUsers/:gid`
 
 Returns list of user ids in the group.

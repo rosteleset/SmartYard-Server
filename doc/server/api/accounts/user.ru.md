@@ -10,6 +10,18 @@
   - если `users->capabilities()["mode"] === "rw"`: `GET`, `POST`, `PUT`, `DELETE`
   - иначе: только `GET`
 
+## Зависимости
+
+- **Точка входа / dispatch**: маршрутизируется в `server/frontend.php` через `server/api/<api>/<method>.php` и класс `\api\accounts\user`.
+- **Backend’и**:
+  - backend `users`: `getUser()`, `addUser()`, `modifyUser()`, `putAvatar()`, `setPassword()`, `deleteUser()`
+  - backend `authentication` (только DELETE, если передан `session`): `logout(session, false)`
+  - backend `groups` (только PUT, если передан `userGroups`): `setGroups(uid, gids)` (подгружается через `loadBackend("groups")`)
+- **Хранилище / side effects**:
+  - Обычные GET-ответы могут кешироваться в Redis на уровне `server/frontend.php` (frontend cache); сам endpoint ключи напрямую не трогает.
+- **Вызывается из UI**:
+  - `client/modules/users/users.js` использует endpoint для CRUD пользователя в интерфейсе Users.
+
 ## GET `/api/accounts/user/:uid`
 
 Возвращает одного пользователя.

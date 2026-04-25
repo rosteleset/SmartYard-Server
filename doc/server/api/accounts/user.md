@@ -10,6 +10,18 @@ Implemented in `server/api/accounts/user.php`.
   - if `users->capabilities()["mode"] === "rw"`: `GET`, `POST`, `PUT`, `DELETE`
   - otherwise: only `GET`
 
+## Dependencies
+
+- **Entry point / dispatch**: routed by `server/frontend.php` via `server/api/<api>/<method>.php` and class `\api\accounts\user`.
+- **Backends**:
+  - `users` backend: `getUser()`, `addUser()`, `modifyUser()`, `putAvatar()`, `setPassword()`, `deleteUser()`
+  - `authentication` backend (DELETE only, if `session` provided): `logout(session, false)`
+  - `groups` backend (PUT only, if `userGroups` provided): `setGroups(uid, gids)` (loaded via `loadBackend("groups")`)
+- **Storage / side effects**:
+  - Standard GET responses may be cached by `server/frontend.php` in Redis (frontend cache); this endpoint itself does not manage keys directly.
+- **Client/UI callers**:
+  - `client/modules/users/users.js` uses this endpoint for user CRUD in the Users UI.
+
 ## GET `/api/accounts/user/:uid`
 
 Returns a single user.

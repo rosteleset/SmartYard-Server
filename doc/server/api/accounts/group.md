@@ -11,6 +11,16 @@ Implemented in `server/api/accounts/group.php`.
   - otherwise: only `GET`
   - if backend `groups` is not available: method is not exposed (empty index)
 
+## Dependencies
+
+- **Entry point / dispatch**: routed by `server/frontend.php` via `server/api/<api>/<method>.php` and class `\api\accounts\group`.
+- **Backends**:
+  - `groups` backend: `getGroup()`, `addGroup()`, `modifyGroup()`, `deleteGroup()`
+- **Storage / side effects**:
+  - GET 200 responses may be cached by `server/frontend.php` in Redis (frontend cache).
+- **Client/UI callers**:
+  - `client/modules/groups/groups.js` uses this endpoint for group CRUD and to populate group edit forms.
+
 ## GET `/api/accounts/group/:gid`
 
 - **Params**: `gid` (number)

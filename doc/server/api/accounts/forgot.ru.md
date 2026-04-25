@@ -11,6 +11,25 @@
 
 Это нужно, потому что UI вызывает его без токена (например, чтобы понять, показывать ли ссылку “Забыли пароль”).
 
+## Зависимости
+
+- **Точка входа / dispatch**:
+  - в `server/frontend.php` есть явный special-case для `api=accounts`, `method=forgot`:
+    - пропускает проверку токена (иначе вернул бы `403 noToken` / `403 tokenNotFound`)
+    - вызывает `forgot($params)` напрямую, не используя `server/api/accounts/*.php`
+- **Backend’и**:
+  - backend `users`: `getUidByEMail()`, `setPassword()`, `getUser()`, `capabilities()`
+- **Хранилище / side effects (Redis)**:
+  - хранение токена/антиспам: `FORGOT:<token>:<uid>` (TTL 900s)
+  - инвалидирование сессий после сброса: удаляются `AUTH:*:<uid>`
+- **Зависимости от конфига**:
+  - `$config["email"]`: должен быть настроен, иначе `available=ask` вернёт 403
+  - `$config["api"]["frontend"]`: используется для формирования ссылки в письме
+- **Вызывается из UI**:
+  - `client/js/app.js` вызывает:
+    - `/accounts/forgot?available=ask` чтобы решить, показывать ли “Забыли пароль”
+    - `/accounts/forgot?eMail=...` чтобы запросить письмо для сброса
+
 ## GET `/accounts/forgot`
 
 Поведение зависит от query-параметров.

@@ -11,6 +11,25 @@ Implemented in `server/utils/forgot.php` and dispatched specially from `server/f
 
 This is required because the UI calls it without any token (e.g. to check if “Forgot password” should be shown).
 
+## Dependencies
+
+- **Entry point / dispatch**:
+  - `server/frontend.php` contains an explicit special-case for `api=accounts`, `method=forgot`:
+    - skips token enforcement (otherwise it would return `403 noToken` / `403 tokenNotFound`)
+    - dispatches directly to `forgot($params)` instead of `server/api/accounts/*.php`
+- **Backends**:
+  - `users` backend: `getUidByEMail()`, `setPassword()`, `getUser()`, `capabilities()`
+- **Storage / side effects (Redis)**:
+  - rate-limit / token storage: `FORGOT:<token>:<uid>` (TTL 900s)
+  - session invalidation after reset: deletes `AUTH:*:<uid>`
+- **Config dependencies**:
+  - `$config["email"]`: must be set for availability (`available=ask`) to return 204
+  - `$config["api"]["frontend"]`: used to build the email link
+- **Client/UI callers**:
+  - `client/js/app.js` calls:
+    - `/accounts/forgot?available=ask` to decide whether to show “Forgot password”
+    - `/accounts/forgot?eMail=...` to request a reset email
+
 ## GET `/accounts/forgot`
 
 Endpoint behavior depends on query parameters.
