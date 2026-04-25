@@ -1,0 +1,43 @@
+# `/api/accounts/group` — CRUD группы
+
+Реализация: `server/api/accounts/group.php`.
+
+## Авторизация и права
+
+- Требуется `Authorization: Bearer <token>`.
+- Доступ проверяется через `authorization->allow()` в `server/frontend.php`.
+- Доступные HTTP-методы зависят от возможностей backend’а groups:
+  - если `groups->capabilities()["mode"] === "rw"`: `GET`, `POST`, `PUT`, `DELETE`
+  - иначе: только `GET`
+  - если backend `groups` отсутствует: endpoint не публикуется (пустой `index()`)
+
+## GET `/api/accounts/group/:gid`
+
+- **Параметр**: `gid` (number)
+- **Успех 200**: `{"group": <groupObject>}`
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
+## POST `/api/accounts/group`
+
+- **Body**:
+  - `acronym` (string): короткое имя
+  - `name` (string): название группы
+- **Успех 200**: `{"gid": <number>}`
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
+## PUT `/api/accounts/group/:gid`
+
+- **Параметр**: `gid` (number)
+- **Body**:
+  - `acronym` (string)
+  - `name` (string)
+  - `admin` (number): `uid` администратора группы
+- **Успех 204**: пустое тело
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
+## DELETE `/api/accounts/group/:gid`
+
+- **Параметр**: `gid` (number)
+- **Успех 204**: пустое тело
+- **Ошибка 406**: `{"error":"notAcceptable"}`
+
