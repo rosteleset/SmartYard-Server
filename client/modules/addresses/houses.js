@@ -486,11 +486,6 @@
     cmses: function (domophoneId, selected) {
         let c = [];
 
-        c.push({
-            id: "0",
-            text: i18n("no"),
-        });
-
         for (let id in modules.addresses.houses.meta.cmses) {
             if (domophoneId && modules.addresses.houses.meta.domophoneModels[domophoneId] && modules.addresses.houses.meta.domophoneModels[domophoneId].cmses.indexOf(id.split(".json")[0]) >= 0) {
                 c.push({
@@ -500,6 +495,15 @@
                 })
             }
         }
+
+        c.sort((a, b) => a.text.localeCompare(b.text, undefined, {
+            sensitivity: "base",
+        }));
+
+        c.unshift({
+            id: "0",
+            text: i18n("no"),
+        });
 
         return c;
     },
