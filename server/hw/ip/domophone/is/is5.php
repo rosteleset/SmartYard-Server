@@ -290,8 +290,7 @@ class is5 extends domophone implements DisplayTextInterface, FreePassInterface, 
 
     public function getLineDiagnostics(int $apartment): string|int|float
     {
-        // TODO: Implement getLineDiagnostics() method.
-        return 0;
+        return $this->client->request("/panelCode/$apartment/resist")['resist'];
     }
 
     public function getSysinfo(): array
