@@ -1,6 +1,6 @@
 <?php
 
-namespace hw\ip\domophone\is\Entities;
+namespace hw\ip\domophone\is\Entities\Switch;
 
 use InvalidArgumentException;
 
@@ -13,7 +13,7 @@ final class SwitchConfig
     public ?int $summator = null;
 
     /**
-     * @var array<int, array{id: int, capacity: int, matrix: array<int, array<int, int|null>>}>
+     * @var SwitchMatrix[]
      */
     public array $matrices = [];
 
@@ -58,53 +58,11 @@ final class SwitchConfig
         }
 
         $entity->matrices = array_map(
-            static fn(array $matrix): array => self::normalizeMatrix($matrix),
+            static fn(array $matrix): SwitchMatrix => SwitchMatrix::fromArray($matrix),
             $data['matrices'],
         );
 
         return $entity;
-    }
-
-    /**
-     * Normalizes a matrix item returned by the switch API.
-     *
-     * @param array<string, mixed> $matrix
-     * @return array{id: int, capacity: int, matrix: array<int, array<int, int|null>>}
-     */
-    private static function normalizeMatrix(array $matrix): array
-    {
-        if (!isset($matrix['id'], $matrix['capacity'], $matrix['matrix'])) {
-            throw new InvalidArgumentException('Cannot create switch config entity: invalid matrix item');
-        }
-
-        if (!is_array($matrix['matrix'])) {
-            throw new InvalidArgumentException('Cannot create switch config entity: matrix must be an array');
-        }
-
-        $id = $matrix['id'];
-        if ($id < 1 || $id > 4) {
-            throw new InvalidArgumentException('Switch matrix id must be in range 1..4');
-        }
-
-        return [
-            'id' => $id,
-            'capacity' => $matrix['capacity'],
-            'matrix' => array_map(
-                static function (mixed $row): array {
-                    if (!is_array($row)) {
-                        throw new InvalidArgumentException(
-                            'Cannot create switch config entity: matrix row must be an array',
-                        );
-                    }
-
-                    return array_map(
-                        static fn(mixed $cell): ?int => $cell,
-                        $row,
-                    );
-                },
-                $matrix['matrix'],
-            ),
-        ];
     }
 
     /**
@@ -117,7 +75,10 @@ final class SwitchConfig
         return [
             'type' => $this->type,
             'summator' => $this->summator,
-            'matrices' => $this->matrices,
+            'matrices' => array_map(
+                static fn(SwitchMatrix $matrix): array => $matrix->toArray(),
+                $this->matrices,
+            ),
         ];
     }
 }
