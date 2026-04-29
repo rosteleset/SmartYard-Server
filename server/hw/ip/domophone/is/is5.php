@@ -3,6 +3,7 @@
 namespace hw\ip\domophone\is;
 
 use hw\Interface\{
+    CmsLevelsInterface,
     DisplayTextInterface,
     FreePassInterface,
     GateModeInterface,
@@ -18,7 +19,7 @@ use hw\ip\domophone\is\{
 /**
  * Represents an Intersvyaz ISCOM X1 rev.5 (Sokol Plus) intercom.
  */
-class is5 extends domophone implements DisplayTextInterface, FreePassInterface, GateModeInterface
+class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface, FreePassInterface, GateModeInterface
 {
     /**
      * Mapping of project CMS model names to Sokol Plus switch type codes.
@@ -277,6 +278,18 @@ class is5 extends domophone implements DisplayTextInterface, FreePassInterface, 
         $this->keysChanged = true;
     }
 
+    public function getCmsLevels(): array
+    {
+        $resistances = $this->client->request('/v1/levels')['resistances'];
+
+        return [
+            round($resistances['quiescent'] ?? self::CMS_DEFAULT_VOLTAGE_QUIESCENT, 2),
+            round($resistances['answer'] ?? self::CMS_DEFAULT_VOLTAGE_ANSWER, 2),
+            round($resistances['break'] ?? self::CMS_DEFAULT_VOLTAGE_BREAK, 2),
+            round($resistances['error'] ?? self::CMS_DEFAULT_VOLTAGE_ERROR, 2),
+        ];
+    }
+
     public function getDisplayText(): array
     {
         $displayText = $this->client->request('/v1/display')['text'];
@@ -372,6 +385,22 @@ class is5 extends domophone implements DisplayTextInterface, FreePassInterface, 
     public function setCallTimeout(int $timeout): void
     {
         $this->client->request('/sip/options', 'PUT', ['ringDuration' => $timeout]);
+    }
+
+    public function setCmsLevels(array $levels): void
+    {
+        if (count($levels) !== 4) {
+            return;
+        }
+
+        $this->client->request('/v1/levels', 'PUT', [
+            'resistances' => [
+                'quiescent' => $levels[0],
+                'answer' => $levels[1],
+                'break' => $levels[2],
+                'error' => $levels[3],
+            ],
+        ]);
     }
 
     public function setCmsModel(string $model = ''): void
