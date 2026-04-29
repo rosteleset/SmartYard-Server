@@ -9,12 +9,14 @@ use hw\Interface\{
     GateModeInterface,
 };
 use hw\ip\domophone\domophone;
-use hw\ip\domophone\is\{
-    Entities\Key,
-    Entities\OpenCode,
-    Entities\PanelCode,
-    HttpClient\HttpClient,
+use hw\ip\domophone\is\Entities\{
+    Key,
+    OpenCode,
+    PanelCode,
+    Switch\SwitchConfig,
+    Switch\SwitchMatrix,
 };
+use hw\ip\domophone\is\HttpClient\HttpClient;
 
 /**
  * Represents an Intersvyaz ISCOM X1 rev.5 (Sokol Plus) intercom.
@@ -199,7 +201,47 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
 
     public function configureMatrix(array $matrix): void
     {
-        // TODO: Implement configureMatrix() method.
+        $this->loadPanelCodes();
+        $this->loadOpenCodes();
+
+        $switchConfigs = $this->getSwitchConfigs();
+        /** @var array<int, SwitchMatrix> $matricesById */
+        $matricesById = [];
+
+        foreach ($switchConfigs as $switchConfig) {
+            foreach ($switchConfig->matrices as $switchMatrix) {
+                $switchMatrix->matrix = $this->clearSwitchMatrix($switchMatrix->matrix);
+                $matricesById[$switchMatrix->id] = $switchMatrix;
+            }
+        }
+
+        foreach ($matrix as $matrixCell) {
+            [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartment,
+            ] = $matrixCell;
+
+            $switchMatrix = $matricesById[$hundreds + 1] ?? null;
+
+            if ($switchMatrix === null) {
+                continue;
+            }
+
+            if (
+                !array_key_exists($tens, $switchMatrix->matrix)
+                || !array_key_exists($units, $switchMatrix->matrix[$tens])
+            ) {
+                continue;
+            }
+
+            $switchMatrix->matrix[$tens][$units] = $apartment;
+        }
+
+        $this->setSwitchConfigs($switchConfigs);
+        $this->panelCodesChanged = true;
+        $this->openCodesChanged = true;
     }
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
@@ -405,7 +447,18 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
 
     public function setCmsModel(string $model = ''): void
     {
-        // TODO: Implement setCmsModel() method.
+        if ($model !== '' && !array_key_exists($model, self::CMS_MODEL_MAP)) {
+            return;
+        }
+
+        $switchConfigs = $this->getSwitchConfigs();
+        $type = $model === '' ? null : self::CMS_MODEL_MAP[$model];
+
+        foreach ($switchConfigs as $switchConfig) {
+            $switchConfig->type = $type;
+        }
+
+        $this->setSwitchConfigs($switchConfigs);
     }
 
     public function setConciergeNumber(int $sipNumber): void
@@ -524,6 +577,19 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
     }
 
     /**
+     * @param array<int, array<int, int|null>> $matrix
+     * @return array<int, array<int, int|null>>
+     */
+    protected function clearSwitchMatrix(array $matrix): array
+    {
+        foreach ($matrix as $rowIndex => $row) {
+            $matrix[$rowIndex] = array_fill_keys(array_keys($row), null);
+        }
+
+        return $matrix;
+    }
+
+    /**
      * Disables DDNS on the device.
      *
      * @return void
@@ -589,8 +655,8 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
 
     protected function getCmsModel(): string
     {
-        // TODO: Implement getCmsModel() method.
-        return '';
+        $model = array_search($this->getSwitchConfig(1)->type, self::CMS_MODEL_MAP, true);
+        return $model === false ? '' : $model;
     }
 
     protected function getDtmfConfig(): array
@@ -613,8 +679,30 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
 
     protected function getMatrix(): array
     {
-        // TODO: Implement getMatrix() method.
-        return [];
+        $matrix = [];
+
+        foreach ($this->getSwitchConfigs() as $switchConfig) {
+            foreach ($switchConfig->matrices as $switchMatrix) {
+                $hundreds = $switchMatrix->id - 1;
+
+                foreach ($switchMatrix->matrix as $tens => $column) {
+                    foreach ($column as $units => $apartment) {
+                        if ($apartment === null || $apartment === 0) {
+                            continue;
+                        }
+
+                        $matrix[$hundreds . $tens . $units] = [
+                            'hundreds' => $hundreds,
+                            'tens' => $tens,
+                            'units' => $units,
+                            'apartment' => $apartment,
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $matrix;
     }
 
     protected function getNtpConfig(): array
@@ -649,6 +737,25 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
             'stunServer' => '',
             'stunPort' => 3478,
         ];
+    }
+
+    protected function getSwitchConfig(int $matrixId): SwitchConfig
+    {
+        return SwitchConfig::fromArray($this->client->request("/v1/switch/$matrixId"));
+    }
+
+    /**
+     * @return array<int, SwitchConfig>
+     */
+    protected function getSwitchConfigs(): array
+    {
+        $switchConfigs = [];
+
+        foreach (range(1, 4) as $matrixId) {
+            $switchConfigs[$matrixId] = $this->getSwitchConfig($matrixId);
+        }
+
+        return $switchConfigs;
     }
 
     protected function initializeProperties(): void
@@ -722,6 +829,21 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
             'enabled' => $enabled,
             'pass' => $pass,
         ]);
+    }
+
+    protected function setSwitchConfig(int $matrixId, SwitchConfig $switchConfig): void
+    {
+        $this->client->request("/v1/switch/$matrixId", 'PUT', $switchConfig->toArray());
+    }
+
+    /**
+     * @param array<int, SwitchConfig> $switchConfigs
+     */
+    protected function setSwitchConfigs(array $switchConfigs): void
+    {
+        foreach ($switchConfigs as $matrixId => $switchConfig) {
+            $this->setSwitchConfig($matrixId, $switchConfig);
+        }
     }
 
     protected function uploadKeys(): void
