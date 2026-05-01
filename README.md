@@ -26,4 +26,4 @@ Markdown docs under [`doc/`](doc/README.md) complement the upstream-generated AP
 - **[Documentation index](doc/README.md)** — roadmap, architecture pointers, links to all sections  
 - **[Russian index](doc/README.ru.md)** — same in Russian  
 - **Server:** [API (`server/api`)](doc/server/api/README.md), [backends](doc/server/backends/README.md), [entrypoints](doc/server/entrypoints/README.md), [utilities](doc/server/utils/README.md), [auxiliary services](doc/server/services/README.md)  
-- **Install:** step files live in [`install/`](install/); **[install index](doc/install/README.md)** lists them in order  
+- **Install:** [guide index](doc/install/README.md) — ordered links to the Markdown steps under `install/`  

@@ -26,4 +26,4 @@
 - **[Индекс документации](doc/README.ru.md)** — дорожная карта, ссылки по разделам  
 - **[English index](doc/README.md)** — то же по-английски  
 - **Сервер:** [API (`server/api`)](doc/server/api/README.ru.md), [backend’ы](doc/server/backends/README.ru.md), [точки входа](doc/server/entrypoints/README.ru.md), [утилиты](doc/server/utils/README.ru.md), [вспомогательные сервисы](doc/server/services/README.ru.md)  
-- **Установка:** пошаговые файлы в [`install/`](install/); **[оглавление](doc/install/README.ru.md)** перечисляет их по порядку  
+- **Установка:** [оглавление гайдов](doc/install/README.ru.md) — ссылки на шаги в `install/` в нужном порядке  
