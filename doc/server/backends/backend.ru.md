@@ -91,7 +91,7 @@ Backend может расширять CLI:
 - `cli($args)` → по умолчанию `false`
 - `cliUsage()` → по умолчанию `[]` (используется для построения общей справки CLI)
 
-Регистрация команд, вызов `php cli.php <backend> …` и стадии `init`/`pre`/`run`: [cli.php](../entrypoints/cli.ru.md).
+Регистрация команд, вызов `php cli.php <backend> …` и стадии `init`/`pre`/`run`: [cli.php](../entrypoints/cli.ru.md). **Флаги по backend’ам** в этом репозитории: [расширения CLI](./cli-extensions.ru.md).
 
 ## Связанный код
 

@@ -5,6 +5,7 @@ This section documents the backend subsystem: pluggable domain services configur
 ## Shared docs
 
 - [Base backend class (`backend.php`)](./backend.md)
+- [Backend CLI extensions](./cli-extensions.md) — which backends define `cliUsage()` / `cli()`
 - [Custom backend variant pattern](../utils/loader.md#custom-variant-project-customization)
 - [Accounts-related backends overview](./accounts/README.md) — `users`, `groups`, `authentication`, `authorization`
 

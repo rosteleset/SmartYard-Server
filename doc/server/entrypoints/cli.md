@@ -81,5 +81,6 @@ If no matching command runs, **`cliUsage()`** rebuilds the registry from all bac
 ## Related documentation
 
 - [Backend base class and `cli` / `cliUsage` hooks](../backends/backend.md)
+- [Catalog of backend-defined CLI flags](../backends/cli-extensions.md)
 - [Dynamic loading: `loadBackend`](../utils/loader.md)
 - Built-in CLI modules live under [`server/cli/`](../../../server/cli/) (and optional [`server/cli/custom/`](../../../server/cli/custom/)).

@@ -5,6 +5,7 @@
 ## Общие материалы
 
 - [Базовый класс backend’ов (`backend.php`)](./backend.ru.md)
+- [Расширения CLI у backend’ов](./cli-extensions.ru.md) — у кого объявлены `cliUsage()` / `cli()`
 - [Паттерн custom backend variant](../utils/loader.ru.md#custom-variant-кастомизация-проекта)
 - [Backend’и вокруг Accounts (обзор)](./accounts/README.ru.md) — `users`, `groups`, `authentication`, `authorization`
 

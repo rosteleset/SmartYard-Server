@@ -517,7 +517,7 @@
 
                     $indexes = array_map(function ($indexInfo) {
                         return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
-                    }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
+                    }, iterator_to_array($this->mongo->$db->$collection->listIndexes()));
 
                     foreach ($indexes as $i) {
                         if ($i["name"] == $args["--drop-index"]) {

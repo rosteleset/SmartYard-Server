@@ -91,7 +91,7 @@ Backends can provide CLI behavior:
 - `cli($args)` → default `false`
 - `cliUsage()` → default `[]` (used to build global CLI help)
 
-How registration, `php cli.php <backend> …`, and `init`/`pre`/`run` stages work: [cli.php](../entrypoints/cli.md).
+How registration, `php cli.php <backend> …`, and `init`/`pre`/`run` stages work: [cli.php](../entrypoints/cli.md). **Per-backend flags** in this repo: [Backend CLI extensions](./cli-extensions.md).
 
 ## Related code
 

@@ -81,5 +81,6 @@
 ## Связанные материалы
 
 - [Базовый класс backend и хуки `cli` / `cliUsage`](../backends/backend.ru.md)
+- [Каталог CLI-флагов, объявленных backend’ами](../backends/cli-extensions.ru.md)
 - [Динамическая загрузка: `loadBackend`](../utils/loader.ru.md)
 - Исходники встроенных CLI-модулей: [`server/cli/`](../../../server/cli/) и опционально [`server/cli/custom/`](../../../server/cli/custom/).
