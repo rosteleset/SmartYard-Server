@@ -64,7 +64,7 @@
 - [Бэкенды (server/backends)](./server/backends/README.ru.md)
 - [Базовый класс backend’ов (`server/backends/backend.php`)](./server/backends/backend.ru.md)
 - [Backend `groups`](./server/backends/groups/README.ru.md)
-- [Утилиты (server/utils)](./server/utils/README.ru.md)
+- [Утилиты (server/utils) — каталог всех .php](./server/utils/README.ru.md)
   - [PDOExt](./server/utils/PDOExt.ru.md)
   - [loader.php (загрузчики)](./server/utils/loader.ru.md)
 - [Вспомогательные сервисы (`server/services`)](./server/services/README.ru.md)

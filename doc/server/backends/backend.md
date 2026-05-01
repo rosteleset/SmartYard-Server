@@ -91,11 +91,13 @@ Backends can provide CLI behavior:
 - `cli($args)` → default `false`
 - `cliUsage()` → default `[]` (used to build global CLI help)
 
+How registration, `php cli.php <backend> …`, and `init`/`pre`/`run` stages work: [cli.php](../entrypoints/cli.md).
+
 ## Related code
 
 - Backend loader and dispatch: `server/utils/loader.php` and `loadBackend(...)`
 - Configuration: `server/config/config.json` → `"backends": { ... }`
-- CLI entrypoint: `server/cli.php` collects `cliUsage()` from loaded backends
+- CLI entrypoint: [`server/cli.php`](../../../server/cli.php) — see [cli.php behavior](../entrypoints/cli.md)
 
 ## Important note: `loadBackend()` returns a cached instance
 

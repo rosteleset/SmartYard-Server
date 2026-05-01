@@ -91,11 +91,13 @@ Backend может расширять CLI:
 - `cli($args)` → по умолчанию `false`
 - `cliUsage()` → по умолчанию `[]` (используется для построения общей справки CLI)
 
+Регистрация команд, вызов `php cli.php <backend> …` и стадии `init`/`pre`/`run`: [cli.php](../entrypoints/cli.ru.md).
+
 ## Связанный код
 
 - Загрузка backend’ов: `server/utils/loader.php`, функция `loadBackend(...)`
 - Конфигурация: `server/config/config.json` → `"backends": { ... }`
-- CLI entrypoint: `server/cli.php` собирает `cliUsage()` от загруженных backend’ов
+- Точка входа CLI: [`server/cli.php`](../../../server/cli.php) — см. [поведение cli.php](../entrypoints/cli.ru.md)
 
 ## Важно: `loadBackend()` возвращает кешированный экземпляр
 

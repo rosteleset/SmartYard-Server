@@ -6,7 +6,7 @@ This section documents **server entrypoints** — scripts located in the root of
 
 - [frontend.php](./frontend.md) — Web UI API gateway (HTTP).
 - [mobile.php](./mobile.md) — Mobile API gateway (HTTP).
-- [cli.php](./cli.md) — CLI tooling (installation, maintenance, cron setup, etc.).
+- [cli.php](./cli.md) — CLI tooling: `server/cli/*` modules plus per-backend commands via `cliUsage()` / `cli()`.
 - [asterisk.php](./asterisk.md) — Asterisk integration endpoint (HTTP).
 - [internal.php](./internal.md) — Internal API gateway (HTTP).
 - [kamailio.php](./kamailio.md) — Kamailio integration endpoint (HTTP).

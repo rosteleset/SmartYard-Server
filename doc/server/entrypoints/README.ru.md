@@ -6,7 +6,7 @@
 
 - [frontend.php](./frontend.ru.md) — шлюз Web UI API (HTTP).
 - [mobile.php](./mobile.ru.md) — шлюз Mobile API (HTTP).
-- [cli.php](./cli.ru.md) — CLI утилиты (установка, обслуживание, crontab и т.п.).
+- [cli.php](./cli.ru.md) — CLI: модули `server/cli/*` и команды backend’ов через `cliUsage()` / `cli()`.
 - [asterisk.php](./asterisk.ru.md) — интеграция с Asterisk (HTTP).
 - [internal.php](./internal.ru.md) — шлюз внутреннего API (HTTP).
 - [kamailio.php](./kamailio.ru.md) — интеграция с Kamailio (HTTP).

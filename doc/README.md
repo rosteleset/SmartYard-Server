@@ -64,7 +64,7 @@ The items below are the documentation structure we aim to complete. Some pages m
 - [Backends (server/backends)](./server/backends/README.md)
 - [Base backend class (`server/backends/backend.php`)](./server/backends/backend.md)
 - [`groups` backend](./server/backends/groups/README.md)
-- [Utilities (server/utils)](./server/utils/README.md)
+- [Utilities (server/utils) — catalog of all .php files](./server/utils/README.md)
   - [PDOExt (PDO helper)](./server/utils/PDOExt.md)
   - [loader.php (dynamic loaders)](./server/utils/loader.md)
 - [Auxiliary services (`server/services`)](./server/services/README.md)
