@@ -18,7 +18,7 @@
 ## Дальше по документации
 
 - [Точки входа](./entrypoints/README.ru.md)
-- [Реализация API](./api/README.ru.md)
+- [Реализация API (каталог разделов)](./api/README.ru.md)
 - [Backends](./backends/README.ru.md)
 - [Утилиты](./utils/README.ru.md)
 

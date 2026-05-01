@@ -2,6 +2,16 @@
 
 This folder contains project documentation for `rbt`.
 
+## About the project
+
+**RoBoT / RBT** — open IP intercom & video platform (standalone server + SPA). Upstream the codebase is known as **SmartYard-Server**.
+
+- Website: [sesameware.com](https://sesameware.com)
+- Upstream notes: [important.md](https://github.com/rosteleset/SmartYard-Server/blob/main/important.md)
+- Wiki: [GitHub Wiki](https://github.com/rosteleset/SmartYard-Server/wiki)
+- Generated API docs (WiP, upstream): [SERVER API](https://rosteleset.github.io/SmartYard-Server/doc/api/), [MOBILE API](https://rosteleset.github.io/SmartYard-Server/doc/mobile/)
+- [Changelog (upstream)](https://github.com/rosteleset/SmartYard-Server/blob/main/changelog.md)
+
 ## Index
 
 ## Project pillars (what the system stands on)
@@ -31,6 +41,7 @@ The items below are the documentation structure we aim to complete. Some pages m
 - [Client overview (SPA, modules, routing)](./client/overview.md)
 - [Client configuration](./client/config.md)
 - [Client modules](./client/modules.md)
+- [SPA modules (`client/modules`)](./client/spa-modules.md)
 - [Customization: customFields](./customFields.md)
 - [Customization examples](./examples/client/README.md)
 
@@ -45,16 +56,18 @@ The items below are the documentation structure we aim to complete. Some pages m
   - [internal.php (Internal API gateway)](./server/entrypoints/internal.md)
   - [kamailio.php (Kamailio integration)](./server/entrypoints/kamailio.md)
   - [wh.php (Webhooks)](./server/entrypoints/wh.md)
-  - [ud363.php (UD363 integration)](./server/entrypoints/ud363.md)
+  - [ud363.php (HTTP upload / XEP-0363 placeholder)](./server/entrypoints/ud363.md)
   - [qr.php (QR endpoint)](./server/entrypoints/qr.md)
   - [test.php (Local testing)](./server/entrypoints/test.md)
 - [API implementation (server/api)](./server/api/README.md)
 - [Base API class (`server/api/api.php`)](./server/api/api.md)
 - [Backends (server/backends)](./server/backends/README.md)
 - [Base backend class (`server/backends/backend.php`)](./server/backends/backend.md)
+- [`groups` backend](./server/backends/groups/README.md)
 - [Utilities (server/utils)](./server/utils/README.md)
   - [PDOExt (PDO helper)](./server/utils/PDOExt.md)
   - [loader.php (dynamic loaders)](./server/utils/loader.md)
+- [Auxiliary services (`server/services`)](./server/services/README.md)
 
 ### Storage and services
 
@@ -83,7 +96,7 @@ The items below are the documentation structure we aim to complete. Some pages m
 
 ### Installation and operations
 
-- [Installation guide](../install/README.md)
+- [Installation index](./install/README.md) (step files live in [`install/`](../install/))
 - [Crontabs and scheduled jobs](./server/operations/crontabs.md)
 - [Maintenance mode](./server/operations/maintenance.md)
 - [Backups and recovery](./server/operations/backups.md)

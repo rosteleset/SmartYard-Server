@@ -1,1 +1,0 @@
-SmartYard-Server services

@@ -2,6 +2,16 @@
 
 Эта папка содержит документацию проекта `rbt`.
 
+## О проекте
+
+**RoBoT / RBT** — открытая платформа IP-домофонии и видеонаблюдения (автономная серверная часть и SPA-клиент). В апстриме проект известен как **SmartYard-Server**.
+
+- Сайт: [sesameware.com](https://sesameware.com)
+- Важные замечания (апстрим): [important.md](https://github.com/rosteleset/SmartYard-Server/blob/main/important.md)
+- Вики: [GitHub Wiki](https://github.com/rosteleset/SmartYard-Server/wiki)
+- Генерируемая документация API (WiP, апстрим): [SERVER API](https://rosteleset.github.io/SmartYard-Server/doc/api/), [MOBILE API](https://rosteleset.github.io/SmartYard-Server/doc/mobile/)
+- [Changelog (апстрим)](https://github.com/rosteleset/SmartYard-Server/blob/main/changelog.md)
+
 ## Содержание
 
 ## Киты проекта (на чём стоит система)
@@ -31,6 +41,7 @@
 - [Обзор клиента (SPA, модули, роутинг)](./client/overview.ru.md)
 - [Конфигурация клиента](./client/config.ru.md)
 - [Модули клиента](./client/modules.ru.md)
+- [Модули SPA (`client/modules`)](./client/spa-modules.ru.md)
 - [Кастомизация: customFields](./customFields.ru.md)
 - [Примеры кастомизации](./examples/client/README.ru.md)
 
@@ -45,16 +56,18 @@
   - [internal.php (шлюз внутреннего API)](./server/entrypoints/internal.ru.md)
   - [kamailio.php (интеграция с Kamailio)](./server/entrypoints/kamailio.ru.md)
   - [wh.php (вебхуки)](./server/entrypoints/wh.ru.md)
-  - [ud363.php (интеграция UD363)](./server/entrypoints/ud363.ru.md)
+  - [ud363.php (HTTP upload / заготовка под XEP-0363)](./server/entrypoints/ud363.ru.md)
   - [qr.php (QR endpoint)](./server/entrypoints/qr.ru.md)
   - [test.php (локальные тесты)](./server/entrypoints/test.ru.md)
 - [Реализация API (server/api)](./server/api/README.ru.md)
 - [Базовый класс API (`server/api/api.php`)](./server/api/api.ru.md)
 - [Бэкенды (server/backends)](./server/backends/README.ru.md)
 - [Базовый класс backend’ов (`server/backends/backend.php`)](./server/backends/backend.ru.md)
+- [Backend `groups`](./server/backends/groups/README.ru.md)
 - [Утилиты (server/utils)](./server/utils/README.ru.md)
   - [PDOExt](./server/utils/PDOExt.ru.md)
   - [loader.php (загрузчики)](./server/utils/loader.ru.md)
+- [Вспомогательные сервисы (`server/services`)](./server/services/README.ru.md)
 
 ### Хранилища и сервисы
 
@@ -83,7 +96,7 @@
 
 ### Установка и эксплуатация
 
-- [Гайд по установке](../install/README.ru.md)
+- [Оглавление установки](./install/README.ru.md) (файлы гайдов в [`install/`](../install/))
 - [Crontab и плановые задачи](./server/operations/crontabs.ru.md)
 - [Режим обслуживания (maintenance)](./server/operations/maintenance.ru.md)
 - [Бэкапы и восстановление](./server/operations/backups.ru.md)

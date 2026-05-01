@@ -1,6 +1,35 @@
-# Addresses API (`/api/addresses/*`)
+# API `addresses` (`server/api/addresses/`)
 
-В этом разделе описаны API endpoint’ы из `server/api/addresses/*`.
+## Назначение
+
+Адресная иерархия (регион → … → дом), поиск, избранное.
+
+## Роутинг (Web UI)
+
+Запросы SPA обрабатывает `server/frontend.php` (и аналогичные entrypoints). Путь **`/api/<module>/<endpoint>`** соответствует файлу `server/api/<module>/<endpoint>.php`: класс **`api\<module>\<endpoint>`**, вызывается статический метод с именем HTTP-метода (`GET`, `POST`, `PUT`, `DELETE`). Если есть **`server/api/<module>/custom/<endpoint>.php`**, он замещает стандартную реализацию (класс **`api\<module>\custom\<endpoint>`**).
+
+Подробнее про ответы API — [базовый класс `api.php`](./api.ru.md).
+
+
+## Каталог endpoint-файлов
+
+| Файл | Путь (относительно `/api/addresses`) |
+|------|----------------------------------------|
+| `addresses.php` | `/addresses` |
+| `area.php` | `/area` |
+| `city.php` | `/city` |
+| `favorites.php` | `/favorites` |
+| `house.php` | `/house` |
+| `region.php` | `/region` |
+| `search.php` | `/search` |
+| `settlement.php` | `/settlement` |
+| `street.php` | `/street` |
+
+См. также [индекс API](../README.ru.md) и [базовый класс `api.php`](../api.ru.md).
+
+---
+
+## Подробная документация
 
 ## Содержание
 
@@ -35,4 +64,3 @@
 - [`/api/addresses/settlement` — CRUD населённых пунктов](./settlement.ru.md)
 - [`/api/addresses/street` — CRUD улиц](./street.ru.md)
 - [`/api/addresses/favorites` — избранное](./favorites.ru.md)
-

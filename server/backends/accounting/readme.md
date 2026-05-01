@@ -1,1 +1,0 @@
-Module for storing and processing logs

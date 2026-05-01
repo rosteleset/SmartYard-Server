@@ -18,7 +18,7 @@ There is no framework “core” that you must learn first — the codebase is i
 ## Next docs
 
 - [Entrypoints](./entrypoints/README.md)
-- [API implementation](./api/README.md)
+- [API implementation (section catalog)](./api/README.md)
 - [Backends](./backends/README.md)
 - [Utilities](./utils/README.md)
 
