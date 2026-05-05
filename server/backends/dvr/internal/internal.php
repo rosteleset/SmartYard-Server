@@ -85,7 +85,7 @@
                 }
 
                 // Если токен явно присутствует в DVR-URL Flussonic, то используем его.
-                if ($dvrServer['type'] == 'flussonic') {
+                if ($dvrServer['type'] == 'flussonic' || $dvrServer['type'] == 'sesame') {
 
                     $parsed_url = parse_url($cam['dvrStream']);
 
@@ -137,7 +137,7 @@
                 $dvrServer = $this->getDVRServerForCam($cam);
 
                 // для Flussonic приводим URL к виду: https://host/stream_name
-                if ($dvrServer['type'] == 'flussonic') {
+                if ($dvrServer['type'] == 'flussonic' || $dvrServer['type'] == 'sesame') {
                     $parsed_url = parse_url($dvrStream);
 
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
