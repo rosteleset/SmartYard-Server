@@ -71,7 +71,7 @@
             $face_id = (int)$result[frs::P_FACE_ID];
             $subscriber_id = (int)$subscriber['subscriberId'];
             $frs->attachFaceIdFrs($face_id, $flat_id, $subscriber_id);
-            response(200);
+            response(200, ['faceId' => $face_id]);
         }
     }
 
