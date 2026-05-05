@@ -65,6 +65,20 @@
         always(modules.addresses.cameras.route);
     },
 
+    getAddCameraForm: function (form) {
+        return form;
+    },
+
+    addCameraFormDone: function (prefix, form) {
+    },
+
+    getModifyCameraForm: function (form, camera, params) {
+        return form;
+    },
+
+    modifyCameraFormDone: function (prefix, form, camera, params) {
+    },
+
     addCamera: function () {
         let models = [];
 
@@ -109,7 +123,7 @@
 
         let t = buildTreeFromPaths(modules.addresses.cameras.meta.tree);
 
-        cardForm({
+        let form = modules.addresses.cameras.getAddCameraForm({
             title: i18n("addresses.addCamera"),
             footer: true,
             borderless: true,
@@ -455,6 +469,8 @@
                 if (config.map && config.map.hideAttribution) {
                     $(".leaflet-control-attribution").hide();
                 }
+
+                modules.addresses.cameras.addCameraFormDone(prefix, form);
             },
             tabActivate: function (prefix, tab) {
                 if (tab == i18n("addresses.map")) {
@@ -474,6 +490,10 @@
                 modules.addresses.cameras.doAddCamera(result);
             },
         });
+
+        if (form) {
+            cardForm(form);
+        }
     },
 
     modifyCamera: function (cameraId, params) {
@@ -533,7 +553,7 @@
 
             let t = buildTreeFromPaths(modules.addresses.cameras.meta.tree);
 
-            cardForm({
+            let form = modules.addresses.cameras.getModifyCameraForm({
                 title: i18n("addresses.modifyCamera"),
                 footer: true,
                 borderless: true,
@@ -1158,6 +1178,8 @@
                     if (tab == i18n("addresses.map")) {
                         modules.addresses.cameras.map.invalidateSize();
                     }
+
+                    modules.addresses.cameras.modifyCameraFormDone(prefix, form, camera, params);
                 },
                 callback: result => {
                     let g = result.geo.split(",");
@@ -1183,7 +1205,11 @@
                         modules.addresses.cameras.doModifyCamera(result, params);
                     }
                 },
-            });
+            }, camera, params);
+
+            if (form) {
+                cardForm(form);
+            }
         } else {
             error(i18n("addresses.cameraNotFound"));
         }
