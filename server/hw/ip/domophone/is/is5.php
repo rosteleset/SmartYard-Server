@@ -205,13 +205,16 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
         $this->loadOpenCodes();
 
         $switchConfigs = $this->getSwitchConfigs();
-        /** @var array<int, SwitchMatrix> $matricesById */
-        $matricesById = [];
+        /** @var array<int, array{config: SwitchConfig, matrix: SwitchMatrix}> $switchMatrixSlots */
+        $switchMatrixSlots = [];
 
         foreach ($switchConfigs as $switchConfig) {
             foreach ($switchConfig->matrices as $switchMatrix) {
                 $switchMatrix->matrix = $this->clearSwitchMatrix($switchMatrix->matrix);
-                $matricesById[$switchMatrix->id] = $switchMatrix;
+                $switchMatrixSlots[] = [
+                    'config' => $switchConfig,
+                    'matrix' => $switchMatrix,
+                ];
             }
         }
 
@@ -223,7 +226,7 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
                 'apartment' => $apartment,
             ] = $matrixCell;
 
-            $switchMatrix = $matricesById[$hundreds + 1] ?? null;
+            $switchMatrix = $this->getOrCreateSwitchMatrix($switchMatrixSlots, $hundreds);
 
             if ($switchMatrix === null) {
                 continue;
@@ -589,6 +592,11 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
         return $matrix;
     }
 
+    protected function createSwitchMatrix(SwitchMatrix $template, int $id): SwitchMatrix
+    {
+        return new SwitchMatrix($id, $template->capacity, $this->clearSwitchMatrix($template->matrix));
+    }
+
     /**
      * Disables DDNS on the device.
      *
@@ -680,11 +688,10 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
     protected function getMatrix(): array
     {
         $matrix = [];
+        $hundreds = 0;
 
         foreach ($this->getSwitchConfigs() as $switchConfig) {
             foreach ($switchConfig->matrices as $switchMatrix) {
-                $hundreds = $switchMatrix->id - 1;
-
                 foreach ($switchMatrix->matrix as $tens => $column) {
                     foreach ($column as $units => $apartment) {
                         if ($apartment === null || $apartment === 0) {
@@ -699,10 +706,21 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
                         ];
                     }
                 }
+
+                $hundreds++;
             }
         }
 
         return $matrix;
+    }
+
+    protected function getNextSwitchMatrixId(SwitchConfig $switchConfig): int
+    {
+        if ($switchConfig->matrices === []) {
+            return 1;
+        }
+
+        return max(array_map(static fn(SwitchMatrix $matrix): int => $matrix->id, $switchConfig->matrices)) + 1;
     }
 
     protected function getNtpConfig(): array
@@ -716,6 +734,31 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
             'port' => $port,
             'timezone' => $settings['tz'],
         ];
+    }
+
+    /**
+     * @param array<int, array{config: SwitchConfig, matrix: SwitchMatrix}> $switchMatrixSlots
+     */
+    protected function getOrCreateSwitchMatrix(array &$switchMatrixSlots, int $index): ?SwitchMatrix
+    {
+        while (!isset($switchMatrixSlots[$index])) {
+            $lastSlot = end($switchMatrixSlots);
+
+            if ($lastSlot === false) {
+                return null;
+            }
+
+            $switchConfig = $lastSlot['config'];
+            $newMatrix = $this->createSwitchMatrix($lastSlot['matrix'], $this->getNextSwitchMatrixId($switchConfig));
+
+            $switchConfig->matrices[] = $newMatrix;
+            $switchMatrixSlots[] = [
+                'config' => $switchConfig,
+                'matrix' => $newMatrix,
+            ];
+        }
+
+        return $switchMatrixSlots[$index]['matrix'];
     }
 
     protected function getRfids(): array

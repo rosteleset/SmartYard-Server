@@ -16,8 +16,8 @@ final class SwitchMatrix
 
     public function __construct(int $id, int $capacity, array $matrix)
     {
-        if ($id < 1 || $id > 4) {
-            throw new InvalidArgumentException('Switch matrix id must be in range 1..4');
+        if ($id < 1) {
+            throw new InvalidArgumentException('Switch matrix id must be a positive integer');
         }
 
         $this->id = $id;
