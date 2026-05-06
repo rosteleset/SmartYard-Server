@@ -434,6 +434,9 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
             return;
         }
 
+        $this->loadPanelCodes();
+        $this->loadOpenCodes();
+
         $switchConfigs = $this->getSwitchConfigs();
         $type = $model === '' ? null : self::CMS_MODEL_MAP[$model];
 
@@ -443,6 +446,8 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
 
         $this->switchConfigs = $switchConfigs;
         $this->switchConfigsChanged = true;
+        $this->panelCodesChanged = true;
+        $this->openCodesChanged = true;
     }
 
     public function setConciergeNumber(int $sipNumber): void
