@@ -1,4 +1,6 @@
 function rectangles(id, image, fallback, rectangles, callback) {
+    let width = $("#" + id).parent().width();
+
     $("#" + id).
     css("position", "relative").html("").
     append(`<canvas id="${id}-canvas" style="cursor: crosshair; position: absolute; left: 0; top: 0" oncontextmenu="return false;">Your browser does not support the HTML5 canvas tag</canvas>`).
@@ -191,8 +193,8 @@ function rectangles(id, image, fallback, rectangles, callback) {
         load(fallback);
     }
 
-    canvas.width = $("#" + id).parent().width();
-    drawer.width = $("#" + id).parent().width();
+    canvas.width = width;
+    drawer.width = width;
 
     start();
 }

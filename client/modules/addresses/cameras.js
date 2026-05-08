@@ -995,6 +995,7 @@
                     let h = '';
                     h += `<div id="${prefix}md"></div>`;
                     h += `<div class="mt-2">`;
+                    h += `<button id="${prefix}mdRefresh" type="button" class="btn btn-info mr-2" title="${i18n("addresses.areaRefresh")}"><i class="fas fa-fw fa-sync-alt"></i></button>`;
                     h += `<button id="${prefix}mdClear" type="button" class="btn btn-danger mr-2" title="${i18n("addresses.areaClear")}"><i class="fas fa-fw fa-eraser"></i></button>`;
                     h += `<button id="${prefix}mdRevert" type="button" class="btn btn-warning mr-2" title="${i18n("addresses.areaRevert")}"><i class="fas fa-fw fa-undo"></i></button>`;
                     h += `</div>`;
@@ -1004,11 +1005,30 @@
                     h = '';
                     h += `<div id="${prefix}rc"></div>`;
                     h += `<div class="mt-2">`;
+                    h += `<button id="${prefix}rcRefresh" type="button" class="btn btn-info mr-2" title="${i18n("addresses.areaRefresh")}"><i class="fas fa-fw fa-sync-alt"></i></button>`;
                     h += `<button id="${prefix}rcClear" type="button" class="btn btn-danger mr-2" title="${i18n("addresses.areaClear")}"><i class="fas fa-fw fa-eraser"></i></button>`;
                     h += `<button id="${prefix}rcRevert" type="button" class="btn btn-warning mr-2" title="${i18n("addresses.areaRevert")}"><i class="fas fa-fw fa-undo"></i></button>`;
                     h += `</div>`;
 
                     $("#" + prefix + "rcArea").html(h);
+
+                    $(`#${prefix}mdRefresh`).off("click").on("click", () => {
+                        GET("cameras", "camshot", cameraId, true).
+                        done(r => {
+                            if (r && r.shot) {
+                                image = "data:image/jpg;base64," + r.shot;
+                                rectangles(`${prefix}md`, callback => {
+                                    if (typeof callback == "function") {
+                                        callback(image);
+                                    }
+                                }, image, mdArea ? mdArea : camera.mdArea, r => {
+                                    mdArea = r;
+                                });
+                            }
+                        }).
+                        fail(FAIL);
+                        xblur();
+                    });
 
                     $(`#${prefix}mdClear`).off("click").on("click", () => {
                         mdArea = [];
@@ -1036,6 +1056,7 @@
                     });
 
                     $(`#${prefix}mdRevert`).off("click").on("click", () => {
+                        mdArea = camera.mdArea;
                         rectangles(`${prefix}md`, callback => {
                             if (image) {
                                 if (typeof callback == "function") {
@@ -1056,6 +1077,24 @@
                         }, image ? image: "img/cctv.png", camera.mdArea, r => {
                             mdArea = r;
                         });
+                        xblur();
+                    });
+
+                    $(`#${prefix}rcRefresh`).off("click").on("click", () => {
+                        GET("cameras", "camshot", cameraId, true).
+                        done(r => {
+                            if (r && r.shot) {
+                                image = "data:image/jpg;base64," + r.shot;
+                                polygon(`${prefix}rc`, callback => {
+                                    if (typeof callback == "function") {
+                                        callback(image);
+                                    }
+                                }, image, rcArea ? rcArea : camera.rcArea, r => {
+                                    rcArea = r;
+                                });
+                            }
+                        }).
+                        fail(FAIL);
                         xblur();
                     });
 
@@ -1085,6 +1124,7 @@
                     });
 
                     $(`#${prefix}rcRevert`).off("click").on("click", () => {
+                        rcArea = camera.rcArea;
                         polygon(`${prefix}rc`, callback => {
                             if (image) {
                                 if (typeof callback == "function") {

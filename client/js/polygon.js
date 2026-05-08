@@ -13,6 +13,8 @@ function polygon(id, image, fallback, polygon, callback) {
 
     let complete = false;
 
+    let width = $("#" + id).parent().width();
+
     $("#" + id).html("").append(`<canvas id="${id}-canvas" style="cursor: crosshair" oncontextmenu="return false;">Your browser does not support the HTML5 canvas tag</canvas>`);
 
     let canvas = document.getElementById(id + "-canvas");
@@ -221,7 +223,7 @@ function polygon(id, image, fallback, polygon, callback) {
 
     $("#" + id).off("mousedown").on("mousedown", point_it);
 
-    canvas.width = $("#" + id).parent().width();
+    canvas.width = width;
 
     ctx = undefined;
     perimeter = [];
