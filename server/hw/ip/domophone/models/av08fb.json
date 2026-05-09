@@ -1,0 +1,11 @@
+{
+    "title": "BASIP AV-08FB",
+    "vendor": "BASIP",
+    "model": "AV-08FB",
+    "class": "AV08FB",
+    "eventServer": "basip",
+    "outputs": 2,
+    "camera": "basip",
+    "useSmartConfigurator": true,
+    "cmses": []
+}

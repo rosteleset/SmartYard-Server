@@ -1,0 +1,9 @@
+{
+    "title": "BASIP AV-08FB",
+    "vendor": "BASIP",
+    "model": "AV-08FB",
+    "version": false,
+    "eventServer": "basip",
+    "class": "aa07fb",
+    "useSmartConfigurator": true
+}
