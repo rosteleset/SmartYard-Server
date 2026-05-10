@@ -10,7 +10,7 @@ use hw\ip\domophone\basip\Basip;
  */
 class AA07BD extends Basip
 {
-    use \hw\ip\common\basip\aa07bd {
+    use \hw\ip\common\basip\Models\AA07BD {
         transformDbConfig as protected aa07bdTransformDbConfig;
     }
 

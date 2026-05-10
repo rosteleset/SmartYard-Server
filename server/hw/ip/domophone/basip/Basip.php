@@ -20,7 +20,7 @@ abstract class Basip extends domophone implements
     HousePrefixInterface,
     LanguageInterface
 {
-    use \hw\ip\common\basip\basip {
+    use \hw\ip\common\basip\Basip {
         transformDbConfig as protected commonTransformDbConfig;
     }
 

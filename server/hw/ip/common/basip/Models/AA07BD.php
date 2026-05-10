@@ -1,11 +1,11 @@
 <?php
 
-namespace hw\ip\common\basip;
+namespace hw\ip\common\basip\Models;
 
 /**
  * Trait providing common functionality related to BasIP AA-07BD devices.
  */
-trait aa07bd
+trait AA07BD
 {
     protected static function getTimezoneParamName(): string
     {

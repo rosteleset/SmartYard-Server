@@ -1,15 +1,16 @@
 <?php
 
-namespace hw\ip\camera\basip;
+namespace hw\ip\camera\basip\Models;
 
+use hw\ip\camera\basip\basip;
 use hw\ip\common\basip\HttpClient\BasicHttpClient;
 
 /**
  * Represents a BasIP AA-07FB camera.
  */
-class aa07fb extends basip
+class AA07FB extends Basip
 {
-    use \hw\ip\common\basip\aa07fb;
+    use \hw\ip\common\basip\Models\AA07FB;
 
     public function __construct(string $url, string $password, bool $firstTime = false)
     {

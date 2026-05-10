@@ -15,7 +15,8 @@ use hw\ip\domophone\basip\{
  */
 class AA12FBI extends Basip implements FreePassInterface
 {
-    use \hw\ip\common\basip\aa07fb;
+    // TODO: check
+    use \hw\ip\common\basip\Models\AA07FB;
     use FreePassTrait;
     use IdentifierValidTrait;
 
@@ -27,8 +28,8 @@ class AA12FBI extends Basip implements FreePassInterface
 
     public function prepare(): void
     {
-        parent::prepare();
         $this->setHttpsEnabled(false);
+        parent::prepare();
     }
 
     /**

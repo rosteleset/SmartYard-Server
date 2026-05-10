@@ -9,7 +9,7 @@ use Exception;
 /**
  * Trait providing common functionality related to BasIP devices.
  */
-trait basip
+trait Basip
 {
     /**
      * Get timezone representation for BasIP devices.

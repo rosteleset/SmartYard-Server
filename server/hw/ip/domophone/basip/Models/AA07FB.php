@@ -15,7 +15,7 @@ use hw\ip\domophone\basip\{
  */
 class AA07FB extends Basip implements FreePassInterface
 {
-    use \hw\ip\common\basip\aa07fb;
+    use \hw\ip\common\basip\Models\AA07FB;
     use FreePassTrait;
     use IdentifierValidTrait;
 

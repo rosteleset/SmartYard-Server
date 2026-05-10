@@ -1,15 +1,16 @@
 <?php
 
-namespace hw\ip\camera\basip;
+namespace hw\ip\camera\basip\Models;
 
+use hw\ip\camera\basip\basip;
 use hw\ip\common\basip\HttpClient\BearerHttpClient;
 
 /**
  * Represents a BasIP AA-07BD camera.
  */
-class aa07bd extends basip
+class AA07BD extends Basip
 {
-    use \hw\ip\common\basip\aa07bd {
+    use \hw\ip\common\basip\Models\AA07BD {
         transformDbConfig as protected aa07bdTransformDbConfig;
     }
 
