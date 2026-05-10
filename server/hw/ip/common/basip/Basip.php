@@ -88,6 +88,9 @@ trait Basip
     public function setAdminPassword(string $password): void
     {
         $this->setDevicePassword($password);
+        $this->client->setPassword($password);
+        $this->password = $password;
+
         $this->setRtspPassword($password);
     }
 

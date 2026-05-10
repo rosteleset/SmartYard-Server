@@ -15,7 +15,7 @@ final class BasicHttpClient implements HttpClientInterface
      */
     public function __construct(
         private readonly string $url,
-        private readonly string $password,
+        private string          $password,
         private readonly string $login = 'admin',
         private readonly string $apiPrefix = '/api',
     )
@@ -48,5 +48,10 @@ final class BasicHttpClient implements HttpClientInterface
         curl_close($ch);
 
         return json_decode($res, true) ?? $res;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
     }
 }

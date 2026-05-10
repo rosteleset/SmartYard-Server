@@ -23,4 +23,12 @@ interface HttpClientInterface
         array  $payload = [],
         int    $timeout = 0,
     ): array|string;
+
+    /**
+     * Updates the password used for subsequent authenticated requests.
+     *
+     * @param string $password New device password.
+     * @return void
+     */
+    public function setPassword(string $password): void;
 }
