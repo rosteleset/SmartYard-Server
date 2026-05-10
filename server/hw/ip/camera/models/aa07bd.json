@@ -4,6 +4,6 @@
     "model": "AA-07BD",
     "version": false,
     "eventServer": "basip",
-    "class": "aa07bd",
+    "class": "AA07BD",
     "useSmartConfigurator": true
 }

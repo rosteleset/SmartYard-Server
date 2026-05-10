@@ -2,7 +2,7 @@
 
 namespace hw\ip\camera\basip\Models;
 
-use hw\ip\camera\basip\basip;
+use hw\ip\camera\basip\Basip;
 use hw\ip\common\basip\HttpClient\BasicHttpClient;
 
 /**

@@ -10,7 +10,7 @@ use hw\ip\common\basip\HttpClient\HttpClientInterface;
  */
 abstract class Basip extends camera
 {
-    use \hw\ip\common\basip\basip {
+    use \hw\ip\common\basip\Basip {
         transformDbConfig as protected commonTransformDbConfig;
     }
 
