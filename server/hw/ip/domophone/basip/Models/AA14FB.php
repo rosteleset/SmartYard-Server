@@ -15,7 +15,6 @@ use hw\ip\domophone\basip\{
  */
 class AA14FB extends Basip implements FreePassInterface
 {
-    // TODO: check
     use \hw\ip\common\basip\Models\AA07FB;
     use FreePassTrait;
     use IdentifierValidTrait;
@@ -41,5 +40,6 @@ class AA14FB extends Basip implements FreePassInterface
     protected function setHttpsEnabled(bool $enabled = true): void
     {
         $this->client->call('/v1/web/ssl', 'POST', ['is_enabled' => $enabled]);
+        sleep(3); // The web API restarts after changing HTTPS settings
     }
 }

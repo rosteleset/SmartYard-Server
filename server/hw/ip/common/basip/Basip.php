@@ -43,13 +43,6 @@ trait Basip
      */
     abstract protected static function getTimezoneParamName(): string;
 
-    /**
-     * Returns the API endpoint for changing the administrator password.
-     *
-     * @return string API path for the admin password endpoint.
-     */
-    abstract protected static function getAdminPasswordEndpoint(): string;
-
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->client->call('/v1/network/ntp', 'POST', [
@@ -126,22 +119,6 @@ trait Basip
     }
 
     /**
-     * Changes the administrator password used for WEB and API access.
-     *
-     * @param string $password New password.
-     * @return void
-     */
-    protected function setDevicePassword(string $password): void
-    {
-        $params = [
-            'oldPassword' => $this->defaultPassword,
-            'newPassword' => $password,
-        ];
-
-        $this->client->call(static::getAdminPasswordEndpoint() . '?' . http_build_query($params), 'POST');
-    }
-
-    /**
      * Changes the password for RTSP.
      *
      * @param string $password New password.
@@ -160,4 +137,12 @@ trait Basip
             'is_audio_enabled' => false,
         ]);
     }
+
+    /**
+     * Changes the administrator password used for WEB and API access.
+     *
+     * @param string $password New password.
+     * @return void
+     */
+    abstract protected function setDevicePassword(string $password): void;
 }

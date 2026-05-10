@@ -12,11 +12,6 @@ trait AA07BD
         return 'current_timezone';
     }
 
-    protected static function getAdminPasswordEndpoint(): string
-    {
-        return '/v1/security/password/web/admin';
-    }
-
     public function configureEventServer(string $url): void
     {
         // Empty implementation
@@ -31,5 +26,15 @@ trait AA07BD
     protected function getEventServer(): string
     {
         return '';
+    }
+
+    protected function setDevicePassword(string $password): void
+    {
+        $params = [
+            'oldPassword' => $this->defaultPassword,
+            'newPassword' => $password,
+        ];
+
+        $this->client->call('/v1/security/password/web/admin?' . http_build_query($params), 'POST');
     }
 }

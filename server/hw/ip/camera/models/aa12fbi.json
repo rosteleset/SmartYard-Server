@@ -4,6 +4,6 @@
     "model": "AA-12FBI",
     "version": false,
     "eventServer": "basip",
-    "class": "AA07FB",
+    "class": "AA12FBI",
     "useSmartConfigurator": true
 }
