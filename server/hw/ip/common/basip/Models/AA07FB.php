@@ -12,27 +12,6 @@ trait AA07FB
         return 'timezone';
     }
 
-    public function configureEventServer(string $url): void
-    {
-        ['host' => $server, 'port' => $port] = parse_url_ext($url);
-
-        $this->client->request('/v1/syslog/settings', 'POST', [
-            'enabled' => $url !== '',
-            'server' => [
-                'port' => $port,
-                'server' => $server,
-                'severity' => 6,
-            ],
-            'tag' => '',
-        ]);
-    }
-
-    protected function getEventServer(): string
-    {
-        $settings = $this->client->request('/v1/syslog/settings')['server'];
-        return 'http://' . $settings['server'] . ':' . $settings['port'];
-    }
-
     protected function setDevicePassword(string $password): void
     {
         $params = [

@@ -43,6 +43,21 @@ trait Basip
      */
     abstract protected static function getTimezoneParamName(): string;
 
+    public function configureEventServer(string $url): void
+    {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
+        $this->client->request('/v1/syslog/settings', 'POST', [
+            'enabled' => $url !== '',
+            'server' => [
+                'port' => $port,
+                'server' => $server,
+                'severity' => 6,
+            ],
+            'tag' => '',
+        ]);
+    }
+
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->client->request('/v1/network/ntp', 'POST', [
@@ -98,6 +113,12 @@ trait Basip
         $dbConfig['ntp']['port'] = 123;
         $dbConfig['ntp']['timezone'] = self::getOffsetByTimezone($timezone);
         return $dbConfig;
+    }
+
+    protected function getEventServer(): string
+    {
+        $settings = $this->client->request('/v1/syslog/settings')['server'];
+        return 'http://' . $settings['server'] . ':' . $settings['port'];
     }
 
     protected function getNtpConfig(): array
