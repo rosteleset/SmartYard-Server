@@ -7,11 +7,6 @@ namespace hw\ip\common\basip\Models;
  */
 trait AA12FBI
 {
-    protected static function getTimezoneParamName(): string
-    {
-        return 'timezone';
-    }
-
     protected function setDevicePassword(string $password): void
     {
         $this->client->request('/v1/security/password/admin?', 'POST', [

@@ -7,11 +7,6 @@ namespace hw\ip\common\basip\Models;
  */
 trait AA07FB
 {
-    protected static function getTimezoneParamName(): string
-    {
-        return 'timezone';
-    }
-
     protected function setDevicePassword(string $password): void
     {
         $params = [

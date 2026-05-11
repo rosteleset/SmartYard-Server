@@ -36,12 +36,12 @@ trait Basip
     /**
      * Returns the name of the parameter that contains the timezone value.
      *
-     * This method must be implemented by subclasses to define which
-     * parameter should be used to read/write the timezone.
-     *
      * @return string The timezone parameter name.
      */
-    abstract protected static function getTimezoneParamName(): string;
+    protected static function getTimezoneParamName(): string
+    {
+        return 'timezone';
+    }
 
     public function configureEventServer(string $url): void
     {
