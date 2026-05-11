@@ -17,7 +17,7 @@ interface HttpClientInterface
      *
      * @return array|string Decoded JSON response or raw response body.
      */
-    public function call(
+    public function request(
         string $resource,
         string $method = 'GET',
         array  $payload = [],

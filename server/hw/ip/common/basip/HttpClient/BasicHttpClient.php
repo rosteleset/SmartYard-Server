@@ -22,7 +22,12 @@ final class BasicHttpClient implements HttpClientInterface
     {
     }
 
-    public function call(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0): array|string
+    public function request(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): array|string
     {
         $req = $this->url . $this->apiPrefix . $resource;
 

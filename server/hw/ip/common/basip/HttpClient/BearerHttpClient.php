@@ -27,7 +27,12 @@ final class BearerHttpClient implements HttpClientInterface
     {
     }
 
-    public function call(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0): array|string
+    public function request(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): array|string
     {
         if ($this->bearerToken === null) {
             $this->refreshBearerToken();
@@ -79,7 +84,7 @@ final class BearerHttpClient implements HttpClientInterface
             'password' => md5($this->password),
         ];
 
-        $response = $basicClient->call('/v1/login?' . http_build_query($params));
+        $response = $basicClient->request('/v1/login?' . http_build_query($params));
         $this->bearerToken = $response['token'] ?? null;
     }
 }

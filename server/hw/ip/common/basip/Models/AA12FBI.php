@@ -16,7 +16,7 @@ trait AA12FBI
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
-        $this->client->call('/v1/syslog/settings', 'POST', [
+        $this->client->request('/v1/syslog/settings', 'POST', [
             'enabled' => $url !== '',
             'server' => [
                 'port' => $port,
@@ -29,13 +29,13 @@ trait AA12FBI
 
     protected function getEventServer(): string
     {
-        $settings = $this->client->call('/v1/syslog/settings')['server'];
+        $settings = $this->client->request('/v1/syslog/settings')['server'];
         return 'http://' . $settings['server'] . ':' . $settings['port'];
     }
 
     protected function setDevicePassword(string $password): void
     {
-        $this->client->call('/v1/security/password/admin?', 'POST', [
+        $this->client->request('/v1/security/password/admin?', 'POST', [
             'old_password' => $this->defaultPassword,
             'new_password' => $password,
         ]);

@@ -35,6 +35,6 @@ trait AA07BD
             'newPassword' => $password,
         ];
 
-        $this->client->call('/v1/security/password/web/admin?' . http_build_query($params), 'POST');
+        $this->client->request('/v1/security/password/web/admin?' . http_build_query($params), 'POST');
     }
 }

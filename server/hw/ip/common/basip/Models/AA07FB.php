@@ -16,7 +16,7 @@ trait AA07FB
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
-        $this->client->call('/v1/syslog/settings', 'POST', [
+        $this->client->request('/v1/syslog/settings', 'POST', [
             'enabled' => $url !== '',
             'server' => [
                 'port' => $port,
@@ -29,7 +29,7 @@ trait AA07FB
 
     protected function getEventServer(): string
     {
-        $settings = $this->client->call('/v1/syslog/settings')['server'];
+        $settings = $this->client->request('/v1/syslog/settings')['server'];
         return 'http://' . $settings['server'] . ':' . $settings['port'];
     }
 
@@ -40,6 +40,6 @@ trait AA07FB
             'newPassword' => $password,
         ];
 
-        $this->client->call('/v1/security/password/admin?' . http_build_query($params), 'POST');
+        $this->client->request('/v1/security/password/admin?' . http_build_query($params), 'POST');
     }
 }

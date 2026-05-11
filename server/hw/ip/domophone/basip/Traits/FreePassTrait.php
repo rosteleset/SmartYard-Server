@@ -13,7 +13,7 @@ trait FreePassTrait
 {
     public function isFreePassEnabled(): bool
     {
-        return $this->client->call('/v1/access/freeaccess')['enable'];
+        return $this->client->request('/v1/access/freeaccess')['enable'];
     }
 
     public function setFreePassEnabled(bool $enabled): void
@@ -26,7 +26,7 @@ trait FreePassTrait
             'day' => $day,
         ], ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']);
 
-        $this->client->call('/v1/access/freeaccess', 'POST', [
+        $this->client->request('/v1/access/freeaccess', 'POST', [
             'enable' => $enabled,
             'days' => $days,
         ]);

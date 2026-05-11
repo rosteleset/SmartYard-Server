@@ -84,12 +84,12 @@ abstract class Basip extends domophone implements
 
     public function configureEncoding(): void
     {
-        $this->client->call('/v1/device/settings/video', 'POST', [
+        $this->client->request('/v1/device/settings/video', 'POST', [
             'fps' => 25, // No way to change this via WEB, so let it be the default value from the POST payload
             'video_resolution' => '1280x720',
         ]);
 
-        $this->client->call('/v1/device/settings/payload', 'POST', ['payload_codec_h264' => 102]);
+        $this->client->request('/v1/device/settings/payload', 'POST', ['payload_codec_h264' => 102]);
     }
 
     public function configureMatrix(array $matrix): void
@@ -107,7 +107,7 @@ abstract class Basip extends domophone implements
         int    $stunPort = 3478,
     ): void
     {
-        $this->client->call('/v1/device/sip/settings', 'POST', [
+        $this->client->request('/v1/device/sip/settings', 'POST', [
             'outbound' => '',
             'password' => $password,
             'proxy' => "sip:$server:$port",
@@ -122,7 +122,7 @@ abstract class Basip extends domophone implements
             ],
         ]);
 
-        $this->client->call('/v1/device/sip/enable', 'POST', ['sip_enable' => $login !== '']);
+        $this->client->request('/v1/device/sip/enable', 'POST', ['sip_enable' => $login !== '']);
         $this->setConciergeNumber(9999); // Need to set a new concierge URL, the SIP server address may have changed
     }
 
@@ -202,7 +202,7 @@ abstract class Basip extends domophone implements
 
     public function openLock(int $lockNumber = 0): void
     {
-        $this->client->call('/v1/access/general/lock/open/remote/accepted/' . $lockNumber + 1);
+        $this->client->request('/v1/access/general/lock/open/remote/accepted/' . $lockNumber + 1);
     }
 
     public function prepare(): void
@@ -215,14 +215,14 @@ abstract class Basip extends domophone implements
     public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 2) {
-            $this->client->call('/v1/device/settings/volume', 'POST', ['volume_level' => $levels[0]]);
-            $this->client->call('/v1/device/settings/mic', 'POST', ['mic_gain_level' => $levels[1]]);
+            $this->client->request('/v1/device/settings/volume', 'POST', ['volume_level' => $levels[0]]);
+            $this->client->request('/v1/device/settings/mic', 'POST', ['mic_gain_level' => $levels[1]]);
         }
     }
 
     public function setCallTimeout(int $timeout): void
     {
-        $this->client->call('/v1/device/call/dial/timeout', 'POST', [
+        $this->client->request('/v1/device/call/dial/timeout', 'POST', [
             'dial_timeout' => $timeout,
             'forwarding_timeout' => 25,
         ]);
@@ -237,7 +237,7 @@ abstract class Basip extends domophone implements
     {
         ['server' => $sipServer, 'port' => $sipPort] = $this->getSipConfig();
 
-        $this->client->call('/v1/device/call/concierge', 'POST', [
+        $this->client->request('/v1/device/call/concierge', 'POST', [
             'number_enable' => true,
             'number_url' => "sip:$sipNumber@$sipServer:$sipPort",
         ]);
@@ -250,8 +250,8 @@ abstract class Basip extends domophone implements
         string $codeCms = '1',
     ): void
     {
-        $this->client->call('/v1/access/general/lock/dtmf/1', 'POST', ['dtmf_code' => $code1]);
-        $this->client->call('/v1/access/general/lock/dtmf/2', 'POST', ['dtmf_code' => $code2]);
+        $this->client->request('/v1/access/general/lock/dtmf/1', 'POST', ['dtmf_code' => $code1]);
+        $this->client->request('/v1/access/general/lock/dtmf/2', 'POST', ['dtmf_code' => $code2]);
     }
 
     public function setHousePrefixes(array $prefixes): void
@@ -275,12 +275,12 @@ abstract class Basip extends domophone implements
             default => 'English',
         };
 
-        $this->client->call("/v1/device/language?language=$lang", 'POST');
+        $this->client->request("/v1/device/language?language=$lang", 'POST');
     }
 
     public function setPublicCode(int $code = 0): void
     {
-        $this->client->call('/v1/access/general/unlock/input/code', 'POST', [
+        $this->client->request('/v1/access/general/unlock/input/code', 'POST', [
             'input_code_enable' => $code !== 0,
             'input_code_number' => $code,
         ]);
@@ -293,13 +293,13 @@ abstract class Basip extends domophone implements
 
     public function setTalkTimeout(int $timeout): void
     {
-        $this->client->call('/v1/device/call/talk/timeout', 'POST', ['talk_timeout' => $timeout]);
+        $this->client->request('/v1/device/call/talk/timeout', 'POST', ['talk_timeout' => $timeout]);
     }
 
     public function setUnlockTime(int $time = 3): void
     {
-        $this->client->call('/v1/access/general/lock/timeout/1', 'POST', ['lock_timeout' => $time]);
-        $this->client->call('/v1/access/general/lock/timeout/2', 'POST', ['lock_timeout' => $time]);
+        $this->client->request('/v1/access/general/lock/timeout/1', 'POST', ['lock_timeout' => $time]);
+        $this->client->request('/v1/access/general/lock/timeout/2', 'POST', ['lock_timeout' => $time]);
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -387,7 +387,7 @@ abstract class Basip extends domophone implements
             'forward_entity_list' => array_map('strval', $sipNumbers), // TODO: check with AA-07FB
         ];
 
-        $this->client->call("/v1/forward/item/$apartmentNumber", 'POST', $forwardItem);
+        $this->client->request("/v1/forward/item/$apartmentNumber", 'POST', $forwardItem);
         $this->forwards[] = $forwardItem + ['forward_number' => $apartmentNumber];
     }
 
@@ -412,7 +412,7 @@ abstract class Basip extends domophone implements
             'valid' => static::getIdentifierValidDefaultValue(),
         ];
 
-        $uid = $this->client->call('/v1/access/identifier', 'POST', $identifierItem);
+        $uid = $this->client->request('/v1/access/identifier', 'POST', $identifierItem);
         $this->identifiers[] = $identifierItem + ['identifier_uid' => $uid['uid']];
     }
 
@@ -423,7 +423,7 @@ abstract class Basip extends domophone implements
      */
     protected function configureInternalReader(): void
     {
-        $this->client->call('/v1/access/general/wiegand/type', 'POST', [
+        $this->client->request('/v1/access/general/wiegand/type', 'POST', [
             'identifier_representation' => 'hex',
             'type' => 'wiegand_58', // Also need to reconfigure the reader mode using the "BAS-IP UKEY Config" app
         ]);
@@ -437,7 +437,7 @@ abstract class Basip extends domophone implements
      */
     protected function deleteForwards(array $flatNumbers): void
     {
-        $this->client->call('/v1/forward/items', 'DELETE', ['uid_items' => $flatNumbers]);
+        $this->client->request('/v1/forward/items', 'DELETE', ['uid_items' => $flatNumbers]);
 
         $this->forwards = array_values(
             array_filter(
@@ -455,7 +455,7 @@ abstract class Basip extends domophone implements
      */
     protected function deleteIdentifiers(array $uids): void
     {
-        $this->client->call('/v1/access/identifier/items', 'DELETE', ['uid_items' => $uids]);
+        $this->client->request('/v1/access/identifier/items', 'DELETE', ['uid_items' => $uids]);
 
         $this->identifiers = array_values(
             array_filter(
@@ -478,7 +478,7 @@ abstract class Basip extends domophone implements
 
         for ($pageNumber = 1; ; $pageNumber++) {
             $url = "$endpoint?limit=$limit&page_number=$pageNumber";
-            $items = $this->client->call($url)['list_items'] ?? [];
+            $items = $this->client->request($url)['list_items'] ?? [];
 
             if (!is_array($items) || $items === []) {
                 break;
@@ -513,8 +513,8 @@ abstract class Basip extends domophone implements
 
     protected function getAudioLevels(): array
     {
-        $volumeLevel = $this->client->call('/v1/device/settings/volume')['volume_level'];
-        $micLevel = $this->client->call('/v1/device/settings/mic')['mic_gain_level'];
+        $volumeLevel = $this->client->request('/v1/device/settings/volume')['volume_level'];
+        $micLevel = $this->client->request('/v1/device/settings/mic')['mic_gain_level'];
 
         return [$volumeLevel, $micLevel];
     }
@@ -527,8 +527,8 @@ abstract class Basip extends domophone implements
 
     protected function getDtmfConfig(): array
     {
-        $code1 = $this->client->call('/v1/access/general/lock/dtmf/1')['dtmf_code'];
-        $code2 = $this->client->call('/v1/access/general/lock/dtmf/2')['dtmf_code'];
+        $code1 = $this->client->request('/v1/access/general/lock/dtmf/1')['dtmf_code'];
+        $code2 = $this->client->request('/v1/access/general/lock/dtmf/2')['dtmf_code'];
 
         return [
             'code1' => $code1,
@@ -610,7 +610,7 @@ abstract class Basip extends domophone implements
 
     protected function getSipConfig(): array
     {
-        $sipSettings = $this->client->call('/v1/device/sip/settings');
+        $sipSettings = $this->client->request('/v1/device/sip/settings');
 
         $realmParts = explode(':', $sipSettings['realm'], 2);
 
@@ -674,7 +674,7 @@ abstract class Basip extends domophone implements
      */
     protected function isWallModeEnabled(): bool
     {
-        $mode = $this->client->call('/v1/device/mode/current');
+        $mode = $this->client->request('/v1/device/mode/current');
         return ($mode['current_panel_mode'] ?? null) === 'Wall';
     }
 
@@ -688,7 +688,7 @@ abstract class Basip extends domophone implements
      */
     protected function setDoorSensorEnabled(bool $enabled, int $openingDelay = 86400): void
     {
-        $this->client->call('/v1/access/door/sensor', 'POST', [
+        $this->client->request('/v1/access/door/sensor', 'POST', [
             'enable' => $enabled,
             'mode' => 'door_sensor',
             'opening_delay' => $openingDelay,
@@ -706,9 +706,9 @@ abstract class Basip extends domophone implements
     protected function setWallModeEnabled(bool $enabled): void
     {
         if ($enabled) {
-            $this->client->call('/v1/device/mode/wall?noUnit=true&device=1', 'POST');
+            $this->client->request('/v1/device/mode/wall?noUnit=true&device=1', 'POST');
         } else {
-            $this->client->call('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
+            $this->client->request('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
         }
     }
 }

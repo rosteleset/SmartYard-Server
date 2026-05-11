@@ -24,7 +24,7 @@ abstract class Basip extends camera
     public function getCamshot(): string
     {
         // TODO: too slow (~2 sec with basic auth, ~4 sec with bearer auth)
-        return $this->client->call('/v1/photo/file', 'GET', [], 5);
+        return $this->client->request('/v1/photo/file', 'GET', [], 5);
     }
 
     public function setOsdText(string $text = ''): void

@@ -45,20 +45,20 @@ trait Basip
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        $this->client->call('/v1/network/ntp', 'POST', [
+        $this->client->request('/v1/network/ntp', 'POST', [
             'custom_server' => $server,
             'enabled' => true,
             'use_default' => false,
         ]);
 
-        $this->client->call('/v1/network/timezone', 'POST', [
+        $this->client->request('/v1/network/timezone', 'POST', [
             static::getTimezoneParamName() => self::getOffsetByTimezone($timezone),
         ]);
     }
 
     public function getSysinfo(): array
     {
-        $info = $this->client->call('/info', 'GET', [], 3);
+        $info = $this->client->request('/info', 'GET', [], 3);
 
         return [
             'DeviceID' => $info['device_serial_number'] ?? null,
@@ -70,12 +70,12 @@ trait Basip
 
     public function reboot(): void
     {
-        $this->client->call('/v1/system/reboot/run');
+        $this->client->request('/v1/system/reboot/run');
     }
 
     public function reset(): void
     {
-        $this->client->call('/v1/system/settings/default', 'POST');
+        $this->client->request('/v1/system/settings/default', 'POST');
     }
 
     public function setAdminPassword(string $password): void
@@ -102,8 +102,8 @@ trait Basip
 
     protected function getNtpConfig(): array
     {
-        $ntp = $this->client->call('/v1/network/ntp');
-        $timezone = $this->client->call('/v1/network/timezone');
+        $ntp = $this->client->request('/v1/network/ntp');
+        $timezone = $this->client->request('/v1/network/timezone');
 
         return [
             'server' => $ntp['custom_server'] ?? '',
@@ -126,7 +126,7 @@ trait Basip
      */
     protected function setRtspPassword(string $password): void
     {
-        $this->client->call('/v1/device/settings/rtsp', 'POST', [
+        $this->client->request('/v1/device/settings/rtsp', 'POST', [
             'username' => $this->login,
             'password' => $password,
 
