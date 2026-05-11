@@ -77,7 +77,7 @@ final class BearerHttpClient implements HttpClientInterface
      */
     private function refreshBearerToken(): void
     {
-        $basicClient = new BasicHttpClient($this->url, $this->login, $this->password, $this->apiPrefix);
+        $basicClient = new BasicHttpClient($this->url, $this->password, $this->login, $this->apiPrefix);
 
         $params = [
             'username' => $this->login,
