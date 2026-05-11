@@ -2,10 +2,8 @@
 
 namespace hw\ip\domophone\basip\Models;
 
-use hw\Interface\FreePassInterface;
 use hw\ip\domophone\basip\{
     Basip,
-    Traits\FreePassTrait,
     Traits\HttpsConfigTrait,
     Traits\IdentifierValidTrait,
 };
@@ -13,10 +11,9 @@ use hw\ip\domophone\basip\{
 /**
  * Represents a BasIP AV-08FB intercom.
  */
-class AV08FB extends Basip implements FreePassInterface
+class AV08FB extends Basip
 {
     use \hw\ip\common\basip\Models\AA07FB;
-    use FreePassTrait;
     use HttpsConfigTrait;
     use IdentifierValidTrait;
 
