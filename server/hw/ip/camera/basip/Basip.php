@@ -3,7 +3,10 @@
 namespace hw\ip\camera\basip;
 
 use hw\ip\camera\camera;
-use hw\ip\common\basip\HttpClient\HttpClientInterface;
+use hw\ip\common\basip\HttpClient\{
+    BasicHttpClient,
+    HttpClientInterface,
+};
 
 /**
  * Abstract base class for BasIP cameras.
@@ -14,7 +17,17 @@ abstract class Basip extends camera
         transformDbConfig as protected commonTransformDbConfig;
     }
 
+    protected const HTTP_CLIENT_CLASS = BasicHttpClient::class;
+
     protected HttpClientInterface $client;
+
+    public function __construct(string $url, string $password, bool $firstTime = false)
+    {
+        $clientClass = static::HTTP_CLIENT_CLASS;
+        $this->client = new $clientClass(rtrim($url, '/'), $firstTime ? '123456' : $password);
+
+        parent::__construct($url, $password, $firstTime);
+    }
 
     public function configureMotionDetection(array $detectionZones): void
     {

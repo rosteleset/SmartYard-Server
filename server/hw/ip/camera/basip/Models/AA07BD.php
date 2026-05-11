@@ -14,11 +14,7 @@ class AA07BD extends Basip
         transformDbConfig as protected aa07bdTransformDbConfig;
     }
 
-    public function __construct(string $url, string $password, bool $firstTime = false)
-    {
-        $this->client = new BearerHttpClient(rtrim($url, '/'), $firstTime ? '123456' : $password);
-        parent::__construct($url, $password, $firstTime);
-    }
+    protected const HTTP_CLIENT_CLASS = BearerHttpClient::class;
 
     public function transformDbConfig(array $dbConfig): array
     {

@@ -7,7 +7,10 @@ use hw\Interface\{
     HousePrefixInterface,
     LanguageInterface,
 };
-use hw\ip\common\basip\HttpClient\HttpClientInterface;
+use hw\ip\common\basip\HttpClient\{
+    BasicHttpClient,
+    HttpClientInterface,
+};
 use hw\ip\domophone\basip\Enums\IdentifierType;
 use hw\ip\domophone\domophone;
 use hw\ValueObject\HousePrefix;
@@ -25,11 +28,20 @@ abstract class Basip extends domophone implements
     }
 
     protected const DISABLED_STUN_ADDRESS = '127.0.0.1';
+    protected const HTTP_CLIENT_CLASS = BasicHttpClient::class;
 
     protected HttpClientInterface $client;
 
     protected ?array $identifiers = null;
     protected ?array $forwards = null;
+
+    public function __construct(string $url, string $password, bool $firstTime = false)
+    {
+        $clientClass = static::HTTP_CLIENT_CLASS;
+        $this->client = new $clientClass(rtrim($url, '/'), $firstTime ? '123456' : $password);
+
+        parent::__construct($url, $password, $firstTime);
+    }
 
     /**
      * Returns the default "valid" field value for a new identifier.
