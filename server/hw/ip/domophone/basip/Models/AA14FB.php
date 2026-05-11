@@ -6,6 +6,7 @@ use hw\Interface\FreePassInterface;
 use hw\ip\domophone\basip\{
     Basip,
     Traits\FreePassTrait,
+    Traits\HttpsConfigTrait,
     Traits\IdentifierValidTrait,
 };
 
@@ -16,23 +17,12 @@ class AA14FB extends Basip implements FreePassInterface
 {
     use \hw\ip\common\basip\Models\AA07FB;
     use FreePassTrait;
+    use HttpsConfigTrait;
     use IdentifierValidTrait;
 
     public function prepare(): void
     {
         $this->setHttpsEnabled(false);
         parent::prepare();
-    }
-
-    /**
-     * Enables or disables HTTPS access for the web server.
-     *
-     * @param bool $enabled Whether to enable HTTPS. Defaults to true.
-     * @return void
-     */
-    protected function setHttpsEnabled(bool $enabled = true): void
-    {
-        $this->client->request('/v1/web/ssl', 'POST', ['is_enabled' => $enabled]);
-        sleep(3); // The web API restarts after changing HTTPS settings
     }
 }
