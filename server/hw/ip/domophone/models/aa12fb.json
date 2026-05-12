@@ -1,8 +1,8 @@
 {
-    "title": "BASIP AA-12FBI",
+    "title": "BASIP AA-12FB",
     "vendor": "BASIP",
-    "model": "AA-12FBI",
-    "class": "AA12FBI",
+    "model": "AA-12FB",
+    "class": "AA12FB",
     "eventServer": "basip",
     "outputs": 2,
     "camera": "basip",

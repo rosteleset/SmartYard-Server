@@ -1,9 +1,9 @@
 {
-    "title": "BASIP AA-12FBI",
+    "title": "BASIP AA-12FB",
     "vendor": "BASIP",
-    "model": "AA-12FBI",
+    "model": "AA-12FB",
     "version": false,
     "eventServer": "basip",
-    "class": "AA12FBI",
+    "class": "AA12FB",
     "useSmartConfigurator": true
 }

@@ -10,11 +10,11 @@ use hw\ip\domophone\basip\{
 };
 
 /**
- * Represents a BasIP AA-12FBI intercom.
+ * Represents a BasIP AA-12FB intercom.
  */
-class AA12FBI extends Basip implements FreePassInterface
+class AA12FB extends Basip implements FreePassInterface
 {
-    use \hw\ip\common\basip\Models\AA12FBI;
+    use \hw\ip\common\basip\Models\AA12FB;
     use FreePassTrait;
     use HttpsConfigTrait;
 
