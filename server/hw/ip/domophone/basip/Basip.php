@@ -307,7 +307,7 @@ abstract class Basip extends domophone implements
     {
         $this->client->request('/v1/access/general/unlock/input/code', 'POST', [
             'input_code_enable' => $code !== 0,
-            'input_code_number' => $code,
+            'input_code_number' => (string)$code,
         ]);
     }
 
