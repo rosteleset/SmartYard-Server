@@ -6,7 +6,6 @@ use hw\Interface\FreePassInterface;
 use hw\ip\domophone\basip\{
     Basip,
     Traits\FreePassTrait,
-    Traits\IdentifierValidTrait,
 };
 
 /**
@@ -16,5 +15,4 @@ class AA07FB extends Basip implements FreePassInterface
 {
     use \hw\ip\common\basip\Models\AA07FB;
     use FreePassTrait;
-    use IdentifierValidTrait;
 }

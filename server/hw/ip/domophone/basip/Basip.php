@@ -44,11 +44,24 @@ abstract class Basip extends domophone implements
     }
 
     /**
-     * Returns the default "valid" field value for a new identifier.
+     * Returns the default "valid" payload for a new identifier.
      *
-     * @return array An associative array representing the default "valid" field value.
+     * @return array An associative array representing the default "valid" payload.
      */
-    abstract protected static function getIdentifierValidDefaultValue(): array;
+    protected static function getIdentifierValidPayload(): array
+    {
+        return [
+            'passes' => [
+                'is_permanent' => true,
+                'max_passes' => null,
+                'time' => [
+                    'from' => null,
+                    'is_permanent' => true,
+                    'to' => null,
+                ],
+            ],
+        ];
+    }
 
     public function addRfid(string $code, int $apartment = 0): void
     {
@@ -421,7 +434,7 @@ abstract class Basip extends domophone implements
             ],
             'identifier_type' => $identifierType->value,
             'lock' => 'first',
-            'valid' => static::getIdentifierValidDefaultValue(),
+            'valid' => static::getIdentifierValidPayload(),
         ];
 
         $uid = $this->client->request('/v1/access/identifier', 'POST', $identifierItem);

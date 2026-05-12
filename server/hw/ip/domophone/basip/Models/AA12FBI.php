@@ -7,7 +7,6 @@ use hw\ip\domophone\basip\{
     Basip,
     Traits\FreePassTrait,
     Traits\HttpsConfigTrait,
-    Traits\IdentifierValidTrait,
 };
 
 /**
@@ -18,7 +17,6 @@ class AA12FBI extends Basip implements FreePassInterface
     use \hw\ip\common\basip\Models\AA12FBI;
     use FreePassTrait;
     use HttpsConfigTrait;
-    use IdentifierValidTrait;
 
     public function prepare(): void
     {

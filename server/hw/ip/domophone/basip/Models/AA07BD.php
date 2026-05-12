@@ -16,7 +16,7 @@ class AA07BD extends Basip
 
     protected const HTTP_CLIENT_CLASS = BearerHttpClient::class;
 
-    protected static function getIdentifierValidDefaultValue(): array
+    protected static function getIdentifierValidPayload(): array
     {
         return [
             'passes' => [
