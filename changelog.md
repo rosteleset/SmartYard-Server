@@ -23,6 +23,11 @@
 - fixed RFID normalization for Akuvox E12 and Akuvox R20A when uploading codes starting with zero
 ! improved UI/UX of recognition options in camera settings
 + added weekly cron support for MongoDB files autocompact
++ added configurable entrances display modes for mobile options
++ added Sesame DVR media server type
++ added faceId to mobile FRS like API response
++ added refresh button to camera motion/recognition zone editors
++ added support for BasIP AA-14FB, AA-12FB
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
