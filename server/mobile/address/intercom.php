@@ -156,17 +156,19 @@
         $cameras = loadBackend("cameras");
         $frsDisabled = null;
         $lprsDisabled = null;
-        foreach ($flat['entrances'] as $entrance) {
-            $e = $households->getEntrance($entrance['entranceId']);
+        $r = $households->getEntrances('flatId', $flat_id);
+        foreach ($r as $e) {
             if ($cameras) {
-                $vstream = $cameras->getCamera($e['cameraId']);
-                if ($vstream && strlen($vstream["frs"]) > 1) {
-                    $frs_server = $frs->getServerByUrl($vstream["frs"]);
-                    $api_type = $frs_server[frs::API_TYPE] ?? null;
-                    if ($api_type === frs::API_LPRS) {
-                        $lprsDisabled = 'f';
-                    } else {
-                        $frsDisabled = 'f';
+                for ($i = 0; $i < 8; $i++) {
+                    $vstream = ($i == 0 ? $cameras->getCamera($e['cameraId']) : $cameras->getCamera($e["altCameraId$i"]));
+                    if ($vstream && strlen($vstream["frs"]) > 1) {
+                        $frs_server = $frs->getServerByUrl($vstream["frs"]);
+                        $api_type = $frs_server[frs::API_TYPE] ?? null;
+                        if ($api_type === frs::API_LPRS) {
+                            $lprsDisabled = 'f';
+                        } else {
+                            $frsDisabled = 'f';
+                        }
                     }
                 }
             }
