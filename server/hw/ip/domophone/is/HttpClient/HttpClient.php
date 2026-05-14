@@ -24,6 +24,25 @@ class HttpClient
     }
 
     /**
+     * Sends request to an endpoint that does not return JSON.
+     *
+     * @param string $resource API path relative to the device base URL.
+     * @param string $method HTTP method.
+     * @param array $payload JSON payload. Empty array means no request body.
+     * @param int $timeout Request timeout in seconds.
+     * @return string Raw response body.
+     */
+    public function rawRequest(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): string
+    {
+        return $this->send($resource, $method, $payload, $timeout);
+    }
+
+    /**
      * Sends request to the device API.
      *
      * @param string $resource API path relative to the device base URL.
@@ -39,6 +58,43 @@ class HttpClient
         array  $payload = [],
         int    $timeout = 0,
     ): array
+    {
+        $res = $this->send($resource, $method, $payload, $timeout);
+
+        if ($res === '') {
+            return [];
+        }
+
+        try {
+            $decoded = json_decode($res, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new RuntimeException("Invalid JSON response for $method $resource", 0, $e);
+        }
+
+        if (!is_array($decoded)) {
+            throw new RuntimeException("Unexpected non-array JSON response for $method $resource");
+        }
+
+        return $decoded;
+    }
+
+    /**
+     * Updates the password used for subsequent authenticated requests.
+     *
+     * @param string $password New device password.
+     * @return void
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    private function send(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): string
     {
         $req = $this->url . $resource;
 
@@ -79,31 +135,6 @@ class HttpClient
             throw new RuntimeException("Request failed for $method $resource with HTTP $statusCode");
         }
 
-        if ($res === '') {
-            return [];
-        }
-
-        try {
-            $decoded = json_decode($res, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw new RuntimeException("Invalid JSON response for $method $resource", 0, $e);
-        }
-
-        if (!is_array($decoded)) {
-            throw new RuntimeException("Unexpected non-array JSON response for $method $resource");
-        }
-
-        return $decoded;
-    }
-
-    /**
-     * Updates the password used for subsequent authenticated requests.
-     *
-     * @param string $password New device password.
-     * @return void
-     */
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
+        return $res;
     }
 }

@@ -5,7 +5,7 @@
     "class": "is5",
     "eventServer": "is",
     "outputs": 6,
-    "camera": "is",
+    "camera": "sokol",
     "useSmartConfigurator": true,
     "cmses": [
         "act-25tm",

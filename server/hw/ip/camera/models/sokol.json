@@ -1,9 +1,9 @@
 {
-    "title": "IS SOKOL LEGACY",
+    "title": "IS SOKOL",
     "vendor": "IS",
     "model": false,
     "version": false,
     "eventServer": "is",
-    "class": "is",
+    "class": "sokol",
     "useSmartConfigurator": true
 }
