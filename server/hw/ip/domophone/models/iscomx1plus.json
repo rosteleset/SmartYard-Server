@@ -1,7 +1,7 @@
 {
-    "title": "IS ISCOM X1 rev.5 (Sokol Plus)",
+    "title": "IS SOKOL PLUS LEGACY (rev.5)",
     "vendor": "IS",
-    "model": "ISCOM X1 rev.5",
+    "model": "SOKOL PLUS LEGACY (rev.5)",
     "class": "iscomx1plus",
     "eventServer": "is",
     "outputs": 6,
