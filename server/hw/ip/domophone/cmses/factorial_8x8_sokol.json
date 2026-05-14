@@ -1,19 +1,17 @@
 {
-    "title": "METAKOM COM-80UD",
-    "model": "COM-80UD",
+    "title": "FACTORIAL 8x8",
+    "model": "FACTORIAL 8x8",
     "dozen_start": 0,
     "cms": {
-        "COM-80UD.1/0": {
+        "FACTORIAL 8x8.1": {
+            "0": 8,
             "1": 8,
             "2": 8,
             "3": 8,
             "4": 8,
             "5": 8,
             "6": 8,
-            "7": 8,
-            "8": 8,
-            "9": 8,
-            "10": 8
+            "7": 8
         }
     }
 }
