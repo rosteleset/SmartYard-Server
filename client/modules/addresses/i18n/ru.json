@@ -215,7 +215,7 @@
     "flatSipCall": "Позвонить в квартиру [sip intercom]",
     "cameras": "Камеры",
     "addCamera": "Добавить камеру",
-    "stream": "RTSP поток камеры",
+    "stream": "URL потока камеры",
     "deleteCamera": "Удалить камеру",
     "modifyCamera": "Редактирование камеры",
     "confirmDeleteCamera": "Удалить камеру \"#%s\"?",
