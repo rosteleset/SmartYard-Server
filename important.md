@@ -1,3 +1,19 @@
+# 2026-05-15
+
+The integration for IS Sokol Plus (rev.5) has been updated. Existing intercom and camera models are now marked
+as legacy and renamed to `IS SOKOL PLUS LEGACY (rev.5)` and `IS SOKOL LEGACY` respectively.
+
+Please update your devices to firmware version
+[2.5.0.14.13](https://doc.is74.ru/books/umnyi-domofon-sokol-plius/page/cto-novogo-firmware)
+and switch the intercom to `IS SOKOL PLUS (rev.5)` and the camera to `IS SOKOL`.
+
+> [!WARNING]
+> Matrix and coordinate-matrix switch (CMS) configuration has been significantly changed in the new integration version.
+> To avoid issues, it is recommended to check that the existing matrix and CMS settings were migrated correctly
+> after changing the intercom model and running autoconfiguration.
+
+⚠️ The old integration version is no longer maintained and will be removed in future releases.
+
 # 2026-04-21
 
 Update crontab entries to add the weekly schedule:

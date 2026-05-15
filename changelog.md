@@ -28,6 +28,7 @@
 + added faceId to mobile FRS like API response
 + added refresh button to camera motion/recognition zone editors
 + added support for BasIP AA-14FB, AA-12FB
++ added new IS Sokol+ implementations (previous ones renamed to LEGACY in UI)
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
