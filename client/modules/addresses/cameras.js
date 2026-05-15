@@ -154,11 +154,11 @@
                     id: "stream",
                     type: "text",
                     title: i18n("addresses.stream"),
-                    placeholder: "rtsp://",
+                    placeholder: "rtsp://, http://, https://",
                     validate: v => {
                         if (v) {
                             try {
-                                if (!/^rtsp:\/\/.+/.test(v)) {
+                                if (!/^(rtsp|https?):\/\/.+/.test(v)) {
                                     throw new Error();
                                 }
                                 new URL(v);
@@ -590,12 +590,12 @@
                         id: "stream",
                         type: "text",
                         title: i18n("addresses.stream"),
-                        placeholder: "rtsp://",
+                        placeholder: "rtsp://, http://, https://",
                         value: camera.stream,
                         validate: v => {
                             if (v) {
                                 try {
-                                    if (!/^rtsp:\/\/.+/.test(v)) {
+                                    if (!/^(rtsp|https?):\/\/.+/.test(v)) {
                                         throw new Error();
                                     }
                                     new URL(v);

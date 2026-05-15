@@ -215,7 +215,7 @@
     "flatSipCall": "Call to flat [sip intercom]",
     "cameras": "Cameras",
     "addCamera": "Add camera",
-    "stream": "Camera RTSP stream",
+    "stream": "Camera stream URL",
     "deleteCamera": "Delete camera",
     "modifyCamera": "Edit camera",
     "confirmDeleteCamera": "Delete camera \"#%s\"?",
