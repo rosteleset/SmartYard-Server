@@ -45,7 +45,7 @@
 
             modules.asterisk.ua.on('newRTCSession', modules.asterisk.newRTCSession);
 
-            modules.asterisk.ua.on('connected', modules.asterisk.onConnectionBroken);
+            modules.asterisk.ua.on('connected', modules.asterisk.onConnected);
             modules.asterisk.ua.on('disconnected', modules.asterisk.onConnectionBroken);
             modules.asterisk.ua.on('unregistered', modules.asterisk.onConnectionBroken);
 
@@ -122,6 +122,10 @@
         }
     },
 
+    onConnected: function () {
+        modules.asterisk.updateButton();
+    },
+
     onConnectionBroken: function () {
         modules.asterisk.ready = false;
         modules.asterisk.currentSession = false;
@@ -195,7 +199,7 @@
         }
         if (number) {
             if (modules.asterisk.currentSession && modules.asterisk.extension(modules.asterisk.currentSession.remote_identity.uri) == number) {
-                hmodules.asterisk.hangup();
+                modules.asterisk.hangup();
             } else {
                 if (!modules.asterisk.currentSession) {
                     modules.asterisk.ua.call(number, modules.asterisk.options);
@@ -245,7 +249,7 @@
             modules.asterisk.holdedSession = modules.asterisk.currentSession;
             modules.asterisk.currentSession = false;
             if (dialAfterHold) {
-                ua.call(dialAfterHold, options);
+                modules.asterisk.ua.call(dialAfterHold, modules.asterisk.options);
             }
             modules.asterisk.updateButton();
         }
@@ -279,7 +283,7 @@
         if (modules.asterisk.currentSession && modules.asterisk.currentSession.data == 'incoming') {
             modules.asterisk.currentSession.data = 'accepted';
             modules.asterisk.currentSession.answered = true;
-            modules.asterisk.currentSession.answer(options);
+            modules.asterisk.currentSession.answer(modules.asterisk.options);
             modules.asterisk.currentSession.connection.addEventListener('addstream', modules.asterisk.addStream);
         }
         modules.asterisk.updateButton();
