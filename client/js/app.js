@@ -981,15 +981,48 @@ function loadSubModules(parent, subModules, doneOrParentObject) {
     }
 }
 
+function loadCustomSubModuleI18n(parent, module, done) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
+
+    $.get("modules/" + parent + "/custom/" + module + "/i18n/" + l + ".json?ver=" + version, i18n => {
+        if (i18n.errors) {
+            if (!lang.errors) {
+                lang.errors = {};
+            }
+            lang.errors = mergeDeep(lang.errors, i18n.errors);
+            delete i18n.errors;
+        }
+        if (i18n.methods) {
+            if (!lang.methods) {
+                lang.methods = {};
+            }
+            lang.methods = mergeDeep(lang.methods, i18n.methods);
+            delete i18n.methods;
+        }
+        if (!lang[parent]) {
+            lang[parent] = {};
+        }
+        lang[parent] = mergeDeep(lang[parent], i18n);
+    }).always(done);
+}
+
 function loadCustomSubModules(parent, subModules) {
     let module = subModules.shift();
     if (!module) {
         loadModule();
     } else{
-        $.getScript("modules/" + parent + "/custom/" + module + ".js?ver=" + version).
-        done(() => {
-            loadCustomSubModules(parent, subModules);
-        }).
-        fail(FAIL);
+        loadCustomSubModuleI18n(parent, module, () => {
+            $.getScript("modules/" + parent + "/custom/" + module + ".js?ver=" + version).
+            done(() => {
+                loadCustomSubModules(parent, subModules);
+            }).
+            fail(FAIL);
+        });
     }
 }
