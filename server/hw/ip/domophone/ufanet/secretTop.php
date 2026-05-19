@@ -3,7 +3,7 @@
 namespace hw\ip\domophone\ufanet;
 
 /**
- * Class representing a Secret Top intercom.
+ * Represents an Ufanet Secret Top intercom.
  */
 class secretTop extends ufanet
 {
