@@ -333,18 +333,6 @@ abstract class ufanet extends domophone implements
         $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => self::CMS_PARAMS[$model] ?? []]);
     }
 
-    public function setConciergeNumber(int $sipNumber): void
-    {
-        $this->loadDialplans();
-
-        $this->dialplans['CONS'] = [
-            'sip_number' => "$sipNumber",
-            'analog' => false,
-            'sip' => true,
-            'map' => 0,
-        ];
-    }
-
     public function setDisplayText(array $textLines): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
@@ -411,18 +399,6 @@ abstract class ufanet extends domophone implements
     public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
-    }
-
-    public function setSosNumber(int $sipNumber): void
-    {
-        $this->loadDialplans();
-
-        $this->dialplans['SOS'] = [
-            'sip_number' => "$sipNumber",
-            'analog' => false,
-            'sip' => true,
-            'map' => 0,
-        ];
     }
 
     public function setTalkTimeout(int $timeout): void

@@ -7,4 +7,13 @@ namespace hw\ip\domophone\ufanet;
  */
 class secretMini extends ufanet
 {
+    public function setConciergeNumber(int $sipNumber): void
+    {
+        // Empty implementation
+    }
+
+    public function setSosNumber(int $sipNumber): void
+    {
+        // Empty implementation
+    }
 }
