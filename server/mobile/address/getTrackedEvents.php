@@ -9,9 +9,10 @@
      *
      * @apiHeader {string} authorization токен авторизации
      *
-     * @apiBody {integer} flatId идентификатор квартиры
+     * @apiBody {integer} [flatId] идентификатор квартиры
      *
      * @apiSuccess {object[]} - массив объектов
+     * @apiSuccess {integer} -.flatId идентификатор квартиры
      * @apiSuccess {integer} -.watcherId идентификатор наблюдения
      * @apiSuccess {integer="3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","9 - открытие по номеру машины"} -.eventType тип события
      * @apiSuccess {string} -.eventDetail детали события (ключ, номер телефона, идентификатор лица, номер машины)
@@ -27,15 +28,17 @@
 
     auth();
 
-    $flat_id = (int)@$postdata['flatId'];
+    $flat_id = (int)$postdata['flatId'] ?? false;
     if (!$flat_id) {
-        response(422);
+        $flat_id = false;
     }
 
-    $flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
-    $f = in_array($flat_id, $flat_ids);
-    if (!$f) {
-        response(403, false, i18n("mobile.404"));
+    if ($flat_id !== false) {
+        $flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
+        $f = in_array($flat_id, $flat_ids);
+        if (!$f) {
+            response(403, false, i18n("mobile.404"));
+        }
     }
 
     $households = loadBackend("households");
@@ -46,9 +49,11 @@
     $data = [];
     $r = $households->watchers($device["deviceId"]);
     foreach ($r as $v) {
-        if ($flat_id == (int)$v["flatId"]) {
+        $f_id = (int)$v["flatId"];
+        if ($flat_id == $f_id || $flat_id === false) {
             $data[] = [
                 "watcherId" => (int)$v["houseWatcherId"],
+                "flatId" => $f_id,
                 "evenType" => (int)$v["eventType"],
                 "eventDetail" => $v["eventDetail"],
                 "comments" => $v["comments"],
