@@ -4,22 +4,13 @@ namespace hw\ip\domophone\ufanet;
 
 use CURLFile;
 use Generator;
-use hw\Interface\{
-    DisplayTextInterface,
-    FreePassInterface,
-    GateModeInterface,
-    LanguageInterface,
-};
+use hw\Interface\LanguageInterface;
 use hw\ip\domophone\domophone;
 
 /**
- * Abstract class representing an Ufanet intercom.
+ * Abstract base class for Ufanet intercoms.
  */
-abstract class ufanet extends domophone implements
-    DisplayTextInterface,
-    FreePassInterface,
-    GateModeInterface,
-    LanguageInterface
+abstract class ufanet extends domophone implements LanguageInterface
 {
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;
@@ -254,16 +245,6 @@ abstract class ufanet extends domophone implements
         }
     }
 
-    public function getDisplayText(): array
-    {
-        return array_filter($this->apiCall('/api/v1/configuration')['display']['labels'] ?? []);
-    }
-
-    public function getDisplayTextLinesCount(): int
-    {
-        return 3;
-    }
-
     public function getLineDiagnostics(int $apartment): string|int|float
     {
         $url = "/api/v1/apartments/$apartment/test";
@@ -273,18 +254,6 @@ abstract class ufanet extends domophone implements
         $resultRaw = $this->apiCall($url); // Get result
 
         return $resultRaw['result'] ?? '';
-    }
-
-    public function isFreePassEnabled(): bool
-    {
-        $doorSettings = $this->apiCall('/api/v1/configuration')['door'];
-        return $doorSettings['unlock'] !== '' || $doorSettings['unlock2'] !== '';
-    }
-
-    public function isGateModeEnabled(): bool
-    {
-        ['type' => $type, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
-        return $type === 'GATE' && $mode === 1;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -333,19 +302,6 @@ abstract class ufanet extends domophone implements
         $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => self::CMS_PARAMS[$model] ?? []]);
     }
 
-    public function setDisplayText(array $textLines): void
-    {
-        $this->apiCall('/api/v1/configuration', 'PATCH', [
-            'display' => [
-                'labels' => [
-                    $textLines[0] ?? '',
-                    $textLines[1] ?? '',
-                    $textLines[2] ?? '',
-                ],
-            ],
-        ]);
-    }
-
     public function setDtmfCodes(
         string $code1 = '1',
         string $code2 = '2',
@@ -357,31 +313,6 @@ abstract class ufanet extends domophone implements
             'door' => [
                 'dtmf_open_local' => [$code1, $code2],
                 'dtmf_open_remote' => $codeCms,
-            ],
-        ]);
-    }
-
-    public function setFreePassEnabled(bool $enabled): void
-    {
-        $this->apiCall('/api/v1/configuration', 'PATCH', [
-            'door' => [
-                'unlock' => $enabled ? self::UNLOCK_DATE : '',
-                'unlock2' => $enabled ? self::UNLOCK_DATE : '',
-            ],
-        ]);
-    }
-
-    public function setGateModeEnabled(bool $enabled): void
-    {
-        // TODO: need to set some CMS as default, otherwise there will be difference after disabling gate mode
-        if ($enabled === false) {
-            return;
-        }
-
-        $this->apiCall('/api/v1/configuration', 'PATCH', [
-            'commutator' => [
-                'type' => 'GATE',
-                'mode' => 1,
             ],
         ]);
     }
