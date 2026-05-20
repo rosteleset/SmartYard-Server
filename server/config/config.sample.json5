@@ -44,6 +44,9 @@
         "address_verification_tab_layout_visible": true,
         "address_verification_tab_1_visible": true,
         "address_verification_tab_2_visible": true,
+
+        // Events Tracking. This option turns on/off the events tracking system UI for the mobile app. The default value is false.
+        "events_tracking": false,
     },
 
     "db": {
