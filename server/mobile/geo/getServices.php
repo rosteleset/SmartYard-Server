@@ -27,14 +27,47 @@
         response(422);
     }
     $households = loadBackend("households");
+    $customFields = loadBackend("customFields");
 
     $ret = [];
+    $services = [];
+    $allowedServices = [
+        "internet",
+        "iptv",
+        "ctv",
+        "phone",
+        "cctv",
+        "domophone",
+        "gsm",
+    ];
 
+    if ($customFields) {
+        $values = $customFields->getValues("house", $house_id);
+
+        if (is_array($values)) {
+            $servicesValue = trim((string)@$values["services"]);
+
+            foreach (explode(",", $servicesValue) as $service) {
+                $service = trim(mb_strtolower($service));
+
+                if (in_array($service, $allowedServices, true) && isset($RBTServices[$service])) {
+                    $services[$service] = $service;
+                }
+            }
+        }
+    }
 
     if ($households->getFlats('houseId', $house_id)) {
-        $s = $RBTServices['domophone'];
-        $s['byDefault'] = 't';
-        $ret[] = $s;
+        if (!count($services)) {
+            $services = [ "domophone" => "domophone" ];
+        }
+
+        foreach ($services as $service) {
+            $s = $RBTServices[$service];
+            $s['canChange'] = 't';
+            $s['byDefault'] = $service === 'domophone' ? 't' : 'f';
+            $ret[] = $s;
+        }
     }
 
 
