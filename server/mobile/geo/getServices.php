@@ -64,7 +64,8 @@
 
         foreach ($services as $service) {
             $s = $RBTServices[$service];
-            $s['byDefault'] = @$s['canChange'] === 'f' ? 't' : 'f';
+            $s['canChange'] = 't';
+            $s['byDefault'] = $service === 'domophone' ? 't' : 'f';
             $ret[] = $s;
         }
     }
