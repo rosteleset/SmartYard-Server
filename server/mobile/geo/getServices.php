@@ -31,7 +31,6 @@
 
     $ret = [];
     $services = [];
-    $defaultServices = [];
     $allowedServices = [
         "internet",
         "iptv",
@@ -61,16 +60,11 @@
     if ($households->getFlats('houseId', $house_id)) {
         if (!count($services)) {
             $services = [ "domophone" => "domophone" ];
-            $defaultServices = [ "domophone" => "domophone" ];
         }
 
         foreach ($services as $service) {
             $s = $RBTServices[$service];
-
-            if (isset($defaultServices[$service])) {
-                $s['byDefault'] = 't';
-            }
-
+            $s['byDefault'] = @$s['canChange'] === 'f' ? 't' : 'f';
             $ret[] = $s;
         }
     }
