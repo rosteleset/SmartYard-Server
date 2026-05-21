@@ -14,6 +14,9 @@
      * @apiBody {string} eventDetail детали события (ключ, номер телефона, идентификатор лица, номер машины)
      * @apiBody {string} comments комментарий наблюдения
      *
+     * @apiSuccess {Object} [-] объект
+     * @apiSuccess {Number} -.watcherId watcherId
+     *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
      * 422 неверный формат данных
@@ -31,6 +34,9 @@
         response(422);
     }
 
-    $households->watch($device["deviceId"], $flat_id, $postdata["eventType"], $postdata["eventDetail"], $postdata["comments"]);
+    $result = $households->watch($device["deviceId"], $flat_id, $postdata["eventType"], $postdata["eventDetail"], $postdata["comments"]);
+    if ($result) {
+        response(200, ['watcherId' => (int)$result]);
+    }
 
     response();

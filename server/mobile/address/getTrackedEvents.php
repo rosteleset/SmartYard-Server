@@ -54,7 +54,7 @@
             $data[] = [
                 "watcherId" => (int)$v["houseWatcherId"],
                 "flatId" => $f_id,
-                "evenType" => (int)$v["eventType"],
+                "eventType" => (int)$v["eventType"],
                 "eventDetail" => $v["eventDetail"],
                 "comments" => $v["comments"],
             ];
