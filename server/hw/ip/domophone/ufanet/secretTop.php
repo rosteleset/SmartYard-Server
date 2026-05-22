@@ -14,6 +14,7 @@ use hw\Interface\{
  */
 class secretTop extends ufanet implements GateModeInterface, DisplayTextInterface, FreePassInterface
 {
+    protected const LINE_TEST_DURATION = 2;
     protected const RELAY_SWITCHING_DURATION = 1;
     protected const UNLOCK_DATE = '3000-01-01 00:00:00';
 
@@ -25,6 +26,17 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
     public function getDisplayTextLinesCount(): int
     {
         return 3;
+    }
+
+    public function getLineDiagnostics(int $apartment): string|int|float
+    {
+        $url = "/api/v1/apartments/$apartment/test";
+
+        $this->apiCall($url, 'POST'); // Start test
+        sleep(self::LINE_TEST_DURATION); // Wait test
+        $resultRaw = $this->apiCall($url); // Get result
+
+        return $resultRaw['result'] ?? '';
     }
 
     public function isFreePassEnabled(): bool

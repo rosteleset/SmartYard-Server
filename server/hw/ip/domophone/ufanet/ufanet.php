@@ -37,8 +37,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         'QAD-100' => ['type' => 'DIGITAL'],
     ];
 
-    protected const LINE_TEST_DURATION = 2;
-
     /**
      * @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded.
      */
@@ -240,17 +238,6 @@ abstract class ufanet extends domophone implements LanguageInterface
                 unset($this->keys[$normalizedRfid]);
             }
         }
-    }
-
-    public function getLineDiagnostics(int $apartment): string|int|float
-    {
-        $url = "/api/v1/apartments/$apartment/test";
-
-        $this->apiCall($url, 'POST'); // Start test
-        sleep(self::LINE_TEST_DURATION); // Wait test
-        $resultRaw = $this->apiCall($url); // Get result
-
-        return $resultRaw['result'] ?? '';
     }
 
     public function prepare(): void
