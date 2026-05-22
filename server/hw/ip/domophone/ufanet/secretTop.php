@@ -14,6 +14,9 @@ use hw\Interface\{
  */
 class secretTop extends ufanet implements GateModeInterface, DisplayTextInterface, FreePassInterface
 {
+    protected const RELAY_SWITCHING_DURATION = 1;
+    protected const UNLOCK_DATE = '3000-01-01 00:00:00';
+
     public function getDisplayText(): array
     {
         return array_filter($this->apiCall('/api/v1/configuration')['display']['labels'] ?? []);
@@ -34,6 +37,16 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
     {
         ['type' => $type, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
         return $type === 'GATE' && $mode === 1;
+    }
+
+    public function openLock(int $lockNumber = 0): void
+    {
+        if ($lockNumber === 2) {
+            $this->switchRelay(true, self::RELAY_SWITCHING_DURATION);
+        } else {
+            $lockNumber++;
+            $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST', null, 3);
+        }
     }
 
     public function prepare(): void

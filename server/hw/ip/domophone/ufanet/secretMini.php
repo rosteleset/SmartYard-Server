@@ -7,6 +7,11 @@ namespace hw\ip\domophone\ufanet;
  */
 class secretMini extends ufanet
 {
+    public function openLock(int $lockNumber = 0): void
+    {
+        $this->apiCall('/api/v1/doors/1/open', 'POST', null, 3);
+    }
+
     public function setConciergeNumber(int $sipNumber): void
     {
         // Empty implementation

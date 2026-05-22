@@ -38,8 +38,6 @@ abstract class ufanet extends domophone implements LanguageInterface
     ];
 
     protected const LINE_TEST_DURATION = 2;
-    protected const RELAY_SWITCHING_DURATION = 1;
-    protected const UNLOCK_DATE = '3000-01-01 00:00:00';
 
     /**
      * @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded.
@@ -253,16 +251,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         $resultRaw = $this->apiCall($url); // Get result
 
         return $resultRaw['result'] ?? '';
-    }
-
-    public function openLock(int $lockNumber = 0): void
-    {
-        if ($lockNumber === 2) {
-            $this->switchRelay(true, self::RELAY_SWITCHING_DURATION);
-        } else {
-            $lockNumber++;
-            $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST', null, 3);
-        }
     }
 
     public function prepare(): void
