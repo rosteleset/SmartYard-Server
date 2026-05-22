@@ -2,7 +2,6 @@
 
 namespace hw\ip\domophone\ufanet;
 
-use CURLFile;
 use Generator;
 use hw\Interface\LanguageInterface;
 use hw\ip\domophone\domophone;
@@ -271,8 +270,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         parent::prepare();
         $this->setNetwork();
         $this->setRfidMode();
-        $this->setDisplayLocalization();
-        $this->setDisplayImage();
     }
 
     public function setAudioLevels(array $levels): void
@@ -651,38 +648,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         }
 
         $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => $params]);
-    }
-
-    /**
-     * Upload and set display image.
-     *
-     * @param string|null $pathToImage (Optional) Path to the image which will be uploaded.
-     * If null, the default path will be used.
-     * @return void
-     */
-    protected function setDisplayImage(?string $pathToImage = null): void
-    {
-        if ($pathToImage === null) {
-            $pathToImage = __DIR__ . '/assets/display_image.jpg';
-        }
-
-        if (!file_exists($pathToImage) || !is_file($pathToImage)) {
-            return;
-        }
-
-        sleep(15); // Yes...
-        $this->apiCall('/api/v1/file', 'POST', ['IMAGE' => new CURLFile($pathToImage)]);
-    }
-
-    /**
-     * Sets the text for display messages.
-     *
-     * @return void
-     */
-    protected function setDisplayLocalization(): void
-    {
-        $localization = require __DIR__ . '/config/display_localization.php';
-        $this->apiCall('/api/v1/configuration', 'PATCH', ['display' => ['localization' => $localization]]);
     }
 
     /**
