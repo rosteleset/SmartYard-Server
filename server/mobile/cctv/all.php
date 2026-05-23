@@ -19,6 +19,7 @@
      * @apiSuccess {Number} -.lon долгота
      * @apiSuccess {String} -.url базовый url потока
      * @apiSuccess {String} -.token token авторизации
+     * @apiSuccess {Number} [-.pathOrder] порядок камеры внутри группы allTree
      * @apiSuccess {String} [-.serverType] тип DVR сервера: "flussonic" (default), "nimble", "trassir", "macroscop", "forpost"
      * @apiSuccess {String} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
      */

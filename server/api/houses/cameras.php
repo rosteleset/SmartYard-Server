@@ -29,6 +29,7 @@
      * @apiBody {Number} houseId
      * @apiBody {Number} cameraId
      * @apiBody {String} path
+     * @apiBody {Number} [pathOrder] order inside selected path group
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -74,7 +75,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyCamera("house", $params["houseId"], $params["cameraId"], $params["path"]);
+                $success = $households->modifyCamera("house", $params["houseId"], $params["cameraId"], $params["path"], @$params["pathOrder"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
