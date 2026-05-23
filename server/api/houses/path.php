@@ -32,6 +32,7 @@
      * @apiParam {Number} parentId
      * @apiBody {String} text
      * @apiBody {String} icon
+     * @apiBody {String="list","map"} [type=list]
      *
      * @apiSuccess {Number} nodeId
      */
@@ -49,6 +50,7 @@
      * @apiParam {Number} nodeId
      * @apiBody {String} text
      * @apiBody {String} icon
+     * @apiBody {String="list","map"} [type]
      *
      * @apiSuccess {Boolean} oprationResult
      */
@@ -107,9 +109,9 @@
                     return api::ERROR();
                 } else {
                     if ((int)$params["_id"]) {
-                        return api::ANSWER($households->addPathNode($params["_id"], @$params["text"], @$params["icon"]), "nodeId");
+                        return api::ANSWER($households->addPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"] ?: "list"), "nodeId");
                     } else {
-                        return api::ANSWER($households->addRootPathNode($params["_id"], @$params["text"], @$params["icon"]), "nodeId");
+                        return api::ANSWER($households->addRootPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"] ?: "list"), "nodeId");
                     }
                 }
             }
@@ -120,7 +122,7 @@
                 if (!$households) {
                     return api::ERROR();
                 } else {
-                    return api::ANSWER($households->modifyPathNode($params["_id"], @$params["text"], @$params["icon"]));
+                    return api::ANSWER($households->modifyPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"]));
                 }
             }
 

@@ -2460,28 +2460,28 @@
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, null path from cameras where camera_id = $params";
+                        $q = "select camera_id, null path, null path_order from cameras where camera_id = $params";
                         break;
 
                     case "houseId":
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, path from houses_cameras_houses where address_house_id = $params";
+                        $q = "select camera_id, path, path_order from houses_cameras_houses where address_house_id = $params";
                         break;
 
                     case "flatId":
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, path from houses_cameras_flats where house_flat_id = $params";
+                        $q = "select camera_id, path, path_order from houses_cameras_flats where house_flat_id = $params";
                         break;
 
                     case "subscriberId":
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id, null path from houses_cameras_subscribers where house_subscriber_id = $params";
+                        $q = "select camera_id, null path, null path_order from houses_cameras_subscribers where house_subscriber_id = $params";
                         break;
                 }
 
@@ -2491,12 +2491,14 @@
                     $ids = $this->db->get($q, $p, [
                         "camera_id" => "cameraId",
                         "path" => "path",
+                        "path_order" => "pathOrder",
                     ]);
 
                     foreach ($ids as $id) {
                         $cam = $cameras->getCamera($id["cameraId"]);
                         if ($cam) {
                             $cam["path"] = $id["path"];
+                            $cam["pathOrder"] = $id["pathOrder"];
                             $list[] = $cam;
                         }
                     }
@@ -2565,20 +2567,28 @@
                 return false;
             }
 
-            public function modifyCamera($from, $id, $cameraId, $path) {
+            public function modifyCamera($from, $id, $cameraId, $path, $pathOrder = null) {
+                if ($pathOrder !== null && $pathOrder !== "" && checkInt($pathOrder) !== false) {
+                    $pathOrder = (int)$pathOrder;
+                } else {
+                    $pathOrder = null;
+                }
+
                 switch ($from) {
                     case "house":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
-                            return $this->db->modify("update houses_cameras_houses set path = :path where camera_id = $cameraId and address_house_id = $id", [
+                            return $this->db->modify("update houses_cameras_houses set path = :path, path_order = :path_order where camera_id = $cameraId and address_house_id = $id", [
                                 "path" => $path ?: null,
+                                "path_order" => $pathOrder,
                             ]);
                         } else {
                             return false;
                         }
                     case "flat":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
-                            return $this->db->modify("update houses_cameras_flats set path = :path where camera_id = $cameraId and house_flat_id = $id", [
+                            return $this->db->modify("update houses_cameras_flats set path = :path, path_order = :path_order where camera_id = $cameraId and house_flat_id = $id", [
                                 "path" => $path ?: null,
+                                "path_order" => $pathOrder,
                             ]);
                         } else {
                             return false;
@@ -3495,12 +3505,13 @@
 
                 $params["house_path_tree"] = $tree;
 
-                $nodes = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and ($query) order by house_path_name", $params, [
+                $nodes = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and ($query) order by house_path_name", $params, [
                     "house_path_id" => "id",
                     "house_path_tree" => "tree",
                     "house_path_parent" => "parentId",
                     "house_path_name" => "text",
                     "house_path_icon" => "icon",
+                    "house_path_type" => "viewType",
                     "childrens" => "children",
                 ]);
 
@@ -3532,7 +3543,7 @@
                 if ($withParents) {
 
                     if ((int)$treeOrFrom) {
-                        $node = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_id = :house_path_id", [
+                        $node = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_id = :house_path_id", [
                             "house_path_id" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -3540,6 +3551,7 @@
                             "house_path_parent" => "parentId",
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
+                            "house_path_type" => "viewType",
                             "childrens" => "children",
                         ], [
                             "singlify"
@@ -3553,7 +3565,7 @@
                     }
 
                     if ((int)$node["parentId"]) {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent in (select house_path_id from houses_paths where house_path_id = :house_path_id) order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent in (select house_path_id from houses_paths where house_path_id = :house_path_id) order by house_path_name", [
                             "house_path_id" => $node["parentId"],
                         ], [
                             "house_path_id" => "id",
@@ -3561,10 +3573,11 @@
                             "house_path_parent" => "parentId",
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
+                            "house_path_type" => "viewType",
                             "childrens" => "children",
                         ]);
                     } else {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent is null and house_path_tree = :house_path_tree order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent is null and house_path_tree = :house_path_tree order by house_path_name", [
                             "house_path_tree" => $node["tree"],
                         ], [
                             "house_path_id" => "id",
@@ -3572,6 +3585,7 @@
                             "house_path_parent" => "parentId",
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
+                            "house_path_type" => "viewType",
                             "childrens" => "children",
                         ]);
                     }
@@ -3601,7 +3615,7 @@
                     return $tree;
                 } else {
                     if (is_numeric($treeOrFrom)) {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
                             "house_path_parent" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -3609,10 +3623,11 @@
                             "house_path_parent" => "parentId",
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
+                            "house_path_type" => "viewType",
                             "childrens" => "children",
                         ]);
                     } else {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
                             "house_path_tree" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -3620,6 +3635,7 @@
                             "house_path_parent" => "parentId",
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
+                            "house_path_type" => "viewType",
                             "childrens" => "children",
                         ]);
                     }
@@ -3634,16 +3650,19 @@
              * @inheritDoc
              */
 
-            function addRootPathNode($tree, $text, $icon) {
+            function addRootPathNode($tree, $text, $icon, $type = "list") {
                 if (!checkStr($tree) || !checkStr($text)) {
                     return false;
                 }
 
-                return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon)", [
+                $type = in_array($type, [ "list", "map" ]) ? $type : "list";
+
+                return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon, house_path_type) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon, :house_path_type)", [
                     "house_path_tree" => $tree,
                     "house_path_parent" => null,
                     "house_path_name" => $text,
                     "house_path_icon" => $icon,
+                    "house_path_type" => $type,
                 ]);
             }
 
@@ -3651,10 +3670,12 @@
              * @inheritDoc
              */
 
-            function addPathNode($parentId, $text, $icon) {
+            function addPathNode($parentId, $text, $icon, $type = "list") {
                 if (!checkInt($parentId) || !checkStr($text)) {
                     return false;
                 }
+
+                $type = in_array($type, [ "list", "map" ]) ? $type : "list";
 
                 $tree = $this->db->get("select house_path_tree from houses_paths where house_path_id = :parent_id", [
                     "parent_id" => (int)$parentId,
@@ -3665,11 +3686,12 @@
                 ]);
 
                 if ($tree) {
-                    return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon)", [
+                    return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon, house_path_type) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon, :house_path_type)", [
                         "house_path_tree" => $tree,
                         "house_path_parent" => $parentId,
                         "house_path_name" => $text,
                         "house_path_icon" => $icon,
+                        "house_path_type" => $type,
                     ]);
                 } else {
                     return false;
@@ -3680,15 +3702,18 @@
              * @inheritDoc
              */
 
-            function modifyPathNode($nodeId, $text, $icon) {
+            function modifyPathNode($nodeId, $text, $icon, $type = null) {
                 if (!checkInt($nodeId) || !checkStr($text)) {
                     return false;
                 }
 
-                return $this->db->modify("update houses_paths set house_path_name = :house_path_name, house_path_icon = :house_path_icon where house_path_id = :house_path_id", [
+                $type = in_array($type, [ "list", "map" ]) ? $type : null;
+
+                return $this->db->modify("update houses_paths set house_path_name = :house_path_name, house_path_icon = :house_path_icon, house_path_type = coalesce(:house_path_type, house_path_type, 'list') where house_path_id = :house_path_id", [
                     "house_path_id" => $nodeId,
                     "house_path_name" => $text,
                     "house_path_icon" => $icon,
+                    "house_path_type" => $type,
                 ]);
             }
 

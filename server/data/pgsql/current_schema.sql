@@ -1007,7 +1007,8 @@ ALTER TABLE public.frs_links_faces OWNER TO rbt;
 CREATE TABLE public.houses_cameras_flats (
     camera_id integer NOT NULL,
     house_flat_id integer NOT NULL,
-    path character varying
+    path character varying,
+    path_order integer
 );
 
 
@@ -1020,7 +1021,8 @@ ALTER TABLE public.houses_cameras_flats OWNER TO rbt;
 CREATE TABLE public.houses_cameras_houses (
     camera_id integer NOT NULL,
     address_house_id integer NOT NULL,
-    path character varying
+    path character varying,
+    path_order integer
 );
 
 
@@ -1300,7 +1302,8 @@ CREATE TABLE public.houses_paths (
     house_path_tree character varying DEFAULT 'default'::character varying,
     house_path_parent integer,
     house_path_name character varying,
-    house_path_icon character varying
+    house_path_icon character varying,
+    house_path_type character varying DEFAULT 'list'::character varying
 );
 
 
@@ -4322,4 +4325,3 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 
 \unrestrict TRZyKC11xO1yBqdeDsDayRekfdDAEGhznasCuu3AKDwwbjDN8ecegEzbdqtr52a
-

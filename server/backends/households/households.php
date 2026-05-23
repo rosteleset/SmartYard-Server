@@ -434,7 +434,7 @@
              * @return mixed
              */
 
-            abstract public function modifyCamera($from, $id, $cameraId, $path);
+            abstract public function modifyCamera($from, $id, $cameraId, $path, $pathOrder = null);
 
             /**
              * @param $by - "id", "subscriber", "flat", "authToken"
@@ -568,7 +568,7 @@
              * @return mixed
              */
 
-            abstract function addRootPathNode($tree, $text, $icon);
+            abstract function addRootPathNode($tree, $text, $icon, $type = "list");
 
             /**
              * @param string parentId
@@ -578,7 +578,7 @@
              * @return mixed
              */
 
-            abstract function addPathNode($parentId, $text, $icon);
+            abstract function addPathNode($parentId, $text, $icon, $type = "list");
 
             /**
              * @param string nodeId
@@ -588,7 +588,7 @@
              * @return mixed
              */
 
-            abstract function modifyPathNode($nodeId, $text, $icon);
+            abstract function modifyPathNode($nodeId, $text, $icon, $type = null);
 
             /**
              * @param string deviceToken

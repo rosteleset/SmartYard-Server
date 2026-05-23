@@ -99,6 +99,7 @@
             $item = [
                 "id" => $camera['cameraId'],
                 "path" => $camera['path'] ?? null,
+                "pathOrder" => $camera['pathOrder'] ?? null,
                 "name" => $camera['name'],
                 "lat" => strval($camera['lat']),
                 "url" => loadBackend("dvr")->getDVRStreamURLForCam($camera),

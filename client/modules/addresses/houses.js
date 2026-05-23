@@ -2443,6 +2443,7 @@
                                     let node = {
                                         id: result.nodeId,
                                         text: i18n("addresses.newNode"),
+                                        viewType: "list",
                                     };
                                     instance.jstree().create_node("#", node, 'last', newNode => {
                                         setTimeout(() => {
@@ -2465,6 +2466,7 @@
                                     let node = {
                                         id: result.nodeId,
                                         text: i18n("addresses.newNode"),
+                                        viewType: "list",
                                     };
                                     modules.addresses.houses.pathNodes[result.nodeId] = i18n("addresses.newNode");
                                     instance.jstree().create_node(parent, node, 'last', newNode => {
@@ -2493,6 +2495,7 @@
                             if (node && node.obj && node.obj.id && node.text && node.text != modules.addresses.houses.pathNodes[node.obj.id]) {
                                 PUT("houses", "path", node.obj.id, {
                                     text: node.text,
+                                    type: node.obj.original && node.obj.original.viewType ? node.obj.original.viewType : "list",
                                 }).
                                 done(() => {
                                     modules.addresses.houses.pathNodes[node.obj.id] = node.text;
@@ -2550,13 +2553,70 @@
                                 }, 100);
                             }
                         }
+                    },
+                    {
+                        id: "pathViewType",
+                        type: "select",
+                        title: i18n("addresses.pathViewType"),
+                        options: [
+                            { value: "list", text: i18n("addresses.pathViewTypeList") },
+                            { value: "map", text: i18n("addresses.pathViewTypeMap") },
+                        ],
+                    },
+                    {
+                        id: "pathOrder",
+                        type: "text",
+                        title: i18n("addresses.pathOrder"),
+                        value: camera.pathOrder !== null && typeof camera.pathOrder !== "undefined" ? camera.pathOrder : "",
+                        validate: v => !$.trim(v) || /^-?\d+$/.test($.trim(v)),
                     }
                 ],
+                done: function (prefix) {
+                    function selectedPathNode() {
+                        let selected = $(`#${prefix}path`).jstree().get_selected();
+                        if (selected && selected.length) {
+                            return $(`#${prefix}path`).jstree().get_node(selected[0]);
+                        }
+
+                        return false;
+                    }
+
+                    function syncPathViewType() {
+                        let node = selectedPathNode();
+                        if (node) {
+                            $(`#${prefix}pathViewType`).prop("disabled", false).val(node.original && node.original.viewType ? node.original.viewType : "list");
+                        } else {
+                            $(`#${prefix}pathViewType`).prop("disabled", true).val("list");
+                        }
+                    }
+
+                    $(`#${prefix}path`).off("select_node.jstree.cctvType deselect_node.jstree.cctvType changed.jstree.cctvType ready.jstree.cctvType").on("select_node.jstree.cctvType deselect_node.jstree.cctvType changed.jstree.cctvType ready.jstree.cctvType", syncPathViewType);
+                    $(`#${prefix}pathViewType`).off("change.cctvType").on("change.cctvType", () => {
+                        let node = selectedPathNode();
+                        if (!node) {
+                            return;
+                        }
+
+                        let type = $(`#${prefix}pathViewType`).val();
+                        PUT("houses", "path", node.id, {
+                            text: node.text,
+                            type: type,
+                        }).
+                        done(() => {
+                            node.original = node.original || {};
+                            node.original.viewType = type;
+                        }).
+                        fail(FAIL);
+                    });
+                    syncPathViewType();
+                },
                 callback: result => {
+                    let pathOrder = $.trim(`${result.pathOrder}`);
                     PUT("houses", "cameras", false, {
                         houseId: houseId,
                         cameraId: cameraId,
                         path: result.path,
+                        pathOrder: pathOrder === "" ? null : parseInt(pathOrder),
                     }).
                     fail(FAIL).
                     done(() => {
