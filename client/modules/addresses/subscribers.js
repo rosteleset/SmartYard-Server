@@ -24,8 +24,8 @@
         loadingStart();
         POST("subscribers", "key", false, key).
         fail(FAIL).
-        done(() => {
-            message(i18n("addresses.keyWasAdded"));
+        done(response => {
+            modules.addresses.keys.addKeyMessage(response);
         }).
         always(() => {
             modules.addresses.subscribers.route(hashParse("params"));
@@ -174,13 +174,11 @@
             apply: i18n("add"),
             fields: [
                 {
-                    id: "rfId",
-                    type: "text",
-                    title: i18n("addresses.key"),
-                    placeholder: "00000000ABCDEF",
-                    validate: v => {
-                        return new RegExp("^" + config.regExp.rfid + "$").test(v);
-                    }
+                    id: "rfIds",
+                    type: "area",
+                    title: i18n("addresses.keys"),
+                    placeholder: "000000ABCDEF12\n00123456789ABC\nA1B2C3D4E5F607",
+                    validate: modules.addresses.keys.validateRfIds,
                 },
                 {
                     id: "comments",
@@ -191,6 +189,8 @@
             ],
             callback: function (result) {
                 let params = hashParse("params");
+
+                result.rfIds = modules.addresses.keys.parseRfIds(result.rfIds);
 
                 if (params.flatId) {
                     result.accessType = 2;

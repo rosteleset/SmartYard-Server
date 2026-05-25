@@ -2140,6 +2140,60 @@
              * @inheritDoc
              */
 
+            public function addKeys($rfIds, $accessType, $accessTo, $comments) {
+                if (
+                    !is_array($rfIds) ||
+                    !checkInt($accessTo) ||
+                    !checkInt($accessType) ||
+                    !checkStr($comments, [ "maxLength" => 128 ])
+                ) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $normalizedRfIds = [];
+                foreach ($rfIds as $rfId) {
+                    $rfId = trim((string)$rfId);
+
+                    if ($rfId !== "" && !in_array($rfId, $normalizedRfIds)) {
+                        $normalizedRfIds[] = $rfId;
+                    }
+                }
+
+                if (!count($normalizedRfIds)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $r = [
+                    "total" => count($normalizedRfIds),
+                    "added" => [],
+                    "failed" => [],
+                ];
+
+                foreach ($normalizedRfIds as $rfId) {
+                    $keyId = $this->addKey($rfId, $accessType, $accessTo, $comments);
+
+                    if ($keyId !== false) {
+                        $r["added"][] = [
+                            "rfId" => $rfId,
+                            "keyId" => $keyId,
+                        ];
+                    } else {
+                        $r["failed"][] = [
+                            "rfId" => $rfId,
+                            "error" => getLastError() ?: "unknown",
+                        ];
+                    }
+                }
+
+                return $r;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function deleteKey($keyId) {
                 if (!checkInt($keyId)) {
                     setLastError("invalidParams");

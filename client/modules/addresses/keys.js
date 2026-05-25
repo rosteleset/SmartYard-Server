@@ -99,6 +99,50 @@
         });
     },
 
+    parseRfIds: function (value) {
+        let rfIds = [];
+        let parts = (value ? value : "").split(/[\s,;]+/);
+
+        for (let i in parts) {
+            let rfId = $.trim(parts[i]);
+            if (rfId && rfIds.indexOf(rfId) < 0) {
+                rfIds.push(rfId);
+            }
+        }
+
+        return rfIds;
+    },
+
+    validateRfIds: function (value) {
+        let rfIds = modules.addresses.keys.parseRfIds(value);
+
+        if (!rfIds.length) {
+            return false;
+        }
+
+        for (let i in rfIds) {
+            if (!new RegExp("^" + config.regExp.rfid + "$").test(rfIds[i])) {
+                return i18n("addresses.invalidKeys", rfIds[i]);
+            }
+        }
+
+        return true;
+    },
+
+    addKeyMessage: function (response) {
+        if (response.keys) {
+            if (response.keys.added.length) {
+                message(response.keys.total > 1 ? i18n("addresses.keysWereAdded", response.keys.added.length, response.keys.total) : i18n("addresses.keyWasAdded"));
+            }
+            if (response.keys.failed.length) {
+                let failed = response.keys.failed.map(key => key.rfId).slice(0, 5).join(", ");
+                error(i18n("addresses.keysWereNotAdded", response.keys.failed.length, response.keys.total) + (failed ? ": " + failed : ""));
+            }
+        } else {
+            message(i18n("addresses.keyWasAdded"));
+        }
+    },
+
     addKey: function (params) {
         cardForm({
             title: i18n("addresses.addKey"),
@@ -108,13 +152,11 @@
             apply: i18n("add"),
             fields: [
                 {
-                    id: "rfId",
-                    type: "text",
-                    title: i18n("addresses.key"),
-                    placeholder: "00000000ABCDEF",
-                    validate: v => {
-                        return new RegExp("^" + config.regExp.rfid + "$").test(v);
-                    }
+                    id: "rfIds",
+                    type: "area",
+                    title: i18n("addresses.keys"),
+                    placeholder: "000000ABCDEF12\n00123456789ABC\nA1B2C3D4E5F607",
+                    validate: modules.addresses.keys.validateRfIds,
                 },
                 {
                     id: "comments",
@@ -124,14 +166,15 @@
                 },
             ],
             callback: function (result) {
+                result.rfIds = modules.addresses.keys.parseRfIds(result.rfIds);
                 result.accessType = params.by ? params.by : "0";
                 result.accessTo = params.query ? params.query : "0";
                 loadingStart();
                 POST("subscribers", "key", false, result).
                 fail(FAIL).
                 fail(loadingDone).
-                done(() => {
-                    message(i18n("addresses.keyWasAdded"));
+                done(response => {
+                    modules.addresses.keys.addKeyMessage(response);
                 }).
                 always(() => {
                     if (params.modal) {

@@ -364,6 +364,17 @@
             abstract public function addKey($rfId, $accessType, $accessTo, $comments);
 
             /**
+             * @param $rfIds
+             * @param $accessType
+             * @param $accessTo
+             * @param $comments
+             *
+             * @return false|array
+             */
+
+            abstract public function addKeys($rfIds, $accessType, $accessTo, $comments);
+
+            /**
              * @param $keyId
              * @param $comments
              *
