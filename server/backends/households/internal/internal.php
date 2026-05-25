@@ -916,6 +916,10 @@
                         $params["password"] = null;
                     }
 
+                    if (array_key_exists("floor", $params) && !is_array($params["floor"]) && trim((string)$params["floor"]) === "") {
+                        $params["floor"] = 0;
+                    }
+
                     if (array_key_exists("floor", $params) && !checkInt($params["floor"])) {
                         setLastError("invalidParams");
                         return false;
