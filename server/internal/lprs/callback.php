@@ -104,6 +104,9 @@ foreach ($e_flats as $key => $values) {
                 $flats_with_event[] = $value;
                 $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_VEHICLE, $domophone_output,
                     $number . "|" . $value . "|" . $event_id . "|" . $camera_id);
+
+                // paranoidEvent (pushes)
+                $households->paranoidEvent($entrance["entranceId"], "lp", $number);
             }
         }
     }

@@ -56,6 +56,12 @@
         "pinError": "The PIN code was entered incorrectly",
         "paranoidTitleRf": "Door opened by rfId",
         "paranoidMsgRf": "%s, %s opened by rfId \"%s\"",
+        "paranoidTitleApp": "Door opened from app",
+        "paranoidMsgApp": "%s, %s opened from app by user \"%s\"",
+        "paranoidTitleCode": "Door opened by code",
+        "paranoidMsgCode": "%s, %s opened by code \"%s\"",
+        "paranoidTitleLP": "Entrance opened by license plate number",
+        "paranoidMsgLP": "%s, %s opened by \"%s\"",
         "overLimit": "Device limit per mobile number exceeded",
         "contactProviderForAdding": "Please contact your provider or flat owner",
         "invalidPlateNumber": "Invalid license plate number"

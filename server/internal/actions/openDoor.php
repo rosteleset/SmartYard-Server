@@ -83,8 +83,9 @@
             // Add door open data
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
 
-            // TODO: paranoidEvent (pushes)
-            // $households->paranoidEvent($entranceId, "code", $details);
+            // paranoidEvent (pushes)
+            $households = loadBackend('households');
+            $households->paranoidEvent($ip, $subId, $door, "code", $detail);
 
             response(201, ["id" => $plogDoorOpen]);
 

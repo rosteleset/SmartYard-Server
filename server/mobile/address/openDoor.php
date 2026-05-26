@@ -25,6 +25,7 @@
     $domophone_id = (int)@$postdata['domophoneId'];
     $door_id = (int)@$postdata['doorId'];
     $households = loadBackend("households");
+    $entrance_id = null;
 
     // Check intercom is blocking
     $blocked = true;
@@ -40,6 +41,7 @@
             $doorId = intval($e['domophoneOutput']);
             if ($domophone_id == $domophoneId && $door_id == $doorId && !$flatDetail['manualBlock'] ) {
                 $blocked = false;
+                $entrance_id = $entrance['entranceId'];
                 break;
             }
         }
@@ -77,6 +79,11 @@
 
         if ($plog) {
             $plog->addDoorOpenDataById(time(), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $subscriber['mobile']);
+
+            // paranoidEvent (pushes)
+            if (isset($entrance_id)) {
+                $households->paranoidEvent($entrance_id, "app", $subscriber['mobile']);
+            }
         }
 
         response();
@@ -90,8 +97,10 @@
         if ($plog) {
             $plog->addDoorOpenDataById(time(), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $subscriber['mobile']);
 
-            // TODO: paranoidEvent (pushes)
-            // $households->paranoidEvent($entranceId, "code", $details);
+            // paranoidEvent (pushes)
+            if (isset($entrance_id)) {
+                $households->paranoidEvent($entrance_id, "app", $subscriber['mobile']);
+            }
         }
     } catch (Exception $e) {
         response(404, false, i18n('mobile.error'), i18n('mobile.unavailable'));

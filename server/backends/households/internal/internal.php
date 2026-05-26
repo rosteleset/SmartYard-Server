@@ -3852,8 +3852,34 @@
 
                 $paranoids = false;
 
+                $map_event_type = [
+                    "rfId" => [
+                        "event_type" => "3",
+                        "title" => "mobile.paranoidTitleRf",
+                        "message" => "mobile.paranoidMsgRf",
+                    ],
+                    "app" => [
+                        "event_type" => "4",
+                        "title" => "mobile.paranoidTitleApp",
+                        "message" => "mobile.paranoidMsgApp",
+                    ],
+                    "code" => [
+                        "event_type" => "6",
+                        "title" => "mobile.paranoidTitleCode",
+                        "message" => "mobile.paranoidMsgCode",
+                    ],
+                    "lp" => [
+                        "event_type" => "9",
+                        "title" => "mobile.paranoidTitleLP",
+                        "message" => "mobile.paranoidMsgLP",
+                    ],
+                ];
+
                 switch ($by) {
                     case "rfId":
+                    case "app":
+                    case "code":
+                    case "lp":
                         $paranoids = $this->db->get("
                             select * from (
                                 select
@@ -3862,7 +3888,7 @@
                                     houses_subscribers_devices.push_token,
                                     houses_subscribers_devices.push_token_type,
                                     houses_subscribers_devices.ua,
-                                    houses_watchers.comments
+                                    coalesce(houses_watchers.comments, '') comments
                                 from
                                     houses_watchers
                                 left join
@@ -3870,8 +3896,8 @@
                                 left join
                                     houses_subscribers_devices on houses_subscribers_devices.subscriber_device_id = houses_watchers.subscriber_device_id
                                 where
-                                    event_type = '3' and
-                                    event_detail = :rfid and
+                                    event_type = :event_type and
+                                    (event_detail = :detail or coalesce(event_detail, '') = '') and
                                     houses_watchers.house_flat_id in (
                                         select house_flat_id from houses_entrances_flats where house_entrance_id = :house_entrance_id
                                     )
@@ -3879,7 +3905,8 @@
                             group by
                                 address_house_id, platform, push_token, push_token_type, ua, comments
                         ", [
-                            "rfid" => $detail,
+                            "event_type" => $map_event_type[$by]["event_type"],
+                            "detail" => $detail,
                             "house_entrance_id" => $entrance["entranceId"]
                         ], [
                             "address_house_id" => "houseId",
@@ -3930,8 +3957,8 @@
                             "timestamp" => time(),
                             "ttl" => 90,
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
-                            "title" => i18nL($l, "mobile.paranoidTitleRf"),
-                            "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ?: $detail),
+                            "title" => i18nL($l, $map_event_type[$by]["title"]),
+                            "msg" => i18nL($l, $map_event_type[$by]["message"], $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ?: $detail),
                             "houseId" => $paranoid["houseId"],
                             "hash" => $hash,
                             "sound" => "default",
