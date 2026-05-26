@@ -388,6 +388,7 @@
     "eventType5": "\"По лицу\"",
     "eventType6": "Код",
     "eventType7": "Звонок",
+    "eventType9": "Номер автомобиля",
     "confirmUnwatch": "Прекратить наблюдение \"#%s\"?",
     "concierge": "Консьерж",
     "sos": "SOS",

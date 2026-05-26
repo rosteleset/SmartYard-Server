@@ -381,6 +381,7 @@
     "eventType5": "\"By face\"",
     "eventType6": "Code",
     "eventType7": "Call",
+    "eventType9": "License plate number",
     "confirmUnwatch": "Stop watching \"#%s\"?",
     "concierge": "Concierge",
     "sos": "SOS",
