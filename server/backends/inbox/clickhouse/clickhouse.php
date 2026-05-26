@@ -88,6 +88,7 @@
                                     "sound" => "default",
                                     "pushAction" => $action,
                                     "messageId" => $msgId,
+                                    "bundle" => $device["bundle"],
                                 ])) {
                                     $count++;
                                 } else {
