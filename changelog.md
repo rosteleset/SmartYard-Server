@@ -29,6 +29,15 @@
 + added refresh button to camera motion/recognition zone editors
 + added support for BasIP AA-14FB, AA-12FB
 + added new IS Sokol+ implementations (previous ones renamed to LEGACY in UI)
+- fixed Asterisk web call handling
++ added custom submodule i18n loading
++ added camera form extension hooks
++ added inbox API method for sending a message by subscriber mobile number
++ mobile getServices now supports house-specific service lists from custom fields
++ added display modes for CCTV tree groups and manual camera ordering in allTree
+- fixed modifyFlat() to accept an empty floor value
++ added bulk RFID key adding through web UI and subscribers API
++ expanded mobile event tracking API and notifications for openings from app, by code and by license plate number
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
