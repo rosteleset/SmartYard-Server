@@ -2,7 +2,6 @@
 
 namespace hw\ip\domophone\ufanet;
 
-use Generator;
 use hw\Interface\LanguageInterface;
 use hw\ip\domophone\domophone;
 
@@ -16,28 +15,6 @@ abstract class ufanet extends domophone implements LanguageInterface
     }
 
     /**
-     * @var array Set of parameters sent to the intercom for different CMS models.
-     */
-    protected const CMS_PARAMS = [
-        'BK-100' => ['type' => 'VIZIT', 'mode' => 2], // TODO: check mode 1 and mode 2
-        'BK-400' => ['type' => 'VIZIT', 'mode' => 3],
-        'COM-25U' => ['type' => 'METAKOM'],
-        'COM-100U' => ['type' => 'METAKOM'],
-        'COM-220U' => ['type' => 'METAKOM'],
-        'FACTORIAL 8x8' => ['type' => 'FACTORIAL'],
-        'KKM-100S2' => ['type' => 'BEWARD_100'],
-        'KKM-105' => ['type' => 'BEWARD_105_108'],
-        'KKM-108' => ['type' => 'BEWARD_105_108'],
-        'KM20-1' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 20],
-        'KM100-7.1' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
-        'KM100-7.2' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
-        'KM100-7.3' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
-        'KM100-7.5' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
-        'KMG-100' => ['type' => 'CYFRAL', 'mode' => 1, 'edge' => 100],
-        'QAD-100' => ['type' => 'DIGITAL'],
-    ];
-
-    /**
      * @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded.
      */
     protected ?array $dialplans = null;
@@ -47,30 +24,6 @@ abstract class ufanet extends domophone implements LanguageInterface
      * which may be null if not loaded.
      */
     protected ?array $keys = null;
-
-    protected ?string $cmsModelName = null;
-
-    /**
-     * @return array{index:string,value:array}
-     */
-    protected static function getMatrixCell(int $mapping, int $apartment): array
-    {
-        $hundreds = floor($mapping / 100);
-        $tens = floor(($mapping - $hundreds * 100) / 10);
-        $units = $mapping - ($hundreds * 100 + $tens * 10);
-
-        $index = "$hundreds$tens$units";
-
-        return [
-            'index' => $index,
-            'value' => [
-                'hundreds' => $hundreds,
-                'tens' => $tens,
-                'units' => $units,
-                'apartment' => $apartment,
-            ],
-        ];
-    }
 
     /**
      * Converts an RFID code to the device's standard format.
@@ -154,24 +107,6 @@ abstract class ufanet extends domophone implements LanguageInterface
             'Encode[0].ExtraFormat[0].Video.BitRate' => 512,
             'Encode[0].ExtraFormat[0].Video.BitRateControl' => 'vbr',
         ]);
-    }
-
-    public function configureMatrix(array $matrix): void
-    {
-        $remappedMatrix = $this->remapMatrix($matrix);
-
-        foreach ($this->getApartmentsDialplans(true) as $apartment => $dialplan) {
-            foreach ($remappedMatrix as $cell) {
-                if ($apartment === $cell['apartment']) {
-                    $apartment = $cell['apartment'];
-                    $line = $cell['hundreds'] * 100 + $cell['tens'] * 10 + $cell['units'];
-                    $this->dialplans[$apartment]['map'] = $line;
-                    continue 2;
-                }
-            }
-
-            $this->dialplans[$apartment]['map'] = 0;
-        }
     }
 
     public function configureSip(
@@ -269,11 +204,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => ['calltime' => $timeout]]);
     }
 
-    public function setCmsModel(string $model = ''): void
-    {
-        $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => self::CMS_PARAMS[$model] ?? []]);
-    }
-
     public function setDtmfCodes(
         string $code1 = '1',
         string $code2 = '2',
@@ -323,22 +253,11 @@ abstract class ufanet extends domophone implements LanguageInterface
     {
         $this->uploadDialplans();
         $this->uploadRfids();
-        $this->setCmsRange();
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig = $this->commonTransformDbConfig($dbConfig);
-
-        if ($dbConfig['cmsModel'] !== '') {
-            $cmsType = self::CMS_PARAMS[$dbConfig['cmsModel']]['type'];
-            $this->cmsModelName = $dbConfig['cmsModel'];
-            if (in_array($cmsType, ['METAKOM', 'ELTIS', 'BEWARD_105_108'])) {
-                $dbConfig['cmsModel'] = $cmsType;
-            }
-
-            $dbConfig['matrix'] = $this->remapMatrix($dbConfig['matrix'], $dbConfig['apartments']);
-        }
 
         $dbConfig['cmsLevels'] = [];
 
@@ -407,16 +326,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         return $flats;
     }
 
-    /** @return Generator<int, array> */
-    protected function getApartmentsDialplans(bool $unmapped = false): Generator
-    {
-        foreach ($this->dialplans as $apartment => $dialplan) {
-            if (ctype_digit((string)$apartment) && ($dialplan['map'] != 0 || $unmapped)) {
-                yield (int)$apartment => $dialplan;
-            }
-        }
-    }
-
     protected function getAudioLevels(): array
     {
         $volume = $this->apiCall('/api/v1/configuration')['volume'] ?? null;
@@ -426,24 +335,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         }
 
         return array_values($volume);
-    }
-
-    protected function getCmsModel(): string
-    {
-        ['type' => $rawType, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
-
-        return match ($rawType) {
-            'DIGITAL' => 'QAD-100',
-            'CYFRAL' => 'KMG-100',
-            'FACTORIAL' => 'FACTORIAL 8x8',
-            'BEWARD_100' => 'KKM-100S2',
-            'VIZIT' => match ($mode) {
-                2 => 'BK-100',
-                3 => 'BK-400',
-                default => $rawType,
-            },
-            default => $rawType,
-        };
     }
 
     protected function getDtmfConfig(): array
@@ -459,28 +350,6 @@ abstract class ufanet extends domophone implements LanguageInterface
             'code3' => '3',
             'codeCms' => $dtmfRemote,
         ];
-    }
-
-    protected function getMatrix(): array
-    {
-        $this->loadDialplans();
-
-        $matrix = [];
-        foreach ($this->getApartmentsDialplans() as $apartment => $dialplan) {
-            if (!isset($this->dialplans[$apartment])) {
-                continue;
-            }
-
-            $cell = self::getMatrixCell($dialplan['map'], $apartment);
-            $matrix[$cell['index']] = $cell['value'];
-        }
-
-        return $matrix;
-    }
-
-    protected function getMatrixEdge(): ?int
-    {
-        return self::CMS_PARAMS[$this->cmsModelName]['edge'] ?? null;
     }
 
     /**
@@ -570,59 +439,6 @@ abstract class ufanet extends domophone implements LanguageInterface
         if ($this->keys === null) {
             $this->keys = $this->apiCall('/api/v1/rfids') ?? [];
         }
-    }
-
-    protected function remapMatrix(array $matrix, array $configApartments = []): array
-    {
-        $this->loadDialplans();
-
-        $newMatrix = [];
-        $edge = $this->getMatrixEdge();
-        foreach ($matrix as $index => $cell) {
-            $apartment = $cell['apartment'];
-            if (!isset($this->dialplans[$apartment]) && !isset($configApartments[$apartment])) {
-                continue;
-            }
-
-            $mapping = $cell['hundreds'] * 100 + $cell['tens'] * 10 + $cell['units'];
-            if ($edge && $mapping % $edge !== 0) {
-                $newMatrix[$index] = $cell;
-                continue;
-            }
-
-            $newCell = self::getMatrixCell($mapping + $edge, $apartment);
-            $newMatrix[$newCell['index']] = $newCell['value'];
-        }
-
-        return $newMatrix;
-    }
-
-    /**
-     * Set CMS range based on apartment numbers.
-     *
-     * @return void
-     */
-    protected function setCmsRange(): void
-    {
-        $apartmentNumbers = array_keys($this->getApartments());
-
-        $minApartmentNumber = $apartmentNumbers ? min($apartmentNumbers) : 0;
-        $maxApartmentNumber = $apartmentNumbers ? max($apartmentNumbers) : 0;
-
-        $params = [
-            'ap_min' => $minApartmentNumber,
-            'ap_max' => $maxApartmentNumber,
-        ];
-
-        // Set cross numbering mode for CMS if device is not in gate mode
-        if ($this->isGateModeEnabled() === false && $this->getCmsModel() !== 'BK-400') {
-            $isCrossNumbering = $minApartmentNumber !== $maxApartmentNumber &&
-                intdiv($minApartmentNumber, 100) !== intdiv($maxApartmentNumber - 1, 100);
-
-            $params['mode'] = $isCrossNumbering ? 2 : 1;
-        }
-
-        $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => $params]);
     }
 
     /**
