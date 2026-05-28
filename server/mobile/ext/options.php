@@ -32,7 +32,7 @@
      * @apiSuccess {String="t","f"} [addressVerificationTabLayoutVisible="t"] Address Verification UI: visibility of the tab layout
      * @apiSuccess {String="t","f"} [addressVerificationTab1Visible="t"] Address Verification UI: visibility of the tab 1
      * @apiSuccess {String="t","f"} [addressVerificationTab2Visible="t"] Address Verification UI: visibility of the tab 2
-     * @apiSuccess {String="t","f"} [eventsTracking="f"] Events tracking flag
+     * @apiSuccess {String="t","f"} [stories="f"] Stories flag
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
@@ -120,5 +120,8 @@
 
     // Events Tracking
     $response["eventsTracking"] = ($config["mobile"]["events_tracking"] ?? false) ? "t" : "f";
+
+    // Stories
+    $response["stories"] = ($config["mobile"]["stories"] ?? false) ? "t" : "f";
 
     response(200, $response);
