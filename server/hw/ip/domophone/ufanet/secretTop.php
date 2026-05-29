@@ -65,6 +65,29 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
         ];
     }
 
+    public function configureApartment(
+        int   $apartment,
+        int   $code = 0,
+        array $sipNumbers = [],
+        bool  $cmsEnabled = true,
+        array $cmsLevels = [],
+    ): void
+    {
+        $this->loadDialplans();
+        $this->deleteFlatPersonalCodes($apartment);
+
+        if ($code !== 0) {
+            $this->addKey($code, $apartment, KeyType::CodePersonal);
+        }
+
+        $this->dialplans[$apartment] = [
+            'sip_number' => (string)($sipNumbers[0] ?? ''),
+            'sip' => true,
+            'analog' => $cmsEnabled,
+            'map' => $this->dialplans[$apartment]['map'] ?? 0,
+        ];
+    }
+
     public function configureMatrix(array $matrix): void
     {
         $remappedMatrix = $this->remapMatrix($matrix);
@@ -81,6 +104,26 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
 
             $this->dialplans[$apartment]['map'] = 0;
         }
+    }
+
+    public function deleteApartment(int $apartment = 0): void
+    {
+        $this->loadDialplans();
+
+        ['map' => $analogReplace, 'analog' => $cmsEnabled] = $this->dialplans[$apartment];
+
+        if ($analogReplace !== 0) {
+            $this->dialplans[$apartment] = [
+                'sip_number' => '',
+                'sip' => false,
+                'analog' => $cmsEnabled,
+                'map' => $analogReplace,
+            ];
+        } else {
+            unset($this->dialplans[$apartment]);
+        }
+
+        $this->deleteFlatPersonalCodes($apartment);
     }
 
     public function getDisplayText(): array
@@ -223,6 +266,46 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
         return $dbConfig;
     }
 
+    /**
+     * Removes personal codes of the specified flat.
+     *
+     * @param int $flatNumber Flat number.
+     * @return void
+     */
+    protected function deleteFlatPersonalCodes(int $flatNumber): void
+    {
+        $this->loadKeys();
+
+        $this->keys = array_filter(
+            $this->keys,
+            fn(string $data) => Key::buildKey($flatNumber, KeyType::CodePersonal) !== $data,
+        );
+    }
+
+    protected function getApartments(): array
+    {
+        $this->loadDialplans();
+
+        $flats = [];
+        $personalCodes = $this->getPersonalCodes();
+
+        foreach ($this->dialplans as $flatNumber => $dialplan) {
+            if ($dialplan['sip'] === false || in_array($flatNumber, ['SOS', 'CONS', 'KALITKA', 'FRSI'])) {
+                continue;
+            }
+
+            $flats[$flatNumber] = [
+                'apartment' => $flatNumber,
+                'code' => $personalCodes[$flatNumber] ?? 0,
+                'sipNumbers' => [$dialplan['sip_number']],
+                'cmsEnabled' => $dialplan['analog'],
+                'cmsLevels' => [],
+            ];
+        }
+
+        return $flats;
+    }
+
     /** @return Generator<int, array> */
     protected function getApartmentsDialplans(bool $unmapped = false): Generator
     {
@@ -271,6 +354,36 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
     protected function getMatrixEdge(): ?int
     {
         return self::CMS_PARAMS[$this->cmsModelName]['edge'] ?? null;
+    }
+
+    /**
+     * Returns all personal codes.
+     *
+     * @return int[] The list of personal codes.
+     */
+    protected function getPersonalCodes(): array
+    {
+        $this->loadKeys();
+
+        $filtered = Key::filterByType($this->keys, KeyType::CodePersonal);
+        $codes = [];
+
+        foreach ($filtered as $code => $value) {
+            $flatNumber = Key::getFlat($value);
+
+            if ($flatNumber === null) {
+                continue;
+            }
+
+            if (!isset($codes[$flatNumber])) {
+                $codes[$flatNumber] = $code;
+            } elseif ($codes[$flatNumber] !== $code) {
+                // Set the personal code to null if the apartment has more than one personal code
+                $codes[$flatNumber] = null;
+            }
+        }
+
+        return $codes;
     }
 
     protected function remapMatrix(array $matrix, array $configApartments = []): array
@@ -356,5 +469,18 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
     {
         $localization = require __DIR__ . '/config/display_localization.php';
         $this->apiCall('/api/v1/configuration', 'PATCH', ['display' => ['localization' => $localization]]);
+    }
+
+    /**
+     * Switches the internal relay.
+     *
+     * @param bool $isOn True to turn the relay on, false to turn it off.
+     * @param int $duration Duration in seconds the relay should stay on before switching off automatically.
+     * Use 0 to keep the state until explicitly changed.
+     * @return void
+     */
+    protected function switchRelay(bool $isOn, int $duration = 0): void
+    {
+        $this->apiCall('/api/v1/relay/' . ($isOn ? 'on' : 'off'), 'POST', ['duration' => $duration], 3);
     }
 }
