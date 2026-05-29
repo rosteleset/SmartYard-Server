@@ -52,7 +52,12 @@ class secretMini extends ufanet
 
     public function setConciergeNumber(int $sipNumber): void
     {
-        // Empty implementation
+        $this->loadDialplans();
+
+        $this->dialplans['FRSI'] = [
+            'sip_number' => "$sipNumber",
+            'sip' => true,
+        ];
     }
 
     public function setSosNumber(int $sipNumber): void
