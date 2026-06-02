@@ -3810,6 +3810,10 @@
              */
 
             function paranoidEvent() {
+                if ((@$this->config['mobile']['events_tracking'] ?: false) === false) {
+                    return false;
+                }
+
                 // TODO: paranoidEvent (pushes)
 
                 // [minimal (?) delay]
