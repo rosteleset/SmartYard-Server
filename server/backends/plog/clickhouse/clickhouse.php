@@ -1417,6 +1417,9 @@
                                 // Check if call started from this panel
                                 if ($now_call_from_panel > 0) {
                                     $call_from_panel = 1;
+                                } elseif ($now_call_from_panel < 0) {
+                                    $call_from_panel = -1;
+                                    break;
                                 }
 
                                 // Search for SIP number
