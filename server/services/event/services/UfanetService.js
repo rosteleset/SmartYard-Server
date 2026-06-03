@@ -12,6 +12,10 @@ class UfanetService extends SyslogService {
         this.lastCall = {};
     }
 
+    isCallFinishedMessage(message) {
+        return message.includes('pickup 0');
+    }
+
     async handleSyslogMessage(date, host, message) {
         // Motion detection start
         if (message.includes('motion detected')) {
@@ -57,7 +61,7 @@ class UfanetService extends SyslogService {
         }
 
         // All calls are done
-        if (message.includes('pickup 0')) {
+        if (this.isCallFinishedMessage(message)) {
             await API.callFinished({ date: date, ip: host });
         }
     }

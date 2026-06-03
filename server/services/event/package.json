@@ -16,6 +16,7 @@
         "start:rubetek": "node index.js rubetek",
         "start:sputnik": "node index.js sputnik_cloud",
         "start:ufanet": "node index.js ufanet",
+        "start:ufanet_mini": "node index.js ufanet_mini",
         "start:brovotech": "node index.js brovotech",
         "start:iflow": "node index.js iflow",
         "start:basip": "node index.js basip",
@@ -27,6 +28,7 @@
         "dev:rubetek": "nodemon index.js rubetek",
         "dev:sputnik": "nodemon index.js sputnik_cloud",
         "dev:ufanet": "nodemon index.js ufanet",
+        "dev:ufanet_mini": "nodemon index.js ufanet_mini",
         "dev:brovotech": "nodemon index.js brovotech",
         "dev:iflow": "nodemon index.js iflow",
         "dev:basip": "nodemon index.js basip",
@@ -38,6 +40,7 @@
         "debug:rubetek": "NODE_ENV=debug nodemon index.js rubetek",
         "debug:sputnik": "NODE_ENV=debug nodemon index.js sputnik_cloud",
         "debug:ufanet": "NODE_ENV=debug nodemon index.js ufanet",
+        "debug:ufanet_mini": "NODE_ENV=debug nodemon index.js ufanet_mini",
         "debug:brovotech": "NODE_ENV=debug nodemon index.js brovotech",
         "debug:iflow": "NODE_ENV=debug nodemon index.js iflow",
         "debug:basip": "NODE_ENV=debug nodemon index.js basip"

@@ -426,6 +426,9 @@
         "basip": [
             "http://127.0.0.1:45460",
         ],
+        "ufanet_mini": [
+            "syslog.udp:127.0.0.1:45461",
+        ],
         "brovotech": [
             "syslog.udp:127.0.0.1:46450",
         ],

@@ -12,6 +12,7 @@ import {
     QtechService,
     RubetekService,
     SputnikCloudService,
+    UfanetMiniService,
     UfanetService,
     BrovotechService,
     IFlowWebHookService,
@@ -29,6 +30,7 @@ import {
     SERVICE_RUBETEK,
     SERVICE_SPUTNIK_CLOUD,
     SERVICE_UFANET,
+    SERVICE_UFANET_MINI,
     SERVICE_BROVOTECH,
     SERVICE_IFLOW,
 } from "./constants.js";
@@ -83,6 +85,11 @@ switch (serviceParam) {
     case SERVICE_UFANET:
         const ufanetService = new UfanetService(SERVICE_UFANET, serviceConfig, spamWords[SERVICE_UFANET]);
         ufanetService.createSyslogServer();
+        break;
+
+    case SERVICE_UFANET_MINI:
+        const ufanetMiniService = new UfanetMiniService(SERVICE_UFANET_MINI, serviceConfig);
+        ufanetMiniService.createSyslogServer();
         break;
 
     case SERVICE_BASIP:

@@ -21,6 +21,7 @@ export const SERVICE_RUBETEK = "rubetek";
 export const SERVICE_NONAME_WEBHOOK = "noname";
 export const SERVICE_OMNY = "omny";
 export const SERVICE_UFANET = "ufanet";
+export const SERVICE_UFANET_MINI = "ufanet_mini";
 export const SERVICE_BROVOTECH = "brovotech";
 export const SERVICE_IFLOW = "iflow";
 export const SERVICE_BASIP = "basip";

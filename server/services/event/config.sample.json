@@ -49,6 +49,9 @@
       "port": 45460,
       "apiEndpoint": "/"
     },
+    "ufanet_mini": {
+      "port": 45461
+    },
     "brovotech": {
       "port": 46450
     },

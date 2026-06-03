@@ -1388,7 +1388,7 @@
                             }
                         }
 
-                        if ($unit == 'ufanet') {
+                        if ($unit === 'ufanet' || $unit === 'ufanet_mini') {
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
                                 ["/SIP UA event: CALL_INCOMING/", false, false, false, -1], // Incoming call message

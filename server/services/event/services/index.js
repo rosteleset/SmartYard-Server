@@ -9,6 +9,7 @@ export { NonameWebHookService } from "./NonameWebHookService.js";
 export { SputnikCloudService } from "./SputnikCloudService.js";
 export { OmnyWebHookService } from "./OmnyWebHookService.js";
 export { UfanetService } from "./UfanetService.js";
+export { UfanetMiniService } from "./UfanetMiniService.js";
 export { BrovotechService } from "./BrovotechService.js";
 export { IFlowWebHookService } from "./IFlowWebHookService.js";
 export { BasipService } from "./BasipService.js";

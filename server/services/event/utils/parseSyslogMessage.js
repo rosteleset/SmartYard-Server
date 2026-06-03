@@ -1,4 +1,4 @@
-import { SERVICE_BROVOTECH, SERVICE_IS, SERVICE_UFANET } from '../constants.js';
+import { SERVICE_BROVOTECH, SERVICE_IS, SERVICE_UFANET, SERVICE_UFANET_MINI } from '../constants.js';
 import { getTimestamp } from './index.js';
 
 const parseSyslogMessage = (str, unit) => {
@@ -55,7 +55,7 @@ const parseSyslogMessage = (str, unit) => {
         };
     }
 
-    if (unit === SERVICE_UFANET) {
+    if (unit === SERVICE_UFANET || unit === SERVICE_UFANET_MINI) {
         const index = str.indexOf(': ');
         const message = str.substring(index + 2);
 
