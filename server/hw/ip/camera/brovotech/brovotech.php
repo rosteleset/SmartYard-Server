@@ -439,6 +439,9 @@ class brovotech extends camera
     {
         $osd = $this->apiCall('/action/get', 'GET', ['subject' => 'osd']);
         if (is_array($osd)) {
+            if (is_array($osd['osd']['custom']['ctext'])) {
+                return $osd['osd']['custom']['ctext'][0] ?? '';
+            }
             return $osd['osd']['custom']['ctext'] ?? '';
         }
         return '';
