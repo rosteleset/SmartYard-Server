@@ -100,6 +100,9 @@ class ufanet extends camera
     {
         $dbConfig = $this->commonTransformDbConfig($dbConfig);
 
+        // The intercom model owns this setting, camera autoconfig must not flip it back
+        $dbConfig['eventServer'] = $this->getEventServer();
+
         // Convert detection zone from database to pixel
         if ($dbConfig['motionDetection']) {
             [$maxX, $maxY] = explode('x', $this->getResolution());
