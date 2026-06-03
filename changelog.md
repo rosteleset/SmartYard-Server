@@ -38,6 +38,7 @@
 - fixed modifyFlat() to accept an empty floor value
 + added bulk RFID key adding through web UI and subscribers API
 + expanded mobile event tracking API and notifications for openings from app, by code and by license plate number
++ added support for Ufanet Secret Mini M2
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
