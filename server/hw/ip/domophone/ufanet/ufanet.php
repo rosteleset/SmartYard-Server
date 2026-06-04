@@ -60,7 +60,7 @@ abstract class ufanet extends domophone implements LanguageInterface
 
             // Audio stream
             'Encode[0].MainFormat[0].AudioEnable' => 'true',
-            'Encode[0].MainFormat[0].Audio.Compression' => 'alaw',
+            'Encode[0].MainFormat[0].Audio.Compression' => 'opus',
             'Encode[0].MainFormat[0].Audio.Frequency' => 8000,
 
             // Video main stream
