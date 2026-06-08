@@ -82,13 +82,6 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
     protected ?array $switchConfigs = null;
     protected bool $switchConfigsChanged = false;
 
-    /**
-     * Real SIP numbers to upload.
-     *
-     * @var array<int, string[]>
-     */
-    protected array $sipNumbersToUpload = [];
-
     public function __construct(string $url, string $password, bool $firstTime = false)
     {
         $this->client = new HttpClient(rtrim($url, '/'), $firstTime ? '123456' : $password);
@@ -127,7 +120,7 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
         $this->loadOpenCodes();
 
         $panelCode = $this->panelCodes[$apartment] ?? new PanelCode($apartment);
-        $panelCode->sipAccounts = [(string)$apartment];
+        $panelCode->sipAccounts = array_map('strval', $sipNumbers);
         $panelCode->sipCallsEnabled = $sipNumbers !== [];
         $panelCode->handsetCallsEnabled = $cmsEnabled;
         $panelCode->quiescentResistance = null;
@@ -139,7 +132,6 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
         }
 
         $this->panelCodes[$apartment] = $panelCode;
-        $this->sipNumbersToUpload[$apartment] = array_map('strval', $sipNumbers);
         $this->panelCodesChanged = true;
 
         if ($code === 0) {
@@ -289,13 +281,11 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
         if ($apartment === 0) {
             $this->panelCodes = [];
             $this->openCodes = [];
-            $this->sipNumbersToUpload = [];
         } else {
             $this->loadPanelCodes();
             $this->loadOpenCodes();
             unset($this->panelCodes[$apartment]);
             unset($this->openCodes[$apartment]);
-            unset($this->sipNumbersToUpload[$apartment]);
         }
 
         $this->panelCodesChanged = true;
@@ -573,17 +563,6 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
         $dbConfig['sip']['stunEnabled'] = false;
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
-
-        /*
-         * FIXME: wait for fix.
-         * The device does not expose the real apartment SIP numbers via GET /panelCode.
-         * It returns the apartment number itself in sipAccounts, so the DB config is normalized
-         * here to avoid false differences between the desired config and the device state.
-         */
-        foreach ($dbConfig['apartments'] as &$flat) {
-            $flat['sipNumbers'] = [$flat['apartment']];
-        }
-
         return $dbConfig;
     }
 
@@ -979,22 +958,10 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
             return;
         }
 
-        /*
-         * FIXME: wait for fix.
-         * The device returns apartment numbers in sipAccounts instead of real SIP targets,
-         * so the cached PanelCode entities keep the device view while upload temporarily
-         * restores the real SIP numbers from $this->sipNumbersToUpload.
-         */
-        $payload = [];
-        foreach ($this->panelCodes as $apartment => $panelCode) {
-            $panelCodeToUpload = clone $panelCode;
-
-            if (isset($this->sipNumbersToUpload[$apartment])) {
-                $panelCodeToUpload->sipAccounts = $this->sipNumbersToUpload[$apartment];
-            }
-
-            $payload[] = $panelCodeToUpload->toArray();
-        }
+        $payload = array_map(
+            static fn(PanelCode $panelCode): array => $panelCode->toArray(),
+            array_values($this->panelCodes),
+        );
 
         $this->client->request('/panelCode/rooms_update', 'PUT', $payload);
         $this->panelCodesChanged = false;
