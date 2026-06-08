@@ -91,53 +91,7 @@ class sokol extends camera
 
     public function setOsdText(string $text = ''): void
     {
-        $hwVer = floor($this->getSysinfo()['HardwareVersion'] ?? 0);
-
-        $firstStringParams = [
-            'size' => 1,
-            'text' => $hwVer == 5 ? $text : '',
-            'color' => '0xFFFFFF',
-            'date' => [
-                'enable' => true,
-                'format' => '%d-%m-%Y',
-            ],
-            'time' => [
-                'enable' => true,
-                'format' => '%H:%M:%S',
-            ],
-            'position' => [
-                'x' => 2,
-                'y' => 2,
-            ],
-            'background' => [
-                'enable' => true,
-                'color' => '0x000000',
-            ],
-        ];
-
-        $secondStringParams = $hwVer == 5 ? [] : [
-            'size' => 1,
-            'text' => $text,
-            'color' => '0xFFFFFF',
-            'date' => [
-                'enable' => false,
-                'format' => '%d-%m-%Y',
-            ],
-            'time' => [
-                'enable' => false,
-                'format' => '%H:%M:%S',
-            ],
-            'position' => [
-                'x' => 2,
-                'y' => 702,
-            ],
-            'background' => [
-                'enable' => true,
-                'color' => '0x000000',
-            ],
-        ];
-
-        $this->client->request('/v2/camera/osd', 'PUT', [$firstStringParams, $secondStringParams]);
+        $this->client->request('/v3/camera/osd', 'PUT', [['text' => $text]]);
     }
 
     public function syncData(): void
@@ -186,8 +140,7 @@ class sokol extends camera
 
     protected function getOsdText(): string
     {
-        $osdParams = $this->client->request('/v2/camera/osd');
-        return $osdParams[0]['text'] ?: $osdParams[1]['text'];
+        return $this->client->request('/v3/camera/osd')[0]['text'];
     }
 
     protected function initializeProperties(): void
