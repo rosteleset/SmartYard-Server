@@ -5,5 +5,5 @@
     "version": false,
     "eventServer": "brovotech",
     "class": "brovotech",
-    "useSmartConfigurator": false
+    "useSmartConfigurator": true
 }

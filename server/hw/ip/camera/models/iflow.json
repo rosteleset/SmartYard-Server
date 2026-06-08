@@ -5,5 +5,5 @@
     "version": false,
     "eventServer": "iflow",
     "class": "iflow",
-    "useSmartConfigurator": false
+    "useSmartConfigurator": true
 }
