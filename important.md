@@ -1,3 +1,9 @@
+# 2026-06-09
+
+IS Sokol Plus (rev.5) integration is now targeted at firmware
+[2.5.0.15.26](https://doc.is74.ru/books/umnyi-domofon-sokol-plius/page/cto-novogo-firmware).
+Devices running firmware 2.5.0.14.13 are not expected to be critically affected, but updating is strongly recommended.
+
 # 2026-05-15
 
 The integration for IS Sokol Plus (rev.5) has been updated. Existing intercom and camera models are now marked

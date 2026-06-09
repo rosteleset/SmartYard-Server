@@ -40,6 +40,7 @@
 + expanded mobile event tracking API and notifications for openings from app, by code and by license plate number
 + added support for Ufanet Secret Mini M2
 - fixed autoconfig for Brovotech, iFLOW and Omny cameras
++ updated IS Sokol+ integration for firmware 2.5.0.15.26 with CMS and OSD improvements
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
