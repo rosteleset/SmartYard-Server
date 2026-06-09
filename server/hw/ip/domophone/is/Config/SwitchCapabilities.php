@@ -16,7 +16,7 @@ return [
     13 => ['eCount' => 10, 'dCount' => 10, 'switchCount' => 1, 'unitStart' => 0],
     20 => ['eCount' => 10, 'dCount' => 10, 'switchCount' => 1, 'unitStart' => 0],
     30 => ['eCount' => 10, 'dCount' => 10, 'switchCount' => 1, 'unitStart' => 0],
-    40 => ['eCount' => 15, 'dCount' => 17, 'switchCount' => 1, 'unitStart' => 1],
+    40 => ['eCount' => 15, 'dCount' => 17, 'switchCount' => 1, 'unitStart' => 0],
     50 => ['eCount' => 4, 'dCount' => 1, 'switchCount' => 1, 'unitStart' => 0],
     51 => ['eCount' => 10, 'dCount' => 1, 'switchCount' => 1, 'unitStart' => 0],
     52 => ['eCount' => 10, 'dCount' => 10, 'switchCount' => 1, 'unitStart' => 0],
