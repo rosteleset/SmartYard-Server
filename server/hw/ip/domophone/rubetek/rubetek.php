@@ -26,7 +26,7 @@ use hw\ValueObject\{
 };
 
 /**
- * Abstract class representing a Rubetek domophone.
+ * Abstract base class for Rubetek intercoms.
  */
 abstract class rubetek extends domophone implements
     CmsLevelsInterface,
@@ -876,18 +876,13 @@ abstract class rubetek extends domophone implements
 
     protected function getDtmfConfig(): array
     {
-        [
-            'code1' => $code1,
-            'code2' => $code2,
-            'code3' => $code3,
-            'out_code' => $codeCms,
-        ] = $this->getConfiguration()['dtmf'];
+        $dtmfConfig = $this->getConfiguration()['dtmf'];
 
         return [
-            'code1' => $code1,
-            'code2' => $code2,
-            'code3' => $code3,
-            'codeCms' => $codeCms,
+            'code1' => $dtmfConfig['code1'],
+            'code2' => $dtmfConfig['code2'],
+            'code3' => $dtmfConfig['code3'] ?? '3', // because of rv3437
+            'codeCms' => $dtmfConfig['out_code'],
         ];
     }
 
