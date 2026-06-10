@@ -2,6 +2,7 @@
 
 namespace hw\SmartConfigurator\ConfigurationBuilder;
 
+use hw\ip\domophone\Cms\MatrixKey;
 use hw\ValueObject\HousePrefix;
 
 /**
@@ -154,7 +155,8 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      */
     public function addMatrix(int $hundreds, int $tens, int $units, int $apartment): self
     {
-        $this->config['matrix'][$hundreds . $tens . $units] = compact('hundreds', 'tens', 'units', 'apartment');
+        $key = MatrixKey::build($hundreds, $tens, $units);
+        $this->config['matrix'][$key] = compact('hundreds', 'tens', 'units', 'apartment');
         return $this;
     }
 

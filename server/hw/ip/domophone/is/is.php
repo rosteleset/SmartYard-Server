@@ -7,7 +7,10 @@ use hw\Interface\{
     FreePassInterface,
     GateModeInterface,
 };
-use hw\ip\domophone\domophone;
+use hw\ip\domophone\{
+    Cms\MatrixKey,
+    domophone,
+};
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
@@ -426,7 +429,7 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
                     $item['units'] = 0;
                 }
 
-                $newKey = $item['hundreds'] . $item['tens'] . $item['units'];
+                $newKey = MatrixKey::build($item['hundreds'], $item['tens'], $item['units']);
                 $matrix[$newKey] = $item;
                 unset($matrix[$key]);
             }
@@ -562,7 +565,7 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
             foreach ($columns as $tens => $column) {
                 foreach ($column as $units => $apartment) {
                     if ($apartment !== null) {
-                        $matrix[$i . $tens . $units] = [
+                        $matrix[MatrixKey::build($i, $tens, $units)] = [
                             'hundreds' => $i,
                             'tens' => $tens,
                             'units' => $units,
@@ -680,7 +683,7 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
                     $item['tens'] = $columns - 1;
                 }
 
-                $newKey = $item['hundreds'] . $item['tens'] . $item['units'];
+                $newKey = MatrixKey::build($item['hundreds'], $item['tens'], $item['units']);
                 $matrix[$newKey] = $item;
                 unset($matrix[$key]);
             }

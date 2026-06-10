@@ -9,6 +9,7 @@ use hw\Interface\{
     FreePassInterface,
     GateModeInterface,
 };
+use hw\ip\domophone\Cms\MatrixKey;
 
 /**
  * Represents an Ufanet Secret Top intercom.
@@ -52,10 +53,8 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
         $tens = floor(($mapping - $hundreds * 100) / 10);
         $units = $mapping - ($hundreds * 100 + $tens * 10);
 
-        $index = "$hundreds$tens$units";
-
         return [
-            'index' => $index,
+            'index' => MatrixKey::build($hundreds, $tens, $units),
             'value' => [
                 'hundreds' => $hundreds,
                 'tens' => $tens,

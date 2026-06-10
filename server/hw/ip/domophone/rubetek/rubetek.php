@@ -11,7 +11,10 @@ use hw\Interface\{
     HousePrefixInterface,
     LanguageInterface,
 };
-use hw\ip\domophone\domophone;
+use hw\ip\domophone\{
+    Cms\MatrixKey,
+    domophone,
+};
 use hw\ip\domophone\rubetek\Enums\DisplayType;
 use hw\ValueObject\{
     FlatNumber,
@@ -868,7 +871,7 @@ abstract class rubetek extends domophone implements
 
             [$hundreds, $tens, $units] = str_split(str_pad($analogNumber, 3, '0', STR_PAD_LEFT));
 
-            $matrix[$hundreds . $tens . $units] = [
+            $matrix[MatrixKey::build($hundreds, $tens, $units)] = [
                 'hundreds' => $hundreds,
                 'tens' => $tens,
                 'units' => $units,

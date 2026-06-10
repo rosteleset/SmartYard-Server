@@ -6,7 +6,10 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use hw\Interface\CmsLevelsInterface;
-use hw\ip\domophone\domophone;
+use hw\ip\domophone\{
+    Cms\MatrixKey,
+    domophone,
+};
 
 /**
  * Class representing a Sputnik domophone.
@@ -515,7 +518,7 @@ class sputnik extends domophone implements CmsLevelsInterface
             $apartmentNumber = $cell['node']['num'];
             [$cms, $dozen, $unit] = str_split(str_pad($alias, 3, '0', STR_PAD_LEFT));
 
-            $matrix[$cms . $dozen . $unit] = [
+            $matrix[MatrixKey::build($cms, $dozen, $unit)] = [
                 'hundreds' => $cms,
                 'tens' => $dozen,
                 'units' => $unit,

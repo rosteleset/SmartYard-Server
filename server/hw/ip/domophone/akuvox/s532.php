@@ -15,6 +15,7 @@ use hw\ip\domophone\akuvox\Entities\{
     User,
 };
 use hw\ip\domophone\akuvox\Enums\AnalogType;
+use hw\ip\domophone\Cms\MatrixKey;
 
 /**
  * Represents an Akuvox S532 intercom.
@@ -553,7 +554,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
                     break;
             }
 
-            $matrix[$hundreds . $tens . $units] = [
+            $matrix[MatrixKey::build($hundreds, $tens, $units)] = [
                 'hundreds' => $hundreds,
                 'tens' => $tens,
                 'units' => $units,

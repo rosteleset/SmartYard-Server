@@ -9,7 +9,10 @@ use hw\Interface\{
     HousePrefixInterface,
     LanguageInterface,
 };
-use hw\ip\domophone\domophone;
+use hw\ip\domophone\{
+    Cms\MatrixKey,
+    domophone,
+};
 use hw\ValueObject\{
     FlatNumber,
     HousePrefix,
@@ -861,7 +864,7 @@ abstract class qtech extends domophone implements
                 $hundreds = 0;
             }
 
-            $matrix[$hundreds . $tens . $units] = [
+            $matrix[MatrixKey::build($hundreds, $tens, $units)] = [
                 'hundreds' => $hundreds,
                 'tens' => $tens,
                 'units' => $units,

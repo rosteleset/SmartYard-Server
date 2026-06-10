@@ -8,7 +8,10 @@ use hw\Interface\{
     FreePassInterface,
     GateModeInterface,
 };
-use hw\ip\domophone\domophone;
+use hw\ip\domophone\{
+    Cms\MatrixKey,
+    domophone,
+};
 use hw\ip\domophone\is\Entities\{
     Key,
     OpenCode,
@@ -747,7 +750,7 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
                             $units = count($column);
                         }
 
-                        $matrix[$hundreds . $tens . $units] = [
+                        $matrix[MatrixKey::build($hundreds, $tens, $units)] = [
                             'hundreds' => $hundreds,
                             'tens' => $tens,
                             'units' => $units,

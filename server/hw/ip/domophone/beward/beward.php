@@ -4,7 +4,10 @@ namespace hw\ip\domophone\beward;
 
 use DOMDocument;
 use DOMXPath;
-use hw\ip\domophone\domophone;
+use hw\ip\domophone\{
+    Cms\MatrixKey,
+    domophone,
+};
 
 /**
  * Abstract class representing a Beward domophone.
@@ -551,7 +554,7 @@ abstract class beward extends domophone
 
                 foreach ($columns as $dozen => $apartment) {
                     if ($apartment != 0) {
-                        $matrix[$cms . $dozen . $unit] = [
+                        $matrix[MatrixKey::build($cms, $dozen, $unit)] = [
                             'hundreds' => $cms,
                             'tens' => $dozen,
                             'units' => $unit,
