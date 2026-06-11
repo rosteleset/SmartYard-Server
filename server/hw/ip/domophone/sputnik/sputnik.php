@@ -347,9 +347,25 @@ class sputnik extends domophone implements CmsLevelsInterface
 
     protected function flipRfid(string $code): string
     {
-        $reversedKey = implode(array_reverse(str_split($code, 2)));
-        $isSevenByteKey = !str_ends_with($reversedKey, '000000');
-        return $isSevenByteKey ? $reversedKey : substr($reversedKey, 0, 8);
+        $code = strtoupper(trim($code));
+
+        if (strlen($code) === 14) {
+            if (str_starts_with($code, '000000')) {
+                $code = substr($code, 6);
+            } elseif (str_starts_with($code, '00')) {
+                /*
+                 * Some Sputnik panels may use built-in EM-Marine/125 kHz readers instead of MIFARE.
+                 * Such credentials are reported by Sputnik as 6-byte IDs, for example 000124618A00 or C7006B4CAD00.
+                 * In RBT's 14-char format these keys get one leading padding byte after byte-order reversal.
+                 *
+                 * This is ambiguous with real 7-byte keys starting with 00 (if such exist at all).
+                 * Keep this branch Sputnik-specific unless key size/type is stored explicitly.
+                 */
+                $code = substr($code, 2);
+            }
+        }
+
+        return $this->reverseRfidBytes($code);
     }
 
     protected function getApartments(): array
@@ -571,7 +587,7 @@ class sputnik extends domophone implements CmsLevelsInterface
         $rawKeys = $intercom['data']['intercom']['configShadow']['keys']['keys']['edges'];
 
         $keys = array_map(
-            fn($code) => strtoupper(str_pad(implode(array_reverse(str_split($code, 2))), 14, '0', STR_PAD_LEFT)),
+            fn($code) => str_pad($this->reverseRfidBytes($code), 14, '0', STR_PAD_LEFT),
             array_column($rawKeys, 'node'),
         );
 
@@ -684,6 +700,17 @@ class sputnik extends domophone implements CmsLevelsInterface
 
             return $result;
         }, []);
+    }
+
+    /**
+     * Normalize an RFID code to uppercase and reverse its byte order.
+     *
+     * @param string $code RFID code represented as a hexadecimal string.
+     * @return string Uppercase RFID code with bytes in reverse order.
+     */
+    protected function reverseRfidBytes(string $code): string
+    {
+        return implode(array_reverse(str_split(strtoupper(trim($code)), 2)));
     }
 
     protected function uploadFlats(): void
