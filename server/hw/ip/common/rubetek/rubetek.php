@@ -208,6 +208,6 @@ trait rubetek
      */
     protected function isLegacyVersion(): bool
     {
-        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2025.04.171131928';
+        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2026.05.202146408';
     }
 }
