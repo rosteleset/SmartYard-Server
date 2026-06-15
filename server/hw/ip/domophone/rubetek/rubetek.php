@@ -15,7 +15,11 @@ use hw\ip\domophone\{
     Cms\MatrixKey,
     domophone,
 };
-use hw\ip\domophone\rubetek\Enums\DisplayType;
+use hw\ip\domophone\rubetek\Enums\{
+    CallType,
+    DisplayType,
+    DoorAccess,
+};
 use hw\ValueObject\{
     FlatNumber,
     HousePrefix,
@@ -53,8 +57,8 @@ abstract class rubetek extends domophone implements
         $this->apiCall('/rfids', 'POST', [
             'rfid' => $code,
             'door_access' => [
-                RubetekConst::RELAY_1_INTERNAL,
-                RubetekConst::RELAY_2_EXTERNAL,
+                DoorAccess::Relay1Internal->value,
+                DoorAccess::Relay2External->value,
             ],
         ]);
     }
@@ -67,8 +71,8 @@ abstract class rubetek extends domophone implements
             $this->apiCall('/rfids_pack', 'POST', [
                 'rfids' => $rfidChunk,
                 'door_access' => [
-                    RubetekConst::RELAY_1_INTERNAL,
-                    RubetekConst::RELAY_2_EXTERNAL,
+                    DoorAccess::Relay1Internal->value,
+                    DoorAccess::Relay2External->value,
                 ],
             ]);
         }
@@ -90,8 +94,8 @@ abstract class rubetek extends domophone implements
             id: $dialplan['id'],
             sipNumber: $sipNumbers[0] ?? '',
             analogNumber: $dialplan['analog_number'],
-            callType: $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
-            doorAccess: [RubetekConst::RELAY_1_INTERNAL],
+            callType: $cmsEnabled ? CallType::SipAnalog->value : CallType::Sip->value,
+            doorAccess: [DoorAccess::Relay1Internal->value],
             accessCodes: $code !== 0 ? ["$code"] : [],
         );
     }
@@ -162,8 +166,8 @@ abstract class rubetek extends domophone implements
             $dialplan = $this->dialplans[$apartment] ?? [
                 'id' => "$apartment",
                 'sip_number' => '',
-                'call_type' => RubetekConst::ANALOG,
-                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+                'call_type' => CallType::Analog->value,
+                'door_access' => [DoorAccess::Relay1Internal->value],
                 'access_codes' => [],
             ];
 
@@ -253,8 +257,8 @@ abstract class rubetek extends domophone implements
                         id: $dialplan['id'],
                         sipNumber: '',
                         analogNumber: $analogNumber,
-                        callType: RubetekConst::ANALOG,
-                        doorAccess: [RubetekConst::RELAY_1_INTERNAL],
+                        callType: CallType::Analog->value,
+                        doorAccess: [DoorAccess::Relay1Internal->value],
                         accessCodes: [],
                     );
                 }
@@ -461,8 +465,8 @@ abstract class rubetek extends domophone implements
             'enabled' => true,
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
-            'call_type' => RubetekConst::SIP,
-            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+            'call_type' => CallType::Sip->value,
+            'door_access' => [DoorAccess::Relay1Internal->value],
         ]);
     }
 
@@ -546,8 +550,8 @@ abstract class rubetek extends domophone implements
                 'start_number' => $prefix->firstFlat->number,
                 'end_number' => $prefix->lastFlat->number,
                 'call_number' => 'XXXXYYYY',
-                'call_type' => RubetekConst::SIP,
-                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+                'call_type' => CallType::Sip->value,
+                'door_access' => [DoorAccess::Relay1Internal->value],
             ]);
         }
     }
@@ -568,8 +572,8 @@ abstract class rubetek extends domophone implements
             'enabled' => true,
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
-            'call_type' => RubetekConst::SIP,
-            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+            'call_type' => CallType::Sip->value,
+            'door_access' => [DoorAccess::Relay1Internal->value],
             'backlight_period' => 3,
         ]);
     }
@@ -643,7 +647,7 @@ abstract class rubetek extends domophone implements
         $this->loadDialplans();
 
         foreach ($this->dialplans as $dialplan) {
-            if ($dialplan['call_type'] === RubetekConst::ANALOG) {
+            if ($dialplan['call_type'] === CallType::Analog->value) {
                 // Delete matrix-only dialplan
                 $this->deleteDialplan($dialplan['id']);
             } else {
@@ -780,7 +784,7 @@ abstract class rubetek extends domophone implements
             ] = $dialplan;
 
             // Skip matrix-only dialplan, this is not an apartment
-            if ($callType === RubetekConst::ANALOG) {
+            if ($callType === CallType::Analog->value) {
                 continue;
             }
 
@@ -790,7 +794,7 @@ abstract class rubetek extends domophone implements
                 // and a list of codes and their validity time for fw >= 2024.10
                 'code' => $codes[0]['code'] ?? $codes[0] ?? 0,
                 'sipNumbers' => [$sipNumber],
-                'cmsEnabled' => $callType === RubetekConst::SIP_ANALOG,
+                'cmsEnabled' => $callType === CallType::SipAnalog->value,
                 'cmsLevels' => [],
             ];
         }
