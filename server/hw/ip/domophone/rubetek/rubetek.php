@@ -444,13 +444,15 @@ abstract class rubetek extends domophone implements
         $analogSettings['kkmtype'] = $type;
 
         if ($this->isLegacyVersion()) {
-            $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
+            $hundredsCount = 8;
         } else {
-            // The analog settings payload requires analog and digital matrices.
-            $analogSettings['kkm_addressing'] = $this->getAnalogAddressingTemplate();
-            $analogSettings['digital_addressing'] = $this->getDigitalAddressingTemplate();
-            $this->apiCall('/settings/analog', 'PATCH', $analogSettings);
+            $hundredsCount = RubetekConst::CMS_MAX_COUNT_MAP[$model] ?? 1;
+            $analogSettings['select_count_kkm'] = $hundredsCount;
         }
+
+        $analogSettings['kkm_addressing'] = $this->getAnalogAddressingTemplate($hundredsCount);
+        $analogSettings['digital_addressing'] = $this->getDigitalAddressingTemplate();
+        $this->apiCall('/settings/analog', 'PATCH', $analogSettings);
     }
 
     public function setConciergeNumber(int $sipNumber): void
@@ -736,13 +738,14 @@ abstract class rubetek extends domophone implements
     /**
      * Generates a default analog addressing template.
      *
+     * @param int $hundredsCount Number of hundreds (matrices).
      * @return array Analog addressing template.
      */
-    protected function getAnalogAddressingTemplate(): array
+    protected function getAnalogAddressingTemplate(int $hundredsCount): array
     {
         $analogAddressing = [];
 
-        for ($kkm = 1; $kkm <= 8; $kkm++) {
+        for ($kkm = 1; $kkm <= $hundredsCount; $kkm++) {
             $analogAddressing["kkm_$kkm"] = [];
 
             for ($e = 0; $e <= 9; $e++) {
