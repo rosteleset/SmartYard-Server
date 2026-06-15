@@ -41,16 +41,45 @@ abstract class rubetek extends domophone implements
     }
 
     /**
+     * @var array<string, string> Mapping of CMS models between database and Rubetek names.
+     */
+    private const CMS_MODEL_MAP = [
+        // DB          // Rubetek
+        'KM100-7.1' => 'km100-7.1',
+        'KM100-7.3' => 'km100-7.3',
+        'KM100-7.5' => 'km100-7.5',
+        'KKM-100S2' => 'kkm-100s2',
+        'KKM-105' => 'kkm-105',
+        'KKM-108' => 'kkm-108',
+        'KMG-100' => 'kmg-100',
+    ];
+
+    /**
+     * @var array<string, int> Maximum number of matrices supported by each CMS model.
+     */
+    private const CMS_MAX_COUNT_MAP = [
+        'KM100-7.1' => 1,
+        'KM100-7.3' => 3,
+        'KM100-7.5' => 5,
+        'KKM-100S2' => 1,
+        'KKM-105' => 5,
+        'KKM-108' => 8,
+        'KMG-100' => 1,
+    ];
+
+    private const CONCIERGE_ID = 'CONCIERGE';
+    private const SOS_ID = 'SOS';
+
+    /**
      * Marker to indicate that the device has a custom display type (e.g., a manually set image),
      * which should not be overwritten by the autoconfiguration.
      */
-    protected const CUSTOM_DISPLAY = ['__CUSTOM_DISPLAY__'];
+    private const CUSTOM_DISPLAY = ['__CUSTOM_DISPLAY__'];
 
     /**
-     * @var array|null $dialplans An array that holds dialplan information,
-     * which may be null if not loaded.
+     * @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded.
      */
-    protected ?array $dialplans = null;
+    private ?array $dialplans = null;
 
     public function addRfid(string $code, int $apartment = 0): void
     {
@@ -440,7 +469,7 @@ abstract class rubetek extends domophone implements
             $type = 'custom';
         } else {
             $mode = 'analog';
-            $type = RubetekConst::CMS_MODEL_MAP[$model] ?? 'custom';
+            $type = self::CMS_MODEL_MAP[$model] ?? 'custom';
         }
 
         $analogSettings = $this->apiCall('/settings/analog');
@@ -450,7 +479,7 @@ abstract class rubetek extends domophone implements
         if ($this->isLegacyVersion()) {
             $hundredsCount = 8;
         } else {
-            $hundredsCount = RubetekConst::CMS_MAX_COUNT_MAP[$model] ?? 1;
+            $hundredsCount = self::CMS_MAX_COUNT_MAP[$model] ?? 1;
             $analogSettings['select_count_kkm'] = $hundredsCount;
         }
 
@@ -810,7 +839,7 @@ abstract class rubetek extends domophone implements
             return 'DIGITAL';
         }
 
-        return array_search($cmsModelRaw['kkmtype'], RubetekConst::CMS_MODEL_MAP) ?? '';
+        return array_search($cmsModelRaw['kkmtype'], self::CMS_MODEL_MAP) ?? '';
     }
 
     /**
@@ -951,7 +980,7 @@ abstract class rubetek extends domophone implements
         // Filter out service apartments
         $filteredDialplans = array_filter(
             $rawDialplans,
-            static fn($item) => !in_array($item['id'], [RubetekConst::CONCIERGE_ID, RubetekConst::SOS_ID]),
+            static fn($item) => !in_array($item['id'], [self::CONCIERGE_ID, self::SOS_ID]),
         );
 
         $this->dialplans = array_column($filteredDialplans, null, 'id');
@@ -1008,8 +1037,6 @@ abstract class rubetek extends domophone implements
      * @param string[] $accessCodes List of apartment access codes.
      *
      * @return void
-     *
-     * @see RubetekConst
      */
     protected function updateDialplan(
         string $id,
