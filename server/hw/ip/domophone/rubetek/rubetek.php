@@ -52,6 +52,7 @@ abstract class rubetek extends domophone implements
         'KKM-105' => 'kkm-105',
         'KKM-108' => 'kkm-108',
         'KMG-100' => 'kmg-100',
+        'KMD-100S' => 'kmd-100s',
     ];
 
     /**
@@ -65,6 +66,7 @@ abstract class rubetek extends domophone implements
         'KKM-105' => 5,
         'KKM-108' => 8,
         'KMG-100' => 1,
+        'KMD-100S' => 8,
     ];
 
     private const CONCIERGE_ID = 'CONCIERGE';
