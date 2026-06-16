@@ -1,3 +1,17 @@
+# 2026-06-16
+
+Rubetek RV-3434 integration is now targeted at firmware
+[2026.05](https://support.rubetek.com/ru/access-control-system/firmwares/).
+We recommend updating your devices to the latest firmware version, as it includes many improvements.
+See the changelog in the firmware description for details.
+
+Devices running firmware between the previous recommended version 2025.04 and the current version 2026.05
+are treated as legacy, **with backward compatibility preserved**.
+
+⚠️ Firmware versions earlier than 2025.04 are no longer supported.
+For the safest upgrade path, update those devices to firmware 2025.04 before upgrading the SmartYard server.
+After the SmartYard server has been upgraded, update the devices to the current firmware version.
+
 # 2026-06-09
 
 IS Sokol Plus (rev.5) integration is now targeted at firmware
