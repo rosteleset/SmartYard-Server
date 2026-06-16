@@ -1212,8 +1212,10 @@
                                 ['Start - AT', true, false, false, 1],
                                 ['Dial to apartment', false, false, false, 0],
                                 ['Start AT call', false, true, false, 1],
+                                ['Analog handset was picked up', false, true, false, 1],
                                 ['Ending AT call', false, true, false, 1],
                                 ['Start VoIP call', false, true, false, 1],
+                                ['Handset was picked up by SIP device', false, true, false, 1],
                                 ['Ending VoIP', false, true, false, 1],
                                 ['General - open door', false, true, true, 0],
                                 ['Open door by AT', false, true, true, 1],
@@ -1223,6 +1225,8 @@
 
                                 // Incoming call patterns
                                 ['IncomingCallProcessing', false, false, false, -1],
+                                ['IncomingCall::', false, false, false, -1],
+                                ['Incoming call', false, false, false, -1],
                                 ['incoming call', false, false, false, -1],
                             ];
 
