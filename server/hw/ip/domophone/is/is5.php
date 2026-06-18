@@ -217,8 +217,13 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
 
             foreach ($this->switchConfigs as $switchConfig) {
                 $switchConfig->matrices = [];
+                $matrices = array_slice($switchMatrices, $offset, $switchMatrixLimit);
 
-                foreach (array_slice($switchMatrices, $offset, $switchMatrixLimit) as $switchMatrix) {
+                if ($matrices !== []) {
+                    $switchConfig->type = $firstSwitchConfig->type;
+                }
+
+                foreach ($matrices as $switchMatrix) {
                     $switchConfig->matrices[] = new SwitchMatrix(
                         count($switchConfig->matrices) + 1,
                         $switchMatrix->capacity,
