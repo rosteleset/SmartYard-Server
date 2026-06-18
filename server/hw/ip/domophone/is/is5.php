@@ -572,6 +572,12 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
         $dbConfig['sip']['stunEnabled'] = false;
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
+
+        // Device does not keep selected CMS type without matrices
+        if ($dbConfig['matrix'] === []) {
+            $dbConfig['cmsModel'] = '';
+        }
+
         return $dbConfig;
     }
 
