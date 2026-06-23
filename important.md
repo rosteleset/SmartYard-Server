@@ -1,3 +1,12 @@
+# 2026-06-23
+
+IS Sokol Plus (rev.5) Zabbix monitoring template has been updated to correctly detect SIP registration failures.
+After updating SmartYard, re-import monitoring templates:
+
+```bash
+php /opt/rbt/server/cli.php --init-monitoring-config
+```
+
 # 2026-06-16
 
 Rubetek RV-3434 integration is now targeted at firmware

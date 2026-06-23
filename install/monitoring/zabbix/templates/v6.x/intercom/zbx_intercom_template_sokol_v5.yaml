@@ -71,7 +71,7 @@ zabbix_export:
             key: intercom.systeminfo
           triggers:
             - uuid: 62ad991c141d4acd9caff26a8a750619
-              expression: 'count(/Intercom_IS_ISCOM_X1_REV.5/intercom.sipstatus,10m,,"0")>5'
+              expression: 'count(/Intercom_IS_ISCOM_X1_REV.5/intercom.sipstatus,10m,,"false")>5'
               name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
@@ -162,13 +162,3 @@ zabbix_export:
         - macro: '{$HOST_USERNAME}'
           value: root
           description: 'WEB GUI | API username, default value admin'
-      valuemaps:
-        - uuid: 84e3fde322dc4b78beb7a22557b46533
-          name: 'SIP registration status'
-          mappings:
-            - value: '0'
-              newvalue: Disable
-            - value: '1'
-              newvalue: Failure
-            - value: '2'
-              newvalue: Online
