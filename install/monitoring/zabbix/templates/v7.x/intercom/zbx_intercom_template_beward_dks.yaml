@@ -82,7 +82,7 @@ zabbix_export:
               name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
-              description: 'Check SIP registration on device more 10 minutes'
+              description: 'SIP registration failure detected during the last 10 minutes'
               dependencies:
                 - name: 'Device has been restarted'
                   expression: last(/Intercom_BEWARD_DKS/intercom.uptime)<10m

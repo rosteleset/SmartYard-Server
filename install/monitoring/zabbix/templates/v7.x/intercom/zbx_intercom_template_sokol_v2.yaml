@@ -48,7 +48,7 @@ zabbix_export:
             - uuid: f21a5dfe789148028c94dbdd04d41fa1
               expression: 'last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion,#1)<>last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion,#2) and length(last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion))>0'
               name: 'Firmware version has changed'
-              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmware version has changed (new version: {ITEM.VALUE})'
               priority: INFO
         - uuid: 2eb21951b0b541709c7d95fcdae3cfc5
           name: 'Sokol Intercom: SIP registration status'
@@ -71,7 +71,7 @@ zabbix_export:
               name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
-              description: 'Check SIP registration on device more 10 minutes'
+              description: 'SIP registration failure detected during the last 10 minutes'
         - uuid: 81f5a995aa1e497a805d630da80ec8b3
           name: 'Sokol Intercom: system info'
           type: HTTP_AGENT
@@ -127,7 +127,7 @@ zabbix_export:
           value_type: FLOAT
           trends: 90d
           units: uptime
-          description: 'Uptime device'
+          description: 'Device uptime'
           preprocessing:
             - type: JSONPATH
               parameters:

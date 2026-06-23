@@ -52,7 +52,7 @@ zabbix_export:
             - uuid: 626e0c6db182478eb8bd42124e262be9
               expression: 'last(/Intercom_BEWARD_DS/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DS/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DS/intercom.fwversion))>0'
               name: 'Firmware version has changed'
-              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmware version has changed (new version: {ITEM.VALUE})'
               priority: INFO
         - uuid: 2ca02adc720e44a7947a2d8a2727e21f
           name: 'BEWARD Intercom: SIP registration status'
@@ -85,7 +85,7 @@ zabbix_export:
               name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
-              description: 'Check SIP registration on device more 10 minutes'
+              description: 'SIP registration failure detected during the last 10 minutes'
         - uuid: 4cd0ca8ed3244fd2a80568c25f060109
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT

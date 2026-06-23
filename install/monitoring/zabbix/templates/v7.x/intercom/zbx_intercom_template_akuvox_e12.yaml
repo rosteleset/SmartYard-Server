@@ -52,7 +52,7 @@ zabbix_export:
             - uuid: 88a1ade070464cffa35eb0e4dd7bf2c5
               expression: 'last(/Intercom_AKUVOX_E12/intercom.fwversion,#1)<>last(/Intercom_AKUVOX_E12/intercom.fwversion,#2) and length(last(/Intercom_AKUVOX_E12/intercom.fwversion))>0'
               name: 'Firmware version has changed'
-              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmware version has changed (new version: {ITEM.VALUE})'
               priority: INFO
         - uuid: ff82c3f504e64cc88b2f2e434721b456
           name: 'AKUVOX Intercom: SIP registration status'
