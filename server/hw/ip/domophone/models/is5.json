@@ -29,5 +29,10 @@
         "km100-7.2",
         "kmg-100",
         "ku-100"
-    ]
+    ],
+    "monitoring": {
+        "zabbix": {
+            "template": "Intercom_IS_ISCOM_X1_REV.5"
+        }
+    }
 }

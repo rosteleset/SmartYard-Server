@@ -14,5 +14,10 @@
         "factorial_8x8",
         "km100-7.1",
         "kmg-100"
-    ]
+    ],
+    "monitoring": {
+        "zabbix": {
+            "template": "Intercom_IS_ISCOM_X1_REV.5"
+        }
+    }
 }

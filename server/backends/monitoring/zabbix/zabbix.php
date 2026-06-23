@@ -429,15 +429,15 @@ class zabbix extends monitoring
         $subset = [];
 
         foreach ($domophones as $domophone) {
+            $model = $domophonesModels[$domophone["model"]];
+            $template =
+                $model["monitoring"]["zabbix"]["template"] ??
+                "Intercom_" . strtoupper(str_replace(" ", "_", rtrim($model["vendor"] . "_" . $model["model"], "*")));
+
             $subset [] = [
                 "monitoring" => $domophone["monitoring"],
                 "domophoneId" => $domophone["domophoneId"],
-                "vendor" => rtrim(
-                    $domophonesModels[$domophone["model"]]["vendor"]
-                    . "_"
-                    . $domophonesModels[$domophone["model"]]["model"],
-                    "*"
-                ),
+                "template" => $template,
                 "name" => $domophone["name"],
                 "ip" => $domophone["ip"],
                 "credentials" => $domophone["credentials"]
@@ -1165,7 +1165,7 @@ class zabbix extends monitoring
                     'status' => $item['monitoring'] === 1,
                     'host' => $item['ip'],
                     'name' => $item['ip'] . ' | ' . $item['name'],
-                    'template' => 'Intercom_' . strtoupper(str_replace(' ', '_', $item['vendor'])),
+                    'template' => $item['template'],
                     'interface' => $item['ip'],
                     'credentials' => $item['credentials']
                 ];
