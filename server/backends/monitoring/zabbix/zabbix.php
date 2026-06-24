@@ -28,7 +28,8 @@ enum ZabbixTag: string
  */
 enum Trigger: string
 {
-    case ICMP = 'ICMP: Unavailable by ICMP ping';
+    case ICMP = 'ICMP: Unavailable by ICMP ping'; // linked ICMP Ping template in Zabbix 6
+    case ICMP_PING = 'ICMP Ping: Unavailable by ICMP ping'; // linked ICMP Ping template in Zabbix 7
     case SIP = 'SIP: Registration failure';
     case HTTP = 'HTTP: port/service unreachable (ICMP OK)';
 }
@@ -1451,10 +1452,12 @@ class zabbix extends monitoring
             if ($trigger['status'] !== '1' && $trigger['value'] === '1'){
                 switch ($trigger['description']) {
                     case Trigger::ICMP->value:
+                    case Trigger::ICMP_PING->value:
                         return $this->createStatusResponse("Offline", "monitoring.offline");
                     case Trigger::SIP->value:
                         return $this->createStatusResponse("SIP error", "monitoring.sipRegistrationFail");
-                    default: $this->createStatusResponse("Other", "monitoring.otherErr");
+                    default:
+                        return $this->createStatusResponse("Other", "monitoring.otherErr");
                 }
             }
         }
@@ -1519,7 +1522,8 @@ class zabbix extends monitoring
                 } else {
                     foreach ($hostTriggers[$ip] as $trigger) {
                         $host['status'] = match ($trigger['description']) {
-                            Trigger::ICMP->value => $this->createStatusResponse("Offline", "monitoring.offline"),
+                            Trigger::ICMP->value,
+                            Trigger::ICMP_PING->value => $this->createStatusResponse("Offline", "monitoring.offline"),
                             Trigger::SIP->value => $this->createStatusResponse("SIP error", "monitoring.sipRegistrationFail"),
                             default => $this->createStatusResponse("Other", "monitoring.otherErr"),
                         };
