@@ -499,11 +499,11 @@
                 break;
 
             case 'SIP error':
-                statusClass = 'fa-minus-circle text-orange';
+                statusClass = 'fa-phone-slash text-orange';
                 break;
 
             case 'DVR error':
-                statusClass = 'fa-minus-circle text-orange';
+                statusClass = 'fa-video-slash text-orange';
                 break;
 
             case 'Disabled':
@@ -511,7 +511,7 @@
                 break;
 
             case 'Other':
-                statusClass = 'fa-dot-circle text-warning';
+                statusClass = 'fa-circle-exclamation text-warning';
                 break;
 
             default:
@@ -524,7 +524,7 @@
                 }
         }
 
-        return `<i class="far fa-fw ${statusClass}" title="${status}"></i>`;
+        return `<i class="fas fa-fw ${statusClass}" title="${status}"></i>`;
     },
 
     doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region, timezone) {
