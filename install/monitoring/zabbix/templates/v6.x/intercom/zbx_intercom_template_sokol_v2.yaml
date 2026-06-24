@@ -1,5 +1,5 @@
 zabbix_export:
-  version: '6.0'
+  version: '6.4'
   template_groups:
     - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
