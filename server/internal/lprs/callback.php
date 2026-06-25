@@ -1,7 +1,9 @@
 <?php
 
-use backends\plog\plog;
-use backends\frs\frs;
+use backends\{
+    frs\frs,
+    plog\plog,
+};
 
 $households = loadBackend("households");
 $plog = loadBackend("plog");
@@ -29,13 +31,20 @@ function openDoor($entrance): void
     $domophone_output = $entrance["domophoneOutput"];
     $domophone = $households->getDomophone($domophone_id);
     try {
-        $model = loadDevice('domophone', $domophone["model"], $domophone["url"], $domophone["credentials"]);
-        $model->openLock($domophone_output);
+        $device = loadDevice(
+            type: 'domophone',
+            model: $domophone['model'],
+            url: $domophone['url'],
+            password: $domophone['credentials'],
+            lazy: $domophone['model'] !== 'sputnik.json', // Sputnik needs getSysinfo() to get its UUID for API calls
+        );
+
+        $device->openLock($domophone_output);
+
         if (isset($config["backends"]["frs"]["open_gates_timeout"])) {
             $redis->set($frs_key, 1, $config["backends"]["frs"]["open_gates_timeout"]);
         }
-    }
-    catch (\Exception $e) {
+    } catch (Throwable) {
         response(404, false, i18n("mobile.error"), i18n("mobile.unavailable"));
     }
 }

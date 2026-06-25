@@ -35,12 +35,12 @@ abstract class Basip extends domophone implements
     protected ?array $identifiers = null;
     protected ?array $forwards = null;
 
-    public function __construct(string $url, string $password, bool $firstTime = false)
+    public function __construct(string $url, string $password, bool $firstTime = false, bool $lazy = false)
     {
         $clientClass = static::HTTP_CLIENT_CLASS;
         $this->client = new $clientClass(rtrim($url, '/'), $firstTime ? '123456' : $password);
 
-        parent::__construct($url, $password, $firstTime);
+        parent::__construct($url, $password, $firstTime, $lazy);
     }
 
     /**

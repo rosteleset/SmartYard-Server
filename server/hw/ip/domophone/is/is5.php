@@ -86,10 +86,10 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
     protected ?array $switchConfigs = null;
     protected bool $switchConfigsChanged = false;
 
-    public function __construct(string $url, string $password, bool $firstTime = false)
+    public function __construct(string $url, string $password, bool $firstTime = false, bool $lazy = false)
     {
         $this->client = new HttpClient(rtrim($url, '/'), $firstTime ? '123456' : $password);
-        parent::__construct($url, $password, $firstTime);
+        parent::__construct($url, $password, $firstTime, $lazy);
     }
 
     public function addRfid(string $code, int $apartment = 0): void

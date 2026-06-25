@@ -1,7 +1,9 @@
 <?php
 
-use backends\plog\plog;
-use backends\frs\frs;
+use backends\{
+    frs\frs,
+    plog\plog,
+};
 
 $frs = loadBackend("frs");
 $households = loadBackend("households");
@@ -43,8 +45,16 @@ foreach ($entrances as $entrance) {
     $domophone_output = $entrance["domophoneOutput"];
     $domophone = $households->getDomophone($domophone_id);
     try {
-        $model = loadDevice('domophone', $domophone["model"], $domophone["url"], $domophone["credentials"]);
-        $model->openLock($domophone_output);
+        $device = loadDevice(
+            type: 'domophone',
+            model: $domophone['model'],
+            url: $domophone['url'],
+            password: $domophone['credentials'],
+            lazy: $domophone['model'] !== 'sputnik.json', // Sputnik needs getSysinfo() to get its UUID for API calls
+        );
+
+        $device->openLock($domophone_output);
+
         if (!$has_event) {
             $has_event = true;
             $redis->set($frs_key, 1, $config["backends"]["frs"]["open_door_timeout"]);
@@ -56,8 +66,7 @@ foreach ($entrances as $entrance) {
                 // $households->paranoidEvent($entranceId, "code", $details);
             }
         }
-    }
-    catch (\Exception $e) {
+    } catch (Throwable $e) {
         response(404, false, 'Ошибка', 'Домофон недоступен');
     }
 }

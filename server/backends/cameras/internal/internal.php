@@ -6,7 +6,7 @@
 
     namespace backends\cameras {
 
-        use Exception;
+        use Throwable;
 
         /**
          * internal.db cameras class
@@ -361,10 +361,11 @@
                         model: $cameraData['model'],
                         url: $cameraData['url'],
                         password: $cameraData['credentials'],
+                        lazy: true,
                     );
 
                     return $device->getCamshot();
-                } catch (Exception) {
+                } catch (Throwable) {
                     error_log("Error getting snapshot from '{$cameraData['url']}' using device method");
                     return null;
                 }

@@ -44,6 +44,7 @@
 + updated Rubetek RV-3434 integration for firmware 2026.05
 - fixed IS Sokol+ rev.5 Zabbix SIP registration monitoring
 - fixed Zabbix 6.x template export format
++ faster snapshots and door opening by skipping redundant device checks
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8

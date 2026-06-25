@@ -50,15 +50,20 @@ abstract class ip extends hw
      * In such a case, the password will be applied on the device if the $firstTime is set to true,
      * otherwise, there will be an exception.
      * @param bool $firstTime (Optional) Indicates if it's the first time using the device. Default is false.
+     * @param bool $lazy (Optional) Skip availability checks and first-time setup during object construction.
      *
      * @throws Exception if the device is unavailable.
      */
-    public function __construct(string $url, string $password, bool $firstTime = false)
+    public function __construct(string $url, string $password, bool $firstTime = false, bool $lazy = false)
     {
         parent::__construct($url);
         $this->initializeProperties();
 
         $this->password = $firstTime ? ($this->defaultPassword ?? $password) : $password;
+
+        if ($lazy) {
+            return;
+        }
 
         if (!$this->ping()) {
             throw new Exception("Device at $this->url is unavailable");

@@ -61,12 +61,20 @@
     * @param string $url The URL for the device.
     * @param string $password The password for the device.
     * @param bool $firstTime Indicates if it's the first time using the device. Default is false.
+    * @param bool $lazy Skip availability checks and first-time setup during object construction. Default is false.
     *
     * @return false|object Returns an object instance of the device class if found and loaded successfully,
     * or false if there was an error loading the class.
     * @throws Exception
     */
-    function loadDevice(string $type, string $model, string $url, string $password, bool $firstTime = false) {
+    function loadDevice(
+        string $type,
+        string $model,
+        string $url,
+        string $password,
+        bool $firstTime = false,
+        bool $lazy = false,
+    ) {
         require_once __DIR__ . '/functions.php';
         require_once __DIR__ . '/../hw/autoload.php';
 
@@ -105,7 +113,7 @@
             throw new RuntimeException("Class '$class' not found for type '$type' and vendor '$vendor'");
         }
 
-        return new $className($url, $password, $firstTime);
+        return new $className($url, $password, $firstTime, $lazy);
     }
 
     /**
