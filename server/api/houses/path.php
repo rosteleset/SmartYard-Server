@@ -33,6 +33,7 @@
      * @apiBody {String} text
      * @apiBody {String} icon
      * @apiBody {String="list","map"} [type=list]
+     * @apiBody {String} [visibleForFlats] comma-separated flat numbers and ranges, e.g. "1,3,10-20"; empty inherits from parent
      *
      * @apiSuccess {Number} nodeId
      */
@@ -51,6 +52,7 @@
      * @apiBody {String} text
      * @apiBody {String} icon
      * @apiBody {String="list","map"} [type]
+     * @apiBody {String} [visibleForFlats] comma-separated flat numbers and ranges, e.g. "1,3,10-20"; empty inherits from parent
      *
      * @apiSuccess {Boolean} oprationResult
      */
@@ -109,9 +111,9 @@
                     return api::ERROR();
                 } else {
                     if ((int)$params["_id"]) {
-                        return api::ANSWER($households->addPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"] ?: "list"), "nodeId");
+                        return api::ANSWER($households->addPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"] ?: "list", @$params["visibleForFlats"]), "nodeId");
                     } else {
-                        return api::ANSWER($households->addRootPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"] ?: "list"), "nodeId");
+                        return api::ANSWER($households->addRootPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"] ?: "list", @$params["visibleForFlats"]), "nodeId");
                     }
                 }
             }
@@ -122,7 +124,9 @@
                 if (!$households) {
                     return api::ERROR();
                 } else {
-                    return api::ANSWER($households->modifyPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"]));
+                    $visibleForFlats = array_key_exists("visibleForFlats", $params) ? $params["visibleForFlats"] : false;
+
+                    return api::ANSWER($households->modifyPathNode($params["_id"], @$params["text"], @$params["icon"], @$params["type"], $visibleForFlats));
                 }
             }
 
