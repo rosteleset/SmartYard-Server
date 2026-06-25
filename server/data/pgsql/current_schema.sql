@@ -1303,7 +1303,8 @@ CREATE TABLE public.houses_paths (
     house_path_parent integer,
     house_path_name character varying,
     house_path_icon character varying,
-    house_path_type character varying DEFAULT 'list'::character varying
+    house_path_type character varying DEFAULT 'list'::character varying,
+    house_path_visible_for_flats character varying
 );
 
 

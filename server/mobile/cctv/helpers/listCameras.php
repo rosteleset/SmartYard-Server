@@ -3,6 +3,8 @@
     $cameras = loadBackend("cameras");
     $houses = [];
 
+    require_once __DIR__ . "/../../helpers/filterAvailableCameras.php";
+
     /**
      * Get stub url's from config
      * payment_require_url - stub if flat is blocked
@@ -58,8 +60,10 @@
             $house['houseId'] = strval($houseId);
             $house['cameras'] = $households->getCameras("houseId", $houseId);
             $house['doors'] = [];
+            $house['flats'] = [];
         }
 
+        $house['flats'][] = $flat['flat'];
         $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
 
         foreach ($flatDetail['entrances'] as $entrance) {
@@ -94,6 +98,8 @@
     foreach ($houses as $house_key => $h) {
         $houses[$house_key]['doors'] = array_values($h['doors']);
         unset($houses[$house_key]['cameras']);
+        unset($houses[$house_key]['flats']);
+        $h['cameras'] = mobile_filter_available_cameras($h['cameras'], $h['flats'], $households);
         foreach($h['cameras'] as $camera) {
             $dvr = loadBackend("dvr")->getDVRServerForCam($camera);
             $item = [

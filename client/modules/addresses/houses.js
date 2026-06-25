@@ -2420,6 +2420,11 @@
                 pathFirst = false;
             }
 
+            function validVisibleForFlats(value) {
+                value = $.trim(value);
+                return !value || /^\d+\s*(?:-\s*\d+\s*)?(?:,\s*\d+\s*(?:-\s*\d+\s*)?)*$/.test(value);
+            }
+
             cardForm({
                 title: i18n("addresses.path"),
                 footer: true,
@@ -2438,12 +2443,14 @@
                         addRoot: function (instance) {
                             POST("houses", "path", treeName, {
                                 text: i18n("addresses.newNode"),
+                                visibleForFlats: "",
                             }).done(result => {
                                 if (result && result.nodeId) {
                                     let node = {
                                         id: result.nodeId,
                                         text: i18n("addresses.newNode"),
                                         viewType: "list",
+                                        visibleForFlats: "",
                                     };
                                     instance.jstree().create_node("#", node, 'last', newNode => {
                                         setTimeout(() => {
@@ -2461,12 +2468,14 @@
                             parent = parent.length ? parent[0] : "#";
                             POST("houses", "path", (parent === "#") ? treeName : parent, {
                                 text: i18n("addresses.newNode"),
+                                visibleForFlats: "",
                             }).done(result => {
                                 if (result && result.nodeId) {
                                     let node = {
                                         id: result.nodeId,
                                         text: i18n("addresses.newNode"),
                                         viewType: "list",
+                                        visibleForFlats: "",
                                     };
                                     modules.addresses.houses.pathNodes[result.nodeId] = i18n("addresses.newNode");
                                     instance.jstree().create_node(parent, node, 'last', newNode => {
@@ -2564,6 +2573,14 @@
                         ],
                     },
                     {
+                        id: "pathVisibleForFlats",
+                        type: "text",
+                        title: i18n("addresses.pathVisibleForFlats"),
+                        placeholder: "1,3,10-20",
+                        hint: i18n("addresses.pathVisibleForFlatsHint"),
+                        validate: validVisibleForFlats,
+                    },
+                    {
                         id: "pathOrder",
                         type: "text",
                         title: i18n("addresses.pathOrder"),
@@ -2581,16 +2598,18 @@
                         return false;
                     }
 
-                    function syncPathViewType() {
+                    function syncPathSettings() {
                         let node = selectedPathNode();
                         if (node) {
                             $(`#${prefix}pathViewType`).prop("disabled", false).val(node.original && node.original.viewType ? node.original.viewType : "list");
+                            $(`#${prefix}pathVisibleForFlats`).prop("disabled", false).val(node.original && node.original.visibleForFlats !== null && typeof node.original.visibleForFlats !== "undefined" ? node.original.visibleForFlats : "");
                         } else {
                             $(`#${prefix}pathViewType`).prop("disabled", true).val("list");
+                            $(`#${prefix}pathVisibleForFlats`).prop("disabled", true).val("");
                         }
                     }
 
-                    $(`#${prefix}path`).off("select_node.jstree.cctvType deselect_node.jstree.cctvType changed.jstree.cctvType ready.jstree.cctvType").on("select_node.jstree.cctvType deselect_node.jstree.cctvType changed.jstree.cctvType ready.jstree.cctvType", syncPathViewType);
+                    $(`#${prefix}path`).off("select_node.jstree.cctvPathSettings deselect_node.jstree.cctvPathSettings changed.jstree.cctvPathSettings ready.jstree.cctvPathSettings").on("select_node.jstree.cctvPathSettings deselect_node.jstree.cctvPathSettings changed.jstree.cctvPathSettings ready.jstree.cctvPathSettings", syncPathSettings);
                     $(`#${prefix}pathViewType`).off("change.cctvType").on("change.cctvType", () => {
                         let node = selectedPathNode();
                         if (!node) {
@@ -2608,7 +2627,29 @@
                         }).
                         fail(FAIL);
                     });
-                    syncPathViewType();
+                    $(`#${prefix}pathVisibleForFlats`).off("change.cctvVisibleForFlats").on("change.cctvVisibleForFlats", () => {
+                        let node = selectedPathNode();
+                        if (!node) {
+                            return;
+                        }
+
+                        let visibleForFlats = $.trim($(`#${prefix}pathVisibleForFlats`).val());
+                        if (!validVisibleForFlats(visibleForFlats)) {
+                            return;
+                        }
+
+                        PUT("houses", "path", node.id, {
+                            text: node.text,
+                            type: node.original && node.original.viewType ? node.original.viewType : "list",
+                            visibleForFlats: visibleForFlats,
+                        }).
+                        done(() => {
+                            node.original = node.original || {};
+                            node.original.visibleForFlats = visibleForFlats;
+                        }).
+                        fail(FAIL);
+                    });
+                    syncPathSettings();
                 },
                 callback: result => {
                     let pathOrder = $.trim(`${result.pathOrder}`);

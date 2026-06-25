@@ -354,6 +354,8 @@
     "pathViewType": "Group view mode",
     "pathViewTypeList": "List",
     "pathViewTypeMap": "Map",
+    "pathVisibleForFlats": "Visible for flats",
+    "pathVisibleForFlatsHint": "Empty inherits from parent",
     "pathOrder": "Order in group",
     "confirmDeleteNode": "Delete node \"%s\"?",
     "deleteNode": "Delete node",
