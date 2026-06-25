@@ -295,5 +295,8 @@
     ],
     "93": [
         "v93_cctv_tree.sql"
+    ],
+    "94": [
+        "v94_cctv_path_visibility.sql"
     ]
 }

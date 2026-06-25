@@ -579,7 +579,7 @@
              * @return mixed
              */
 
-            abstract function addRootPathNode($tree, $text, $icon, $type = "list");
+            abstract function addRootPathNode($tree, $text, $icon, $type = "list", $visibleForFlats = null);
 
             /**
              * @param string parentId
@@ -589,7 +589,7 @@
              * @return mixed
              */
 
-            abstract function addPathNode($parentId, $text, $icon, $type = "list");
+            abstract function addPathNode($parentId, $text, $icon, $type = "list", $visibleForFlats = null);
 
             /**
              * @param string nodeId
@@ -599,7 +599,15 @@
              * @return mixed
              */
 
-            abstract function modifyPathNode($nodeId, $text, $icon, $type = null);
+            abstract function modifyPathNode($nodeId, $text, $icon, $type = null, $visibleForFlats = false);
+
+            /**
+             * @param string nodeId
+             *
+             * @return mixed
+             */
+
+            abstract function getPathVisibleForFlats($nodeId);
 
             /**
              * @param string deviceToken

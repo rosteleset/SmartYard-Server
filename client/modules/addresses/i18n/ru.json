@@ -361,6 +361,8 @@
     "pathViewType": "Режим отображения группы",
     "pathViewTypeList": "Список",
     "pathViewTypeMap": "Карта",
+    "pathVisibleForFlats": "Видна квартирам",
+    "pathVisibleForFlatsHint": "Пусто — наследовать от родителя",
     "pathOrder": "Порядок в группе",
     "confirmDeleteNode": "Удалить элемент \"%s\"?",
     "deleteNode": "Удалить элемент",

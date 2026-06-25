@@ -3563,13 +3563,14 @@
 
                 $params["house_path_tree"] = $tree;
 
-                $nodes = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and ($query) order by house_path_name", $params, [
+                $nodes = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, house_path_visible_for_flats, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and ($query) order by house_path_name", $params, [
                     "house_path_id" => "id",
                     "house_path_tree" => "tree",
                     "house_path_parent" => "parentId",
                     "house_path_name" => "text",
                     "house_path_icon" => "icon",
                     "house_path_type" => "viewType",
+                    "house_path_visible_for_flats" => "visibleForFlats",
                     "childrens" => "children",
                 ]);
 
@@ -3601,7 +3602,7 @@
                 if ($withParents) {
 
                     if ((int)$treeOrFrom) {
-                        $node = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_id = :house_path_id", [
+                        $node = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, house_path_visible_for_flats, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_id = :house_path_id", [
                             "house_path_id" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -3610,6 +3611,7 @@
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
                             "house_path_type" => "viewType",
+                            "house_path_visible_for_flats" => "visibleForFlats",
                             "childrens" => "children",
                         ], [
                             "singlify"
@@ -3623,7 +3625,7 @@
                     }
 
                     if ((int)$node["parentId"]) {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent in (select house_path_id from houses_paths where house_path_id = :house_path_id) order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, house_path_visible_for_flats, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent in (select house_path_id from houses_paths where house_path_id = :house_path_id) order by house_path_name", [
                             "house_path_id" => $node["parentId"],
                         ], [
                             "house_path_id" => "id",
@@ -3632,10 +3634,11 @@
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
                             "house_path_type" => "viewType",
+                            "house_path_visible_for_flats" => "visibleForFlats",
                             "childrens" => "children",
                         ]);
                     } else {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent is null and house_path_tree = :house_path_tree order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, house_path_visible_for_flats, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent is null and house_path_tree = :house_path_tree order by house_path_name", [
                             "house_path_tree" => $node["tree"],
                         ], [
                             "house_path_id" => "id",
@@ -3644,6 +3647,7 @@
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
                             "house_path_type" => "viewType",
+                            "house_path_visible_for_flats" => "visibleForFlats",
                             "childrens" => "children",
                         ]);
                     }
@@ -3673,7 +3677,7 @@
                     return $tree;
                 } else {
                     if (is_numeric($treeOrFrom)) {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, house_path_visible_for_flats, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
                             "house_path_parent" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -3682,10 +3686,11 @@
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
                             "house_path_type" => "viewType",
+                            "house_path_visible_for_flats" => "visibleForFlats",
                             "childrens" => "children",
                         ]);
                     } else {
-                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, coalesce(house_path_type, 'list') house_path_type, house_path_visible_for_flats, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
                             "house_path_tree" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -3694,6 +3699,7 @@
                             "house_path_name" => "text",
                             "house_path_icon" => "icon",
                             "house_path_type" => "viewType",
+                            "house_path_visible_for_flats" => "visibleForFlats",
                             "childrens" => "children",
                         ]);
                     }
@@ -3708,19 +3714,22 @@
              * @inheritDoc
              */
 
-            function addRootPathNode($tree, $text, $icon, $type = "list") {
+            function addRootPathNode($tree, $text, $icon, $type = "list", $visibleForFlats = null) {
                 if (!checkStr($tree) || !checkStr($text)) {
                     return false;
                 }
 
                 $type = in_array($type, [ "list", "map" ]) ? $type : "list";
 
-                return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon, house_path_type) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon, :house_path_type)", [
+                $visibleForFlats = trim((string)$visibleForFlats) ?: null;
+
+                return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon, house_path_type, house_path_visible_for_flats) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon, :house_path_type, :house_path_visible_for_flats)", [
                     "house_path_tree" => $tree,
                     "house_path_parent" => null,
                     "house_path_name" => $text,
                     "house_path_icon" => $icon,
                     "house_path_type" => $type,
+                    "house_path_visible_for_flats" => $visibleForFlats,
                 ]);
             }
 
@@ -3728,7 +3737,7 @@
              * @inheritDoc
              */
 
-            function addPathNode($parentId, $text, $icon, $type = "list") {
+            function addPathNode($parentId, $text, $icon, $type = "list", $visibleForFlats = null) {
                 if (!checkInt($parentId) || !checkStr($text)) {
                     return false;
                 }
@@ -3744,12 +3753,15 @@
                 ]);
 
                 if ($tree) {
-                    return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon, house_path_type) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon, :house_path_type)", [
+                    $visibleForFlats = trim((string)$visibleForFlats) ?: null;
+
+                    return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon, house_path_type, house_path_visible_for_flats) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon, :house_path_type, :house_path_visible_for_flats)", [
                         "house_path_tree" => $tree,
                         "house_path_parent" => $parentId,
                         "house_path_name" => $text,
                         "house_path_icon" => $icon,
                         "house_path_type" => $type,
+                        "house_path_visible_for_flats" => $visibleForFlats,
                     ]);
                 } else {
                     return false;
@@ -3760,19 +3772,67 @@
              * @inheritDoc
              */
 
-            function modifyPathNode($nodeId, $text, $icon, $type = null) {
+            function modifyPathNode($nodeId, $text, $icon, $type = null, $visibleForFlats = false) {
                 if (!checkInt($nodeId) || !checkStr($text)) {
                     return false;
                 }
 
                 $type = in_array($type, [ "list", "map" ]) ? $type : null;
 
-                return $this->db->modify("update houses_paths set house_path_name = :house_path_name, house_path_icon = :house_path_icon, house_path_type = coalesce(:house_path_type, house_path_type, 'list') where house_path_id = :house_path_id", [
+                if ($visibleForFlats === false) {
+                    return $this->db->modify("update houses_paths set house_path_name = :house_path_name, house_path_icon = :house_path_icon, house_path_type = coalesce(:house_path_type, house_path_type, 'list') where house_path_id = :house_path_id", [
+                        "house_path_id" => $nodeId,
+                        "house_path_name" => $text,
+                        "house_path_icon" => $icon,
+                        "house_path_type" => $type,
+                    ]);
+                }
+
+                $visibleForFlats = trim((string)$visibleForFlats) ?: null;
+                return $this->db->modify("update houses_paths set house_path_name = :house_path_name, house_path_icon = :house_path_icon, house_path_type = coalesce(:house_path_type, house_path_type, 'list'), house_path_visible_for_flats = :house_path_visible_for_flats where house_path_id = :house_path_id", [
                     "house_path_id" => $nodeId,
                     "house_path_name" => $text,
                     "house_path_icon" => $icon,
                     "house_path_type" => $type,
+                    "house_path_visible_for_flats" => $visibleForFlats,
                 ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function getPathVisibleForFlats($nodeId) {
+                if (!checkInt($nodeId)) {
+                    return null;
+                }
+
+                $nodeId = (int)$nodeId;
+
+                while ($nodeId) {
+                    $node = $this->db->get("select coalesce(house_path_parent, 0) house_path_parent, house_path_visible_for_flats from houses_paths where house_path_id = :house_path_id", [
+                        "house_path_id" => $nodeId,
+                    ], [
+                        "house_path_parent" => "parentId",
+                        "house_path_visible_for_flats" => "visibleForFlats",
+                    ], [
+                        "singlify"
+                    ]);
+
+                    if (!$node) {
+                        return null;
+                    }
+
+                    $visibleForFlats = trim((string)($node["visibleForFlats"] ?? ""));
+
+                    if ($visibleForFlats !== "") {
+                        return $visibleForFlats;
+                    }
+
+                    $nodeId = (int)$node["parentId"];
+                }
+
+                return null;
             }
 
             /**
