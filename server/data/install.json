@@ -298,5 +298,8 @@
     ],
     "94": [
         "v94_subscriber_groups.sql"
+    ],
+    "95": [
+        "v95_cctv_path_visibility.sql"
     ]
 }

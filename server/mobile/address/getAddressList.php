@@ -45,6 +45,8 @@
     $plog = loadBackend("plog");
     $cameras = loadBackend("cameras");
 
+    require_once __DIR__ . "/../helpers/filterAvailableCameras.php";
+
     $houses = [];
 
     foreach ($subscriber['flats'] as $flat) {
@@ -65,8 +67,10 @@
             }
             $house['cameras'] = $households->getCameras("houseId", $houseId);
             $house['doors'] = [];
+            $house['flats'] = [];
         }
 
+        $house['flats'][] = $flat['flat'];
         $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
 
         $flatDetail = $households->getFlat($flat['flatId']);
@@ -107,6 +111,7 @@
     // конвертируем ассоциативные массивы в простые и удаляем лишние ключи
     foreach ($houses as $house_key => $h) {
         // count unique cameras
+        $h['cameras'] = mobile_filter_available_cameras($h['cameras'], $h['flats'], $households);
         $tempArr = array_unique(array_column($h['cameras'], 'cameraId'));
         $houses[$house_key]['cctv'] = count($tempArr);
 
@@ -128,6 +133,7 @@
         });
         $houses[$house_key]['doors'] = $doors;
         unset($houses[$house_key]['cameras']);
+        unset($houses[$house_key]['flats']);
     }
     $result = array_values($houses);
 
