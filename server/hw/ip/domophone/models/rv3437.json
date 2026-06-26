@@ -16,5 +16,10 @@
         "km100-7.3",
         "km100-7.5",
         "kmg-100"
-    ]
+    ],
+    "monitoring": {
+        "zabbix": {
+            "template": "Intercom_RUBETEK_RV-3434"
+        }
+    }
 }
