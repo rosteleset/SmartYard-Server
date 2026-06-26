@@ -64,7 +64,14 @@
         "paranoidMsgLP": "%s, %s открыт по номеру \"%s\"",
         "overLimit": "Превышен лимит устройств на мобильный номер",
         "contactProviderForAdding": "Для добавление телефона, обратитесь к вашему провайдеру или владельцу квартиры",
-        "invalidPlateNumber": "Некорректный автомобильный номер"
+        "invalidPlateNumber": "Некорректный автомобильный номер",
+        "invalidParameter": "Некорректный параметр %s",
+        "cantCreateGroup": "Не удалось создать группу",
+        "cantChangeGroup": "Не удалось изменить группу",
+        "cantDeleteGroup": "Не удалось удалить группу",
+        "cantAttachFaceToGroup": "Не удалось привязать лицо к группе",
+        "cantDetachFaceFromGroup": "Не удалось отвязать лицо от группы",
+        "cantClusterFaces": "Не удалось создать кластеры лиц"
     },
 
     "services": {

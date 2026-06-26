@@ -710,5 +710,48 @@
              */
 
             abstract public function getTree();
+
+            /**
+             * @param $subscriberId
+             * @param $flatId
+             * @param $name
+             *
+             * @return int
+             */
+            abstract public function addSubscriberGroup($subscriberId, $flatId, $groupName): int;
+
+            /**
+             * @param $subscriberId
+             * @param $subscriberGroupId
+             * @param $flatId
+             * @param $newName
+             *
+             * @return bool
+             */
+            abstract public function updateSubscriberGroup($subscriberId, $subscriberGroupId, $flatId, $groupName): bool;
+
+            /**
+             * @param $subscriberId
+             * @param $subscriberGroupId
+             * @param $flatId
+             *
+             * @return bool
+             */
+            abstract public function deleteSubscriberGroup($subscriberId, $subscriberGroupId, $flatId): bool;
+
+            /**
+             * @param $subscriberId
+             * @param $flatId
+             *
+             * @return array
+             */
+            abstract public function getSubscriberGroups($subscriberId, $flatId): array;
+
+            /**
+             * @param $groupId
+             * @param $subscriberId
+             * @return bool
+             */
+            abstract public function groupBelongsToSubscriber($subscriberGroupId, $subscriberId): bool;
         }
     }

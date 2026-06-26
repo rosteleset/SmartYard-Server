@@ -6,6 +6,8 @@
 
     namespace backends\households {
 
+        use Exception;
+
         /**
          * internal.db houses class
          */
@@ -130,9 +132,9 @@
                 $q = "";
                 $p = [];
 
-                // Attach house UUID to the result ONLY if the search is performed by house UUID and flat number, 
+                // Attach house UUID to the result ONLY if the search is performed by house UUID and flat number,
                 // because in this case the house UUID is already known and can be useful for further processing without additional queries
-                // By default, house UUID is not attached to the result of getFlat() method 
+                // By default, house UUID is not attached to the result of getFlat() method
                 $attachHouseUuid = false;
 
                 switch ($by) {
@@ -2968,7 +2970,7 @@
                                 } else {
                                     echo "error while adding $k into flat $f\n";
                                 }
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 echo "error while adding $k into flat $f\n";
                             }
                         }
@@ -4214,6 +4216,114 @@
 
             public function getTree() {
                 return $this->db->get("select * from houses_devices_tree");
+            }
+
+            public function addSubscriberGroup($subscriberId, $flatId, $groupName): int
+            {
+                $id = 0;
+                try {
+                    $query = "
+                        insert into subscriber_groups(house_subscriber_id, flat_id, subscriber_group_name)
+                        values(:subscriber_id, :flat_id, :group_name)
+                        on conflict (house_subscriber_id, flat_id, subscriber_group_name)
+                        do update set subscriber_group_name = excluded.subscriber_group_name
+                        returning subscriber_group_id";
+                    $r = $this->db->get($query, [
+                        "subscriber_id" => $subscriberId,
+                        "flat_id" => $flatId,
+                        "group_name" => $groupName,
+                    ], [], ["singlify"]);
+                    if ($r !== false) {
+                        $id = $r['subscriber_group_id'];
+                    }
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $id;
+            }
+
+            public function updateSubscriberGroup($subscriberId, $subscriberGroupId, $flatId, $groupName): bool
+            {
+                $r = false;
+                try {
+                    $query = "
+                        update subscriber_groups
+                        set subscriber_group_name = :group_name
+                        where house_subscriber_id = :subscriber_id
+                        and subscriber_group_id = :subscriber_group_id
+                        and flat_id = :flat_id";
+                    $r = $this->db->modify($query, [
+                        "group_name" => $groupName,
+                        "subscriber_id" => $subscriberId,
+                        "subscriber_group_id" => $subscriberGroupId,
+                        "flat_id" => $flatId,
+                    ]);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $r;
+            }
+
+            public function deleteSubscriberGroup($subscriberId, $subscriberGroupId, $flatId): bool
+            {
+                $r = false;
+                try {
+                    $query = "
+                        delete from subscriber_groups
+                        where house_subscriber_id = :subscriber_id
+                        and subscriber_group_id = :subscriber_group_id
+                        and flat_id = :flat_id";
+                    $r = $this->db->modify($query, [
+                        "subscriber_id" => $subscriberId,
+                        "subscriber_group_id" => $subscriberGroupId,
+                        "flat_id" => $flatId,
+                    ]);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $r;
+            }
+
+            public function getSubscriberGroups($subscriberId, $flatId): array
+            {
+                $group_data = [];
+                $query = "
+                    select
+                        subscriber_group_id,
+                        subscriber_group_name
+                    from
+                        subscriber_groups
+                    where
+                        house_subscriber_id = :subscriber_id
+                        and flat_id = :flat_id
+                    order by
+                        subscriber_group_name
+                ";
+                $r = $this->db->get($query, [
+                    "subscriber_id" => $subscriberId,
+                    "flat_id" => $flatId,
+                ]);
+                if ($r) {
+                    foreach ($r as $row) {
+                        $group_data[] = ['groupId' => $row['subscriber_group_id'], 'groupName' => $row['subscriber_group_name']];
+                    }
+                }
+
+                return $group_data;
+            }
+
+            public function groupBelongsToSubscriber($subscriberGroupId, $subscriberId): bool
+            {
+                $query = "select true result from subscriber_groups where house_subscriber_id = :subscriber_id and subscriber_group_id = :subscriber_group_id";
+                $r = $this->db->get($query, [
+                    "subscriber_id" => $subscriberId,
+                    "subscriber_group_id" => $subscriberGroupId,
+                ], [], ["singlify"]);
+
+                return $r && $r['result'] === true;
             }
         }
     }

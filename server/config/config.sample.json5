@@ -45,11 +45,17 @@
         "address_verification_tab_1_visible": true,
         "address_verification_tab_2_visible": true,
 
-        // Events Tracking. This option turns on/off the events tracking system UI for the mobile app. The default value is false.
+        // Enables or disables the events tracking system UI for the mobile app. The default value is false.
         "events_tracking": false,
 
-        // Stories. This option turns on/off the stories. The default value is false.
+        // Enables or disables the stories. The default value is false.
         "stories": false,
+
+        // Enables or disables face group management. The default value is false.
+        "face_groups": false,
+
+        // Enables or disables face clustering. Supported in FALPRS 1.1.0 and later. Check the installed version with `/opt/falprs/falprs --version`. The default value is false.
+        "face_clustering": false,
     },
 
     "db": {
@@ -260,21 +266,28 @@
 
             "servers": [
                 {
-                    // API type of FALPRS project. One of: frs, lprs
-                    // "api": "frs",
+                    // API type for FALPRS. One of: frs, lprs.
+                    "api": "frs",
 
                     "title": "FRS server",
 
-                    // URL for API calls. For FALPRS project should be like this: http://127.0.0.1:9051/frs/api/
-                    "url": "http://127.0.0.1:9051"
+                    // URL for API calls
+                    "url": "http://127.0.0.1:9051/frs/api/",
 
                     // Optional authorization token for FALPRS project (taken from table vstream_groups if you use more than one video stream group).
                     // By default this option is not needed.
                     // "authToken": "..."
+
+                    // Similarity threshold for face clustering. Must be in the range [0.0, 1.0]. Applies to FALPRS version 1.1.0 or later. The default value is 0.5.
+                    "face_clustering_similarity_threshold": 0.5
                 },
                 {
+                    // API type for FALPRS. One of: frs, lprs.
                     "api": "lprs",
+
                     "title": "LPRS server",
+
+                    // URL for API calls
                     "url": "http://127.0.0.1:9051/lprs/api/"
 
                     // Optional authorization token for FALPRS project (taken from table vstream_groups if you use more than one video stream group)

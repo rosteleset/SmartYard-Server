@@ -31,6 +31,7 @@
             const P_FACE_HEIGHT = "height";
             const P_FACE_ID = "faceId";
             const P_FACE_IMAGE = "faceImage";
+            const P_GROUP_ID = "groupId";
             const P_PARAMS = "params";
             const P_PARAM_NAME = "paramName";
             const P_PARAM_VALUE = "paramValue";
@@ -50,6 +51,7 @@
             const P_BOX = "box";
             const P_KPTS = "kpts";
             const P_NUMBER = "number";
+            const P_SIMILARITY = "similarity";
 
             //FRS method names
             const M_ADD_STREAM = "addStream";
@@ -67,6 +69,7 @@
             const M_GET_EVENT_DATA = "getEventData";
             const M_SET_STREAM_DEFAULT_CONFIG = "setStreamDefaultConfig";
             const M_GET_STREAM_DEFAULT_CONFIG = "getStreamDefaultConfig";
+            const M_CLUSTER_FACES_BY_SIMILARITY = "clusterFacesBySimilarity";  // applies to FALPRS version 1.1.0 or later
 
             //response codes
             const R_CODE_OK = 200;
@@ -258,6 +261,42 @@
              */
 
             abstract public function getRegisteredFaceIdFrs($event_uuid);
+
+            /**
+             * Check if the face belongs to the subscriber
+             * @param int $face_id
+             * @param int $subscriber_id
+             * @return bool
+             */
+            abstract public function faceBelongsToSubscriberFrs(int $face_id, int $subscriber_id): bool;
+
+            /**
+             * Attach registered face to the subscriber's group
+             * @param int $face_id
+             * @param int $group_id
+             *
+             * @return bool
+             * */
+            abstract public function attachFaceToGroupFrs(int $face_id, int $group_id, int $subscriber_id): bool;
+
+            /**
+             * Detach registered face from the subscriber's group
+             * @param int $face_id
+             * @param int $group_id
+             *
+             * @return bool
+             * */
+            abstract public function detachFaceFromGroupFrs(int $face_id, int $group_id): bool;
+
+            /**
+             * Build face similarity clusters (applies to FALPRS version 1.1.0 or later)
+             * @param array $faces
+             * @param string $prefix_name
+             * @param int $subscriber_id
+             * @param int $flat_id
+             * @return bool
+             */
+            abstract public function clusterFacesBySimilarityFrs(array $faces, string $prefix_name, int $subscriber_id, int $flat_id): bool;
 
             //LPRS API methods calls
 

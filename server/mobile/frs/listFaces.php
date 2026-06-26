@@ -14,6 +14,7 @@
      * @apiSuccess {object[]} - массив объектов
      * @apiSuccess {string} -.faceId идентификатор "лица"
      * @apiSuccess {string} -.image url картинки
+     * @apiSuccess {integer} [-.groupId] идентификатор группы
      */
 
     use backends\frs\frs;
@@ -50,7 +51,12 @@
     $faces = $frs->listFacesFrs($flat_id, $subscriber_id, $flat_owner);
     $result = [];
     foreach ($faces as $face) {
-        $result[] = ['faceId' => strval($face[frs::P_FACE_ID]), 'image' => @$config["api"]["mobile"] . "/address/plogCamshot/" . $face[frs::P_FACE_IMAGE]];
+        $item = ['faceId' => strval($face[frs::P_FACE_ID]), 'image' => @$config["api"]["mobile"] . "/address/plogCamshot/" . $face[frs::P_FACE_IMAGE]];
+        $group_id = $face[frs::P_GROUP_ID];
+        if (isset($group_id)) {
+            $item[frs::P_GROUP_ID] = (int)$group_id;
+        }
+        $result[] = $item;
     }
 
     if ($result) {

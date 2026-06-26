@@ -998,25 +998,33 @@
                 $query1 = "
                     select distinct
                         ff.face_id,
-                        ff.face_uuid
+                        ff.face_uuid,
+                        lfsg.subscriber_group_id group_id
                     from
                         frs_links_faces lf
                         inner join frs_faces ff
-                        on lf.face_id = ff.face_id
+                            on lf.face_id = ff.face_id
+                        left join link_face_subscriber_group lfsg
+                            on lf.face_id = lfsg.face_id
+                            and exists(select 1 from subscriber_groups sg where sg.subscriber_group_id = lfsg.subscriber_group_id and sg.house_subscriber_id = :subscriber_id)
                     where
                         lf.flat_id = :flat_id
                     order by
                         ff.face_id
                 ";
 
-                        $query2 = "
+                $query2 = "
                     select distinct
                         ff.face_id,
-                        ff.face_uuid
+                        ff.face_uuid,
+                        lfsg.subscriber_group_id group_id
                     from
                         frs_links_faces lf
                         inner join frs_faces ff
-                        on lf.face_id = ff.face_id
+                            on lf.face_id = ff.face_id
+                        left join link_face_subscriber_group lfsg
+                            on lf.face_id = lfsg.face_id
+                            and exists(select 1 from subscriber_groups sg where sg.subscriber_group_id = lfsg.subscriber_group_id and sg.house_subscriber_id = :subscriber_id)
                     where
                         lf.flat_id = :flat_id
                         and lf.house_subscriber_id = :subscriber_id
@@ -1026,15 +1034,14 @@
 
                 if ($is_owner) {
                     $query = $query1;
-                    $r = $this->db->get($query, [":flat_id" => $flat_id], []);
                 } else {
                     $query = $query2;
-                    $r = $this->db->get($query, [":flat_id" => $flat_id, ":subscriber_id" => $subscriber_id], []);
                 }
+                $r = $this->db->get($query, [":flat_id" => $flat_id, ":subscriber_id" => $subscriber_id], []);
 
                 $list_faces = [];
                 foreach ($r as $row) {
-                    $list_faces[] = [self::P_FACE_ID => $row['face_id'], self::P_FACE_IMAGE => $row['face_uuid']];
+                    $list_faces[] = [self::P_FACE_ID => $row['face_id'], self::P_FACE_IMAGE => $row['face_uuid'], self::P_GROUP_ID => $row['group_id']];
                 }
 
                 return $list_faces;
@@ -1051,6 +1058,139 @@
                     return $r["face_id"];
 
                 return false;
+            }
+
+            public function faceBelongsToSubscriberFrs(int $face_id, int $subscriber_id): bool
+            {
+                $query = "
+                    select
+                        true result
+                    where
+                      exists(
+                        select
+                          1
+                        from
+                            frs_links_faces lf
+                        where
+                            lf.face_id = :face_id
+                            and lf.house_subscriber_id = :subscriber_id
+                      )
+                ";
+                $r = $this->db->get($query, [":face_id" => $face_id, ":subscriber_id" => $subscriber_id], [], [self::PDO_SINGLIFY]);
+
+                return $r && $r['result'] === true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function attachFaceToGroupFrs(int $face_id, int $group_id, int $subscriber_id): bool
+            {
+                $r = false;
+                try {
+                    $query = "
+                        delete from
+                            link_face_subscriber_group lfsg
+                        where
+                            lfsg.face_id = :face_id
+                            and exists(select 1 from subscriber_groups sg where sg.subscriber_group_id = lfsg.subscriber_group_id and sg.house_subscriber_id = :subscriber_id);
+                    ";
+                    $this->db->modify($query, [
+                        "face_id" => $face_id,
+                        "subscriber_id" => $subscriber_id,
+                    ]);
+
+                    $query = "
+                        insert into link_face_subscriber_group(face_id, subscriber_group_id)
+                        values(:face_id, :group_id)
+                    ";
+                    $r = $this->db->modify($query, [
+                        "face_id" => $face_id,
+                        "group_id" => $group_id,
+                    ]);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $r;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function detachFaceFromGroupFrs(int $face_id, int $group_id): bool
+            {
+                $r = false;
+                try {
+                    $query = "
+                        delete from
+                            link_face_subscriber_group
+                        where
+                            face_id = :face_id
+                            and subscriber_group_id = :group_id
+                    ";
+                    $r = $this->db->modify($query, [
+                        "face_id" => $face_id,
+                        "group_id" => $group_id,
+                    ]);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $r;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function clusterFacesBySimilarityFrs(array $faces, string $prefix_name, int $subscriber_id, int $flat_id): bool
+            {
+                $frs_servers = $this->frsServers() ?? [];
+                if (is_array($frs_servers) && count($frs_servers) > 0) {
+                    $frs_server = $frs_servers[0];
+                } else {
+                    return true;
+                }
+
+                if (count($faces) == 0) {
+                    return true;
+                }
+
+                $similarity = $this->config["backends"]["frs"]["face_clustering_similarity_threshold"] ?? 0.5;
+                $method_params = [
+                    self::P_FACE_IDS => $faces,
+                    self::P_SIMILARITY => $similarity,
+                ];
+
+                $response = $this->apiCallFrs($frs_server[self::FRS_BASE_URL], self::M_CLUSTER_FACES_BY_SIMILARITY, $method_params);
+                if ($response === false) {
+                    return false;
+                }
+
+                $is_ok = true;
+                if ($response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
+                    $households = loadBackend("households");
+                    $frs = loadBackend("frs");
+                    $clustered_faces = $response[frs::P_DATA];
+                    foreach ($clustered_faces as $i => $cluster) {
+                        $group_id = $households->addSubscriberGroup($subscriber_id, $flat_id, $prefix_name . ' ' . $i + 1);
+                        if ($group_id > 0) {
+                            foreach ($cluster as $face_id) {
+                                $r = $frs->attachFaceToGroupFrs($face_id, $group_id, $subscriber_id);
+                                $is_ok = $is_ok && ($r === true);
+                            }
+                        } else {
+                            $is_ok = false;
+                        }
+                    }
+                } elseif ($response[frs::P_CODE] != 204) {
+                    $is_ok = false;
+                }
+
+                return $is_ok;
             }
 
             /**

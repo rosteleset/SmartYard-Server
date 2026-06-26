@@ -64,7 +64,14 @@
         "paranoidMsgLP": "%s, %s opened by \"%s\"",
         "overLimit": "Device limit per mobile number exceeded",
         "contactProviderForAdding": "Please contact your provider or flat owner",
-        "invalidPlateNumber": "Invalid license plate number"
+        "invalidPlateNumber": "Invalid license plate number",
+        "invalidParameter": "Invalid parameter %s",
+        "cantCreateGroup": "Failed to create a group",
+        "cantChangeGroup": "Failed to change the group",
+        "cantDeleteGroup": "Failed to delete the group",
+        "cantAttachFaceToGroup": "Failed to attach the face to the group",
+        "cantDetachFaceFromGroup": "Failed to detach the face from the group",
+        "cantClusterFaces": "Failed to create face clusters"
     },
 
     "services": {
