@@ -65,18 +65,18 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - $.acc1_register_status
-            - type: STR_REPLACE
+            - type: JAVASCRIPT
               parameters:
-                - unregistered
-                - '0'
-            - type: STR_REPLACE
-              parameters:
-                - failed
-                - '0'
-            - type: STR_REPLACE
-              parameters:
-                - registered
-                - '1'
+                - |
+                  if (value === 'registered') {
+                      return 1;
+                  }
+
+                  if (value === 'unregistered' || value.startsWith('failed')) {
+                      return 0;
+                  }
+
+                  return value;
           url: 'http://{HOST.CONN}/api/v1/reg_status'
           tags:
             - tag: component
