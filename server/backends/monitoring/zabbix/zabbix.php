@@ -70,29 +70,30 @@ class zabbix extends monitoring
      */
     public function cron($part)
     {
+        if ($part !== $this->scheduler) {
+            return true;
+        }
+
         try {
-            $result = false;
-            if ($part === $this->scheduler){
-                $this->getActualIds();
-                $this->handleDevicesByType(
-                    DeviceType::INTERCOMS->value,
-                    fn() => $this->getDomophonesFromRBT(),
-                    fn() => $this->getDomophonesFromZBX(),
-                );
+            $this->getActualIds();
+            $this->handleDevicesByType(
+                DeviceType::INTERCOMS->value,
+                fn() => $this->getDomophonesFromRBT(),
+                fn() => $this->getDomophonesFromZBX(),
+            );
 
-                $this->handleDevicesByType(
-                    DeviceType::CAMERAS->value,
-                    fn() => $this->getCamerasFromRBT(),
-                    fn() => $this->getCamerasFromZBX(),
-                );
+            $this->handleDevicesByType(
+                DeviceType::CAMERAS->value,
+                fn() => $this->getCamerasFromRBT(),
+                fn() => $this->getCamerasFromZBX(),
+            );
 
-                $result = true;
-                $this->log("Cron task finished");
-            }
+            $this->log("Cron task finished");
+            return true;
         } catch (Exception $e) {
             $this->log('Cron error: ' . $e->getMessage());
+            return false;
         }
-        return $result;
     }
 
     /**

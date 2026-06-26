@@ -34,7 +34,7 @@ class prometheus extends monitoring
         /**
          * Implement me
          */
-
+        return true;
     }
 
     public function configureMonitoring(): void
