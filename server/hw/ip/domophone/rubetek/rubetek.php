@@ -347,22 +347,17 @@ abstract class rubetek extends domophone implements
 
         $displaySettings = $this->getConfiguration()['display'];
 
-        // Three line text
+        // Multiline text
         if (isset($displaySettings['text1'])) {
             return array_filter([
                 $displaySettings['text1'],
                 $displaySettings['text2'],
-                $displaySettings['text3'],
+                $displaySettings['text3'] ?? null, // RV-3437 has two lines
             ]);
         }
 
         $text = trim($displaySettings['text'] ?? '');
         return $text === '' ? [] : [$text];
-    }
-
-    public function getDisplayTextLinesCount(): int
-    {
-        return 3;
     }
 
     public function getHousePrefixSupportedFields(): array
@@ -881,7 +876,7 @@ abstract class rubetek extends domophone implements
         return [
             'code1' => $dtmfConfig['code1'],
             'code2' => $dtmfConfig['code2'],
-            'code3' => $dtmfConfig['code3'] ?? '3', // because of rv3437
+            'code3' => $dtmfConfig['code3'] ?? '3', // RV-3437 has two DTMF codes
             'codeCms' => $dtmfConfig['out_code'],
         ];
     }

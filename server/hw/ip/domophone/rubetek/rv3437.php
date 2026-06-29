@@ -7,4 +7,8 @@ namespace hw\ip\domophone\rubetek;
  */
 class rv3437 extends rubetek
 {
+    public function getDisplayTextLinesCount(): int
+    {
+        return 2;
+    }
 }
