@@ -3,9 +3,9 @@
 namespace hw\ip\domophone\ufanet;
 
 /**
- * Represents an Ufanet Secret Mini intercom.
+ * Represents an Ufanet Secret Solo intercom.
  */
-class secretMini extends ufanet
+class secretSolo extends ufanet
 {
     public function configureApartment(
         int   $apartment,
@@ -15,12 +15,7 @@ class secretMini extends ufanet
         array $cmsLevels = [],
     ): void
     {
-        $this->loadDialplans();
-
-        $this->dialplans[$apartment] = [
-            'sip_number' => (string)($sipNumbers[0] ?? ''),
-            'sip' => true,
-        ];
+        // Empty implementation
     }
 
     public function configureMatrix(array $matrix): void
@@ -30,8 +25,7 @@ class secretMini extends ufanet
 
     public function deleteApartment(int $apartment = 0): void
     {
-        $this->loadDialplans();
-        unset($this->dialplans[$apartment]);
+        // Empty implementation
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -57,6 +51,7 @@ class secretMini extends ufanet
         $this->dialplans['FRSI'] = [
             'sip_number' => "$sipNumber",
             'sip' => true,
+            'map' => 0,
         ];
     }
 
@@ -71,35 +66,15 @@ class secretMini extends ufanet
 
         $dbConfig['cmsModel'] = '';
         $dbConfig['matrix'] = [];
-
-        foreach ($dbConfig['apartments'] as &$apartment) {
-            $apartment['code'] = 0;
-            $apartment['cmsEnabled'] = false;
-        }
+        $dbConfig['apartments'] = [];
 
         return $dbConfig;
     }
 
     protected function getApartments(): array
     {
-        $this->loadDialplans();
-        $flats = [];
-
-        foreach ($this->dialplans as $flatNumber => $dialplan) {
-            if ($dialplan['sip'] === false || $flatNumber === 'FRSI') {
-                continue;
-            }
-
-            $flats[$flatNumber] = [
-                'apartment' => $flatNumber,
-                'code' => 0,
-                'sipNumbers' => [$dialplan['sip_number']],
-                'cmsEnabled' => false,
-                'cmsLevels' => [],
-            ];
-        }
-
-        return $flats;
+        // Empty implementation
+        return [];
     }
 
     protected function getCmsModel(): string

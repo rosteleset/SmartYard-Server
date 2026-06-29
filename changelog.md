@@ -46,6 +46,7 @@
 - fixed Zabbix 6.x template export format
 + faster snapshots and door opening by skipping redundant device checks
 - fixed Zabbix SIP registration monitoring for Rubetek intercoms
++ added support for Ufanet Secret Solo
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8

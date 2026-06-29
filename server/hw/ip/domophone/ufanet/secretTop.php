@@ -163,8 +163,7 @@ class secretTop extends ufanet implements GateModeInterface, DisplayTextInterfac
         if ($lockNumber === 2) {
             $this->switchRelay(true, self::RELAY_SWITCHING_DURATION);
         } else {
-            $lockNumber++;
-            $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST', null, 3);
+            $this->openLockByNumber($lockNumber);
         }
     }
 

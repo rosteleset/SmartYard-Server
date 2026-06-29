@@ -329,6 +329,18 @@ abstract class ufanet extends domophone implements LanguageInterface
     }
 
     /**
+     * Open a lock using the `/api/v1/doors/{n}/open` endpoint.
+     *
+     * @param int $lockNumber Lock number.
+     * @return void
+     */
+    protected function openLockByNumber(int $lockNumber = 0): void
+    {
+        $doorNumber = $lockNumber + 1;
+        $this->apiCall("/api/v1/doors/$doorNumber/open", 'POST', null, 3);
+    }
+
+    /**
      * Set network params.
      *
      * @return void
