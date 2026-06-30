@@ -3,12 +3,21 @@
 namespace hw\ip\domophone\ufanet;
 
 use hw\ip\domophone\domophone;
+use hw\ip\domophone\ufanet\HttpClient\HttpClient;
 
 /**
  * Represents an Ufanet Secret Mole controller.
  */
 class secretMole extends domophone
 {
+    private HttpClient $client;
+
+    public function __construct(string $url, string $password, bool $firstTime = false, bool $lazy = false)
+    {
+        $this->client = new HttpClient($url, $firstTime ? '123456' : $password);
+        parent::__construct($url, $password, $firstTime, $lazy);
+    }
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         // TODO: Implement addRfid() method.
@@ -47,7 +56,12 @@ class secretMole extends domophone
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        // TODO: Implement configureNtp() method.
+        $this->client->request('/api/v1/conn-config', 'PATCH', [
+            'time' => [
+                'timezone' => $timezone,
+                'ntp_servers' => [$server, ''],
+            ],
+        ]);
     }
 
     public function configureSip(
@@ -86,28 +100,39 @@ class secretMole extends domophone
 
     public function getSysinfo(): array
     {
-        // TODO: Implement getSysinfo() method.
-        return [];
+        $response = $this->client->request('/api/v1/status', timeout: 3);
+
+        return [
+            'DeviceID' => $response['eth']['ip'],
+            'HardwareVersion' => $response['hw_ver'],
+        ];
     }
 
     public function openLock(int $lockNumber = 0): void
     {
-        // TODO: Implement openLock() method.
+        $lockNumber++;
+        $this->client->request("/api/v1/doors/$lockNumber/open", timeout: 3);
     }
 
     public function reboot(): void
     {
-        // TODO: Implement reboot() method.
+        // Empty implementation
     }
 
     public function reset(): void
     {
-        // TODO: Implement reset() method.
+        // Empty implementation
     }
 
     public function setAdminPassword(string $password): void
     {
-        // TODO: Implement setAdminPassword() method.
+        $this->client->request('/api/v1/auth-config', 'PATCH', [
+            'http' => [
+                'password' => $password,
+            ],
+        ]);
+
+        $this->client->setPassword($password);
     }
 
     public function setAudioLevels(array $levels): void
@@ -220,8 +245,13 @@ class secretMole extends domophone
 
     protected function getNtpConfig(): array
     {
-        // TODO: Implement getNtpConfig() method.
-        return [];
+        $response = $this->client->request('/api/v1/conn-config');
+
+        return [
+            'server' => $response['time']['ntp_servers'][0] ?? '',
+            'port' => 123,
+            'timezone' => $response['time']['timezone'],
+        ];
     }
 
     protected function getRfids(): array
@@ -246,6 +276,7 @@ class secretMole extends domophone
 
     protected function initializeProperties(): void
     {
-        // TODO: Implement initializeProperties() method.
+        $this->login = 'admin';
+        $this->defaultPassword = '123456';
     }
 }
