@@ -46,7 +46,13 @@ class secretMole extends domophone
 
     public function configureEventServer(string $url): void
     {
-        // TODO: Implement configureEventServer() method.
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
+        $this->client->request('/api/v1/conn-config', 'PATCH', [
+            'syslog' => [
+                'servers' => ["$server:$port", ''],
+            ],
+        ]);
     }
 
     public function configureMatrix(array $matrix): void
@@ -233,8 +239,9 @@ class secretMole extends domophone
 
     protected function getEventServer(): string
     {
-        // TODO: Implement getEventServer() method.
-        return '';
+        $response = $this->client->request('/api/v1/conn-config');
+        $server = $response['syslog']['servers'][0];
+        return "syslog.udp:$server";
     }
 
     protected function getMatrix(): array
@@ -248,7 +255,7 @@ class secretMole extends domophone
         $response = $this->client->request('/api/v1/conn-config');
 
         return [
-            'server' => $response['time']['ntp_servers'][0] ?? '',
+            'server' => $response['time']['ntp_servers'][0],
             'port' => 123,
             'timezone' => $response['time']['timezone'],
         ];
