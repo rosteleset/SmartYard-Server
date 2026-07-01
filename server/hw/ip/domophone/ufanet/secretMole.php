@@ -125,10 +125,10 @@ class secretMole extends domophone
 
     public function deleteRfid(string $code = ''): void
     {
-//        if ($code === '') {
-//            $this->client->request('/api/v1/rfids', 'DELETE', []);
-//            return;
-//        }
+        if ($code === '') {
+            $this->client->request('/api/v1/rfids', 'DELETE', []);
+            return;
+        }
 
         $this->rfidsToDelete[] = self::normalizeRfid($code);
     }
