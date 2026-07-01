@@ -10,7 +10,12 @@ use hw\ip\domophone\ufanet\HttpClient\HttpClient;
  */
 class secretMole extends domophone
 {
+    private const MAX_RFID_BATCH_SIZE_ADD = 18;
+    private const MAX_RFID_BATCH_SIZE_DELETE = 32;
+    private const MAX_RFID_PAGE_SIZE = 20;
+
     private HttpClient $client;
+    private array $rfidsToDelete = [];
 
     public function __construct(string $url, string $password, bool $firstTime = false, bool $lazy = false)
     {
@@ -18,14 +23,39 @@ class secretMole extends domophone
         parent::__construct($url, $password, $firstTime, $lazy);
     }
 
+    private static function normalizeRfid(string $code): string
+    {
+        $trimmedCode = ltrim($code, '0');
+        $normalizedCode = strtoupper(strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode);
+
+        return implode('', array_reverse(str_split($normalizedCode, 2)));
+    }
+
     public function addRfid(string $code, int $apartment = 0): void
     {
-        // TODO: Implement addRfid() method.
+        $this->addRfids([$code]);
     }
 
     public function addRfids(array $rfids): void
     {
-        // TODO: Implement addRfids() method.
+        if ($rfids === []) {
+            return;
+        }
+
+        foreach (array_chunk(array_unique($rfids), self::MAX_RFID_BATCH_SIZE_ADD) as $rfidChunk) {
+            $keys = [];
+
+            foreach ($rfidChunk as $rfid) {
+                $keys[] = [
+                    'key' => self::normalizeRfid($rfid),
+                    'rssi' => 0,
+                    'group' => 0,
+                    'descr' => '',
+                ];
+            }
+
+            $this->client->request('/api/v1/rfids', 'PUT', ['keys' => $keys]);
+        }
     }
 
     public function configureApartment(
@@ -95,7 +125,12 @@ class secretMole extends domophone
 
     public function deleteRfid(string $code = ''): void
     {
-        // TODO: Implement deleteRfid() method.
+//        if ($code === '') {
+//            $this->client->request('/api/v1/rfids', 'DELETE', []);
+//            return;
+//        }
+
+        $this->rfidsToDelete[] = self::normalizeRfid($code);
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -193,7 +228,7 @@ class secretMole extends domophone
 
     public function syncData(): void
     {
-        // TODO: Implement syncData() method.
+        $this->deleteRfids();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -263,8 +298,25 @@ class secretMole extends domophone
 
     protected function getRfids(): array
     {
-        // TODO: Implement getRfids() method.
-        return [];
+        $response = $this->client->request('/api/v1/rfids-count');
+        $count = (int)$response['count'];
+        $rfids = [];
+
+        for ($page = 0; $page * self::MAX_RFID_PAGE_SIZE < $count; $page++) {
+            $response = $this->client->request('/api/v1/rfids', 'POST', [
+                'page' => $page,
+                'count' => self::MAX_RFID_PAGE_SIZE,
+                'short' => true,
+            ]);
+
+            foreach ($response['keys_short'] as $rfid) {
+                $rfid = strlen($rfid) % 2 ? '0' . $rfid : $rfid;
+                $rfid = implode('', array_reverse(str_split($rfid, 2)));
+                $rfids[] = str_pad(strtoupper($rfid), 14, '0', STR_PAD_LEFT);
+            }
+        }
+
+        return $rfids;
     }
 
     protected function getSipConfig(): array
@@ -285,5 +337,14 @@ class secretMole extends domophone
     {
         $this->login = 'admin';
         $this->defaultPassword = '123456';
+    }
+
+    private function deleteRfids(): void
+    {
+        foreach (array_chunk(array_unique($this->rfidsToDelete), self::MAX_RFID_BATCH_SIZE_DELETE) as $rfidChunk) {
+            $this->client->request('/api/v1/rfids', 'DELETE', ['keys' => $rfidChunk]);
+        }
+
+        $this->rfidsToDelete = [];
     }
 }
