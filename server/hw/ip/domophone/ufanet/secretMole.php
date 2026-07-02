@@ -2,17 +2,19 @@
 
 namespace hw\ip\domophone\ufanet;
 
+use hw\Interface\FreePassInterface;
 use hw\ip\domophone\domophone;
 use hw\ip\domophone\ufanet\HttpClient\HttpClient;
 
 /**
  * Represents an Ufanet Secret Mole controller.
  */
-class secretMole extends domophone
+class secretMole extends domophone implements FreePassInterface
 {
     private const MAX_RFID_BATCH_SIZE_ADD = 18;
     private const MAX_RFID_BATCH_SIZE_DELETE = 32;
     private const MAX_RFID_PAGE_SIZE = 20;
+    private const UNLOCK_DATE = '2038-01-01 00:00:00';
 
     private HttpClient $client;
     private array $rfidsToDelete = [];
@@ -149,10 +151,22 @@ class secretMole extends domophone
         ];
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        $response = $this->client->request('/api/v1/core-config');
+        return $response['door']['unlock'] !== '';
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $lockNumber++;
         $this->client->request("/api/v1/doors/$lockNumber/open", timeout: 3);
+    }
+
+    public function prepare(): void
+    {
+        parent::prepare();
+        $this->setRfidCopyProtection(false);
     }
 
     public function reboot(): void
@@ -206,6 +220,15 @@ class secretMole extends domophone
         // Empty implementation
     }
 
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $this->client->request('/api/v1/core-config', 'PATCH', [
+            'door' => [
+                'unlock' => $enabled ? self::UNLOCK_DATE : '',
+            ],
+        ]);
+    }
+
     public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
@@ -223,7 +246,11 @@ class secretMole extends domophone
 
     public function setUnlockTime(int $time = 3): void
     {
-        // Empty implementation
+        $this->client->request('/api/v1/core-config', 'PATCH', [
+            'door' => [
+                'open_time' => $time,
+            ],
+        ]);
     }
 
     public function syncData(): void
@@ -346,5 +373,14 @@ class secretMole extends domophone
         }
 
         $this->rfidsToDelete = [];
+    }
+
+    private function setRfidCopyProtection(bool $enabled = true): void
+    {
+        $this->client->request('/api/v1/core-config', 'PATCH', [
+            'card_reader' => [
+                'copy_protection' => $enabled,
+            ],
+        ]);
     }
 }
