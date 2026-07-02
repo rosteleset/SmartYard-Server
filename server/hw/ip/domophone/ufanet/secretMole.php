@@ -2,6 +2,9 @@
 
 namespace hw\ip\domophone\ufanet;
 
+use DateTimeImmutable;
+use DateTimeZone;
+use Exception;
 use hw\Interface\FreePassInterface;
 use hw\ip\domophone\domophone;
 use hw\ip\domophone\ufanet\HttpClient\HttpClient;
@@ -14,6 +17,7 @@ class secretMole extends domophone implements FreePassInterface
     private const MAX_RFID_BATCH_SIZE_ADD = 18;
     private const MAX_RFID_BATCH_SIZE_DELETE = 32;
     private const MAX_RFID_PAGE_SIZE = 20;
+    private const DEFAULT_TIMEZONE = 'Europe/Moscow';
     private const UNLOCK_DATE = '2038-01-01 00:00:00';
 
     private HttpClient $client;
@@ -31,6 +35,29 @@ class secretMole extends domophone implements FreePassInterface
         $normalizedCode = strtoupper(strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode);
 
         return implode('', array_reverse(str_split($normalizedCode, 2)));
+    }
+
+    private static function getOffsetByTimezone(string $timezone): string
+    {
+        try {
+            $timeZone = new DateTimeZone($timezone);
+            $offsetSeconds = $timeZone->getOffset(new DateTimeImmutable('now', $timeZone));
+        } catch (Exception) {
+            return self::getOffsetByTimezone(self::DEFAULT_TIMEZONE);
+        }
+
+        if ($offsetSeconds % 60 !== 0) {
+            return self::getOffsetByTimezone(self::DEFAULT_TIMEZONE);
+        }
+
+        $sign = $offsetSeconds > 0 ? '-' : '+';
+        $offsetSeconds = abs($offsetSeconds);
+        $hours = intdiv($offsetSeconds, 3600);
+        $minutes = intdiv($offsetSeconds % 3600, 60);
+
+        return $minutes === 0
+            ? "GMT$sign$hours"
+            : sprintf('GMT%s%d:%02d', $sign, $hours, $minutes);
     }
 
     public function addRfid(string $code, int $apartment = 0): void
@@ -96,7 +123,7 @@ class secretMole extends domophone implements FreePassInterface
     {
         $this->client->request('/api/v1/conn-config', 'PATCH', [
             'time' => [
-                'timezone' => $timezone,
+                'timezone' => self::getOffsetByTimezone($timezone),
                 'ntp_servers' => [$server, ''],
             ],
         ]);
@@ -262,6 +289,7 @@ class secretMole extends domophone implements FreePassInterface
     {
         $dbConfig['dtmf'] = $this->getDtmfConfig();
         $dbConfig['sip'] = $this->getSipConfig();
+        $dbConfig['ntp']['timezone'] = self::getOffsetByTimezone($dbConfig['ntp']['timezone']);
 
         $dbConfig['cmsModel'] = '';
         $dbConfig['matrix'] = [];
