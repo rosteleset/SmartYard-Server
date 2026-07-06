@@ -1,0 +1,150 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: a06c527d403f4d6d82938392b30b53ac
+      name: Templates/Intercoms
+  templates:
+    - uuid: 24e87ecaf3324963bd868a3446895214
+      template: Controller_UFANET
+      name: 'Controller | UFANET by HTTP'
+      description: 'UFANET controller monitoring by HTTP API'
+      vendor:
+        name: SmartYard
+        version: 2026-02
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      items:
+        - uuid: 2163cdecd5aa407c88fb3fbc1336b70f
+          name: 'UFANET Controller: system info'
+          type: HTTP_AGENT
+          key: controller.systeminfo
+          history: 1h
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          url: 'http://{HOST.CONN}/api/v1/status'
+          follow_redirects: 'NO'
+          triggers:
+            - uuid: 25ee59d8b48e49599f7a2048fbb134ae
+              expression: 'nodata(/Controller_UFANET/controller.systeminfo,600)=1'
+              name: 'HTTP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'HTTP Check unavailable but ICMP available'
+              dependencies:
+                - name: 'ICMP: Unavailable by ICMP ping'
+                  expression: 'max(/Controller_UFANET/icmpping,#3)=0'
+        - uuid: 0ee3d59256a64c68acc771d056eb4103
+          name: 'UFANET Controller: hardware version'
+          type: DEPENDENT
+          key: controller.hwversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.hw_ver
+          master_item:
+            key: controller.systeminfo
+        - uuid: 9295812aff8f4e1d825664e2e4174b9a
+          name: 'UFANET Controller: MCU version'
+          type: DEPENDENT
+          key: controller.mcuversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.mcu_ver
+          master_item:
+            key: controller.systeminfo
+        - uuid: e0f22d8ff5b14b9aa95a8a915a66391e
+          name: 'UFANET Controller: input voltage'
+          type: DEPENDENT
+          key: controller.vin
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.v_in
+          master_item:
+            key: controller.systeminfo
+        - uuid: 6025a478a74b4653baf5bd890bf3b680
+          name: 'UFANET Controller: time sync status'
+          type: DEPENDENT
+          key: controller.timesync
+          delay: '0'
+          history: 7d
+          trends: '0'
+          valuemap:
+            name: 'Time synchronization status'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.time_sync
+            - type: BOOL_TO_DECIMAL
+          master_item:
+            key: controller.systeminfo
+        - uuid: 6a1a3249510646ef92506f317a449d11
+          name: 'UFANET Controller: uptime'
+          type: DEPENDENT
+          key: controller.uptime
+          delay: '0'
+          value_type: FLOAT
+          units: uptime
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.uptime
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const match = String(value).trim().match(/^(?:(\d+)\s+days?\s+)?(\d{1,2}):(\d{2}):(\d{2})$/);
+                  if (!match) {
+                      throw 'Unsupported uptime format: ' + value;
+                  }
+
+                  const days = parseInt(match[1] || '0', 10);
+                  const hours = parseInt(match[2], 10);
+                  const minutes = parseInt(match[3], 10);
+                  const seconds = parseInt(match[4], 10);
+
+                  return days * 86400 + hours * 3600 + minutes * 60 + seconds;
+          master_item:
+            key: controller.systeminfo
+          triggers:
+            - uuid: f226e2210ff240108bf7876791e570d7
+              expression: last(/Controller_UFANET/controller.uptime)<10m
+              name: 'Device has been restarted'
+              event_name: 'CONTROLLER: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: ufanet
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: f80f2aafab164240a5b990bca473e482
+          name: 'Time synchronization status'
+          mappings:
+            - value: '0'
+              newvalue: Out of sync
+            - value: '1'
+              newvalue: Synchronized
