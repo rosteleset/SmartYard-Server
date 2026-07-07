@@ -1189,7 +1189,7 @@ class zabbix extends monitoring
                 "host" => $item["host"],
                 "name" => $item["name"],
                 "template" => $item["parentTemplates"][0]["host"],
-                "interface" => $item["interfaces"][0]["ip"]
+                "interface" => $item["interfaces"][0]["ip"] ?? null
             ];
 
             // mapping macros
