@@ -64,17 +64,17 @@ zabbix_export:
                 - $.acc1_register_status
             - type: JAVASCRIPT
               parameters:
-                - |
-                  if (value === 'registered') {
-                      return 1;
-                  }
-
-                  if (value === 'unregistered' || value.startsWith('failed')) {
-                      return 0;
-                  }
-
-                  return value;
-          url: 'http://{HOST.CONN}/api/v1/reg_status'
+                - unregistered
+                - '0'
+            - type: STR_REPLACE
+              parameters:
+                - failed
+                - '0'
+            - type: STR_REPLACE
+              parameters:
+                - registered
+                - '1'
+          url: 'http://{HOST.HOST}/api/v1/reg_status'
           tags:
             - tag: component
               value: raw
@@ -93,7 +93,7 @@ zabbix_export:
           authtype: BASIC
           username: '{$HOST_USERNAME}'
           password: '{$HOST_PASSWORD}'
-          url: 'http://{HOST.CONN}/api/v1/version'
+          url: 'http://{HOST.HOST}/api/v1/version'
           tags:
             - tag: component
               value: raw
@@ -120,7 +120,7 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - $.uptime
-          url: 'http://{HOST.CONN}/api/v1/intercom/check_status'
+          url: 'http://{HOST.HOST}/api/v1/intercom/check_status'
           tags:
             - tag: component
               value: raw

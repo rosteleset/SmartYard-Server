@@ -84,7 +84,7 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - $.body
-          url: 'http://{HOST.CONN}/system/info'
+          url: 'http://{HOST.HOST}/system/info'
           output_format: JSON
           tags:
             - tag: component
@@ -112,7 +112,7 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - $.body
-          url: 'http://{HOST.CONN}/v2/system/versions'
+          url: 'http://{HOST.HOST}/v2/system/versions'
           output_format: JSON
           tags:
             - tag: component

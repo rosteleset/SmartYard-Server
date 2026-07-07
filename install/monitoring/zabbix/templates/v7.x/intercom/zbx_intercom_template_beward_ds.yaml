@@ -71,7 +71,7 @@ zabbix_export:
             - type: JAVASCRIPT
               parameters:
                 - 'return value.split("\n")[0].split("AccountReg1=")[1]'
-          url: 'http://{HOST.CONN}/cgi-bin/sip_cgi'
+          url: 'http://{HOST.HOST}/cgi-bin/sip_cgi'
           query_fields:
             - name: action
               value: regstatus
@@ -110,7 +110,7 @@ zabbix_export:
                       }
                   });
                   return JSON.stringify(data)
-          url: 'http://{HOST.CONN}/cgi-bin/systeminfo_cgi'
+          url: 'http://{HOST.HOST}/cgi-bin/systeminfo_cgi'
           query_fields:
             - name: action
               value: get

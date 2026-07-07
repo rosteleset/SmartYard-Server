@@ -722,16 +722,7 @@ class zabbix extends monitoring
             $params = [
                 'host' => $item['host'],
                 'name' => $item['name'],
-                'interfaces' => [
-                    [
-                        "type" => 1,
-                        "main" => 1,
-                        "useip" => 1,
-                        "ip" => $item['interface'],
-                        "dns" => "",
-                        "port" => "10050"
-                    ]
-                ],
+                'interfaces' => [],
                 'groups' => [
                     [
                         "groupid" => $this->zbxData['groups'][$groupName]

@@ -75,7 +75,7 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - $.data.SipAccount.AccountStatus
-          url: 'http://{HOST.CONN}/api'
+          url: 'http://{HOST.HOST}/api'
           posts: |
             {
                 "target": "sip",
@@ -109,7 +109,7 @@ zabbix_export:
               parameters:
                 - $.body.data
               error_handler: DISCARD_VALUE
-          url: 'http://{HOST.CONN}/api'
+          url: 'http://{HOST.HOST}/api'
           posts: |
             {
                 "target": "firmware",
