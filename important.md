@@ -1,3 +1,12 @@
+# 2026-07-02
+
+Ufanet Zabbix monitoring templates have been updated and are now used by Ufanet Secret Mini and Secret Solo.
+After updating SmartYard, re-import monitoring templates:
+
+```bash
+php /opt/rbt/server/cli.php --init-monitoring-config
+```
+
 # 2026-06-23
 
 IS Sokol Plus (rev.5) Zabbix monitoring template has been updated to correctly detect SIP registration failures.

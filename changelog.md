@@ -47,6 +47,7 @@
 + faster snapshots and door opening by skipping redundant device checks
 - fixed Zabbix SIP registration monitoring for Rubetek intercoms
 + added support for Ufanet Secret Solo
++ updated Ufanet Zabbix monitoring templates and enabled them for Secret Mini and Secret Solo
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
