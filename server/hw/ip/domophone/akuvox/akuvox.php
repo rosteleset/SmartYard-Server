@@ -355,11 +355,18 @@ abstract class akuvox extends domophone
     /**
      * Sets the binding of discrete inputs to relays.
      *
-     * @param int $inputA (Optional) Relay number controlled by Input A. Relay A (1) by default.
-     * @param int $inputB (Optional) Relay number controlled by Input B. Relay B (2) by default.
+     * @param int $inputA (Optional) Relay number controlled by Input A (1). Relay A (1) by default.
+     * @param int $inputB (Optional) Relay number controlled by Input B (2). Relay B (2) by default.
+     * @param int $inputC (Optional) Relay number controlled by Input C (3). Relay A (1) by default.
+     * @param int $inputD (Optional) Relay number controlled by Input D (4). Relay B (2) by default.
      * @return void
      */
-    protected function bindInputsToRelays(int $inputA = 1, int $inputB = 2): void
+    protected function bindInputsToRelays(
+        int $inputA = 1,
+        int $inputB = 2,
+        int $inputC = 1,
+        int $inputD = 2,
+    ): void
     {
         $this->apiCall('', 'POST', [
             'target' => 'input',
@@ -367,8 +374,12 @@ abstract class akuvox extends domophone
             'data' => [
                 'Config.DoorSetting.INPUT.InputEnable' => '1',
                 'Config.DoorSetting.INPUT.InputBEnable' => '1',
+                'Config.DoorSetting.INPUT.InputCEnable' => '1',
+                'Config.DoorSetting.INPUT.InputDEnable' => '1',
                 'Config.DoorSetting.INPUT.InputRelay' => (string)$inputA,
                 'Config.DoorSetting.INPUT.InputBRelay' => (string)$inputB,
+                'Config.DoorSetting.INPUT.InputCRelay' => (string)$inputC,
+                'Config.DoorSetting.INPUT.InputDRelay' => (string)$inputD,
             ],
         ]);
     }

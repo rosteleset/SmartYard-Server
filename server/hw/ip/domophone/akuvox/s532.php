@@ -249,6 +249,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
         $this->setHttpsEnabled(false);
         $this->setRelayInversion(true, true);
         $this->setInputTriggerLevel(onHighC: true, onHighD: true);
+        $this->bindInputsToRelays();
         $this->setExternalReader(openRelayB: true);
         $this->setAccessGrantedSound();
         $this->setDirectoryEnabled(false);
