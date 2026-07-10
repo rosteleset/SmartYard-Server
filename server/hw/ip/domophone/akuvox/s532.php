@@ -56,6 +56,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
     protected const GROUP_NAME_DEFAULT = 'Default';
 
     /**
+     * Compatible models can disable this to keep their factory access-granted sound.
+     */
+    protected const SHOULD_UPLOAD_CUSTOM_ACCESS_GRANTED_SOUND = true;
+
+    /**
      * @var User[]|null Users scheduled to be added during data sync.
      */
     protected ?array $usersToAdd = null;
@@ -251,8 +256,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
         $this->setInputTriggerLevel(onHighC: true, onHighD: true);
         $this->bindInputsToRelays();
         $this->setExternalReader(openRelayB: true);
-        $this->setAccessGrantedSound();
         $this->setDirectoryEnabled(false);
+
+        if (static::SHOULD_UPLOAD_CUSTOM_ACCESS_GRANTED_SOUND) {
+            $this->setAccessGrantedSound();
+        }
     }
 
     public function setAdminPassword(string $password): void
