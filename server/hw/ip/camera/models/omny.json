@@ -1,0 +1,9 @@
+{
+    "title": "OMNY DOMOPHONE CAMERA",
+    "vendor": "OMNY",
+    "model": false,
+    "version": false,
+    "eventServer": "akuvox",
+    "class": "omny",
+    "useSmartConfigurator": true
+}

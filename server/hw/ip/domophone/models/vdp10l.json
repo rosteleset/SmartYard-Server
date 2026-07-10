@@ -1,0 +1,24 @@
+{
+    "title": "OMNY VDP-10L",
+    "vendor": "OMNY",
+    "model": "VDP-10L",
+    "class": "vdp10l",
+    "eventServer": "akuvox",
+    "outputs": 2,
+    "camera": "omny",
+    "useSmartConfigurator": true,
+    "useAnalogNumber": true,
+    "cmses": [
+        "bk-100",
+        "bk-400",
+        "com-25u",
+        "com-100u",
+        "digital",
+        "km20-1",
+        "km100-7.1",
+        "km100-7.2",
+        "km100-7.3",
+        "km100-7.5",
+        "kmg-100"
+    ]
+}
