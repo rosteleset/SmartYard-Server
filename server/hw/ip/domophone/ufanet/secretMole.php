@@ -175,6 +175,7 @@ class secretMole extends domophone implements FreePassInterface
         return [
             'DeviceID' => $response['eth']['ip'],
             'HardwareVersion' => $response['hw_ver'],
+            'SoftwareVersion' => $response['mcu_ver'],
         ];
     }
 
@@ -198,12 +199,12 @@ class secretMole extends domophone implements FreePassInterface
 
     public function reboot(): void
     {
-        // Empty implementation
+        $this->client->request('/api/v1/reboot', 'POST');
     }
 
     public function reset(): void
     {
-        // Empty implementation
+        $this->client->request('/api/v1/reset', 'POST');
     }
 
     public function setAdminPassword(string $password): void
