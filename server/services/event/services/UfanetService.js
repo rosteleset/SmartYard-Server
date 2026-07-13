@@ -60,6 +60,13 @@ class UfanetService extends SyslogService {
             }
         }
 
+        // Opening a door by RFID key on Secret Mole
+        if (message.includes('RFID card ') && message.includes(': PASS')) {
+            const rawRfid = message.split('RFID card ')[1].split(': PASS')[0];
+            const rfid = Buffer.from(rawRfid, 'hex').reverse().toString('hex').padStart(14, '0').toUpperCase();
+            await API.openDoor({ date: date, ip: host, door: 0, detail: rfid, by: 'rfid' });
+        }
+
         // All calls are done
         if (this.isCallFinishedMessage(message)) {
             await API.callFinished({ date: date, ip: host });
