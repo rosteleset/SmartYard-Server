@@ -49,6 +49,7 @@
 + added support for Ufanet Secret Solo
 + updated Ufanet Zabbix monitoring templates and enabled them for Secret Mini and Secret Solo
 + added support for Rubetek RV-3437
++ added support for Ufanet Secret Mole
 ```
 
 ## 2026-01-14 0.0.20 hotfix 8
