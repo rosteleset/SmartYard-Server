@@ -20,12 +20,12 @@ The script bootstraps the same core pieces as other server entrypoints (config, 
 2. **Backend-scoped commands** — first argument is the **backend name** from `config.json` → `backends`, then flags for that backend:
 
    ```text
-   php server/cli.php mongo --list-indexes
+   php server/cli.php files --list-indexes
    ```
 
    The dispatcher loads that backend instance and calls its `cli($args)` method. The backend is responsible for interpreting which flag was passed (often several flags are documented under one `cliUsage()` tree).
 
-Detection: if `argv[1]` exists and does not start with `--` (e.g. it is `mongo`), it is treated as the backend name, removed from the parsed `$args` map, and `cli("run", "<backend>", $args)` runs. Otherwise dispatch uses `#`.
+Detection: if `argv[1]` exists and does not start with `--` (e.g. it is `files`), it is treated as the backend name, removed from the parsed `$args` map, and `cli("run", "<backend>", $args)` runs. Otherwise dispatch uses `#`.
 
 ## Where commands are registered
 
