@@ -187,6 +187,13 @@ class is5 extends domophone implements CmsLevelsInterface, DisplayTextInterface,
                 ],
             ],
         ]);
+
+        /*
+         * Firmware 2.5.0.15.30 applies encoding settings only after reboot.
+         * Without this reboot, applying OSD settings also breaks.
+         */
+        $this->reboot();
+        $this->wait();
     }
 
     public function configureEventServer(string $url): void
