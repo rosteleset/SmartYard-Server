@@ -427,7 +427,7 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
 
         $house = $addresses->getHouse($this->mainEntrance['houseId'] ?? null);
         $street = $addresses->getStreet($house['streetId'] ?? null);
-        $settlement = $addresses->getSettlement($house['settlementId'] ?? null);
+        $settlement = $addresses->getSettlement($house['settlementId'] ?? $street['settlementId'] ?? null);
         $city = $addresses->getCity($settlement['cityId'] ?? $street['cityId'] ?? null);
         $area = $addresses->getArea($settlement['areaId'] ?? $city['areaId'] ?? null);
         $region = $addresses->getRegion($area['regionId'] ?? $city['regionId'] ?? null);
