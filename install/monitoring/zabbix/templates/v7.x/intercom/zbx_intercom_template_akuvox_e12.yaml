@@ -6,8 +6,8 @@ zabbix_export:
   templates:
     - uuid: 38e9595b758a48c2a9b64a19485ec156
       template: Intercom_AKUVOX_E12
-      name: 'Intercom | AKUVOX E12 by HTTP'
-      description: 'Intercom AKUVOX E12 panel monitoring'
+      name: 'Intercom | AKUVOX by HTTP'
+      description: 'AKUVOX intercom monitoring'
       vendor:
         name: SmartYard
         version: 2026-02
@@ -72,7 +72,7 @@ zabbix_export:
             key: intercom.systeminfo
           triggers:
             - uuid: 49be10d2cc31437390e3f93e77daaef4
-              expression: 'count(/Intercom_AKUVOX_E12/intercom.sipstatus,10m,,"0")>5'
+              expression: 'count(/Intercom_AKUVOX_E12/intercom.sipstatus,10m,"ne","2")>5'
               name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
@@ -80,9 +80,9 @@ zabbix_export:
           name: 'AKUVOX Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
-          history: '0'
+          history: 1h
           trends: '0'
-          value_type: CHAR
+          value_type: TEXT
           authtype: DIGEST
           username: '{$HOST_USERNAME}'
           password: '{$HOST_PASSWORD}'
@@ -97,31 +97,22 @@ zabbix_export:
               dependencies:
                 - name: 'ICMP Ping: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_AKUVOX_E12/icmpping,#3)=0'
-        - uuid: 5c3dca9642e34e50b5751b7d11876936
-          name: 'AKUVOX Intercom: system status'
+        - uuid: 465125e71af844ca84bb07131a317ac9
+          name: 'AKUVOX Intercom: uptime'
           type: HTTP_AGENT
-          key: intercom.systemstatus
-          history: 1h
-          trends: '0'
+          key: intercom.uptime
+          history: 7d
+          trends: 90d
+          units: uptime
           authtype: DIGEST
           username: '{$HOST_USERNAME}'
           password: '{$HOST_PASSWORD}'
-          description: 'Get system information from Akuvox SIP intercom'
+          description: 'Get device uptime from Akuvox SIP intercom'
           preprocessing:
             - type: JSONPATH
               parameters:
                 - $.data.UpTime
           url: 'http://{HOST.CONN}/api/system/status'
-        - uuid: 465125e71af844ca84bb07131a317ac9
-          name: 'AKUVOX Intercom: uptime'
-          type: DEPENDENT
-          key: intercom.uptime
-          delay: '0'
-          history: 7d
-          trends: 90d
-          units: uptime
-          master_item:
-            key: intercom.systemstatus
           triggers:
             - uuid: ac34af80a8c94c5d9752810f9c740423
               expression: last(/Intercom_AKUVOX_E12/intercom.uptime)<10m
