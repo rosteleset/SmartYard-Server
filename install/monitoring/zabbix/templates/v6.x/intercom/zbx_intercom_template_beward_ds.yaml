@@ -7,7 +7,7 @@ zabbix_export:
     - uuid: 46bbe9b8518d49e9b6f5dc7ad15b2926
       template: Intercom_BEWARD_DS
       name: 'Intercom | BEWARD DS by HTTP'
-      description: 'Intercom BEWARD DS panel monitoring'
+      description: 'BEWARD DS intercom monitoring'
       vendor:
         name: SmartYard
         version: 2026-02

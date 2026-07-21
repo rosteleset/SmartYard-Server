@@ -7,7 +7,7 @@ zabbix_export:
     - uuid: 8a918d037ae5428e8a0324f36111faca
       template: Intercom_BASIP_AA-07FB
       name: 'Intercom | BASIP AA-07FB by HTTP'
-      description: 'Intercom BASIP AA-07FB by HTTP panel monitoring'
+      description: 'BASIP AA-07FB intercom monitoring'
       vendor:
         name: SmartYard
         version: 2026-02

@@ -6,8 +6,8 @@ zabbix_export:
   templates:
     - uuid: 6a9fffb80a26444495920fe4210985bf
       template: Intercom_IS_ISCOM_X1_REV.2
-      name: 'Intercom | IS SOKOL V2 by HTTP'
-      description: 'Intercom IS ISCOM X1 rev.2 panel monitoring'
+      name: 'Intercom | IS SOKOL rev.2 by HTTP'
+      description: 'IS SOKOL rev.2 intercom monitoring'
       vendor:
         name: SmartYard
         version: 2026-02

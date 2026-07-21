@@ -7,7 +7,7 @@ zabbix_export:
     - uuid: 24e87ecaf3324963bd868a3446895214
       template: Controller_UFANET
       name: 'Controller | UFANET by HTTP'
-      description: 'UFANET controller monitoring by HTTP API'
+      description: 'UFANET controller monitoring'
       vendor:
         name: SmartYard
         version: 2026-02

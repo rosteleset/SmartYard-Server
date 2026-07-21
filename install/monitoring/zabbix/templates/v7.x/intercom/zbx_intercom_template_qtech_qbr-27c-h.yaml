@@ -7,7 +7,7 @@ zabbix_export:
     - uuid: 4b1e045ce6f54de8b626da09c747bb5d
       template: Intercom_QTECH_QDB-27C-H
       name: 'Intercom | QTECH QDB-27C-H by HTTP'
-      description: 'Intercom QTECH QDB-27C-H panel monitoring'
+      description: 'QTECH QDB-27C-H intercom monitoring'
       vendor:
         name: SmartYard
         version: 2026-02

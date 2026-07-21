@@ -6,8 +6,8 @@ zabbix_export:
   templates:
     - uuid: f5f60cb8e6c04543bf32905fdd8bbe67
       template: Intercom_RUBETEK_RV-3434
-      name: 'Intercom | RUBETEK RV-3434 by HTTP'
-      description: 'Intercom RUBETEK RV-3434 panel monitoring'
+      name: 'Intercom | RUBETEK by HTTP'
+      description: 'RUBETEK intercom monitoring'
       vendor:
         name: SmartYard
         version: 2026-02

@@ -6,7 +6,8 @@ zabbix_export:
   templates:
     - uuid: 59a318f11f524f2bb31e42fd6ffe4840
       template: Camera_simple
-      name: 'Camera | Simple check'
+      name: 'Camera | Generic by ICMP'
+      description: 'Generic camera monitoring'
       vendor:
         name: SmartYard
         version: 2026-02
