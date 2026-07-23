@@ -7,6 +7,13 @@
 # removed or deprecated
 ```
 
+## devel
+
+```diff
+```
+
+## v1.0.0
+
 ```diff
 + 2faName and 2faTitle (in config) renamed to two_fa_name and two_fa_title
 + encrypted password authentications (requires "cli.php --keys" and pubKey in client's config)
@@ -79,5 +86,3 @@
 + autocompact parameter for files backend
 + --mongodb-compact global cli command
 ```
-
-## 2025-11-09 0.0.18 hotfix 7
