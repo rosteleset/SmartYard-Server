@@ -231,7 +231,7 @@
     }
 
     function auth() {
-        global $_SERVER, $bearer, $subscriber, $device, $real_ip_header;
+        global $_SERVER, $bearer, $subscriber, $device, $real_ip_header, $redis;
 
         $households = loadBackend("households");
 
@@ -298,7 +298,21 @@
                 $updateDevice["version"] = $headers['X-App-Version'];
             }
 
-            $households->modifyDevice($device["deviceId"], $updateDevice);
+            $shouldUpdateDevice = true;
+
+            try {
+                $shouldUpdateDevice = (bool)$redis->set(
+                    "mobile:device-touch:" . $device["deviceId"],
+                    "1",
+                    [ "nx", "ex" => 60 ]
+                );
+            } catch (Throwable $e) {
+                $shouldUpdateDevice = true;
+            }
+
+            if ($shouldUpdateDevice) {
+                $households->modifyDevice($device["deviceId"], $updateDevice);
+            }
         }
     }
 
