@@ -21,4 +21,15 @@
     */
 
     auth();
+
+    $page = null;
+    mobileCustomize('ext.ext.page', $page, [
+        'postdata' => $postdata,
+        'subscriber' => $subscriber,
+    ]);
+
+    if ($page !== null) {
+        response(200, $page);
+    }
+
     response();

@@ -131,6 +131,21 @@
         $db->exec("SET search_path TO " . $config["db"]["schema"] . ", public");
     }
 
+    /**
+     * Allow mobile API customizations to amend a value without replacing the
+     * base method. A custom endpoint can register $GLOBALS['mobileCustomizer']
+     * and then require the corresponding base endpoint.
+     *
+     * Callback signature: function (string $point, &$value, array $context): void
+     */
+    function mobileCustomize(string $point, &$value, array $context = []): void {
+        $customizer = $GLOBALS['mobileCustomizer'] ?? null;
+
+        if (is_callable($customizer)) {
+            $customizer($point, $value, $context);
+        }
+    }
+
     function response($code = 204, $data = false, $name = false, $message = false) {
 
         $response_codes = [
