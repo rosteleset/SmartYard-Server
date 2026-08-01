@@ -133,4 +133,9 @@
     // Face Clustering
     $response["faceClustering"] = ($config["mobile"]["face_clustering"] ?? false) ? "t" : "f";
 
+    mobileCustomize('ext.options.response', $response, [
+        'subscriber' => $subscriber,
+        'config' => $config,
+    ]);
+
     response(200, $response);

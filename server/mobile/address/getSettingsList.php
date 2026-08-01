@@ -104,6 +104,13 @@
             $f["keys"] = $households->getKeys("flatId", $f['flatId']);
         }
 
+        mobileCustomize('address.getSettingsList.flat', $f, [
+            'subscriber' => $subscriber,
+            'flat' => $flat,
+            'flatDetail' => $h_flat,
+            'isOwner' => $is_owner,
+        ]);
+
         $flats[] = $f;
     }
 

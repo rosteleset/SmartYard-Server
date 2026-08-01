@@ -18,4 +18,14 @@
     */
 
     auth();
+
+    $items = [];
+    mobileCustomize('ext.list.items', $items, [
+        'subscriber' => $subscriber,
+    ]);
+
+    if ($items) {
+        response(200, $items);
+    }
+
     response();

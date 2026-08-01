@@ -28,6 +28,12 @@
         $houseId = $flat['addressHouseId'];
         $flatDetail = $households->getFlat($flat['flatId']);
         $flatIsBlocked = $flatDetail['adminBlock'] || $flatDetail['manualBlock'] || $flatDetail['autoBlock'];
+        mobileCustomize('cctv.flatBlocked', $flatIsBlocked, [
+            'subscriber' => $subscriber,
+            'flat' => $flat,
+            'flatDetail' => $flatDetail,
+            'households' => $households,
+        ]);
         if ($flatIsBlocked)
             continue;
 
