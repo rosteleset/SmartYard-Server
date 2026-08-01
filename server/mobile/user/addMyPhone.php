@@ -36,6 +36,13 @@
 
     $households = loadBackend("households");
     $flats = $households->getFlats("credentials", [ "login" => $login, "password" => $password ]);
+
+    mobileCustomize("user.addMyPhone.flats", $flats, [
+        "login" => $login,
+        "password" => $password,
+        "households" => $households,
+    ]);
+
     if (!$flats) {
         response(400, i18n("mobile.404"), i18n("mobile.404Contract"));
     }
