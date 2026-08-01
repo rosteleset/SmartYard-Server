@@ -124,3 +124,6 @@ asterisk/extconfig.conf
 asterisk/http.conf
 asterisk/pjsip.conf
 asterisk/logger.conf
+
+# Private Cursor rules: ~/sync/cursor (local symlink)
+.cursor
