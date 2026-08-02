@@ -732,7 +732,7 @@ final class DesiredStateService
                 'overlayPrefix' => $lease['overlay_prefix'],
                 'allowedSourcePrefixes' => $this->decodeList($lease['allowed_source_prefixes']),
                 'persistentKeepaliveSec' => (int) $lease['persistent_keepalive_sec'],
-                'parameters' => $this->decodeObject($lease['parameters']),
+                'parameters' => $this->decodeObjectValue($lease['parameters']),
             ];
             $mappingStatement = $this->db->prepare(<<<'SQL'
                 SELECT mapping_id, host(local_ip) AS local_ip,
@@ -852,7 +852,9 @@ final class DesiredStateService
         foreach ($row as $key => $value) {
             if (in_array($key, ['enabled', 'lease_enabled', 'managed_authorized'], true)) {
                 $row[$key] = $this->boolValue($value);
-            } elseif (in_array($key, ['allowed_source_prefixes', 'parameters', 'payload', 'result'], true) && is_string($value)) {
+            } elseif ($key === 'parameters' && is_string($value)) {
+                $row[$key] = $this->decodeObjectValue($value);
+            } elseif (in_array($key, ['allowed_source_prefixes', 'payload', 'result'], true) && is_string($value)) {
                 $row[$key] = json_decode($value, true) ?? [];
             }
         }
@@ -969,6 +971,13 @@ final class DesiredStateService
         }
         $decoded = json_decode((string) $value, true);
         return is_array($decoded) && !array_is_list($decoded) ? $decoded : [];
+    }
+
+    /** @return array<string,mixed>|object */
+    private function decodeObjectValue(mixed $value): array|object
+    {
+        $decoded = $this->decodeObject($value);
+        return $decoded === [] ? (object) [] : $decoded;
     }
 
     /** @return list<mixed> */

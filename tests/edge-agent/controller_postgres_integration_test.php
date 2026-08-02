@@ -285,6 +285,9 @@ try {
         }
     }
     $service->assignPool($agentId, 'pool-test');
+    if ($db->query("SELECT desired_state->'overlay'->'parameters' FROM edge_agents WHERE agent_id = 'agent-integration-test'")->fetchColumn() !== '{}') {
+        throw new RuntimeException('empty WireGuard parameters were not serialized as a JSON object');
+    }
     $agent = $service->saveMapping($agentId, [
         'mappingId' => 'map-camera',
         'localIp' => '192.168.1.20',
