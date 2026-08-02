@@ -27,3 +27,12 @@
 - **[English index](doc/README.md)** — то же по-английски  
 - **Сервер:** [API (`server/api`)](doc/server/api/README.ru.md), [backend’ы](doc/server/backends/README.ru.md), [точки входа](doc/server/entrypoints/README.ru.md), [утилиты](doc/server/utils/README.ru.md), [вспомогательные сервисы](doc/server/services/README.ru.md)  
 - **Установка:** [оглавление гайдов](doc/install/README.ru.md) — ссылки на шаги в `install/` в нужном порядке  
+
+### SesameAgent
+
+Declarative controller для независимого подключения SesameAgent, управления
+AmneziaWG/WireGuard overlay и двустороннего 1:1 NAT описан в:
+
+- [целевой модели](doc/sesame-agent/target-model.ru.md);
+- [HTTP protocol v1](doc/sesame-agent/http-protocol-v1.ru.md);
+- [инструкции установки](install/16.sesame-agent.md).

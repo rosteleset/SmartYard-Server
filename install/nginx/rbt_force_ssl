@@ -85,6 +85,14 @@ server {
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
         }
 
+        location ^~ /rbt-agent/v1/ {
+                include fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME /opt/rbt/server/rbt-agent.php;
+                fastcgi_param SCRIPT_NAME /rbt-agent.php;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+                client_max_body_size 4m;
+        }
+
         location /md {
                 rewrite ^.*$ /md.php last;
         }

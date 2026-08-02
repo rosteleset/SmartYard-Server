@@ -94,9 +94,15 @@
 - [IS: syslog events](./hardware/is/syslog_events.ru.md)
 - [QTech: syslog events](./hardware/qtech/syslog_events.ru.md)
 
+### SesameAgent
+
+- [Целевая модель RBT и SesameAgent](./sesame-agent/target-model.ru.md)
+- [Подписанный HTTP protocol v1](./sesame-agent/http-protocol-v1.ru.md)
+
 ### Установка и эксплуатация
 
 - [Оглавление установки](./install/README.ru.md) (файлы гайдов в [`install/`](../install/))
+- [Установка SesameAgent controller и overlay gateway](../install/16.sesame-agent.md)
 - [Crontab и плановые задачи](./server/operations/crontabs.ru.md)
 - [Режим обслуживания (maintenance)](./server/operations/maintenance.ru.md)
 - [Бэкапы и восстановление](./server/operations/backups.ru.md)
@@ -106,5 +112,4 @@
 - [Примеры сервера](./examples/server/README.ru.md)
 - [Примеры кастомного сервера](./examples/custom/server/README.ru.md)
 - [Примеры кастомного клиента](./examples/custom/client/README.ru.md)
-
 

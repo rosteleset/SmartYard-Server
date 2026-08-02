@@ -1,0 +1,11 @@
+/var/log/rbt-agent-controller/*.jsonl {
+    daily
+    maxsize 50M
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 www-data www-data
+    su www-data www-data
+}

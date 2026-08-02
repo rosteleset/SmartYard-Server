@@ -1,0 +1,13 @@
+[Unit]
+Description=Reconcile RBT SesameAgent overlay gateway periodically
+
+[Timer]
+OnBootSec=15s
+OnUnitActiveSec=10s
+AccuracySec=1s
+RandomizedDelaySec=1s
+Persistent=true
+Unit=rbt-overlay-gateway.service
+
+[Install]
+WantedBy=timers.target

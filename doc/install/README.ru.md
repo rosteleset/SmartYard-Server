@@ -19,7 +19,8 @@
 13. [Push service](../../install/13.push.md)
 14. [Mosquitto](../../install/14.mosquitto.md)
 15. [ONLYOFFICE Document Builder](../../install/15.onlyoffice.md)
-16. [Post install](../../install/99.post_install.md)
+16. [SesameAgent controller и overlay gateway](../../install/16.sesame-agent.md)
+17. [Post install](../../install/99.post_install.md)
 
 ## Дополнительно
 

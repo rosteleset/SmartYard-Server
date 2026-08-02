@@ -1,0 +1,189 @@
+.edge-agents-page {
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 1rem 1rem 3rem;
+}
+
+.ea-page-header,
+.ea-section-heading,
+.ea-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+.ea-page-header {
+    margin-bottom: 1.25rem;
+}
+
+.ea-page-header h1,
+.ea-section-heading h2 {
+    margin: 0;
+    letter-spacing: 0;
+}
+
+.ea-page-header h1 {
+    font-size: 1.75rem;
+}
+
+.ea-section-heading h2,
+.ea-subsection-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.ea-section,
+.ea-editor {
+    background: var(--white, #fff);
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 6px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.ea-editor {
+    border-left: 4px solid #c89b4f;
+}
+
+.ea-subsection {
+    padding: 1.25rem 0;
+    border-top: 1px solid rgba(0, 0, 0, .1);
+}
+
+.ea-subsection-title {
+    margin-bottom: .75rem;
+}
+
+.ea-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.ea-facts-compact {
+    padding-bottom: 0;
+}
+
+.ea-fact {
+    min-width: 0;
+}
+
+.ea-fact span,
+.ea-fact strong {
+    display: block;
+}
+
+.ea-fact span {
+    color: #6c757d;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.ea-fact strong {
+    margin-top: .2rem;
+    overflow-wrap: anywhere;
+}
+
+.ea-table {
+    margin-bottom: 0;
+}
+
+.ea-table th {
+    border-top: 0;
+    color: #6c757d;
+    font-size: .78rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ea-table td {
+    vertical-align: middle;
+}
+
+.ea-clickable {
+    cursor: pointer;
+}
+
+.ea-clickable.ea-selected td {
+    background: rgba(200, 155, 79, .12);
+}
+
+.ea-mono,
+.ea-code-input,
+.ea-json {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.ea-code-input {
+    min-height: 5rem;
+}
+
+.ea-json {
+    max-height: 16rem;
+    overflow: auto;
+    padding: .75rem;
+    border: 1px solid rgba(0, 0, 0, .1);
+    background: rgba(0, 0, 0, .03);
+    white-space: pre-wrap;
+}
+
+.ea-wrap {
+    display: inline-block;
+    max-width: 44rem;
+    overflow-wrap: anywhere;
+}
+
+.ea-empty {
+    padding: 1.25rem 0;
+    color: #6c757d;
+}
+
+.ea-danger-zone {
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(220, 53, 69, .25);
+}
+
+.ea-log {
+    max-height: 32rem;
+    overflow: auto;
+}
+
+@media (max-width: 991.98px) {
+    .ea-facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .edge-agents-page {
+        padding: .75rem .5rem 2rem;
+    }
+
+    .ea-section,
+    .ea-editor {
+        padding: 1rem;
+    }
+
+    .ea-facts {
+        grid-template-columns: 1fr;
+    }
+
+    .ea-actions > .btn {
+        flex: 1 1 auto;
+    }
+}
+
+.dark-mode .ea-section,
+.dark-mode .ea-editor {
+    background: #343a40;
+    border-color: rgba(255, 255, 255, .15);
+}
+
+.dark-mode .ea-json {
+    background: rgba(0, 0, 0, .2);
+    border-color: rgba(255, 255, 255, .15);
+}

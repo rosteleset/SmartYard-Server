@@ -10,6 +10,8 @@
         "addresses",
         "queues",
         "about",
+        // Enable after installing the SesameAgent controller system integration.
+        // "edgeAgents",
     ],
     "asterisk": {
         // websocket endpoint (ws or wss)

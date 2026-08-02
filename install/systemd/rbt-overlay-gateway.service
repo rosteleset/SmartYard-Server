@@ -1,0 +1,29 @@
+[Unit]
+Description=RBT SesameAgent overlay gateway reconciliation
+After=network-online.target postgresql.service
+Wants=network-online.target
+ConditionPathExists=/opt/rbt/server/edge-agent-controller/bin/reconcile-gateway.php
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+Environment=RBT_AGENT_RBT_CONFIG=/opt/rbt/server/config/config.json
+Environment=RBT_AGENT_GATEWAY_STATE=/var/lib/rbt-agent-controller/gateway
+Environment=RBT_AGENT_GATEWAY_PUBLIC_KEYS=/var/lib/rbt-agent-controller/gateway-public
+Environment=RBT_AGENT_GATEWAY_LOG=/var/log/rbt-overlay-gateway/events.jsonl
+ExecStart=/usr/bin/php /opt/rbt/server/edge-agent-controller/bin/reconcile-gateway.php
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ReadWritePaths=/var/lib/rbt-agent-controller/gateway /var/lib/rbt-agent-controller/gateway-public /var/log/rbt-overlay-gateway /run
+CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_ADMIN
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target
