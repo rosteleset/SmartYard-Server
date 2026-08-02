@@ -52,6 +52,8 @@
     "lanScan": "Scan LAN",
     "rotateKey": "Rotate overlay key",
     "actionQueued": "Action queued",
+    "managedActionHint": "Service actions are available only with permissions granted to this RBT by the owner in the agent's local UI.",
+    "managedScopeRequired": "Agent managed permission is required: {scope}",
     "noActions": "No actions have been run",
     "result": "Result",
     "conditions": "Conditions and errors",

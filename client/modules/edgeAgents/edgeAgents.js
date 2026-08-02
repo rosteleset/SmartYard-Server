@@ -181,10 +181,16 @@
 
     renderAgent: function (agent) {
         const scopes = Array.isArray(agent.managed_scopes) ? agent.managed_scopes : [];
-        const availableScopes = ["overlay.configure", "mapping.configure", "network.diagnose", "lan.scan"];
         const scopeBadges = scopes.length
             ? scopes.map(scope => modules.edgeAgents.badge(scope, "success")).join(" ")
             : `<span class="text-muted">${escapeHTML(i18n("edgeAgents.noManagedAccess"))}</span>`;
+        const actionButton = (actionType, requiredScope, icon, label) => {
+            const allowed = agent.managed_authorized === true && scopes.includes(requiredScope);
+            const disabled = allowed ? "" : " disabled aria-disabled=\"true\"";
+            const title = allowed ? "" : ` title="${escapeHTML(modules.edgeAgents.managedScopeMessage(requiredScope))}"`;
+            const handler = allowed ? ` onclick="modules.edgeAgents.queueAction('${actionType}');"` : "";
+            return `<button type="button" class="btn btn-outline-secondary"${disabled}${title}${handler}><i class="fas ${icon} mr-1"></i>${escapeHTML(label)}</button>`;
+        };
         const pools = ((modules.edgeAgents.summary || {}).pools || []).filter(pool => pool.enabled);
         let poolOptions = `<option value="">${escapeHTML(i18n("edgeAgents.selectPool"))}</option>`;
         pools.forEach(pool => {
@@ -262,11 +268,12 @@
             <div class="ea-subsection">
                 <div class="ea-subsection-title">${escapeHTML(i18n("edgeAgents.actions"))}</div>
                 <div class="ea-actions mb-3">
-                    <button type="button" class="btn btn-outline-secondary" onclick="modules.edgeAgents.queueAction('diagnostics');"><i class="fas fa-stethoscope mr-1"></i>${escapeHTML(i18n("edgeAgents.diagnostics"))}</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="modules.edgeAgents.queueAction('inventory_refresh');"><i class="fas fa-list mr-1"></i>${escapeHTML(i18n("edgeAgents.inventory"))}</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="modules.edgeAgents.queueAction('lan_scan');"><i class="fas fa-search mr-1"></i>${escapeHTML(i18n("edgeAgents.lanScan"))}</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="modules.edgeAgents.queueAction('awg_key_rotation');"><i class="fas fa-key mr-1"></i>${escapeHTML(i18n("edgeAgents.rotateKey"))}</button>
+                    ${actionButton("diagnostics", "network.diagnose", "fa-stethoscope", i18n("edgeAgents.diagnostics"))}
+                    ${actionButton("inventory_refresh", "network.diagnose", "fa-list", i18n("edgeAgents.inventory"))}
+                    ${actionButton("lan_scan", "lan.scan", "fa-search", i18n("edgeAgents.lanScan"))}
+                    ${actionButton("awg_key_rotation", "overlay.configure", "fa-key", i18n("edgeAgents.rotateKey"))}
                 </div>
+                <div class="text-muted small mb-3">${escapeHTML(i18n("edgeAgents.managedActionHint"))}</div>
                 ${actions}
             </div>
             <div class="ea-subsection">
@@ -506,6 +513,18 @@
     },
 
     queueAction: function (actionType) {
+        const requiredScope = {
+            diagnostics: "network.diagnose",
+            inventory_refresh: "network.diagnose",
+            lan_scan: "lan.scan",
+            awg_key_rotation: "overlay.configure",
+        }[actionType];
+        const agent = modules.edgeAgents.agent || {};
+        const scopes = Array.isArray(agent.managed_scopes) ? agent.managed_scopes : [];
+        if (!requiredScope || agent.managed_authorized !== true || !scopes.includes(requiredScope)) {
+            toastr.error(modules.edgeAgents.managedScopeMessage(requiredScope || "-"));
+            return;
+        }
         modules.edgeAgents.post({ operation: "queueAction", agentId: modules.edgeAgents.agent.agent_id, actionType: actionType }, () => {
             toastr.success(i18n("edgeAgents.actionQueued"));
             modules.edgeAgents.openAgent(modules.edgeAgents.agent.agent_id, false);
@@ -573,6 +592,10 @@
         const warning = ["pending", "queued", "running", "revoking", "disabled"];
         const kind = good.includes(value) ? "success" : (warning.includes(value) ? "warning" : (value === "revoked" || value === "failed" || value === "error" ? "danger" : "secondary"));
         return modules.edgeAgents.badge(value, kind);
+    },
+
+    managedScopeMessage: function (scope) {
+        return String(i18n("edgeAgents.managedScopeRequired")).replace("{scope}", String(scope || "-"));
     },
 
     shortKey: function (value) {
