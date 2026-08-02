@@ -8,6 +8,7 @@ ConditionPathExists=/opt/rbt/server/edge-agent-controller/bin/reconcile-gateway.
 Type=oneshot
 User=root
 Group=root
+SupplementaryGroups=www-data
 Environment=RBT_AGENT_RBT_CONFIG=/opt/rbt/server/config/config.json
 Environment=RBT_AGENT_GATEWAY_STATE=/var/lib/rbt-agent-controller/gateway
 Environment=RBT_AGENT_GATEWAY_PUBLIC_KEYS=/var/lib/rbt-agent-controller/gateway-public
