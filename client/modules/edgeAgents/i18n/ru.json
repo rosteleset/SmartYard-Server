@@ -1,4 +1,5 @@
 {
+    "edgeAgents": "Агенты SesameAgent",
     "title": "Агенты SesameAgent",
     "subtitle": "Сопряжение, управляемая оверлейная сеть и 1:1 NAT",
     "refresh": "Обновить",

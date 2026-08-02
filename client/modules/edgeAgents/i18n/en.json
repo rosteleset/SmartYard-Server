@@ -1,4 +1,5 @@
 {
+    "edgeAgents": "SesameAgent agents",
     "title": "Edge agents",
     "subtitle": "Pairing, managed overlay and 1:1 NAT for SesameAgent",
     "refresh": "Refresh",
