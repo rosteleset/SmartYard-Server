@@ -11,6 +11,16 @@ class vdp10l extends s532
 {
     protected const SHOULD_UPLOAD_CUSTOM_ACCESS_GRANTED_SOUND = false;
 
+    public function configureEventServer(string $url): void
+    {
+        $this->setConfigParams([
+            // VDP-10L emits MakeCall messages required by event and plog parsers only at level 6
+            'Config.Settings.LOGLEVEL.Level' => '6',
+        ]);
+
+        parent::configureEventServer($url);
+    }
+
     public function setSosNumber(int $sipNumber): void
     {
         $this->setConfigParams([
