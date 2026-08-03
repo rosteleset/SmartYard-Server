@@ -31,7 +31,18 @@
         "GetRemoteUserNameByRPID",
         "GetRemoteDisplayNameByRPID",
         "audio buf is full",
-        "serial_send error"
+        "serial_send error",
+        "getkeycode:event.code:0xac event.value:1 event.type:0x15",
+        "WINDOW STATUS =====",
+        "SetLCDBackLightValue",
+        "ScreenSaverDlg.cpp-on_open_screen_saver_window",
+        "SetCurDlgID",
+        "onvif_server.cpp-Function:OnDiscoveryRun",
+        "Action url event ACTION_URL_MOTIONDETECT",
+        "MotionControl.cpp-CheckMotionEnabled",
+        "MjpegService OnClientUpdate",
+        "SendMotionAlert: SendTcpMsg failed.",
+        "on_msg_capture_image, image path:"
     ],
     "beward": [
         "RTSP",
