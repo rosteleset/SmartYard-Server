@@ -14,6 +14,7 @@
 - reduced redundant database writes by throttling mobile device metadata updates during authorization
 + expanded Akuvox event service syslog filtering to remove recurring diagnostic noise
 + added support for Omny VDP-10L
++ enhanced bulk RFID imports with DEC/HEX conversion, byte-order controls and preview
 ```
 
 ## v1.0.0

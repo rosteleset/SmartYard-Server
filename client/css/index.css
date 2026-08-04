@@ -1135,3 +1135,29 @@ code {
 .center {
   text-align: center;
 }
+
+.rfid-preview-error > td {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.rfid-preview-error > td:first-child {
+  box-shadow: inset 3px 0 #dc3545;
+}
+
+.rfid-preview-duplicate > td {
+  background-color: rgba(255, 193, 7, 0.12) !important;
+}
+
+.rfid-preview-duplicate > td:first-child {
+  box-shadow: inset 3px 0 #d39e00;
+}
+
+body.dark-mode .rfid-preview-error > td {
+  background-color: rgba(220, 53, 69, 0.18) !important;
+  color: #f5c2c7 !important;
+}
+
+body.dark-mode .rfid-preview-duplicate > td {
+  background-color: rgba(255, 193, 7, 0.16) !important;
+  color: #ffe69c !important;
+}

@@ -17,7 +17,9 @@
         // ICE stun servers
         "ice": [
             {
-                "urls": [ "stun:stun.l.google.com:19302" ]
+                "urls": [
+                    "stun:stun.l.google.com:19302"
+                ]
             }
         ],
         //
@@ -42,8 +44,6 @@
     "regExp": {
         // phone number validation regexp
         "phone": "(8|7|\\+7)((\\d{10})|(\\s\\(\\d{3}\\)\\s\\d{3}\\s\\d{2}\\s\\d{2}))",
-        // rfid validation regexp
-        "rfid": "[0-9A-F]{14}"
     },
     // default client route
     "defaultRoute": "#about",

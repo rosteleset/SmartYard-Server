@@ -168,29 +168,16 @@
     addKey: function () {
         cardForm({
             title: i18n("addresses.addKey"),
+            size: "lg",
             footer: true,
             borderless: true,
             topApply: true,
             apply: i18n("add"),
-            fields: [
-                {
-                    id: "rfIds",
-                    type: "area",
-                    title: i18n("addresses.keys"),
-                    placeholder: "000000ABCDEF12\n00123456789ABC\nA1B2C3D4E5F607",
-                    validate: modules.addresses.keys.validateRfIds,
-                },
-                {
-                    id: "comments",
-                    type: "text",
-                    title: i18n("addresses.comments"),
-                    placeholder: i18n("addresses.comments"),
-                },
-            ],
+            fields: modules.addresses.keys.rfIdFormFields(),
             callback: function (result) {
                 let params = hashParse("params");
 
-                result.rfIds = modules.addresses.keys.parseRfIds(result.rfIds);
+                result = modules.addresses.keys.prepareRfIdFormResult(result);
 
                 if (params.flatId) {
                     result.accessType = 2;
@@ -199,6 +186,7 @@
 
                 modules.addresses.subscribers.doAddKey(result);
             },
+            done: modules.addresses.keys.initRfIdForm,
         });
     },
 
