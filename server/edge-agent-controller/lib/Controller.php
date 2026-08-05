@@ -62,14 +62,14 @@ final class Controller
                 throw new ControllerError(413, 'request_body_too_large');
             }
             $metadata = $this->metadataFromHeaders($headers, 'request', $method, $path, 0);
-            if (preg_match('#^/rbt-agent/v1/actions/([A-Za-z0-9][A-Za-z0-9_.:-]{0,127})/result$#', $path, $matches)) {
+            if (preg_match('#^/rbt-agent/v2/actions/([A-Za-z0-9][A-Za-z0-9_.:-]{0,127})/result$#', $path, $matches)) {
                 return $this->actionResult($metadata, $headers, $body, $remoteAddress, $matches[1]);
             }
             return match ($path) {
-                '/rbt-agent/v1/pair' => $this->pair($metadata, $headers, $body, $remoteAddress),
-                '/rbt-agent/v1/pair/confirm' => $this->confirmPairing($metadata, $headers, $body, $remoteAddress),
-                '/rbt-agent/v1/sync' => $this->sync($metadata, $headers, $body, $remoteAddress),
-                '/rbt-agent/v1/revoke' => $this->revoke($metadata, $headers, $body, $remoteAddress),
+                '/rbt-agent/v2/pair' => $this->pair($metadata, $headers, $body, $remoteAddress),
+                '/rbt-agent/v2/pair/confirm' => $this->confirmPairing($metadata, $headers, $body, $remoteAddress),
+                '/rbt-agent/v2/sync' => $this->sync($metadata, $headers, $body, $remoteAddress),
+                '/rbt-agent/v2/revoke' => $this->revoke($metadata, $headers, $body, $remoteAddress),
                 default => throw new ControllerError(404, 'endpoint_not_found'),
             };
         } catch (ControllerError $error) {
@@ -748,7 +748,7 @@ final class Controller
     {
         try {
             Protocol::validateTimestamp($metadata, $this->now(), self::MAX_CLOCK_SKEW_SECONDS);
-            Protocol::verify($publicKey, $metadata, $this->header($headers, 'X-Sesame-Signature'), $body);
+            Protocol::verify($publicKey, $metadata, $this->header($headers, Protocol::HEADER_SIGNATURE), $body);
         } catch (Throwable $error) {
             throw new ControllerError(401, $error->getMessage());
         }
@@ -817,24 +817,24 @@ final class Controller
             'Content-Type' => 'application/json; charset=utf-8',
             'Cache-Control' => 'no-store',
             'X-Content-Type-Options' => 'nosniff',
-            'X-Sesame-Signature-Version' => Protocol::VERSION,
-            'X-Sesame-Signer-ID' => (string) $metadata['signerId'],
-            'X-Sesame-Key-ID' => (string) $metadata['keyId'],
-            'X-Sesame-Timestamp' => (string) $metadata['timestamp'],
-            'X-Sesame-Request-ID' => (string) $metadata['requestId'],
-            'X-Sesame-Sequence' => (string) $metadata['sequence'],
-            'X-Sesame-Content-SHA256' => (string) $metadata['bodySha256'],
-            'X-Sesame-Signature' => $signature,
+            Protocol::HEADER_SIGNATURE_VERSION => Protocol::VERSION,
+            Protocol::HEADER_SIGNER_ID => (string) $metadata['signerId'],
+            Protocol::HEADER_KEY_ID => (string) $metadata['keyId'],
+            Protocol::HEADER_TIMESTAMP => (string) $metadata['timestamp'],
+            Protocol::HEADER_REQUEST_ID => (string) $metadata['requestId'],
+            Protocol::HEADER_SEQUENCE => (string) $metadata['sequence'],
+            Protocol::HEADER_CONTENT_SHA256 => (string) $metadata['bodySha256'],
+            Protocol::HEADER_SIGNATURE => $signature,
         ];
     }
 
     /** @param array<string,string> $headers @return array<string,mixed> */
     private function metadataFromHeaders(array $headers, string $direction, string $method, string $path, int $statusCode): array
     {
-        if (!hash_equals(Protocol::VERSION, $this->header($headers, 'X-Sesame-Signature-Version'))) {
+        if (!hash_equals(Protocol::VERSION, $this->header($headers, Protocol::HEADER_SIGNATURE_VERSION))) {
             throw new ControllerError(401, 'signature_version_invalid');
         }
-        $sequence = filter_var($this->header($headers, 'X-Sesame-Sequence'), FILTER_VALIDATE_INT);
+        $sequence = filter_var($this->header($headers, Protocol::HEADER_SEQUENCE), FILTER_VALIDATE_INT);
         if (!is_int($sequence) || $sequence <= 0) {
             throw new ControllerError(401, 'signature_sequence_invalid');
         }
@@ -843,11 +843,11 @@ final class Controller
             'method' => strtoupper($method),
             'path' => $path,
             'statusCode' => $statusCode,
-            'bodySha256' => $this->header($headers, 'X-Sesame-Content-SHA256'),
-            'signerId' => $this->header($headers, 'X-Sesame-Signer-ID'),
-            'keyId' => $this->header($headers, 'X-Sesame-Key-ID'),
-            'timestamp' => $this->header($headers, 'X-Sesame-Timestamp'),
-            'requestId' => $this->header($headers, 'X-Sesame-Request-ID'),
+            'bodySha256' => $this->header($headers, Protocol::HEADER_CONTENT_SHA256),
+            'signerId' => $this->header($headers, Protocol::HEADER_SIGNER_ID),
+            'keyId' => $this->header($headers, Protocol::HEADER_KEY_ID),
+            'timestamp' => $this->header($headers, Protocol::HEADER_TIMESTAMP),
+            'requestId' => $this->header($headers, Protocol::HEADER_REQUEST_ID),
             'sequence' => $sequence,
         ];
         try {

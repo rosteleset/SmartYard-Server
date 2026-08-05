@@ -388,7 +388,7 @@
         },
     },
 
-    // Public application endpoint used only for SesameAgent pairing invitations.
+    // Public application endpoint used only for RBTAgent pairing invitations.
     // Pairing is pinned to the persistent controller Ed25519 key, not to the TLS certificate.
     "edgeAgentController": {
         "publicUrl": "https://rbt.example.com",

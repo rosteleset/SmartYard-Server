@@ -1,5 +1,5 @@
 [Unit]
-Description=Reconcile RBT SesameAgent overlay gateway periodically
+Description=Reconcile RBTAgent overlay gateway periodically
 
 [Timer]
 OnBootSec=15s

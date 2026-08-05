@@ -28,11 +28,11 @@ function assertThrows(callable $callback, string $message): void
 $body = '{"agentId":"agent-test","appliedGeneration":7}';
 $publicKey = 'A6EHv/POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg';
 $keyId = 'sha256:56475aa75463474c0285df5dbf2bcab73da651358839e9b77481b2eab107708c';
-$signature = 'cizlJa77hQqniFwTJgZgUzBEUUj8vHCIYQWq249YZdBiSax/evT0sluurZg8PXbJLMf+NQpKuUMY4pSNbmdRCg';
+$signature = 'tDcH8BnPX7E/Xh9x0ATOLjv7mzsvLw79qNOrjbPvI71ZvfyAgookbx4LV/oCEENS/KOhpZAuUjxxf+gDclizBQ';
 $metadata = [
     'direction' => 'request',
     'method' => 'POST',
-    'path' => '/rbt-agent/v1/sync',
+    'path' => '/rbt-agent/v2/sync',
     'statusCode' => 0,
     'bodySha256' => '476479c031f11b90e29d84cbac96166ed61cea02cd945dad5de6390002e8fc03',
     'signerId' => 'agent-test',
@@ -41,11 +41,17 @@ $metadata = [
     'requestId' => 'req-01JTESTVECTOR',
     'sequence' => 42,
 ];
+
+assertSameValue('2', Protocol::VERSION, 'signature version mismatch');
+assertSameValue('rbt-agent-http-signature-v2', Protocol::DOMAIN, 'signature domain mismatch');
+assertSameValue('X-RBT-Agent-Signature-Version', Protocol::HEADER_SIGNATURE_VERSION, 'signature version header mismatch');
+assertSameValue('X-RBT-Agent-Signature', Protocol::HEADER_SIGNATURE, 'signature header mismatch');
+
 $canonical = implode("\n", [
-    'sesame-agent-http-signature-v1',
+    'rbt-agent-http-signature-v2',
     'request',
     'POST',
-    '/rbt-agent/v1/sync',
+    '/rbt-agent/v2/sync',
     '0',
     '476479c031f11b90e29d84cbac96166ed61cea02cd945dad5de6390002e8fc03',
     'agent-test',

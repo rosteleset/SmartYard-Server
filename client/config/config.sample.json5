@@ -10,7 +10,7 @@
         "addresses",
         "queues",
         "about",
-        // Enable after installing the SesameAgent controller system integration.
+        // Enable after installing the RBTAgent controller system integration.
         // "edgeAgents",
     ],
     "asterisk": {

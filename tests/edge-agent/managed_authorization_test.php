@@ -15,7 +15,7 @@ $proof = ManagedAuthorization::proof(
     'challenge-123',
     ['overlay.configure', 'mapping.configure', 'mapping.configure'],
 );
-if ($proof !== '5EyqcPxeK2+iy//q2yb+RVnqoYsSqMVyDu7JUt4NTmU') {
+if ($proof !== 'X9+VazyV3hwpUiw16PFBXxTlHT/W1dNk5041dCf9ZQk') {
     throw new RuntimeException("unexpected managed authorization proof: $proof");
 }
 fwrite(STDOUT, "managed_authorization_test: ok\n");

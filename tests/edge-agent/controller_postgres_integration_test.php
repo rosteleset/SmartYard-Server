@@ -113,14 +113,14 @@ function signedControllerCall(
         'sequence' => $sequence,
     ];
     $headers = [
-        'X-Sesame-Signature-Version' => Protocol::VERSION,
-        'X-Sesame-Signer-ID' => $agentId,
-        'X-Sesame-Key-ID' => $identity['keyId'],
-        'X-Sesame-Timestamp' => $metadata['timestamp'],
-        'X-Sesame-Request-ID' => $requestId,
-        'X-Sesame-Sequence' => (string) $sequence,
-        'X-Sesame-Content-SHA256' => $metadata['bodySha256'],
-        'X-Sesame-Signature' => Protocol::sign($identity['secret'], $metadata),
+        'X-RBT-Agent-Signature-Version' => Protocol::VERSION,
+        'X-RBT-Agent-Signer-ID' => $agentId,
+        'X-RBT-Agent-Key-ID' => $identity['keyId'],
+        'X-RBT-Agent-Timestamp' => $metadata['timestamp'],
+        'X-RBT-Agent-Request-ID' => $requestId,
+        'X-RBT-Agent-Sequence' => (string) $sequence,
+        'X-RBT-Agent-Content-SHA256' => $metadata['bodySha256'],
+        'X-RBT-Agent-Signature' => Protocol::sign($identity['secret'], $metadata),
     ];
     $response = $controller->handle('POST', $path, $headers, $body, '127.0.0.1');
     if (!$response instanceof ControllerResponse || $response->status !== $expectedStatus) {
@@ -131,17 +131,17 @@ function signedControllerCall(
         'method' => 'POST',
         'path' => $path,
         'statusCode' => $response->status,
-        'bodySha256' => $response->headers['X-Sesame-Content-SHA256'],
-        'signerId' => $response->headers['X-Sesame-Signer-ID'],
-        'keyId' => $response->headers['X-Sesame-Key-ID'],
-        'timestamp' => $response->headers['X-Sesame-Timestamp'],
-        'requestId' => $response->headers['X-Sesame-Request-ID'],
-        'sequence' => (int) $response->headers['X-Sesame-Sequence'],
+        'bodySha256' => $response->headers['X-RBT-Agent-Content-SHA256'],
+        'signerId' => $response->headers['X-RBT-Agent-Signer-ID'],
+        'keyId' => $response->headers['X-RBT-Agent-Key-ID'],
+        'timestamp' => $response->headers['X-RBT-Agent-Timestamp'],
+        'requestId' => $response->headers['X-RBT-Agent-Request-ID'],
+        'sequence' => (int) $response->headers['X-RBT-Agent-Sequence'],
     ];
     Protocol::verify(
         $controllerIdentity->publicKey(),
         $responseMetadata,
-        $response->headers['X-Sesame-Signature'],
+        $response->headers['X-RBT-Agent-Signature'],
         $response->body,
     );
     return json_decode($response->body, true, flags: JSON_THROW_ON_ERROR);
@@ -162,7 +162,7 @@ try {
     $agentChallenge = Protocol::encodeBase64(random_bytes(32));
     $invitation = $service->createInvitation('https://rbt.example', 600, 'RBT test', null);
 
-    $pair = signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v1/pair', [
+    $pair = signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v2/pair', [
         'schemaVersion' => 1,
         'pairingCode' => $invitation['pairingCode'],
         'agent' => [
@@ -174,11 +174,11 @@ try {
                 'publicKey' => $agentIdentity['public'],
                 'keyId' => $agentIdentity['keyId'],
             ],
-            'capabilities' => ['rbt_signed_https_v1'],
+            'capabilities' => ['rbt_signed_https_v2'],
         ],
         'agentChallenge' => $agentChallenge,
     ], 1, $agentId, $agentIdentity);
-    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v1/pair/confirm', [
+    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v2/pair/confirm', [
         'schemaVersion' => 1,
         'pairingId' => $pair['pairingId'],
         'agentId' => $agentId,
@@ -202,7 +202,7 @@ try {
             'agentVersion' => 'test',
             'identity' => ['publicKey' => $agentIdentity['public'], 'keyId' => $agentIdentity['keyId']],
             'capabilities' => [
-                'protocol' => ['rbt_signed_https_v1'],
+                'protocol' => ['rbt_signed_https_v2'],
                 'overlayTypes' => ['wireguard'],
                 'overlayPublicKey' => $overlayKey,
                 'fullNat44' => true,
@@ -216,7 +216,7 @@ try {
             'health' => ['uptimeSec' => 10],
         ];
     };
-    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v1/sync', $syncPayload($management), 3, $agentId, $agentIdentity);
+    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v2/sync', $syncPayload($management), 3, $agentId, $agentIdentity);
 
     try {
         $service->assignPool($agentId, 'missing');
@@ -232,7 +232,7 @@ try {
     $challengeResponse = signedControllerCall(
         $controller,
         $controllerIdentity,
-        '/rbt-agent/v1/sync',
+        '/rbt-agent/v2/sync',
         $syncPayload($management),
         4,
         $agentId,
@@ -242,7 +242,7 @@ try {
         throw new RuntimeException('managed challenge was not delivered');
     }
     $management['authorized'] = true;
-    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v1/sync', $syncPayload($management), 5, $agentId, $agentIdentity);
+    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v2/sync', $syncPayload($management), 5, $agentId, $agentIdentity);
 
     $gatewayKey = base64_encode(str_repeat('g', 32));
     $service->savePool([
@@ -298,7 +298,7 @@ try {
     $desired = signedControllerCall(
         $controller,
         $controllerIdentity,
-        '/rbt-agent/v1/sync',
+        '/rbt-agent/v2/sync',
         $syncPayload($management),
         6,
         $agentId,
@@ -344,7 +344,7 @@ try {
     $withAction = signedControllerCall(
         $controller,
         $controllerIdentity,
-        '/rbt-agent/v1/sync',
+        '/rbt-agent/v2/sync',
         $syncPayload($management, $desiredGeneration, 0),
         7,
         $agentId,
@@ -356,7 +356,7 @@ try {
     signedControllerCall(
         $controller,
         $controllerIdentity,
-        '/rbt-agent/v1/actions/' . $action['action_id'] . '/result',
+        '/rbt-agent/v2/actions/' . $action['action_id'] . '/result',
         [
             'schemaVersion' => 1,
             'agentId' => $agentId,
@@ -378,7 +378,7 @@ try {
     $revokeInstruction = signedControllerCall(
         $controller,
         $controllerIdentity,
-        '/rbt-agent/v1/sync',
+        '/rbt-agent/v2/sync',
         $syncPayload($management, $desiredGeneration, 0),
         9,
         $agentId,
@@ -387,7 +387,7 @@ try {
     if (($revokeInstruction['revoke'] ?? false) !== true) {
         throw new RuntimeException('agent did not receive signed revoke instruction');
     }
-    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v1/revoke', [
+    signedControllerCall($controller, $controllerIdentity, '/rbt-agent/v2/revoke', [
         'schemaVersion' => 1,
         'agentId' => $agentId,
     ], 10, $agentId, $agentIdentity);

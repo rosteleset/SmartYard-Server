@@ -1,23 +1,26 @@
-# Целевая модель SesameAgent, SesameDVR и RBT
+# Целевая модель RBTAgent и RBT
 
 ## Статус документа
 
 Этот документ фиксирует согласованную целевую архитектуру совместной работы:
 
-- `SesameAgent` в локальной сети пользователя;
-- `SesameDVR` как система приёма, хранения и воспроизведения видео;
+- [`RBTAgent`](https://gitap.ru/SesameWare/RBTAgent) в локальной сети пользователя;
 - `RBT` (`rosteleset/SmartYard-Server`) как система управления объектами и сетевым доступом через overlay;
 - RBT overlay gateway на базе AmneziaWG.
 
-Документ описывает целевое состояние. Совместимость с ранним тестовым прототипом Agent не требуется. Его конфигурация и pairing переносятся вручную.
+Серверная реализация находится в ветке
+[`feature/rbt-agent-overlay`](https://github.com/rosteleset/SmartYard-Server/tree/feature/rbt-agent-overlay)
+SmartYard Server. Далее `RBTAgent` для краткости также называется Agent.
+Совместимость с ранним универсальным прототипом Agent не предусмотрена: его
+конфигурация и pairing переносятся вручную.
 
 ## 1. Основные принципы
 
 1. Agent является владельцем своей локальной конфигурации, локальной сети, ключей и фактического состояния.
-2. Agent сам инициирует все подключения к SesameDVR и RBT. Входящие соединения к Agent через NAT не требуются.
-3. SesameDVR и RBT являются независимыми контроллерами с разными pairing, ключами, разрешениями и отзывом доступа.
+2. Agent сам инициирует все подключения к RBT. Входящие соединения к Agent через NAT не требуются.
+3. RBTAgent использует собственные binary, service, configuration, state и pairing credentials.
 4. Базовый pairing не даёт серверу права менять конфигурацию Agent.
-5. Удалённое управление включается локальным пользователем Agent отдельно для каждого контроллера и только с явно заданными scopes.
+5. Удалённое управление включается локальным пользователем отдельно для каждого RBT и только с явно заданными scopes.
 6. RBT хранит желаемое сетевое состояние, а Agent самостоятельно приводит локальную ОС к этому состоянию.
 7. RBT не передаёт Agent низкоуровневые команды `ip`, `nft` или `awg`.
 8. Persistent-конфигурация передаётся полным снимком desired state, а не очередью команд.
@@ -30,59 +33,42 @@
 flowchart LR
     subgraph LAN["Локальная сеть пользователя"]
         C["Камеры и устройства"]
-        A["SesameAgent"]
+        A["RBTAgent"]
         C --> A
     end
 
-    D["SesameDVR"]
     R["RBT / SmartYard"]
     G["RBT overlay gateway"]
 
-    A -->|"Видео и ONVIF события"| D
     A -->|"Signed HTTPS sync"| R
     A <-->|"AmneziaWG tunnel"| G
     R -->|"Desired gateway state"| G
     R -->|"Доступ к overlay IP"| G
 ```
 
-### SesameAgent
+### RBTAgent
 
 Agent:
 
-- хранит локальный список RTSP-потоков и ONVIF-устройств;
+- выполняет независимый pairing с одним или несколькими RBT;
 - сканирует локальную сеть только по команде локального пользователя либо при наличии отдельного managed scope;
-- выполняет локальный repair потока и удаляет ненужные дорожки;
-- шифрует и публикует разрешённые пользователем потоки в SesameDVR;
-- публикует разрешённые ONVIF-события;
+- выполняет разрешённую сетевую диагностику;
 - генерирует и хранит device identity и private key AmneziaWG;
 - применяет локальные интерфейсы, маршруты, 1:1 NAT и firewall;
 - сверяет desired state с actual state и выполняет reconciliation;
 - никогда не передаёт private keys контроллерам.
 
-### SesameDVR
-
-SesameDVR:
-
-- принимает анонсы потоков и состояния Agent;
-- выдаёт краткоживущие publish grants для разрешённых потоков;
-- принимает, пишет и воспроизводит видео;
-- принимает ONVIF-события;
-- в базовом режиме не может включать, выключать, добавлять или менять локальные потоки Agent;
-- может получить отдельное managed-разрешение на media-команды, если пользователь явно включил его на Agent;
-- не управляет overlay, маршрутами и NAT RBT.
-
 ### RBT
 
 RBT:
 
-- выполняет отдельный pairing с Agent;
+- выполняет pairing с RBTAgent;
 - хранит desired state overlay и mappings;
 - выделяет tunnel IP, overlay prefix и overlay IP;
 - показывает администратору состояние Agent, overlay и mappings;
 - передаёт Agent полный signed desired state во время короткого HTTPS sync;
 - не выполняет команды в локальной ОС Agent;
-- не меняет RTSP, media repair, шифрование и публикацию потоков;
-- не получает media publish secrets SesameDVR.
+- не управляет RTSP, ONVIF или media policy сторонних сервисов.
 
 ### RBT overlay gateway
 
@@ -104,18 +90,15 @@ Base pairing устанавливает взаимное доверие Agent и
 
 После base pairing контроллер может:
 
-- принимать identity, capabilities, inventory и health Agent;
-- принимать анонсы разрешённых локальным пользователем потоков и событий;
-- выдавать publish grants или показать доступность сервисов;
-- принимать health и диагностическую телеметрию, которую Agent сам включил в анонс.
+- принимать identity, capabilities, actual state и health Agent;
+- показывать доступность Agent и его фактическое сетевое состояние;
+- возвращать подписанный пустой или ранее разрешённый desired state.
 
 Он не может:
 
-- добавить или удалить камеру;
-- запустить или остановить поток;
-- изменить шифрование;
 - изменить overlay или mapping;
 - запустить сканирование LAN;
+- выполнить сетевую диагностику;
 - изменить локально разрешённые диапазоны сети.
 
 ### 3.2. Managed authorization
@@ -141,7 +124,8 @@ Agent остаётся инициатором соединения и на эт�
 - `network.diagnose`;
 - `lan.scan`, только как отдельное явное разрешение.
 
-Scopes SesameDVR управляются независимо и не дают RBT дополнительных прав.
+Эти scopes относятся только к сетевым функциям RBTAgent и не дают RBT прав на
+управление сторонними media-сервисами.
 
 Локальный пользователь может отозвать managed grant, не удаляя base pairing. Полный revoke удаляет и pairing, и все grants соответствующего controller.
 
@@ -163,7 +147,7 @@ Agent при первом запуске генерирует:
 sequenceDiagram
     participant U as "Локальный пользователь"
     participant R as "RBT"
-    participant A as "SesameAgent"
+    participant A as "RBTAgent"
 
     U->>R: Создать одноразовое приглашение
     R-->>U: serverUrl, controllerId, controllerPublicKey, code, expiresAt
@@ -205,7 +189,7 @@ Agent хранит `controllerId` и application public key RBT. Он не хр�
 
 RBT проверяет подпись, допустимое окно времени, уникальность `requestId` и рост `sequence`. Ответ RBT подписывается controller key и проверяется Agent до разбора desired state.
 
-Точный canonical payload, HTTP headers и общий Go/PHP test vector определены в [`http-protocol-v1.ru.md`](http-protocol-v1.ru.md).
+Точный canonical payload, HTTP headers и общий Go/PHP test vector определены в [`http-protocol-v2.ru.md`](http-protocol-v2.ru.md).
 
 ## 5. Транспорт RBT - Agent
 
@@ -213,11 +197,11 @@ RBT проверяет подпись, допустимое окно време�
 
 Целевые endpoints:
 
-- `POST /rbt-agent/v1/pair`;
-- `POST /rbt-agent/v1/pair/confirm`;
-- `POST /rbt-agent/v1/sync`;
-- `POST /rbt-agent/v1/actions/:id/result`;
-- `POST /rbt-agent/v1/revoke`.
+- `POST /rbt-agent/v2/pair`;
+- `POST /rbt-agent/v2/pair/confirm`;
+- `POST /rbt-agent/v2/sync`;
+- `POST /rbt-agent/v2/actions/:id/result`;
+- `POST /rbt-agent/v2/revoke`.
 
 Managed authorization инициирует администратор через штатный защищённый admin
 API SmartYard. Доказательство знания managed secret передаётся Agent внутри
@@ -294,9 +278,11 @@ Agent сообщает два поколения:
   "observedGeneration": 18,
   "appliedGeneration": 17,
   "capabilities": {
+    "protocol": ["rbt_signed_https_v2"],
     "overlayTypes": ["amneziawg"],
     "fullNat44": true,
-    "lanScan": true
+    "lanScan": true,
+    "atomicNftablesReplace": true
   },
   "actualState": {
     "overlay": {
@@ -380,7 +366,9 @@ Agent применяет:
 осознанная часть L3 1:1 NAT. Если в будущем понадобится сохранять исходный IP,
 это должен быть отдельный маршрутизируемый режим с явным return route в LAN.
 
-Это L3-доступ, а не Ethernet bridge. Через overlay не проходят ARP, broadcast, multicast и WS-Discovery. Поиск ONVIF выполняет Agent локально, после чего передаёт inventory контроллерам в рамках разрешённой policy.
+Это L3-доступ, а не Ethernet bridge. Через overlay не проходят ARP, broadcast,
+multicast и WS-Discovery. LAN scan выполняется Agent локально, после чего
+результат передаётся RBT только в рамках разрешённой policy и scope `lan.scan`.
 
 ## 9. Server-side gateway reconciliation
 
@@ -389,7 +377,7 @@ Agent не может самостоятельно создать server-side AW
 ```mermaid
 flowchart TB
     DB["RBT desired state"]
-    AC["SesameAgent reconciler"]
+    AC["RBTAgent reconciler"]
     GC["RBT gateway reconciler"]
     AN["Agent AWG, routes, nftables"]
     GN["Gateway AWG peers, routes, firewall"]
@@ -653,7 +641,7 @@ multi-node deployment и долгого хранения допускается 
 - удалённое выполнение произвольных shell-команд;
 - управление media policy Agent со стороны RBT;
 - управление RBT со стороны Agent;
-- общий ключ или общий managed grant для SesameDVR и RBT;
+- общие runtime state, identity или managed grant для RBTAgent и других сервисов;
 - автоматическая миграция тестового прототипа Agent.
 
 ## 17. Критерии готовности
@@ -671,4 +659,4 @@ multi-node deployment и долгого хранения допускается 
 9. Server-side gateway и Agent-side состояние наблюдаются независимо.
 10. Камера RBT работает через обычный overlay IP без `camera_edge_bindings` и operational data в `cameras.ext`.
 11. Журналы ограничиваются `logrotate`, а PostgreSQL не растёт из-за event history.
-12. SesameDVR и RBT можно независимо pair/revoke без влияния на второй controller.
+12. Установка, pairing и удаление RBTAgent не изменяют состояние других сервисов edge-устройства.

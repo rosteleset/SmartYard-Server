@@ -1,16 +1,16 @@
 {
-    "edgeAgents": "Агенты SesameAgent",
-    "title": "Агенты SesameAgent",
+    "edgeAgents": "RBTAgent",
+    "title": "RBTAgent",
     "subtitle": "Сопряжение, управляемая оверлейная сеть и 1:1 NAT",
     "refresh": "Обновить",
     "loading": "Загрузка...",
     "agents": "Агенты",
     "agent": "Агент",
-    "noAgents": "Агенты ещё не подключены. Создайте приглашение и вставьте его в локальном UI SesameAgent.",
+    "noAgents": "RBTAgent ещё не подключён. Создайте приглашение и вставьте его в локальном UI RBTAgent.",
     "createInvitation": "Создать приглашение",
     "displayName": "Имя контроллера",
     "create": "Создать",
-    "invitationJson": "Приглашение для SesameAgent",
+    "invitationJson": "Приглашение для RBTAgent",
     "copy": "Копировать",
     "copied": "Скопировано",
     "expires": "Действует до",
@@ -91,9 +91,9 @@
     "noEvents": "Событий пока нет",
     "methods": {
         "edgeAgents": {
-            "_title": "Агенты SesameAgent",
+            "_title": "RBTAgent",
             "controller": {
-                "_title": "Управление агентами SesameAgent",
+                "_title": "Управление RBTAgent",
                 "GET": "Просмотр",
                 "POST": "Изменение",
                 "DELETE": "Удаление"

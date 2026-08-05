@@ -1,16 +1,16 @@
 {
-    "edgeAgents": "SesameAgent agents",
-    "title": "Edge agents",
-    "subtitle": "Pairing, managed overlay and 1:1 NAT for SesameAgent",
+    "edgeAgents": "RBTAgent",
+    "title": "RBTAgent",
+    "subtitle": "Pairing, managed overlay and 1:1 NAT for RBTAgent",
     "refresh": "Refresh",
     "loading": "Loading...",
     "agents": "Agents",
     "agent": "Agent",
-    "noAgents": "No agents are connected. Create an invitation and paste it into the local SesameAgent UI.",
+    "noAgents": "No RBTAgent instances are connected. Create an invitation and paste it into the local RBTAgent UI.",
     "createInvitation": "Create invitation",
     "displayName": "Controller name",
     "create": "Create",
-    "invitationJson": "SesameAgent invitation",
+    "invitationJson": "RBTAgent invitation",
     "copy": "Copy",
     "copied": "Copied",
     "expires": "Expires",
@@ -91,9 +91,9 @@
     "noEvents": "No events yet",
     "methods": {
         "edgeAgents": {
-            "_title": "Edge agents",
+            "_title": "RBTAgent",
             "controller": {
-                "_title": "Manage Edge agents",
+                "_title": "Manage RBTAgent",
                 "GET": "View",
                 "POST": "Change",
                 "DELETE": "Delete"

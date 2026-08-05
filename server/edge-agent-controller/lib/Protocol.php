@@ -11,8 +11,16 @@ use RuntimeException;
 
 final class Protocol
 {
-    public const VERSION = '1';
-    public const DOMAIN = 'sesame-agent-http-signature-v1';
+    public const VERSION = '2';
+    public const DOMAIN = 'rbt-agent-http-signature-v2';
+    public const HEADER_SIGNATURE_VERSION = 'X-RBT-Agent-Signature-Version';
+    public const HEADER_SIGNER_ID = 'X-RBT-Agent-Signer-ID';
+    public const HEADER_KEY_ID = 'X-RBT-Agent-Key-ID';
+    public const HEADER_TIMESTAMP = 'X-RBT-Agent-Timestamp';
+    public const HEADER_REQUEST_ID = 'X-RBT-Agent-Request-ID';
+    public const HEADER_SEQUENCE = 'X-RBT-Agent-Sequence';
+    public const HEADER_CONTENT_SHA256 = 'X-RBT-Agent-Content-SHA256';
+    public const HEADER_SIGNATURE = 'X-RBT-Agent-Signature';
 
     public static function bodySha256(string $body): string
     {

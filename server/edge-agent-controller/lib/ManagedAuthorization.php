@@ -8,6 +8,8 @@ use InvalidArgumentException;
 
 final class ManagedAuthorization
 {
+    public const DOMAIN = 'rbt-agent-managed-authorization-v2';
+
     /** @param list<string> $scopes */
     public static function canonical(
         string $agentId,
@@ -17,7 +19,7 @@ final class ManagedAuthorization
         array $scopes,
     ): string {
         return implode("\n", [
-            'sesame-agent-managed-authorization-v1',
+            self::DOMAIN,
             $agentId,
             $controllerId,
             (string) $revision,
