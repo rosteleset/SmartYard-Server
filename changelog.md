@@ -15,6 +15,7 @@
 + expanded Akuvox event service syslog filtering to remove recurring diagnostic noise
 + added support for Omny VDP-10L
 + enhanced bulk RFID imports with DEC/HEX conversion, byte-order controls and preview
+# removed obsolete SQLite database support
 ```
 
 ## v1.0.0

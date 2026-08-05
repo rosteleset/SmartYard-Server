@@ -26,16 +26,12 @@
         public function __construct($_dsn, $username = null, $password = null, $options = null) {
             $this->dsn = $_dsn;
 
-            parent::__construct($_dsn, $username, $password, $options);
-
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            switch ($this->parseDsn()["protocol"]) {
-                case "sqlite":
-                    $this->sqliteCreateFunction('mb_strtoupper', 'mb_strtoupper', 1);
-                    $this->sqliteCreateFunction('mb_levenshtein', 'mb_levenshtein', 2);
-                    break;
+            if ($this->parseDsn()["protocol"] !== "pgsql") {
+                throw new InvalidArgumentException("Unsupported database driver; only PostgreSQL is supported");
             }
+
+            parent::__construct($_dsn, $username, $password, $options);
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
 
         /**

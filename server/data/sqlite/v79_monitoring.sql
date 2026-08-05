@@ -1,2 +1,0 @@
-ALTER TABLE houses_domophones ADD COLUMN monitoring INTEGER DEFAULT 1;
-ALTER TABLE cameras ADD COLUMN monitoring INTEGER DEFAULT 1;

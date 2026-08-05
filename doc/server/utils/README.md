@@ -18,7 +18,6 @@ Shared procedural helpers for the server: included from entrypoints (`frontend.p
 | [`functions.php`](../../../server/utils/functions.php) | Large shared helper set: `checkInt`, `checkStr`, `GUIDv4`, `array_diff_assoc_recursive`, etc. |
 | [`i18n.php`](../../../server/utils/i18n.php) | `language()`, `i18n()` — locale from `Accept-Language` / config, translated strings. |
 | [`installCrontabs.php`](../../../server/utils/installCrontabs.php) | `installCrontabs()` — installs the RBT cron block (markers `## RBT crons …`). |
-| [`levenshtein.php`](../../../server/utils/levenshtein.php) | UTF-8 `mb_levenshtein` / ratio for fuzzy string work. |
 | [`loader.php`](../../../server/utils/loader.php) | `loadBackend`, `loadConfiguration`, `loadExtension`, `loadDevice` — see [dedicated page](./loader.md). |
 | [`PDOExt.php`](../../../server/utils/PDOExt.php) | PDO extension for this project — see [dedicated page](./PDOExt.md). |
 | [`polyfills.php`](../../../server/utils/polyfills.php) | Polyfills (e.g. `apache_request_headers`) when missing in the runtime. |

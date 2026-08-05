@@ -18,7 +18,6 @@
 | [`functions.php`](../../../server/utils/functions.php) | Крупный набор общих функций: `checkInt`, `checkStr`, `GUIDv4`, `array_diff_assoc_recursive`, и др. |
 | [`i18n.php`](../../../server/utils/i18n.php) | `language()`, `i18n()` — язык из `Accept-Language` / конфига, подстановка строк перевода. |
 | [`installCrontabs.php`](../../../server/utils/installCrontabs.php) | `installCrontabs()` — вписывает секцию заданий RBT в crontab пользователя (маркеры `## RBT crons …`). |
-| [`levenshtein.php`](../../../server/utils/levenshtein.php) | `mb_levenshtein` / ratio для UTF-8 (поиск/нечёткое сравнение строк). |
 | [`loader.php`](../../../server/utils/loader.php) | `loadBackend`, `loadConfiguration`, `loadExtension`, `loadDevice` — см. [отдельная страница](./loader.ru.md). |
 | [`PDOExt.php`](../../../server/utils/PDOExt.php) | Расширение PDO для проекта — см. [отдельная страница](./PDOExt.ru.md). |
 | [`polyfills.php`](../../../server/utils/polyfills.php) | Полифиллы (например `apache_request_headers`), если нет в окружении. |

@@ -3349,69 +3349,40 @@
                 $search = trim(preg_replace('/\s+/', ' ', $search));
                 $text_search_config = $this->config["db"]["text_search_config"] ?? "simple";
 
-                switch ($this->db->parseDsn()["protocol"]) {
-                    case "pgsql":
-                        switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
-                            case "trgm":
-                                $query = "select * from (
-                                    select *, greatest(similarity(subscriber_full, :search), similarity(id, :search)) as similarity from houses_subscribers_mobile where subscriber_full % :search or id = :search
-                                ) as t1 order by similarity desc, subscriber_full limit 51";
-                                $params = [ "search" => $search ];
-                                break;
-
-                            case "ftsa":
-                                $search = str_replace(" ", " & ", $search);
-
-                            case "fts":
-                                $query = "select * from (
-                                    select *, ts_rank_cd(to_tsvector('$text_search_config', subscriber_full), to_tsquery(:search)) as similarity from houses_subscribers_mobile where to_tsvector('$text_search_config', subscriber_full) @@ to_tsquery('$text_search_config', :search)
-                                    union
-                                    select *, 1 as similarity from houses_subscribers_mobile where id = :search
-                                ) as t1  order by similarity, subscriber_full desc limit 51";
-                                $params = [ "search" => $search ];
-                                break;
-
-                            default:
-                                $tokens = explode(" ", $search);
-                                $query = [];
-                                $params = [];
-                                for ($i = 0; $i < count($tokens); $i++) {
-                                    $query[] = "(subscriber_full ilike '%' || :s$i || '%')";
-                                    $params["s$i"] = $tokens[$i];
-                                }
-                                $query = implode(" and ", $query);
-                                $query = "select * from (
-                                    select *, least(levenshtein(subscriber_full, :search), levenshtein(id, :search)) as similarity from houses_subscribers_mobile where ($query) or id = :search
-                                ) as t1 order by similarity asc, subscriber_full limit 51";
-                                $params["search"] = $search;
-                                break;
-                        }
+                switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
+                    case "trgm":
+                        $query = "select * from (
+                            select *, greatest(similarity(subscriber_full, :search), similarity(id, :search)) as similarity from houses_subscribers_mobile where subscriber_full % :search or id = :search
+                        ) as t1 order by similarity desc, subscriber_full limit 51";
+                        $params = [ "search" => $search ];
                         break;
 
-                    case "sqlite";
+                    case "ftsa":
+                        $search = str_replace(" ", " & ", $search);
+
+                    case "fts":
+                        $query = "select * from (
+                            select *, ts_rank_cd(to_tsvector('$text_search_config', subscriber_full), to_tsquery(:search)) as similarity from houses_subscribers_mobile where to_tsvector('$text_search_config', subscriber_full) @@ to_tsquery('$text_search_config', :search)
+                            union
+                            select *, 1 as similarity from houses_subscribers_mobile where id = :search
+                        ) as t1  order by similarity, subscriber_full desc limit 51";
+                        $params = [ "search" => $search ];
+                        break;
+
+                    default:
                         $tokens = explode(" ", $search);
                         $query = [];
                         $params = [];
                         for ($i = 0; $i < count($tokens); $i++) {
-                            $query[] = "(mb_strtoupper(subscriber_full) like concat('%', :s$i, '%'))";
-                            $params["s$i"] = mb_strtoupper($tokens[$i]);
+                            $query[] = "(subscriber_full ilike '%' || :s$i || '%')";
+                            $params["s$i"] = $tokens[$i];
                         }
                         $query = implode(" and ", $query);
                         $query = "select * from (
-                            select
-                                *, min(mb_levenshtein(subscriber_full, :search), mb_levenshtein(id, :search)) as similarity
-                            from
-                                houses_subscribers_mobile
-                            where
-                                ($query)
-                                or
-                                id = :search
+                            select *, least(levenshtein(subscriber_full, :search), levenshtein(id, :search)) as similarity from houses_subscribers_mobile where ($query) or id = :search
                         ) as t1 order by similarity asc, subscriber_full limit 51";
                         $params["search"] = $search;
                         break;
-
-                    default:
-                        return false;
                 }
 
                 $result = $this->db->get($query, $params, [
@@ -3539,29 +3510,14 @@
             function searchPath($tree, $search) {
                 $search = trim(preg_replace('/\s+/', ' ', $search));
 
-                switch ($this->db->parseDsn()["protocol"]) {
-                    case "pgsql":
-                        $tokens = explode(" ", $search);
-                        $query = [];
-                        $params = [];
-                        for ($i = 0; $i < count($tokens); $i++) {
-                            $query[] = "(house_path_name ilike '%' || :s$i || '%')";
-                            $params["s$i"] = $tokens[$i];
-                        }
-                        $query = implode(" and ", $query);
-                        break;
-
-                    case "sqlite";
-                        $tokens = explode(" ", $search);
-                        $query = [];
-                        $params = [];
-                        for ($i = 0; $i < count($tokens); $i++) {
-                            $query[] = "(mb_strtoupper(house_path_name) like concat('%', :s$i, '%'))";
-                            $params["s$i"] = mb_strtoupper($tokens[$i]);
-                        }
-                        $query = implode(" and ", $query);
-                        break;
+                $tokens = explode(" ", $search);
+                $query = [];
+                $params = [];
+                for ($i = 0; $i < count($tokens); $i++) {
+                    $query[] = "(house_path_name ilike '%' || :s$i || '%')";
+                    $params["s$i"] = $tokens[$i];
                 }
+                $query = implode(" and ", $query);
 
                 $params["house_path_tree"] = $tree;
 

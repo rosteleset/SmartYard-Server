@@ -1,1 +1,0 @@
-ALTER TABLE houses_entrances DROP COLUMN video;

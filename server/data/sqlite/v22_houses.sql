@@ -1,1 +1,0 @@
-ALTER TABLE houses_domophones ADD COLUMN name TEXT;

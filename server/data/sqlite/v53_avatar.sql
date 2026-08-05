@@ -1,1 +1,0 @@
-ALTER TABLE core_users ADD COLUMN avatar TEXT;

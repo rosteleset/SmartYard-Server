@@ -4,8 +4,7 @@
 
 - хранение исходного DSN и разбор DSN на `protocol` + параметры;
 - удобные методы для частых операций: `insert()`, `modify()`, `modifyEx()`, `get()`, `queryEx()`;
-- единый стиль обработки ошибок (через `setLastError()` + `error_log()`), с опцией подавления логирования (`silent`);
-- для SQLite — регистрацию пользовательских функций `mb_strtoupper` и `mb_levenshtein`.
+- единый стиль обработки ошибок (через `setLastError()` + `error_log()`), с опцией подавления логирования (`silent`).
 
 ## Конструктор
 
@@ -14,15 +13,9 @@
 Поведение:
 
 - сохраняет DSN в приватное поле `$dsn`;
+- отклоняет драйверы баз данных, отличные от PostgreSQL;
 - вызывает `parent::__construct(...)`;
-- выставляет `PDO::ATTR_ERRMODE` в `PDO::ERRMODE_EXCEPTION`;
-- определяет протокол через `parseDsn()["protocol"]` и при `sqlite` регистрирует функции:
-  - `mb_strtoupper` (1 аргумент),
-  - `mb_levenshtein` (2 аргента).
-
-Важно:
-
-- регистрация функций делается всегда при `sqlite`, поэтому предполагается, что в окружении существуют callable `mb_strtoupper` и `mb_levenshtein`.
+- выставляет `PDO::ATTR_ERRMODE` в `PDO::ERRMODE_EXCEPTION`.
 
 ## parseDsn()
 
@@ -157,5 +150,3 @@
 ## Внешние зависимости / ожидания окружения
 
 - `setLastError(...)` должен существовать (используется в обработчиках исключений).
-- Для `sqlite` должны быть доступны callable `mb_strtoupper` и `mb_levenshtein` (регистрируются как SQLite-функции).
-

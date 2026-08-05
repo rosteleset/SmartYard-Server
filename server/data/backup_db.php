@@ -13,15 +13,7 @@
         $file = $path . "/" . date("Y-m-d_H:i:s") . ".sql";
         $dsn = $db->parseDsn();
 
-        switch ($dsn["protocol"]) {
-            case "pgsql":
-                backupPgSql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
-                break;
-
-            case "sqlite":
-                backupSQlite($dsn["params"][0], $file);
-                break;
-        }
+        backupPgSql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
 
         if ($check_backup && filesize($file) < 1024) {
             die("backup file is too small\n\n");
@@ -77,15 +69,7 @@
 
         $dsn = $db->parseDsn();
 
-        switch ($dsn["protocol"]) {
-            case "pgsql":
-                restorePgSql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
-                break;
-
-            case "sqlite":
-                restoreSQlite($dsn["params"][0], $file);
-                break;
-        }
+        restorePgSql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
 
         echo "db restore complete: $file\n";
     }
@@ -100,24 +84,6 @@
         }
     }
 
-    function backupSQlite($db, $file) {
-        $result = -1;
-
-        system("sqlite3 $db .dump >$file", $result);
-
-        if ((int)$result) {
-            die("backup failed, code $result\n");
-        }
-    }
-
     function restorePgSql($host, $port, $login, $password, $db, $file) {
         system("PGPASSWORD=\"$password\" psql -U $login -d $db -h $host -p $port <$file");
-    }
-
-    function restoreSQlite($db, $file) {
-        if (file_exists($db)) {
-            unlink($db);
-        }
-
-        system("sqlite3 $db <$file");
     }

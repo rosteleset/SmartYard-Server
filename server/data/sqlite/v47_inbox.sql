@@ -1,1 +1,0 @@
-ALTER TABLE inbox DROP COLUMN house_subscriber_id;
