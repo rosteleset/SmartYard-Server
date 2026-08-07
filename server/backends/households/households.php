@@ -375,6 +375,94 @@
             abstract public function addKeys($rfIds, $accessType, $accessTo, $comments);
 
             /**
+             * Add RFID keys to flats within a house.
+             *
+             * @param $assignments
+             * @param $houseId
+             * @param $comments
+             *
+             * @return false|array
+             */
+
+            public function addKeysToFlats($assignments, $houseId, $comments) {
+                if (
+                    !is_array($assignments) ||
+                    !count($assignments) ||
+                    (!is_int($houseId) && !is_string($houseId)) ||
+                    !checkInt($houseId) ||
+                    $houseId <= 0 ||
+                    !is_string($comments) ||
+                    !checkStr($comments, [ "maxLength" => 128 ])
+                ) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $flats = $this->getFlats("houseId", $houseId);
+                if ($flats === false) {
+                    return false;
+                }
+
+                $houseFlats = [];
+                foreach ($flats as $flat) {
+                    $houseFlats[(string)$flat["flatId"]] = $flat["flat"];
+                }
+
+                $unique = [];
+                foreach ($assignments as $assignment) {
+                    $flatId = is_array($assignment) ? ($assignment["flatId"] ?? null) : null;
+                    $rfId = is_array($assignment) ? ($assignment["rfId"] ?? "") : "";
+                    $rfId = is_scalar($rfId) ? trim((string)$rfId) : "";
+                    $flatKey = (is_int($flatId) || is_string($flatId)) ? (string)$flatId : "";
+                    $key = $flatKey . "\0" . $rfId;
+
+                    if (!array_key_exists($key, $unique)) {
+                        $unique[$key] = [
+                            "flatId" => $flatId,
+                            "rfId" => $rfId,
+                        ];
+                    }
+                }
+
+                $result = [
+                    "total" => count($unique),
+                    "added" => [],
+                    "failed" => [],
+                ];
+
+                foreach ($unique as $assignment) {
+                    $flatId = $assignment["flatId"];
+                    $rfId = $assignment["rfId"];
+
+                    if ((!is_int($flatId) && !is_string($flatId)) || !checkInt($flatId) || !array_key_exists((string)$flatId, $houseFlats)) {
+                        $result["failed"][] = [
+                            "flatId" => $flatId,
+                            "rfId" => $rfId,
+                            "error" => "flatNotFound",
+                        ];
+                        continue;
+                    }
+
+                    $keyId = $this->addKey($rfId, 2, $flatId, $comments);
+                    $item = [
+                        "flatId" => $flatId,
+                        "flat" => $houseFlats[(string)$flatId],
+                        "rfId" => $rfId,
+                    ];
+
+                    if ($keyId !== false) {
+                        $item["keyId"] = $keyId;
+                        $result["added"][] = $item;
+                    } else {
+                        $item["error"] = getLastError() ?: "unknown";
+                        $result["failed"][] = $item;
+                    }
+                }
+
+                return $result;
+            }
+
+            /**
              * @param $keyId
              * @param $comments
              *

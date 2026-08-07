@@ -16,6 +16,7 @@
 + added support for Omny VDP-10L
 + enhanced bulk RFID imports with DEC/HEX conversion, byte-order controls and preview
 # removed obsolete SQLite database support
++ added bulk RFID key assignment by flat from the house view
 ```
 
 ## v1.0.0

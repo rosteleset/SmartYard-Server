@@ -102,7 +102,7 @@
     splitRfIds: function (value) {
         let rfIds = [];
 
-        for (const part of (value ? value : "").split(/[\r\n,;]+/)) {
+        for (const part of (value ? value : "").split(/\r\n|\r|\n/)) {
             let rfId = $.trim(part);
 
             if (rfId) {
@@ -117,6 +117,17 @@
         return format === "dec"
             ? "313249263\n884401844993\n20015998343868\n45514025410622983"
             : "12:AB:CD:EF\ncdea753301\n12-34-56-78-9A-BC\nA1 B2 C3 D4 E5 F6 07";
+    },
+
+    flatRfIdPlaceholder: function (format, order) {
+        let rows = format === "dec"
+            ? [[ "12", "313249263", ";" ], [ "13", "884401844993", "," ], [ "14", "20015998343868", ";" ]]
+            : [[ "12", "12:AB:CD:EF", ";" ], [ "13", "cdea753301", "," ], [ "14", "12-34-56-78-9A-BC", ";" ]];
+
+        return rows.map(row => order === "rfidFlat"
+            ? `${row[1]}${row[2]} ${row[0]}`
+            : `${row[0]}${row[2]} ${row[1]}`
+        ).join("\n");
     },
 
     rfIdByteSizeOptions: function () {
@@ -151,53 +162,79 @@
 
     processRfIds: function (value, format, reverseBytes, byteSize) {
         let seen = new Set();
-        let separatedHex = /^(?:[0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){1,6}|[0-9A-Fa-f]{2}(?:-[0-9A-Fa-f]{2}){1,6}|[0-9A-Fa-f]{2}(?:\s+[0-9A-Fa-f]{2}){1,6})$/;
-        let maxRfId = BigInt("0xFFFFFFFFFFFFFF");
-        let byteLength = parseInt(byteSize);
 
         return modules.addresses.keys.splitRfIds(value).map(source => {
-            let rfId;
-
-            if (format === "dec") {
-                if (!/^\d+$/.test(source) || BigInt(source) > maxRfId) {
-                    return { source: source, valid: false };
-                }
-                rfId = BigInt(source).toString(16).toUpperCase();
-            } else {
-                if (!/^[0-9A-Fa-f]{1,14}$/.test(source) && !separatedHex.test(source)) {
-                    return { source: source, valid: false };
-                }
-                rfId = source.replace(/[:-]|\s+/g, "").toUpperCase();
+            let row = modules.addresses.keys.processRfId(source, format, reverseBytes, byteSize);
+            if (!row.valid) {
+                return row;
             }
 
-            if (reverseBytes) {
-                if (!/^[1-7]$/.test(byteSize) || (rfId.replace(/^0+/, "") || "0").length > byteLength * 2) {
-                    return { source: source, valid: false };
-                }
-                rfId = (rfId.replace(/^0+/, "") || "0").padStart(byteLength * 2, "0");
-                rfId = rfId.match(/.{2}/g).reverse().join("");
-            }
+            row.duplicate = seen.has(row.result);
+            seen.add(row.result);
 
-            rfId = rfId.padStart(14, "0");
-
-            let duplicate = seen.has(rfId);
-            seen.add(rfId);
-
-            return {
-                source: source,
-                result: rfId,
-                valid: true,
-                duplicate: duplicate,
-            };
+            return row;
         });
     },
 
-    showRfIdPreview: function (prefix, notify) {
+    processRfId: function (source, format, reverseBytes, byteSize) {
+        let separatedHex = /^(?:[0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){1,6}|[0-9A-Fa-f]{2}(?:-[0-9A-Fa-f]{2}){1,6}|[0-9A-Fa-f]{2}(?:\s+[0-9A-Fa-f]{2}){1,6})$/;
+        let maxRfId = BigInt("0xFFFFFFFFFFFFFF");
+        let byteLength = parseInt(byteSize);
+        let rfId;
+
+        if (format === "dec") {
+            if (!/^\d+$/.test(source) || BigInt(source) > maxRfId) {
+                return { source: source, valid: false };
+            }
+            rfId = BigInt(source).toString(16).toUpperCase();
+        } else {
+            if (!/^[0-9A-Fa-f]{1,14}$/.test(source) && !separatedHex.test(source)) {
+                return { source: source, valid: false };
+            }
+            rfId = source.replace(/[:-]|\s+/g, "").toUpperCase();
+        }
+
+        if (reverseBytes) {
+            if (!/^[1-7]$/.test(byteSize) || (rfId.replace(/^0+/, "") || "0").length > byteLength * 2) {
+                return { source: source, valid: false };
+            }
+            rfId = (rfId.replace(/^0+/, "") || "0").padStart(byteLength * 2, "0");
+            rfId = rfId.match(/.{2}/g).reverse().join("");
+        }
+
+        return {
+            source: source,
+            result: rfId.padStart(14, "0"),
+            valid: true,
+            duplicate: false,
+        };
+    },
+
+    rfIdPreviewStatus: function (row, flatAssignment) {
+        if (!row.valid) {
+            return flatAssignment && row.flat && !row.flatFound
+                ? "addresses.rfidFlatNotFound"
+                : "addresses.rfidInvalid";
+        }
+        if (row.duplicate) {
+            return "addresses.rfidDuplicate";
+        }
+        if (flatAssignment && row.multipleFlats) {
+            return "addresses.rfidMultipleFlats";
+        }
+
+        return "addresses.rfidOk";
+    },
+
+    showRfIdPreview: function (prefix, notify, flats) {
+        let flatAssignment = Array.isArray(flats);
         let value = $("#" + prefix + "rfIds").val();
         let format = $("#" + prefix + "rfIdFormat").val();
         let reverseBytes = $("#" + prefix + "reverseRfIdBytes").val() === "1";
         let byteSize = reverseBytes ? $("#" + prefix + "rfIdBytes").val() : null;
-        let rows = modules.addresses.keys.processRfIds(value, format, reverseBytes, byteSize);
+        let rows = flatAssignment
+            ? modules.addresses.keys.processFlatRfIds(value, flats, $("#" + prefix + "rfidFlatOrder").val(), format, reverseBytes, byteSize)
+            : modules.addresses.keys.processRfIds(value, format, reverseBytes, byteSize);
 
         if (!rows.length || (reverseBytes && !/^[1-7]$/.test(byteSize))) {
             modules.addresses.keys.hideRfIdPreview(prefix);
@@ -208,24 +245,33 @@
             return false;
         }
 
-        let valid = rows.every(row => row.valid);
-
+        let columns = flatAssignment
+            ? [
+                [ "addresses.flat", row => row.flat ],
+                [ "addresses.rfidSource", row => row.source ],
+                [ "addresses.rfidResult", row => row.result ],
+            ]
+            : [
+                [ "addresses.rfidSource", row => row.source ],
+                [ "addresses.rfidResult", row => row.result ],
+            ];
         let preview = `
             <div class="overflow-auto" style="max-height: 300px;">
                 <table class="table table-sm mb-0">
                     <thead>
                         <tr>
-                            <th>${i18n("addresses.rfidSource")}</th>
-                            <th>${i18n("addresses.rfidResult")}</th>
+                            ${columns.map(column => `<th>${i18n(column[0])}</th>`).join("")}
                             <th>${i18n("addresses.status")}</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${rows.map(row => `
-                            <tr class="${!row.valid ? "rfid-preview-error" : (row.duplicate ? "rfid-preview-duplicate" : "")}">
-                                <td>${escapeHTML(row.source)}</td>
-                                <td>${row.result ? escapeHTML(row.result) : "&mdash;"}</td>
-                                <td>${i18n(!row.valid ? "addresses.rfidInvalid" : (row.duplicate ? "addresses.rfidDuplicate" : "addresses.rfidOk"))}</td>
+                            <tr class="${!row.valid ? "rfid-preview-error" : ((row.duplicate || (flatAssignment && row.multipleFlats)) ? "rfid-preview-duplicate" : "")}">
+                                ${columns.map(column => {
+                                    let value = column[1](row);
+                                    return `<td>${value ? escapeHTML(value) : "&mdash;"}</td>`;
+                                }).join("")}
+                                <td>${i18n(modules.addresses.keys.rfIdPreviewStatus(row, flatAssignment))}</td>
                             </tr>
                         `).join("")}
                     </tbody>
@@ -238,7 +284,7 @@
         $("#" + prefix + "rfIdPreview").removeClass("is-invalid").html(preview);
         $("#" + prefix + "rfIdPreview-container").show();
 
-        return valid;
+        return rows.every(row => row.valid);
     },
 
     normalizeRfIds: function (value, format, reverseBytes, byteSize) {
@@ -247,15 +293,92 @@
             .map(row => row.result);
     },
 
-    rfIdFormFields: function () {
-        return [
+    processFlatRfIds: function (value, flats, order, format, reverseBytes, byteSize) {
+        let flatIds = new Map();
+        let seen = new Set();
+
+        for (const flat of flats) {
+            flatIds.set($.trim(String(flat.flat)), flat.flatId);
+        }
+
+        let rows = [];
+        for (const sourceLine of (value ? value : "").split(/\r\n|\r|\n/)) {
+            let line = $.trim(sourceLine);
+            if (!line) {
+                continue;
+            }
+
+            let parts = line.split(/[;,\t]/);
+            let flat = parts.length === 2 ? $.trim(parts[order === "rfidFlat" ? 1 : 0]) : "";
+            let source = parts.length === 2 ? $.trim(parts[order === "rfidFlat" ? 0 : 1]) : line;
+            let flatFound = flatIds.has(flat);
+            let rfId = modules.addresses.keys.processRfId(source, format, reverseBytes, byteSize);
+            let valid = parts.length === 2 && flat !== "" && source !== "" && flatFound && rfId.valid;
+            let flatId = flatFound ? flatIds.get(flat) : null;
+            let pair = flatId + "\0" + rfId.result;
+            let duplicate = valid && seen.has(pair);
+
+            if (valid) {
+                seen.add(pair);
+            }
+
+            rows.push({
+                flat: flat,
+                flatId: flatId,
+                source: source,
+                result: rfId.result,
+                valid: valid,
+                duplicate: duplicate,
+                flatFound: flatFound,
+                multipleFlats: false,
+            });
+        }
+
+        let rfIdFlats = new Map();
+        for (const row of rows) {
+            if (row.valid && !row.duplicate) {
+                if (!rfIdFlats.has(row.result)) {
+                    rfIdFlats.set(row.result, new Set());
+                }
+                rfIdFlats.get(row.result).add(String(row.flatId));
+            }
+        }
+        for (const row of rows) {
+            row.multipleFlats = row.valid && rfIdFlats.get(row.result).size > 1;
+        }
+
+        return rows;
+    },
+
+    normalizeFlatRfIds: function (value, flats, order, format, reverseBytes, byteSize) {
+        return modules.addresses.keys.processFlatRfIds(value, flats, order, format, reverseBytes, byteSize)
+            .filter(row => row.valid && !row.duplicate)
+            .map(row => ({
+                flatId: row.flatId,
+                rfId: row.result,
+            }));
+    },
+
+    rfIdFormFields: function (options) {
+        options = options || {};
+        let flatAssignment = !!options.flatAssignment;
+        let placeholder = (format, order) => flatAssignment
+            ? modules.addresses.keys.flatRfIdPlaceholder(format, order)
+            : modules.addresses.keys.rfIdPlaceholder(format);
+        let showPreview = (prefix, notify) => modules.addresses.keys.showRfIdPreview(
+            prefix,
+            notify,
+            flatAssignment ? options.flats : false
+        );
+
+        let fields = [
             {
                 id: "rfIdFormat",
                 type: "select",
                 title: i18n("addresses.rfidFormat"),
                 value: "hex",
                 select: (field, id, prefix) => {
-                    $("#" + prefix + "rfIds").attr("placeholder", modules.addresses.keys.rfIdPlaceholder(field.val()));
+                    $("#" + prefix + "rfIds").attr("placeholder", placeholder(field.val(), $("#" + prefix + "rfidFlatOrder").val()));
                     modules.addresses.keys.hideRfIdPreview(prefix);
                 },
                 options: [
@@ -272,8 +395,8 @@
             {
                 id: "rfIds",
                 type: "area",
-                title: i18n("addresses.keys"),
-                placeholder: modules.addresses.keys.rfIdPlaceholder("hex"),
+                title: i18n(flatAssignment ? "addresses.rfidFlatAssignments" : "addresses.keys"),
+                placeholder: placeholder("hex", "flatRfid"),
             },
             {
                 id: "reverseRfIdBytes",
@@ -299,7 +422,7 @@
                 button: {
                     hint: i18n("addresses.rfidPreview"),
                     class: "btn-secondary",
-                    click: prefix => modules.addresses.keys.showRfIdPreview(prefix, true),
+                    click: prefix => showPreview(prefix, true),
                 },
             },
             {
@@ -307,7 +430,7 @@
                 type: "empty",
                 title: i18n("addresses.rfidConversionResult"),
                 hidden: true,
-                validate: (value, prefix) => modules.addresses.keys.showRfIdPreview(prefix, false),
+                validate: (value, prefix) => showPreview(prefix, false),
             },
             {
                 id: "comments",
@@ -315,6 +438,31 @@
                 title: i18n("addresses.comments"),
             },
         ];
+
+        if (flatAssignment) {
+            fields.splice(1, 0, {
+                id: "rfidFlatOrder",
+                type: "select",
+                title: i18n("addresses.rfidFlatOrder"),
+                value: "flatRfid",
+                options: [
+                    {
+                        id: "flatRfid",
+                        text: i18n("addresses.flatRfidOrder"),
+                    },
+                    {
+                        id: "rfidFlat",
+                        text: i18n("addresses.rfidFlatOrderValue"),
+                    },
+                ],
+                select: (field, id, prefix) => {
+                    $("#" + prefix + "rfIds").attr("placeholder", placeholder($("#" + prefix + "rfIdFormat").val(), field.val()));
+                    modules.addresses.keys.hideRfIdPreview(prefix);
+                },
+            });
+        }
+
+        return fields;
     },
 
     prepareRfIdFormResult: function (result) {
@@ -339,7 +487,10 @@
                 message(response.keys.total > 1 ? i18n("addresses.keysWereAdded", response.keys.added.length, response.keys.total) : i18n("addresses.keyWasAdded"));
             }
             if (response.keys.failed.length) {
-                let failed = response.keys.failed.map(key => key.rfId).slice(0, 5).join(", ");
+                let failed = response.keys.failed
+                    .map(key => key.flat ? key.flat + ": " + key.rfId : key.rfId)
+                    .slice(0, 5)
+                    .join(", ");
                 error(i18n("addresses.keysWereNotAdded", response.keys.failed.length, response.keys.total) + (failed ? ": " + failed : ""));
             }
         } else {
@@ -374,6 +525,48 @@
                         window.location = refreshUrl();
                     }
                 });
+            },
+            done: modules.addresses.keys.initRfIdForm,
+        });
+    },
+
+    addFlatKeys: function (houseId, flats) {
+        if (!flats.length) {
+            warning(i18n("addresses.noFlatsFound"));
+            return;
+        }
+
+        cardForm({
+            title: i18n("addresses.addFlatKeys"),
+            size: "xl",
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            fields: modules.addresses.keys.rfIdFormFields({
+                flatAssignment: true,
+                flats: flats,
+            }),
+            callback: function (result) {
+                let assignments = modules.addresses.keys.normalizeFlatRfIds(
+                    result.rfIds,
+                    flats,
+                    result.rfidFlatOrder,
+                    result.rfIdFormat,
+                    result.reverseRfIdBytes === "1",
+                    result.rfIdBytes
+                );
+
+                loadingStart();
+                POST("subscribers", "key", false, {
+                    houseId: houseId,
+                    assignments: assignments,
+                    comments: result.comments,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(modules.addresses.keys.addKeyMessage).
+                always(loadingDone);
             },
             done: modules.addresses.keys.initRfIdForm,
         });

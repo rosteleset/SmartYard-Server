@@ -3870,6 +3870,18 @@
             }
         },
         {
+            title: i18n("addresses.addFlatKeys"),
+            click: function () {
+                loadingStart();
+                GET("houses", "house", params.houseId, true).
+                fail(FAIL).
+                done(response => {
+                    modules.addresses.keys.addFlatKeys(params.houseId, response.house.flats);
+                }).
+                always(loadingDone);
+            },
+        },
+        {
             title: i18n("addresses.broadcast"),
             click: function () {
                 loadingStart();

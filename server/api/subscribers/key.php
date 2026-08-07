@@ -12,6 +12,8 @@
      *
      * @apiBody {String} rfId
      * @apiBody {String[]} rfIds
+     * @apiBody {Object[]} assignments flatId and rfId pairs
+     * @apiBody {Number} houseId required for assignments
      * @apiBody {Number="0,1,2,3,4,5"} accessType 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
      * @apiBody {Number} accessTo
      * @apiBody {String} comments
@@ -68,6 +70,16 @@
 
             public static function POST($params) {
                 $households = loadBackend("households");
+
+                if (array_key_exists("assignments", $params)) {
+                    $keys = $households->addKeysToFlats(
+                        $params["assignments"],
+                        $params["houseId"] ?? null,
+                        $params["comments"] ?? "",
+                    );
+
+                    return api::ANSWER($keys, ($keys !== false) ? "keys" : false);
+                }
 
                 if (array_key_exists("rfIds", $params)) {
                     $keys = $households->addKeys(
