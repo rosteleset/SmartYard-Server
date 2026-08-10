@@ -18,6 +18,7 @@
              * add file to storage
              *
              * $meta["expire"] (optional) expire filetime (unix timestamp)
+             * $meta["storage"] (optional) content storage: gridfs, tmpfs or extfs
              *
              * @param string $realFileName
              * @param $stream

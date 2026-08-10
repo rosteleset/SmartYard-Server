@@ -18,6 +18,10 @@
 # removed obsolete SQLite database support
 + added bulk RFID key assignment by flat from the house view
 + added camera group visibility filtering by flats
+! changed the default storage for event snapshots and DVR exports to MongoDB GridFS
++ added explicit storage selection for event snapshots and DVR exports
+# removed tmpfs.ttl_max; file expiration is now controlled by metadata.expire
+- made stream and temporary file cleanup reliable on failures for DVR exports and DVR-backed event snapshots
 ```
 
 ## v1.0.0

@@ -41,7 +41,6 @@
                 }
 
                 fclose($file);
-                fclose($stream);
 
                 chmod($path, $file_rights);
 
@@ -96,43 +95,6 @@
                 } else {
                     return false;
                 }
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function cleanup() {
-                $c = 0;
-
-                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-                $ttl_max = @$this->config["backends"]["tmpfs"]["ttl_max"] ?: "1month";
-                $threshold = strtotime("-" . $ttl_max);
-
-                if (file_exists($path) && $threshold) {
-                    $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
-                    foreach ($iterator as $info) {
-                        if ($info->isFile() && $threshold >= $info->getMTime()) {
-                            unlink($info->getPath() . "/" . $info->getFilename());
-                        }
-                    }
-                }
-
-                return $c;
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function cron($part) {
-                if ($part == "daily") {
-                    $this->cleanup();
-
-                    return true;
-                }
-
-                return true;
             }
         }
     }

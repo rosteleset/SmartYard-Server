@@ -6,13 +6,90 @@
 
     namespace backends\files {
 
+        use MongoDB\{
+            BSON\ObjectId,
+            Client,
+        };
+        use RuntimeException;
+        use Throwable;
+
         /**
          * gridFS storage
          */
 
         class mongo extends files {
 
+            private const STORAGE_GRIDFS = "gridfs";
+            private const STORAGE_TMPFS = "tmpfs";
+            private const STORAGE_EXTFS = "extfs";
+
             private $mongo, $dbName;
+
+            private function normalizeStorage($storage) {
+                $storage = strtolower((string)$storage);
+
+                if ($storage === "mongo") {
+                    return self::STORAGE_GRIDFS;
+                }
+
+                if (!in_array($storage, [ self::STORAGE_GRIDFS, self::STORAGE_TMPFS, self::STORAGE_EXTFS ], true)) {
+                    throw new \InvalidArgumentException("Unknown file storage: $storage");
+                }
+
+                return $storage;
+            }
+
+            private function storageForNewFile($metadata) {
+                if (@$metadata["storage"]) {
+                    return $this->normalizeStorage($metadata["storage"]);
+                }
+
+                if (@$metadata["external"]) {
+                    if (loadBackend("extfs")) {
+                        return self::STORAGE_EXTFS;
+                    }
+                }
+
+                return self::STORAGE_GRIDFS;
+            }
+
+            private function storageForStoredFile($metadata) {
+                if (@$metadata["storage"]) {
+                    return $this->normalizeStorage($metadata["storage"]);
+                }
+
+                // Infer records written before metadata.storage was introduced.
+                if (@$metadata["external"] && array_key_exists("realLength", $metadata)) {
+                    return self::STORAGE_EXTFS;
+                }
+
+                if (@$metadata["expire"] && array_key_exists("realLength", $metadata)) {
+                    return self::STORAGE_TMPFS;
+                }
+
+                return self::STORAGE_GRIDFS;
+            }
+
+            private function storageBackend($storage) {
+                if ($storage === self::STORAGE_TMPFS || $storage === self::STORAGE_EXTFS) {
+                    $backend = loadBackend($storage);
+                    if (!$backend) {
+                        throw new RuntimeException("File storage backend is not available: $storage");
+                    }
+
+                    return $backend;
+                }
+
+                return false;
+            }
+
+            private function objectId($uuid) {
+                if ($uuid instanceof ObjectId) {
+                    return $uuid;
+                }
+
+                return new ObjectId((string)$uuid);
+            }
 
             /**
              * @inheritDoc
@@ -24,9 +101,9 @@
                 $this->dbName = @$config["backends"]["files"]["db"] ?: "rbt";
 
                 if (@$config["mongo"]["uri"]) {
-                    $this->mongo = new \MongoDB\Client($config["mongo"]["uri"]);
+                    $this->mongo = new Client($config["mongo"]["uri"]);
                 } else {
-                    $this->mongo = new \MongoDB\Client();
+                    $this->mongo = new Client();
                 }
             }
 
@@ -39,29 +116,36 @@
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                $tmpfs = loadBackend("tmpfs");
+                $metadata = is_array($metadata) ? $metadata : [];
+                $storage = $this->storageForNewFile($metadata);
+                $metadata["storage"] = $storage;
 
-                $s = false;
-
-                if ($tmpfs && $metadata && @$metadata["expire"]) {
-                    $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
-                    $s = $tmpfs->putFile($id, $stream);
+                if ($storage === self::STORAGE_GRIDFS) {
+                    $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
                 } else {
-                    $extfs = loadBackend("extfs");
-                    if ($extfs && $metadata && @$metadata["external"]) {
-                        $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
-                        $metadata["md5id"] = md5($id);
-                        $s = $extfs->putFile($id, $stream);
-                    } else {
-                        $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
-                    }
-                }
+                    $backend = $this->storageBackend($storage);
+                    $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
 
-                if ($s !== false) {
-                    if (!$metadata) {
-                        $metadata = [];
+                    try {
+                        $size = $backend->putFile($id, $stream);
+                        if ($size === false) {
+                            throw new RuntimeException("Failed to write file to $storage");
+                        }
+                    } catch (Throwable $e) {
+                        try {
+                            $backend->deleteFile($id);
+                        } catch (Throwable) {
+                            // Preserve the original storage error.
+                        }
+                        $bucket->delete($id);
+                        throw $e;
                     }
-                    $metadata["realLength"] = $s;
+
+                    $metadata["realLength"] = $size;
+
+                    if ($storage === self::STORAGE_EXTFS) {
+                        $metadata["md5id"] = md5((string)$id);
+                    }
                 }
 
                 if ($metadata) {
@@ -78,34 +162,29 @@
             public function getFile($uuid) {
                 $db = $this->dbName;
 
-                $tmpfs = loadBackend("tmpfs");
-                $extfs = loadBackend("extfs");
-
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                $fileId = new \MongoDB\BSON\ObjectId($uuid);
-
-                $tstream = false;
-                $estream = false;
-
-                if ($tmpfs) {
-                    $tstream = $tmpfs->getFile($uuid);
-                }
-
-                if ($extfs) {
-                    $estream = $extfs->getFile($uuid);
-                }
-
+                $fileId = $this->objectId($uuid);
                 $stream = $bucket->openDownloadStream($fileId);
                 $info = $bucket->getFileDocumentForStream($stream);
 
-                if (@$info["metadata"] && @$info["metadata"]["realLength"]) {
+                $metadata = @$info["metadata"] ? object_to_array($info["metadata"]) : [];
+                $storage = $this->storageForStoredFile($metadata);
+
+                if ($storage !== self::STORAGE_GRIDFS) {
+                    $stream = $this->storageBackend($storage)->getFile($uuid);
+                    if (!$stream) {
+                        throw new RuntimeException("File content is missing from $storage: $uuid");
+                    }
+                }
+
+                if (@$info["metadata"] && isset($info["metadata"]["realLength"])) {
                     $info["length"] = $info["metadata"]["realLength"];
                 }
 
                 return [
                     "fileInfo" => $info,
-                    "stream" => $tstream ?: ( $estream ?: $stream),
+                    "stream" => $stream,
                 ];
             }
 
@@ -133,7 +212,7 @@
                 $collection = "fs.files";
                 $db = $this->dbName;
 
-                return $this->mongo->$db->$collection->updateOne([ "_id" => new \MongoDB\BSON\ObjectId($uuid) ], [ '$set' => [ "metadata" => $metadata ]]);
+                return $this->mongo->$db->$collection->updateOne([ "_id" => $this->objectId($uuid) ], [ '$set' => [ "metadata" => $metadata ]]);
             }
 
             /**
@@ -153,11 +232,11 @@
                 $db = $this->dbName;
 
                 if (@$query["_id"]) {
-                    $query["_id"] = new \MongoDB\BSON\ObjectId($query["_id"]);
+                    $query["_id"] = $this->objectId($query["_id"]);
                 }
 
                 if (@$query["id"]) {
-                    $query["_id"] = new \MongoDB\BSON\ObjectId($query["id"]);
+                    $query["_id"] = $this->objectId($query["id"]);
                     unset($query["id"]);
                 }
 
@@ -174,7 +253,7 @@
                     $document = object_to_array($document);
                     $document["id"] = (string)$document["_id"]["oid"];
 
-                    if (@$document["metadata"] && @$document["metadata"]["realLength"]) {
+                    if (@$document["metadata"] && isset($document["metadata"]["realLength"])) {
                         $document["length"] = $document["metadata"]["realLength"];
                     }
 
@@ -196,33 +275,23 @@
             public function deleteFile($uuid) {
                 $db = $this->dbName;
 
-                $tmpfs = loadBackend("tmpfs");
-
-                if ($tmpfs) {
-                    try {
-                        $tmpfs->deleteFile($uuid);
-                    } catch (\Exception $e) {
-                        //
-                    }
-                }
-
-                $extfs = loadBackend("extfs");
-
-                if ($extfs) {
-                    try {
-                        $extfs->deleteFile($uuid);
-                    } catch (\Exception $e) {
-                        //
-                    }
-                }
-
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
                 if ($bucket) {
                     try {
-                        $bucket->delete(new \MongoDB\BSON\ObjectId($uuid));
+                        $fileId = $this->objectId($uuid);
+                        $stream = $bucket->openDownloadStream($fileId);
+                        $info = $bucket->getFileDocumentForStream($stream);
+                        $metadata = @$info["metadata"] ? object_to_array($info["metadata"]) : [];
+                        $storage = $this->storageForStoredFile($metadata);
+
+                        if ($storage !== self::STORAGE_GRIDFS) {
+                            $this->storageBackend($storage)->deleteFile($uuid);
+                        }
+
+                        $bucket->delete($fileId);
                         return true;
-                    } catch (\Exception $e) {
+                    } catch (Throwable $e) {
                         setLastError($e->getMessage());
                     }
                 }
@@ -258,8 +327,9 @@
 
                 $cursor = $this->mongo->$db->$collection->find([ "metadata.expire" => [ '$lt' => time() ] ]);
                 foreach ($cursor as $document) {
-                    $this->deleteFile($document->_id);
-                    $c++;
+                    if ($this->deleteFile($document->_id)) {
+                        $c++;
+                    }
                 }
 
                 return $c;
@@ -600,6 +670,7 @@
                                         $file["metadata"] = [];
                                     }
                                     $file["metadata"]["external"] = true;
+                                    $file["metadata"]["storage"] = self::STORAGE_EXTFS;
                                     if (@$file["uploadDate"]) {
                                         $file["metadata"]["realUploadDate"] = $file["uploadDate"];
                                     }

@@ -41,7 +41,6 @@
                 }
 
                 fclose($file);
-                fclose($stream);
 
                 chmod($path, $file_rights);
 

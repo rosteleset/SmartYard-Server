@@ -6,6 +6,9 @@
 
     namespace backends\dvrExports {
 
+        use RuntimeException;
+        use Throwable;
+
         /**
          * mongo dvrExports class
          */
@@ -66,8 +69,9 @@
              */
 
             public function runDownloadRecordTask($recordId) {
-                $config = $this->config;
                 // TODO: добавить удаление старых заданий на скачивание.
+
+                $file = false;
 
                 try {
                     $task = $this->db->get(
@@ -112,33 +116,35 @@
                             ),
                         );
                         $file = fopen($request_url, "r", false, stream_context_create($arrContextOptions));
+                        if (!$file) {
+                            throw new RuntimeException("Failed to open DVR record: $request_url");
+                        }
+
                         $fileId = $files->addFile($task['filename'], $file, [
                             "camId" => $task['cameraId'],
                             "start" => $task['start'],
                             "finish" => $task['finish'],
                             "subscriberId" => $task['subscriberId'],
-                            "expire" => $task['expire']
+                            "expire" => $task['expire'],
+                            "storage" => $this->config["backends"]["dvrExports"]["storage"] ?? "gridfs",
                         ]);
 
-                        if ($file) {
-                            $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
-                            echo "Record download task with id = $recordId was successfully finished!\n";
-                            fclose($file);
-                            return $fileId;
-                        } else {
-                            $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
-                            echo "Record download task with id = $recordId was finished with error code = $code!\n";
-                            return false;
-                        }
+                        $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
+                        echo "Record download task with id = $recordId was successfully finished!\n";
+                        return $fileId;
                     } else {
                         echo "Task with id = $recordId was not found\n";
                         return false;
                     }
-
-
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
+                    $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
                     echo "Record download task with id = $recordId was failed to start\n";
+                    error_log(print_r($e, true));
                     return false;
+                } finally {
+                    if (is_resource($file)) {
+                        fclose($file);
+                    }
                 }
             }
         }

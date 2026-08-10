@@ -17,6 +17,7 @@
             /**
              * $uuid
              * $stream
+             * The caller retains ownership of the stream.
              *
              * return boolean|integer
              */

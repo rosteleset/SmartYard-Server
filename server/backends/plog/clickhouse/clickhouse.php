@@ -8,6 +8,7 @@
 
         use backends\frs\frs;
         use PDO;
+        use Throwable;
 
         /**
          * clickhouse archive class
@@ -20,6 +21,7 @@
             private $max_call_length;  // максимальная длительность звонка в секундах
             private $ttl_temp_record;  // значение, которое прибавляется к текущему времени для получения expire
             private $ttl_camshot_days;  // время жизни кадра события
+            private $camshot_storage;
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
             private $cron_process_events_scheduler;
             private $http_timeout;  // timeout for file_get_contents
@@ -42,6 +44,7 @@
                 $this->max_call_length = $config['backends']['plog']['max_call_length'];
                 $this->ttl_temp_record = $config['backends']['plog']['ttl_temp_record'];
                 $this->ttl_camshot_days = $config['backends']['plog']['ttl_camshot_days'];
+                $this->camshot_storage = $config['backends']['plog']['camshot_storage'] ?? 'gridfs';
                 $this->back_time_shift_video_shot = $config['backends']['plog']['back_time_shift_video_shot'];
                 $this->cron_process_events_scheduler = $config['backends']['plog']['cron_process_events_scheduler'];
                 $this->http_timeout = $config['backends']['plog']['http_timeout'] ?? 3;  // default 3 seconds
@@ -114,6 +117,7 @@
                                                 [
                                                     "contentType" => $content_type,
                                                     "expire" => time() + $this->ttl_camshot_days * 86400,
+                                                    "storage" => $this->camshot_storage,
                                                 ]
                                             ));
                                             $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
@@ -146,6 +150,7 @@
                                                 [
                                                     "contentType" => $content_type,
                                                     "expire" => time() + $this->ttl_camshot_days * 86400,
+                                                    "storage" => $this->camshot_storage,
                                                 ]
                                             ));
                                             $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
@@ -179,6 +184,8 @@
                         }
 
                         if (!isset($camshot_data[self::COLUMN_PREVIEW])) {
+                            $filename = false;
+
                             try {
                                 //получение кадра с DVR-серевера, если нет кадра от FRS
                                 $prefix = $cameras[0]["dvrStream"];
@@ -197,15 +204,27 @@
                                             stream_context_create(["http" => ["timeout" => $this->http_timeout]])));
                                     }
                                     if (file_exists($filename)) {
-                                        $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
-                                            "camshot",
-                                            fopen($filename, 'rb'),
-                                            [
-                                                "contentType" => "image/jpeg",
-                                                "expire" => time() + $this->ttl_camshot_days * 86400,
-                                            ]
-                                        ));
-                                        unlink($filename);
+                                        $camshot_stream = fopen($filename, "rb");
+                                        if (!$camshot_stream) {
+                                            throw new \RuntimeException("Failed to open camshot file: $filename");
+                                        }
+
+                                        try {
+                                            $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
+                                                "camshot",
+                                                $camshot_stream,
+                                                [
+                                                    "contentType" => "image/jpeg",
+                                                    "expire" => time() + $this->ttl_camshot_days * 86400,
+                                                    "storage" => $this->camshot_storage,
+                                                ]
+                                            ));
+                                        } finally {
+                                            if (is_resource($camshot_stream)) {
+                                                fclose($camshot_stream);
+                                            }
+                                        }
+
                                         $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_DVR;
                                     } else {
                                         $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
@@ -218,11 +237,15 @@
                                 } else {
                                     $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                                 }
-                            } catch (\Exception $e) {
+                            } catch (Throwable $e) {
                                 unset($camshot_data[self::COLUMN_IMAGE_UUID]);
                                 unset($camshot_data[self::COLUMN_FACE]);
                                 $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                                 error_log(print_r($e, true));
+                            } finally {
+                                if ($filename && file_exists($filename)) {
+                                    unlink($filename);
+                                }
                             }
                         }
                     }

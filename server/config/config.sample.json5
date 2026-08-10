@@ -184,6 +184,9 @@
             // your time to live in days for camshots (hint 60 - approx. two months)
             "ttl_camshot_days": 60,
 
+            // camshot content storage: gridfs or tmpfs
+            "camshot_storage": "gridfs",
+
             // your back time shift in seconds for receiving video shot from media server (hint 3)
             "back_time_shift_video_shot": 3,
 
@@ -224,6 +227,8 @@
         "dvrExports": {
             "backend": "mongo",
             "dvr_files_ttl": 259200,
+            // exported video content storage: gridfs or tmpfs
+            "storage": "gridfs",
         },
 
         "sip": {
@@ -351,7 +356,6 @@
             "path": "/tmp/tmpfs",
             "path_rights": "777",
             "file_rights": "777",
-            "ttl_max": "3day",
         },
 
         "extfs": {

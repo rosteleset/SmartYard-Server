@@ -1,3 +1,28 @@
+# 2026-08-10
+
+MongoDB GridFS is now the default content storage for event snapshots and DVR exports.
+The presence of the `tmpfs` backend no longer redirects expiring files to the filesystem automatically.
+
+To store new files in `tmpfs`, configure it explicitly:
+
+```json5
+{
+    "backends": {
+        "plog": {
+            "camshot_storage": "tmpfs"
+        },
+        "dvrExports": {
+            "storage": "tmpfs"
+        }
+    }
+}
+```
+
+Existing files are not migrated. Legacy files already stored in `tmpfs` remain readable through their MongoDB metadata.
+Keep the `backends.tmpfs` section configured until those files have expired;
+removing it earlier makes their content unavailable. The `tmpfs.ttl_max` option is no longer used.
+File expiration is controlled by each file's `metadata.expire` value.
+
 # 2026-07-02
 
 Ufanet Zabbix monitoring templates have been updated and are now used by Ufanet Secret Mini and Secret Solo.
