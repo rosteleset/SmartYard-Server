@@ -22,6 +22,7 @@
 + added explicit storage selection for event snapshots and DVR exports
 # removed tmpfs.ttl_max; file expiration is now controlled by metadata.expire
 - made stream and temporary file cleanup reliable on failures for DVR exports and DVR-backed event snapshots
+- enabled outgoing call cancellation with hardware buttons on Akuvox-compatible intercoms
 ```
 
 ## v1.0.0

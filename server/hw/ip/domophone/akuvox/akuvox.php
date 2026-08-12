@@ -117,8 +117,7 @@ abstract class akuvox extends domophone
             'target' => 'sip',
             'action' => 'set',
             'data' => [
-                // Disable hangup with button, call event may be corrupted when enabled
-                'Config.Features.DOORPHONE.EnableButtonHangup' => '0',
+                'Config.Features.DOORPHONE.EnableButtonHangup' => '1',
                 'Config.Account1.GENERAL.AuthName' => $login,
                 'Config.Account1.GENERAL.DisplayName' => $login,
                 'Config.Account1.GENERAL.Enable' => '1',
