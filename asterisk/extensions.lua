@@ -471,15 +471,37 @@ function handleOtherCases(context, extension)
         app.Ringing()
         app.Progress()
 
-        -- sokol's crutch
-        -- TODO: delete after fixing SIP numbers for flats
+        -- Legacy Sokol panels dial the apartment number instead of its SIP number.
         if extension:len() < 5 and not extension:find('#', 1, true) then
-            logDebug("bad extension, replacing...")
-            local flats = dm("apartment", {
-                domophoneId = domophoneId,
-                flatNumber = tonumber(extension),
-            })
-            extension = string.format("1%09d", flats[1].flatId)
+            local apartmentNumber = tonumber(extension)
+            local flats = false
+
+            if apartmentNumber ~= nil then
+                flats = dm("apartment", {
+                    domophoneId = domophoneId,
+                    flatNumber = apartmentNumber,
+                })
+            end
+
+            local flat = type(flats) == "table" and #flats == 1 and flats[1] or nil
+            local legacySokol = false
+
+            if flat and type(flat.entrances) == "table" then
+                for _, entrance in ipairs(flat.entrances) do
+                    if tonumber(entrance.domophoneId) == domophoneId
+                        and (entrance.domophoneModel == "iscomx1.json"
+                            or entrance.domophoneModel == "iscomx1plus.json") then
+                        legacySokol = true
+                        break
+                    end
+                end
+            end
+
+            if legacySokol then
+                local flatExtension = string.format("1%09d", flat.flatId)
+                logDebug("legacy Sokol apartment number resolved: " .. extension .. " -> " .. flatExtension)
+                extension = flatExtension
+            end
         end
 
         -- 1000049796, length == 10, first digit == 1 - it's a flatId

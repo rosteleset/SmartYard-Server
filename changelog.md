@@ -23,6 +23,7 @@
 # removed tmpfs.ttl_max; file expiration is now controlled by metadata.expire
 - made stream and temporary file cleanup reliable on failures for DVR exports and DVR-backed event snapshots
 - enabled outgoing call cancellation with hardware buttons on Akuvox-compatible intercoms
+- limited short apartment number fallback in the Asterisk dialplan to legacy Sokol intercoms
 ```
 
 ## v1.0.0
