@@ -11,6 +11,23 @@ Backends that inherit the implementation from `households/internal` require no c
 
 # 2026-08-10
 
+## Households path tree contract
+
+The `households` path tree contract has changed to support camera visibility by flat:
+
+```php
+addRootPathNode($tree, $text, $icon, $type = "list", $visibleForFlats = null)
+addPathNode($parentId, $text, $icon, $type = "list", $visibleForFlats = null)
+modifyPathNode($nodeId, $text, $icon, $type = null, $visibleForFlats = false)
+getPathVisibleForFlats($nodeId)
+```
+
+Custom backends that directly extend the abstract `households` backend must update the three method signatures
+and implement `getPathVisibleForFlats()` or they will fail to load.
+Backends that extend `households/internal` inherit these changes and require no updates.
+
+## File storage
+
 MongoDB GridFS is now the default content storage for event snapshots and DVR exports.
 The presence of the `tmpfs` backend no longer redirects expiring files to the filesystem automatically.
 
