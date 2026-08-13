@@ -1725,12 +1725,14 @@
              * @inheritDoc
              */
 
-            public function addSubscriber($mobile, $name = '', $patronymic = '', $last = '', $flatId = false, $message = false) {
+            public function addSubscriber($mobile, $name = '', $patronymic = '', $last = '', $flatId = false, $message = false, $owner = false) {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ]) ||
                     !checkStr($name, [ "maxLength" => 32 ]) ||
                     !checkStr($patronymic, [ "maxLength" => 32 ]) ||
-                    !checkStr($last, [ "maxLength" => 32 ])
+                    !checkStr($last, [ "maxLength" => 32 ]) ||
+                    !checkInt($owner) ||
+                    !in_array($owner, [ 0, 1 ], true)
                 ) {
                     setLastError("invalidParams");
                     return false;
@@ -1793,9 +1795,10 @@
                         }
                     }
 
-                    if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, 1)", [
+                    if (!$this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
+                        "role" => $owner ? 0 : 1,
                     ])) {
                         return false;
                     }

@@ -15,6 +15,7 @@
      * @apiBody {String} subscriberPatronymic
      * @apiBody {String} subscriberLast
      * @apiBody {Number} flatId
+     * @apiBody {Boolean} [owner=false]
      * @apiBody {String} message
      *
      * @apiSuccess {Object[]} rfs
@@ -90,7 +91,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $subscriberId = $households->addSubscriber($params["mobile"], $params["subscriberName"], $params["subscriberPatronymic"], $params["subscriberLast"], @$params["flatId"], @$params["message"]);
+                $subscriberId = $households->addSubscriber($params["mobile"], $params["subscriberName"], $params["subscriberPatronymic"], $params["subscriberLast"], @$params["flatId"], @$params["message"], @$params["owner"]);
 
                 return api::ANSWER($subscriberId, ($subscriberId !== false) ? "subscriber" : false);
             }

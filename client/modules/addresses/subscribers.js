@@ -152,6 +152,12 @@
                     title: i18n("addresses.subscriberLast"),
                     placeholder: i18n("addresses.subscriberLast"),
                 },
+                {
+                    id: "owner",
+                    type: "yesno",
+                    title: i18n("addresses.subscriberFlatOwner"),
+                    value: "0",
+                },
             ],
             callback: function (result) {
                 let params = hashParse("params");

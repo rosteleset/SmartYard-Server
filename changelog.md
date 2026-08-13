@@ -24,6 +24,7 @@
 - made stream and temporary file cleanup reliable on failures for DVR exports and DVR-backed event snapshots
 - enabled outgoing call cancellation with hardware buttons on Akuvox-compatible intercoms
 - limited short apartment number fallback in the Asterisk dialplan to legacy Sokol intercoms
++ added owner selection when adding a subscriber to a flat in the web UI
 ```
 
 ## v1.0.0

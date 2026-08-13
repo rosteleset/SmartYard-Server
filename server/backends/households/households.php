@@ -305,7 +305,7 @@
              * @return boolean|integer
              */
 
-            abstract public function addSubscriber($mobile, $name = '', $patronymic = '', $last = '', $flatId = false, $message = false);
+            abstract public function addSubscriber($mobile, $name = '', $patronymic = '', $last = '', $flatId = false, $message = false, $owner = false);
 
             /**
              * @param $subscriberId

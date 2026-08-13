@@ -1,3 +1,14 @@
+# 2026-08-13
+
+The `households::addSubscriber()` method now accepts an optional seventh `$owner` argument:
+
+```php
+addSubscriber($mobile, $name, $patronymic, $last, $flatId, $message, $owner = false)
+```
+
+Custom `households` backends that override this method must update their method signature.
+Backends that inherit the implementation from `households/internal` require no changes.
+
 # 2026-08-10
 
 MongoDB GridFS is now the default content storage for event snapshots and DVR exports.
