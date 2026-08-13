@@ -10,6 +10,12 @@
 ## devel
 
 ```diff
+
+```
+
+## v1.1.0
+
+```diff
 + added mobile API customization hooks
 - reduced redundant database writes by throttling mobile device metadata updates during authorization
 + expanded Akuvox event service syslog filtering to remove recurring diagnostic noise
