@@ -73,8 +73,11 @@
              */
 
             public function getDVRTokenForCam($cam, $subscriberId) {
-                // Implemetnation for static token for dvr server written in config
-                // You should override this method, if you have dynamic tokens or have unique static tokens for every subscriber
+                return $this->getDVRServiceTokenForCam($cam);
+            }
+
+            protected function getDVRServiceTokenForCam($cam) {
+                // Implementation for a static token configured for the DVR server.
 
                 $dvrServer = $this->getDVRServerForCam($cam);
 
@@ -552,8 +555,10 @@
                 default:
                     // Flussonic Server by default
                     $url = "$prefix/$time-preview.mp4";
-                    if (isset($dvr['token']) && strlen($dvr['token']) !== 0)
-                        $url = $url . "?token=" . $dvr['token'];
+                    $flussonic_token = $this->getDVRServiceTokenForCam($cam);
+                    if ($flussonic_token !== '') {
+                        $url .= "?token=" . $flussonic_token;
+                    }
                     return $url;
                 }
                 return false;
