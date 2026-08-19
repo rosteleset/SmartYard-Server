@@ -1421,11 +1421,11 @@
                                 ["/SIP UA event: CALL_INCOMING/", false, false, false, -1], // Incoming call message
                                 ["/call number: (\d+)/", true, false, false, 1],
                                 ["/STAT\/CALLGATE: (\d+)/", true, false, false, 1],
-                                ["/SIP UA event: CALL_OUTGOING \( sip:(\d+)@.*\)/", true, false, false, 1],
-                                ["/SIP UA event: CALL_RINGING \( sip:(\d+)@.*\)/", true, false, false, 1],
+                                ["/SIP UA event: CALL_OUTGOING\b/", true, false, false, 1],
+                                ["/SIP UA event: CALL_RINGING\b/", true, false, false, 1],
                                 // ["/TELE\/NUMBER: (\d+)/", true, false, false, 0],
-                                ["/SIP UA event: CALL_ANSWERED \( sip:(\d+)@.*\)/", false, true, false, 1],
-                                ["/SIP UA event: CALL_ESTABLISHED \( sip:(\d+)@.*\)/", false, true, false, 0],
+                                ["/SIP UA event: CALL_ANSWERED\b/", false, true, false, 1],
+                                ["/SIP UA event: CALL_ESTABLISHED\b/", false, true, false, 0],
                                 ["/pickup 1/", false, true, false, 0],
                                 ["/DTMF/", false, false, true, 1],
                                 ["/STAT\/DOOR1: 1/" , false, false, true, 0], // TODO: no info about opening with CMS handset
@@ -1450,8 +1450,8 @@
                                 }
 
                                 // Search for SIP number
-                                if (preg_match('/sip:(\d+)@/', $msg, $match)) {
-                                    $sipNumber = $match[1];
+                                if (preg_match_all('/sip:(\d+)@/', $msg, $matches)) {
+                                    $sipNumber = end($matches[1]);
                                     $numberLen = strlen($sipNumber);
 
                                     // Ordinary panel - apartment ID

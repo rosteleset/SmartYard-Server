@@ -25,9 +25,10 @@ class UfanetService extends SyslogService {
 
         // Outgoing call
         if (message.includes('CALL_OUTGOING')) {
-            const sipNumber = message.split('sip:')[1].split('@')[0];
+            const sipMatches = [...message.matchAll(/sip:(\d+)@/g)];
+            const sipNumber = sipMatches.at(-1)?.[1];
 
-            if (sipNumber.length === 10) { // Normal mode
+            if (sipNumber?.length === 10) { // Normal mode
                 this.lastCall[host] = {
                     ip: host,
                     apartmentId: parseInt(sipNumber.substring(1)),
