@@ -6,9 +6,76 @@
 
     namespace backends\dvr {
 
-        use DateInterval;
-
         class internal extends dvr {
+
+            private function getForpostTokenParams($dvr) {
+                if (!@$dvr['token']) {
+                    return [];
+                }
+
+                parse_str($dvr['token'], $params);
+                return is_array($params) ? $params : [];
+            }
+
+            private function getForpostAuthParams($dvr) {
+                if (@$dvr['login'] && @$dvr['password']) {
+                    return [
+                        "AdminLogin" => $dvr['login'],
+                        "AdminPassword" => $dvr['password'],
+                    ];
+                }
+
+                $token_params = $this->getForpostTokenParams($dvr);
+                if (@$token_params['AdminLogin'] && @$token_params['AdminPassword']) {
+                    return [
+                        "AdminLogin" => $token_params['AdminLogin'],
+                        "AdminPassword" => $token_params['AdminPassword'],
+                    ];
+                }
+
+                return [];
+            }
+
+            private function getForpostCamParams($cam) {
+                $parsed_url = parse_url($cam['dvrStream']);
+                $params = [];
+
+                if (isset($parsed_url['query'])) {
+                    parse_str($parsed_url['query'], $params);
+                }
+
+                return $params;
+            }
+
+            private function getForpostApiUrl($dvr, $path) {
+                $parsed_url = parse_url($dvr['url']);
+                $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                $host = $parsed_url['host'] ?? '';
+                $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+
+                return "$scheme$host$port$path";
+            }
+
+            private function forpostSystemApi($cam, $dvr, $path, $params = []) {
+                $request_params = array_merge(
+                    $this->getForpostTokenParams($dvr),
+                    $this->getForpostAuthParams($dvr),
+                    $this->getForpostCamParams($cam),
+                    $params
+                );
+
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_POST, 1);
+                curl_setopt($curl, CURLOPT_URL, $this->getForpostApiUrl($dvr, $path));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $request_params);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+                $response = json_decode(curl_exec($curl), true);
+                curl_close($curl);
+
+                return $response;
+            }
 
             function getRangesForNimble($host, $port, $stream, $token) {
 
@@ -85,6 +152,18 @@
 
                 if ($dvrServer) {
                     $result = strval(@$dvrServer['token'] ?: '');
+                }
+
+                if (@$dvrServer['type'] == 'forpost') {
+                    // Клиентский token целиком (AdminLogin, UserLogin, Format=HLS и т.д.)
+                    if (@$dvrServer['token']) {
+                        return strval($dvrServer['token']);
+                    }
+
+                    $auth = $this->getForpostAuthParams($dvrServer);
+                    if (@$auth['AdminLogin'] && @$auth['AdminPassword']) {
+                        return 'AdminLogin=' . $auth['AdminLogin'] . '&AdminPassword=' . $auth['AdminPassword'];
+                    }
                 }
 
                 // Если токен явно присутствует в DVR-URL Flussonic, то используем его.
@@ -375,29 +454,14 @@
                         $tz = new \DateTimeZone($tz_string);
                         $tz_offset = $tz->getOffset(new \DateTime('now'));
 
-                        $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
-                        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-                        $host = $parsed_url['host'] ?? '';
-                        $path = '/system-api/GetDownloadURL';
-                        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-                        $url = "$scheme$host$port$path";
-
-                        parse_str($parsed_url["query"], $params);
+                        $params = $this->getForpostCamParams($cam);
                         unset($params["Format"]);
                         $params["Container"] = "mp4";
                         $params["TS"] = $start;
                         $params["TZ"] = $tz_offset;
-                        $params["Duration"] = ceil(($finish - $start) / 60) ;
+                        $params["Duration"] = ceil(($finish - $start) / 60);
 
-                        $curl = curl_init();
-                        curl_setopt($curl, CURLOPT_POST, 1);
-                        curl_setopt($curl, CURLOPT_URL, $url);
-                        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                        $response = json_decode(curl_exec($curl), true);
-                        curl_close($curl);
+                        $response = $this->forpostSystemApi($cam, $dvr, '/system-api/GetDownloadURL', $params);
                         $attempts_count = 300;
                         $file_url = @$response["URL"] ?? false;
                         while($attempts_count > 0) {
@@ -528,27 +592,11 @@
                     $tz = new \DateTimeZone($tz_string);
                     $tz_offset = $tz->getOffset(new \DateTime('now'));
 
-                    $parsed_url = parse_url($cam['dvrStream'] . "&" . $dvr["token"]);
-                    $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-                    $host = $parsed_url['host'] ?? '';
-                    $path = '/system-api/GetTranslationURL';
-                    $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-                    $url = "$scheme$host$port$path";
-
-                    parse_str($parsed_url["query"], $params);
-                    $params["Format"] = "JPG";
-                    $params["TS"] = $time;
-                    $params["TZ"] = $tz_offset;
-
-                    $curl = curl_init();
-                    curl_setopt($curl, CURLOPT_POST, 1);
-                    curl_setopt($curl, CURLOPT_URL, $url);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                    $response = json_decode(curl_exec($curl), true);
-                    curl_close($curl);
+                    $response = $this->forpostSystemApi($cam, $dvr, '/system-api/GetTranslationURL', [
+                        "Format" => "JPG",
+                        "TS" => $time,
+                        "TZ" => $tz_offset,
+                    ]);
 
                     return @$response["URL"] ?: false;
 
@@ -629,12 +677,44 @@
                     // Client uses direct request for ranges
                     return [];
                 } elseif ($dvr['type'] == 'forpost') {
-                    // Forpost
-                    // TODO: Here you need to implement of obtaining available DVR ranges from Forpost media server.
-                    $ranges = [];
-                    $duration_interval = DateInterval::createFromDateString('10 days');
-                    $ranges[] = [ "from" => date_sub(date_create(), $duration_interval)->getTimestamp(), "duration" => 10*24*3600 ];
-                    return [ [ "stream" => "forpost", "ranges" => $ranges] ];
+                    $cam_params = $this->getForpostCamParams($cam);
+                    $camera_id = @$cam_params["CameraID"] ?: false;
+                    if (!$camera_id) {
+                        return [];
+                    }
+
+                    $last_record_response = $this->forpostSystemApi($cam, $dvr, '/system-api/GetCameraLastRecordTime', [
+                        "CameraID" => $camera_id,
+                    ]);
+                    $last_record_time = @$last_record_response["LastRecordTime"] ?: false;
+                    if (!$last_record_time) {
+                        return [];
+                    }
+
+                    $account_id = isset($dvr['accountid']) ? $dvr['accountid'] : 1;
+
+                    $cameras_response = $this->forpostSystemApi($cam, $dvr, '/system-api/GetCameras', [
+                        "AccountID" => $account_id,
+                        "ID" => $camera_id,
+                    ]);
+                    $forpost_cam = is_array($cameras_response)
+                        ? (isset($cameras_response["Quota"]) ? $cameras_response : ($cameras_response[0] ?? false))
+                        : false;
+                    $quota = @$forpost_cam["Quota"] ?: false;
+                    if (!$quota) {
+                        return [];
+                    }
+
+                    $from = $last_record_time - $quota;
+                    if ($from < 0) {
+                        $quota = $last_record_time;
+                        $from = 0;
+                    }
+
+                    return [[
+                        "stream" => strval($camera_id),
+                        "ranges" => [[ "from" => $from, "duration" => $quota ]],
+                    ]];
                 } else {
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
