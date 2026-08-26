@@ -1,6 +1,32 @@
 {
     "about": "RoBoT",
     "systemInfo": "System info",
+    "statistics": "Statistics",
+    "flatsStats": "Flats statistics",
+    "subscribers": "Connected users",
+    "flats": "Flats",
+    "flatsTotal": "Total",
+    "flatsWithSubscribers": "With subscribers",
+    "flatsWithoutSubscribers": "Without subscribers",
+    "blockedFlats": "Blocked",
+    "equipment": "Equipment",
+    "domophones": "Intercoms",
+    "cameras": "Cameras",
+    "keys": "Keys",
+    "keysTotal": "Total",
+    "keysUniversal": "Superkeys",
+    "keysSubscriber": "Tenant",
+    "keysFlat": "Flat",
+    "keysEntrance": "Entrance",
+    "keysHouse": "House",
+    "keysCompany": "Company",
+    "devices": "Devices",
+    "devicesTotal": "Total",
+    "devicesAndroid": "Android",
+    "devicesIos": "iOS",
+    "devicesWeb": "Web",
+    "devicesOther": "Other",
+    "devicesWithoutFlats": "Not linked to a flat",
     "hostname": "Hostname",
     "os": "OS",
     "php": "PHP version",
@@ -45,6 +71,10 @@
             "systemInfo": {
                 "_title": "System information",
                 "GET": "System information"
+            },
+            "statistics": {
+                "_title": "Statistics",
+                "GET": "Statistics"
             }
         }
     }

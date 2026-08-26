@@ -1,6 +1,32 @@
 {
     "about": "RoBoT",
     "systemInfo": "Системная информация",
+    "statistics": "Статистика",
+    "flatsStats": "Статистика по квартирам",
+    "subscribers": "Подключённые пользователи",
+    "flats": "Квартиры",
+    "flatsTotal": "Всего",
+    "flatsWithSubscribers": "С абонентами",
+    "flatsWithoutSubscribers": "Без абонентов",
+    "blockedFlats": "Заблокированные",
+    "equipment": "Оборудование",
+    "domophones": "Домофоны",
+    "cameras": "Камеры",
+    "keys": "Ключи",
+    "keysTotal": "Всего",
+    "keysUniversal": "Суперключи",
+    "keysSubscriber": "Жильца",
+    "keysFlat": "Квартиры",
+    "keysEntrance": "Подъезда",
+    "keysHouse": "Дома",
+    "keysCompany": "Компании",
+    "devices": "Устройства",
+    "devicesTotal": "Всего",
+    "devicesAndroid": "Android",
+    "devicesIos": "iOS",
+    "devicesWeb": "Web",
+    "devicesOther": "Прочие",
+    "devicesWithoutFlats": "Без привязки к квартире",
     "hostname": "Имя сервера",
     "os": "ОС",
     "php": "Версия PHP",
@@ -45,6 +71,10 @@
             "systemInfo": {
                 "_title": "Системная информация",
                 "GET": "Системная информация"
+            },
+            "statistics": {
+                "_title": "Статистика",
+                "GET": "Статистика"
             }
         }
     }
