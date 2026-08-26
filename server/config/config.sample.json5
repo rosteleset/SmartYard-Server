@@ -378,7 +378,9 @@
         },
 
         "statistics": {
-            "backend": "internal"
+            "backend": "internal",
+            "inactiveDeviceDays": 30,
+            "cacheTtl": 300,
         },
 
         "ud363": {

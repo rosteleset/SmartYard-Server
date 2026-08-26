@@ -17,6 +17,39 @@
              */
 
             public function statistics() {
+                $inactiveDeviceDays = (int)(@$this->bconfig["inactiveDeviceDays"] ?: 30);
+                if ($inactiveDeviceDays < 1) {
+                    $inactiveDeviceDays = 30;
+                }
+
+                $cacheTtl = (int)($this->bconfig["cacheTtl"] ?? 300);
+                $cacheKey = "CACHE:STATISTICS:DATA:" . $inactiveDeviceDays;
+
+                if ($cacheTtl > 0) {
+                    $cached = $this->redis->get($cacheKey);
+                    if ($cached) {
+                        $data = json_decode($cached, true);
+                        if (is_array($data)) {
+                            return $data;
+                        }
+                    }
+                }
+
+                $data = $this->collectStatistics($inactiveDeviceDays);
+
+                if ($cacheTtl > 0 && is_array($data)) {
+                    $this->redis->setex($cacheKey, $cacheTtl, json_encode($data));
+                }
+
+                return $data;
+            }
+
+            /**
+             * @param int $inactiveDeviceDays
+             * @return array|false
+             */
+
+            private function collectStatistics($inactiveDeviceDays) {
                 $households = loadBackend("households");
                 $cameras = loadBackend("cameras");
                 $addresses = loadBackend("addresses");
@@ -76,10 +109,22 @@
                 $devicesWeb = 0;
                 $devicesOther = 0;
                 $devicesWithoutFlats = 0;
+                $devicesWithoutPush = 0;
+                $devicesInactive = 0;
+                $inactiveBefore = time() - ($inactiveDeviceDays * 86400);
 
                 foreach ($devicesById as $device) {
                     if (!is_array(@$device["flats"]) || !count($device["flats"])) {
                         $devicesWithoutFlats++;
+                    }
+
+                    if (trim((string)(@$device["pushToken"] ?? "")) === "") {
+                        $devicesWithoutPush++;
+                    }
+
+                    $lastSeen = (int)(@$device["lastSeen"] ?: 0);
+                    if ($lastSeen < $inactiveBefore) {
+                        $devicesInactive++;
                     }
 
                     if ($device["platform"] === null || $device["platform"] === "") {
@@ -105,6 +150,20 @@
 
                 $domophones = $households->getDomophones("all") ?: [];
                 $cameraList = $cameras->getCameras() ?: [];
+
+                $domophonesDisabled = 0;
+                foreach ($domophones as $domophone) {
+                    if (!(int)(@$domophone["enabled"])) {
+                        $domophonesDisabled++;
+                    }
+                }
+
+                $camerasDisabled = 0;
+                foreach ($cameraList as $camera) {
+                    if (!(int)(@$camera["enabled"])) {
+                        $camerasDisabled++;
+                    }
+                }
 
                 $keysById = [];
                 $addKeys = function ($keys) use (&$keysById) {
@@ -178,7 +237,9 @@
                     "flatsWithoutSubscribers" => $flatsWithoutSubscribers,
                     "blockedFlats" => $blockedFlats,
                     "domophones" => count($domophones),
+                    "domophonesDisabled" => $domophonesDisabled,
                     "cameras" => count($cameraList),
+                    "camerasDisabled" => $camerasDisabled,
                     "keys" => count($keysById),
                     "keysUniversal" => $keysUniversal,
                     "keysSubscriber" => $keysSubscriber,
@@ -191,7 +252,10 @@
                     "devicesIos" => $devicesIos,
                     "devicesWeb" => $devicesWeb,
                     "devicesOther" => $devicesOther,
+                    "devicesWithoutPush" => $devicesWithoutPush,
                     "devicesWithoutFlats" => $devicesWithoutFlats,
+                    "devicesInactive" => $devicesInactive,
+                    "inactiveDeviceDays" => $inactiveDeviceDays,
                 ];
             }
         }

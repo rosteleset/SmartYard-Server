@@ -93,8 +93,11 @@
                             ${row(i18n("about.blockedFlats"), s.blockedFlats)}
                         `)}
                         ${card("teal", i18n("about.equipment"), `
-                            ${row(i18n("about.domophones"), s.domophones)}
-                            ${row(i18n("about.cameras"), s.cameras)}
+                            ${row(i18n("about.domophones"), s.domophones, true)}
+                            ${row(i18n("about.cameras"), s.cameras, true)}
+                            <hr class="my-2" />
+                            ${row(i18n("about.domophonesDisabled"), s.domophonesDisabled)}
+                            ${row(i18n("about.camerasDisabled"), s.camerasDisabled)}
                         `)}
                         ${card("navy", i18n("about.keys"), `
                             ${row(i18n("about.keysTotal"), s.keys, true)}
@@ -111,7 +114,10 @@
                             ${row(i18n("about.devicesIos"), s.devicesIos)}
                             ${row(i18n("about.devicesWeb"), s.devicesWeb)}
                             ${row(i18n("about.devicesOther"), s.devicesOther)}
+                            <hr class="my-2" />
+                            ${row(i18n("about.devicesWithoutPush"), s.devicesWithoutPush)}
                             ${row(i18n("about.devicesWithoutFlats"), s.devicesWithoutFlats)}
+                            ${row(i18n("about.devicesInactive", s.inactiveDeviceDays ?? 30), s.devicesInactive)}
                         `)}
                     </div>
                 </div>
