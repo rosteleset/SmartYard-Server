@@ -377,6 +377,10 @@
             "backend": "internal"
         },
 
+        "statistics": {
+            "backend": "internal"
+        },
+
         "ud363": {
             "backend": "internal",
             "path": "/tmp/ud363",
