@@ -72,6 +72,46 @@
             abstract public function getDetailEventsByDay(int $flat_id, string $date);
 
             /**
+             * @param int $entrance_id
+             * @param mixed $filter_events
+             * @return false|array
+             */
+
+            public function getEventsDaysByEntrance(int $entrance_id, $filter_events) {
+                return false;
+            }
+
+            /**
+             * @param int $entrance_id
+             * @param string $date
+             * @return false|array
+             */
+
+            public function getDetailEventsByDayAndEntrance(int $entrance_id, string $date) {
+                return false;
+            }
+
+            /**
+             * @param int $house_id
+             * @param mixed $filter_events
+             * @return false|array
+             */
+
+            public function getEventsDaysByHouse(int $house_id, $filter_events) {
+                return false;
+            }
+
+            /**
+             * @param int $house_id
+             * @param string $date
+             * @return false|array
+             */
+
+            public function getDetailEventsByDayAndHouse(int $house_id, string $date) {
+                return false;
+            }
+
+            /**
              * Get event's detail by UUID
              * @param string $uuid
              *

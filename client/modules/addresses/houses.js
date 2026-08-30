@@ -3239,6 +3239,14 @@
                             modules.addresses.houses.addFlat(houseId);
                         },
                     },
+                    altButton: {
+                        caption: i18n("addresses.housePlog"),
+                        icon: "fas fa-history",
+                        click: () => {
+                            let label = modules.addresses.houses.meta.house ? modules.addresses.houses.meta.house.house : houseId;
+                            modules.addresses.flatPlog.modalHousePlog(houseId, label);
+                        },
+                    },
                 },
                 edit: flatId => {
                     modules.addresses.houses.modifyFlat(flatId, houseId, true);
@@ -3378,6 +3386,21 @@
                                             }, 500);
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-history",
+                                        title: i18n("addresses.flatPlog"),
+                                        click: flatId => {
+                                            for (let i in modules.addresses.houses.meta.flats) {
+                                                if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
+                                                    modules.addresses.flatPlog.modalFlatPlog(flatId, modules.addresses.houses.meta.flats[i].flat);
+                                                    break;
+                                                }
+                                            }
+                                        },
                                     },
                                 ],
                             },
@@ -3527,6 +3550,13 @@
                                         title: i18n("addresses.keys"),
                                         click: entranceId => {
                                             window.location.href = "?#addresses.keys&query=" + entranceId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull) + "&backStrPlus=" + encodeURIComponent(entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hashParse("hash"));
+                                        },
+                                    },
+                                    {
+                                        icon: "fas fa-history",
+                                        title: i18n("addresses.entrancePlog"),
+                                        click: entranceId => {
+                                            modules.addresses.flatPlog.modalEntrancePlog(entranceId, entrances[entranceId].entrance, houseId);
                                         },
                                     },
                                 ],

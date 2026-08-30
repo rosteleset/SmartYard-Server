@@ -605,15 +605,13 @@
 
         cardTable({
             target: "#altForm",
+            dropDownLeft: true,
             title: {
                 caption: i18n("addresses.keys"),
                 button: params.flatId ? {
                     caption: i18n("addresses.addKey"),
                     click: modules.addresses.subscribers.addKey,
                 } : false,
-            },
-            edit: keyId => {
-                modules.addresses.subscribers.modifyKey(keyId, list);
             },
             columns: [
                 {
@@ -656,6 +654,34 @@
                                 data: list[i].comments,
                             },
                         ],
+                        dropDown: {
+                            items: [
+                                {
+                                    icon: "far fa-edit",
+                                    title: i18n("edit"),
+                                    click: keyId => {
+                                        modules.addresses.subscribers.modifyKey(keyId, list);
+                                    },
+                                },
+                                {
+                                    icon: "fas fa-history",
+                                    title: i18n("addresses.keyEvents"),
+                                    click: keyId => {
+                                        for (let j in list) {
+                                            if (list[j].keyId == keyId) {
+                                                modules.addresses.flatPlog.modalKeyPlog(
+                                                    params.flatId,
+                                                    list[j].rfId,
+                                                    list[j].comments || list[j].rfId,
+                                                    params.flat,
+                                                );
+                                                break;
+                                            }
+                                        }
+                                    },
+                                },
+                            ],
+                        },
                     });
                 }
 
