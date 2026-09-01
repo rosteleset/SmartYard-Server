@@ -697,7 +697,7 @@
                 }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text: text,
+                    text: `#${response.cameras.cameras[i].cameraId} - ${text}`,
                 });
             }
 
