@@ -12,6 +12,13 @@
 ```diff
 - fixed authenticated snapshot URL generation for Flussonic and Sesame DVR servers when secure_token is configured
 + added a DVR service-token customization hook for requests outside a subscriber context
+- fixed SIP event parsing for the updated Ufanet log format
++ added archive range support for Forpost media servers
++ documented bulk installation and activation of event services
++ added Postman API collections
++ increased the maximum height of Select2 dropdowns
+- fixed house state corruption after closing the add-camera form without saving
++ added camera and intercom IDs to device dropdowns and search
 ```
 
 ## v1.1.0
