@@ -3630,7 +3630,6 @@
     addCamera: function (houseId) {
         GET("cameras", "cameras", false, true).
         done(response => {
-            modules.addresses.houses.meta = response.cameras;
             let cameras = [];
 
             for (let i in response.cameras.cameras) {
