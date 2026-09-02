@@ -844,7 +844,13 @@
             abstract public function getSubscriberGroups($subscriberId, $flatId): array;
 
             /**
-             * @param $groupId
+             * @param $subscriberGroupId
+             * @return ?string
+             */
+            abstract function getSubscriberGroupById($subscriberGroupId): ?string;
+
+            /**
+             * @param $subscriberGroupId
              * @param $subscriberId
              * @return bool
              */

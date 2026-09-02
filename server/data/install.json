@@ -301,5 +301,8 @@
     ],
     "95": [
         "v95_cctv_path_visibility.sql"
+    ],
+    "96": [
+        "v96_faces_groups.sql"
     ]
 }

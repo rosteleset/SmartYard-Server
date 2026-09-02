@@ -62,12 +62,12 @@ foreach ($entrances as $entrance) {
             if ($plog) {
                 $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_FACE, $domophone_output, $face_id . "|" . $event_id);
 
-                // TODO: paranoidEvent (pushes)
-                // $households->paranoidEvent($entranceId, "code", $details);
+                $entrance_id = $entrance["entranceId"];
+                $households->paranoidEvent($entrance_id, "face", $face_id);
             }
         }
     } catch (Throwable $e) {
-        response(404, false, 'Ошибка', 'Домофон недоступен');
+        response(404, false, i18n("mobile.unavailable"));
     }
 }
 

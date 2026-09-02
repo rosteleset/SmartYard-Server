@@ -3852,21 +3852,21 @@
                     $detail = func_get_arg(2);
                     $entrance = $this->getEntrance($entranceId);
                 } else
-                if (func_num_args() == 5) {
-                    $entrances = $this->getEntrances("domophone", [
-                        "ip" => func_get_arg(0),
-                        "subId" => func_get_arg(1),
-                        "output" => func_get_arg(2),
-                    ]);
+                    if (func_num_args() == 5) {
+                        $entrances = $this->getEntrances("domophone", [
+                            "ip" => func_get_arg(0),
+                            "subId" => func_get_arg(1),
+                            "output" => func_get_arg(2),
+                        ]);
 
-                    if ($entrances) {
-                        $entrance = $entrances[0];
-                    } else {
-                        return false;
+                        if ($entrances) {
+                            $entrance = $entrances[0];
+                        } else {
+                            return false;
+                        }
+                        $by = func_get_arg(3);
+                        $detail = func_get_arg(4);
                     }
-                    $by = func_get_arg(3);
-                    $detail = func_get_arg(4);
-                }
 
                 $addresses = loadBackend("addresses");
                 $isdn = loadBackend("isdn");
@@ -3897,6 +3897,11 @@
                         "event_type" => "9",
                         "title" => "mobile.paranoidTitleLP",
                         "message" => "mobile.paranoidMsgLP",
+                    ],
+                    "face" => [
+                        "event_type" => "5",
+                        "title" => "mobile.paranoidTitleFace",
+                        "message" => "mobile.paranoidMsgFace",
                     ],
                 ];
 
@@ -3940,6 +3945,52 @@
                             "push_token_type" => "tokenType",
                             "ua" => "ua",
                             "comments" => "comments",
+                        ]);
+
+                        break;
+
+                    case "face":
+                        $paranoids = $this->db->get("
+                            select * from (
+                              select
+                                f.address_house_id,
+                                sd.platform,
+                                sd.push_token,
+                                sd.push_token_type,
+                                sd.ua,
+                                sg.subscriber_group_name
+                              from
+                                link_face_subscriber_group lfsg
+                                inner join subscriber_groups sg
+                                  on sg.subscriber_group_id = lfsg.subscriber_group_id
+                                inner join houses_subscribers_devices sd
+                                  on sd.house_subscriber_id = sg.house_subscriber_id
+                                inner join houses_watchers w
+                                  on w.subscriber_device_id = sd.subscriber_device_id
+                                  and w.event_detail = cast(lfsg.subscriber_group_id as varchar)
+                                  and w.house_flat_id = sg.flat_id
+                                  and w.event_type = :event_type
+                                inner join houses_entrances_flats ef
+                                  on ef.house_flat_id = w.house_flat_id
+                                inner join houses_flats f
+                                  on f.house_flat_id = sg.flat_id
+                              where
+                                lfsg.face_id = :face_id
+                                and ef.house_entrance_id = :house_entrance_id
+                            ) as t
+                            group by
+                              address_house_id, platform, push_token, push_token_type, ua, subscriber_group_name
+                        ", [
+                            "event_type" => $map_event_type[$by]["event_type"],
+                            "face_id" => $detail,
+                            "house_entrance_id" => $entrance["entranceId"]
+                        ], [
+                            "address_house_id" => "houseId",
+                            "platform" => "platform",
+                            "push_token" => "pushToken",
+                            "push_token_type" => "tokenType",
+                            "ua" => "ua",
+                            "subscriber_group_name" => "comments",
                         ]);
 
                         break;
@@ -4332,6 +4383,23 @@
                 }
 
                 return $group_data;
+            }
+
+            function getSubscriberGroupById($subscriberGroupId): ?string
+            {
+                $query = "
+                    select
+                        subscriber_group_name
+                    from
+                        subscriber_groups
+                    where
+                        subscriber_group_id = :subscriber_group_id
+                ";
+                $r = $this->db->get($query, [
+                    "subscriber_group_id" => $subscriberGroupId,
+                ], [], ["singlify"]);
+
+                return $r["subscriber_group_name"] ?? null;
             }
 
             public function groupBelongsToSubscriber($subscriberGroupId, $subscriberId): bool

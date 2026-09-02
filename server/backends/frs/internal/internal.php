@@ -1146,22 +1146,119 @@
              * @inheritDoc
              */
 
-            public function clusterFacesBySimilarityFrs(array $faces, string $prefix_name, int $subscriber_id, int $flat_id): bool
+            public function getFaceGroupIdFrs(int $flat_id, int $subscriber_id, int $face_id): ?int
+            {
+                $r = null;
+                try {
+                    $query = "
+                        select
+                            sg.subscriber_group_id
+                        from
+                            subscriber_groups sg
+                            inner join link_face_subscriber_group lfsg
+                              on sg.subscriber_group_id = lfsg.subscriber_group_id
+                        where
+                            sg.flat_id = :flat_id
+                            and sg.house_subscriber_id = :subscriber_id
+                            and lfsg.face_id = :face_id
+                    ";
+                    $qr = $this->db->get($query, [":flat_id" => $flat_id, ":face_id" => $face_id, ":subscriber_id" => $subscriber_id], [], [self::PDO_SINGLIFY]);
+                    if ($qr && is_array($qr)) {
+                        $r = $qr["subscriber_group_id"] ?? null;
+                    }
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $r;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getFacesFromGroupIdFrs(int $group_id): array
+            {
+                $r = [];
+                try {
+                    $query = "
+                        select
+                            lfsg.face_id
+                        from
+                            link_face_subscriber_group lfsg
+                        where
+                            lfsg.subscriber_group_id = :group_id
+                    ";
+                    $qr = $this->db->get($query, [":group_id" => $group_id], []);
+                    foreach ($qr as $row) {
+                        $r[] = $row['face_id'];
+                    }
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+                return $r;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id): bool
             {
                 $frs_servers = $this->frsServers() ?? [];
                 if (is_array($frs_servers) && count($frs_servers) > 0) {
                     $frs_server = $frs_servers[0];
                 } else {
-                    return true;
+                    return false;
                 }
 
-                if (count($faces) == 0) {
+                // select all subscriber faces
+                $query = "
+                    select
+                      lf.face_id
+                    from
+                      frs_links_faces lf
+                    where
+                      lf.flat_id = :flat_id
+                      and lf.house_subscriber_id = :subscriber_id
+                    order by
+                      1
+                ";
+                $r = $this->db->get($query, [":flat_id" => $flat_id, ":subscriber_id" => $subscriber_id], []);
+                $faces_all = [];
+                foreach ($r as $row) {
+                    $faces_all[] = $row['face_id'];
+                }
+
+                if (count($faces_all) == 0)
                     return true;
+
+                // select subscriber faces with group
+                $query = "
+                    select
+                      lf.face_id,
+                      lfsg.subscriber_group_id
+                    from
+                      frs_links_faces lf
+                      inner join subscriber_groups sg
+                        on sg.house_subscriber_id = lf.house_subscriber_id
+                      inner join link_face_subscriber_group lfsg
+                        on lfsg.subscriber_group_id = sg.subscriber_group_id
+                        and lfsg.face_id = lf.face_id
+                    where
+                      lf.flat_id = :flat_id
+                      and lf.house_subscriber_id = :subscriber_id
+                    order by
+                      1
+                ";
+                $r = $this->db->get($query, [":flat_id" => $flat_id, ":subscriber_id" => $subscriber_id], []);
+                $face_to_group = [];
+                foreach ($r as $row) {
+                    $face_to_group[$row['face_id']] = $row['subscriber_group_id'];
                 }
 
                 $similarity = $this->config["backends"]["frs"]["face_clustering_similarity_threshold"] ?? 0.5;
                 $method_params = [
-                    self::P_FACE_IDS => $faces,
+                    self::P_FACE_IDS => $faces_all,
                     self::P_SIMILARITY => $similarity,
                 ];
 
@@ -1175,7 +1272,51 @@
                     $households = loadBackend("households");
                     $frs = loadBackend("frs");
                     $clustered_faces = $response[frs::P_DATA];
-                    foreach ($clustered_faces as $i => $cluster) {
+
+                    $new_face_to_group = [];
+                    $new_clustered_faces = [];
+
+                    foreach ($clustered_faces as $cluster) {
+                        $group_id = null;
+
+                        // Find the first face in the cluster
+                        // that is already assigned to a user group.
+                        foreach ($cluster as $face_id) {
+                            if (isset($face_to_group[$face_id])) {
+                                $group_id = $face_to_group[$face_id];
+                                break;
+                            }
+                        }
+
+                        $new_cluster = [];
+
+                        foreach ($cluster as $face_id) {
+                            // The face is already assigned to a group.
+                            if (isset($face_to_group[$face_id])) {
+                                continue;
+                            }
+
+                            // A face with an existing group was found in the cluster,
+                            // so assign the new face to that group.
+                            if ($group_id !== null) {
+                                $new_face_to_group[$face_id] = $group_id;
+                            } else {
+                                // The face remains unassigned to any group.
+                                $new_cluster[] = $face_id;
+                            }
+                        }
+
+                        if (!empty($new_cluster)) {
+                            $new_clustered_faces[] = $new_cluster;
+                        }
+                    }
+
+                    foreach ($new_face_to_group as $face_id => $group_id) {
+                        $r = $frs->attachFaceToGroupFrs($face_id, $group_id, $subscriber_id);
+                        $is_ok = $is_ok && ($r === true);
+                    }
+
+                    foreach ($new_clustered_faces as $i => $cluster) {
                         $group_id = $households->addSubscriberGroup($subscriber_id, $flat_id, $prefix_name . ' ' . $i + 1);
                         if ($group_id > 0) {
                             foreach ($cluster as $face_id) {

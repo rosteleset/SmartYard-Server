@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /mobile/frs/clusterFaces cluster faces by similarity
+ * @api {post} /mobile/frs/clusterFaces clusters ungrouped faces by similarity
  * @apiVersion 1.0.0
  * @apiDescription **ready**
  *
@@ -9,7 +9,6 @@
  *
  * @apiHeader {string} authorization authorization token
  *
- * @apiBody {string[]} faces array of face identifiers
  * @apiBody {integer} flatId flat identifier
  * @apiBody {string} prefixName prefix used to generate group names (e.g. "group" → "group 1", "group 2").
  *
@@ -32,11 +31,6 @@ if (!$f) {
     response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'flatId'));
 }
 
-$faces = @$postdata['faces'];
-if (!is_array($faces) || empty($faces)) {
-    response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'faces'));
-}
-
 $prefix_name = @$postdata['prefixName'];
 if (!$prefix_name) {
     response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'prefixName'));
@@ -49,7 +43,7 @@ if (!$frs) {
     response(422);
 }
 
-$r = $frs->clusterFacesBySimilarityFrs($faces, $prefix_name, $subscriber_id, $flat_id);
+$r = $frs->clusterFacesBySimilarityFrs($prefix_name, $subscriber_id, $flat_id);
 if ($r === true) {
     response(204);
 } else {

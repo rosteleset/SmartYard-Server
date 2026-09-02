@@ -23,10 +23,9 @@
      * @apiSuccess {integer} [-.houseId] идентификатор дома
      * @apiSuccess {integer} [-.entranceId] идентификатор входа
      * @apiSuccess {integer} [-.cameraId] идентификатор камеры
-     * @apiSuccess {string="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)","9 - открытие по номеру машины"} -.event тип события
+     * @apiSuccess {string="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по лицу","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)","9 - открытие по номеру машины"} -.event тип события
      * @apiSuccess {string} [-.preview] url картинки
      * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - DVR, 2 - FRS)
-     * @apiSuccess {string} [-.detail] непонятная фигня
      * @apiSuccess {object} [-.detailX] детализация события
      * @apiSuccess {string="t","f"} [-.detailX.opened] открыли или нет (1, 2)
      * @apiSuccess {string} [-.detailX.key] ключ (3)
@@ -39,6 +38,7 @@
      * @apiSuccess {void} [-.detailX.flags.canLike] можно "лайкать"
      * @apiSuccess {void} [-.detailX.flags.canDislike] можно "дизлайкать"
      * @apiSuccess {void} [-.detailX.flags.liked] уже "лайкнуто"
+     * @apiSuccess {integer} [-.detailX.groupId] идентификатор группы пользователя
      * @apiSuccess {object} [-.detailX.face] дополнительная информация по распознанному лицу
      * @apiSuccess {integer} [-.detailX.face.left] отступ по X
      * @apiSuccess {integer} [-.detailX.face.top] отступ по Y
@@ -160,14 +160,22 @@
                             $face_id = $face->faceId;
                         }
                         $subscriber_id = (int)$subscriber['subscriberId'];
-                        if ($frs->isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $row[plog::COLUMN_EVENT_UUID], $flat_owner)) {
-                            $e_details['detailX']['flags'][] = frs::FLAG_LIKED;
-                            $e_details['detailX']['flags'][] = frs::FLAG_CAN_DISLIKE;
+                        if ($subscriber_id > 0) {
+                            if ($frs->isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $row[plog::COLUMN_EVENT_UUID], $flat_owner)) {
+                                $e_details['detailX']['flags'][] = frs::FLAG_LIKED;
+                                $e_details['detailX']['flags'][] = frs::FLAG_CAN_DISLIKE;
+                                if ($face_id > 0) {
+                                    $e_details['detailX']['faceId'] = strval($face_id);
+                                }
+                            }
+                            if ($face_id > 0) {
+                                $group_id = $frs->getFaceGroupIdFrs($flat_id, $subscriber_id, $face_id);
+                                if (isset($group_id) && $group_id > 0) {
+                                    $e_details['detailX']['groupId'] = $group_id;
+                                }
+                            }
                         }
                     }
-                }
-                if (isset($face->faceId) && $face->faceId > 0) {
-                    $e_details['detailX']['faceId'] = strval($face->faceId);
                 }
 
                 $phones = json_decode($row[plog::COLUMN_PHONES]);
