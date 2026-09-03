@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "c564af3c-e3ef-41fa-9c95-069de11b4b9b",
+    "_postman_id": "fb881430-92dd-431c-8a17-95f8581412f9",
     "name": "SmartYard RBT (EN)",
     "description": "Postman collection for [SmartYard-Server / RBT](https://github.com/rosteleset/SmartYard-Server).\n\n##Gateways\n- **Frontend** (`/frontend` or `/api`) - REST API of the admin panel, Bearer operator token\n- **Mobile** (`/mobile`) - mobile application API, Bearer accessToken\n- **Internal** (`/internal`) — service callbacks, localhost only\n\n## Quick start\n1. Import environment `SmartYard-RBT.postman_environment.json`\n2. Specify `base_url`, `operator_login`, `operator_password`\n3. Execute **Auth → Frontend Login** - the token will be saved automatically\n4. For mobile: **Auth → Mobile requestCode** → **Mobile confirmCode**\n\n## Response formats\n- Frontend: flat JSON `{ \"field\": ... }` or `{ \"error\": \"...\" }`\n- Mobile/Internal: wrapper `{ \"code\", \"name\", \"message\", \"data\" }`\n\nDocumentation: `doc/billing.api.ru.md`, apidoc in `doc/api/` and `doc/mobile/`.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -4417,40 +4417,6 @@
                   }
                 },
                 "description": "## send message\n\n**POST** `/api/inbox/message/:subscriberId`\n\n- **Group:** inbox\n- **Version:** 1.0.0\n- **Name:** sendMessage\n\n### Headers\n- `Authorization` *(String)* — authentication token\n\n### Path parameters\n- `subscriberId` *(Number)*\n\n### Body\n- `title` *(String)*\n- `body` *(String)*\n- `action` *(String)*\n\n### Success response\n- `sent` *(Object)*"
-              }
-            },
-            {
-              "name": "message (DELETE)",
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/frontend/inbox/message",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "frontend",
-                    "inbox",
-                    "message"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{operator_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "description": "## delete message\n\n**DELETE** `/api/inbox/message/:subscriberId`\n\n- **Group:** inbox\n- **Version:** 1.0.0\n- **Name:** deleteMessage\n\n### Headers\n- `Authorization` *(String)* — authentication token\n\n### Path parameters\n- `subscriberId` *(Number)*\n\n### Body\n- `messageId` *(Number)*\n\n### Success response\n- `operationResult` *(Boolean)*"
               }
             },
             {
@@ -9400,14 +9366,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(optional)* *(integer)* — apartment identifier\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.flatId` *(integer)* — apartment identifier\n- `-.watcherId` *(integer)* — observation identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `-.eventDetail` *(string)* — event details (key, phone number, person ID, car number)\n- `-.comments` *(string)* — observation comment"
+                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(optional)* *(integer)* — apartment identifier\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.flatId` *(integer)* — apartment identifier\n- `-.watcherId` *(integer)* — observation identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `-.eventDetail` *(string)* — event details (key, phone number, person group identifier, car number)\n- `-.comments` *(string)* — observation comment"
               }
             },
             {
@@ -9675,14 +9641,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"day\": \"2026-09-02\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## get the object's event log for the day\n\n**POST** `/mobile/address/plog`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**in progress**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(string)* — apartment identifier\n- `day` *(string=\"Y-m-d\")* - date (day)\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.date` *(string=\"Y-m-d H:i:s\")* - date\n- `-.timezone` *(optional)* *(integer)* — time zone (default - Moscow Time)\n- `-.uuid` *(UUID)* — UUID of the event (unique)\n- `-.objectId` *(integer)* — object identifier (intercom)\n- `-.objectType` *(integer=\"0\")* - object type (0 - intercom)\n- `-.objectMechanizma` *(integer=\"0\",\"1\",\"2\")* - load (door) identifier\n- `-.mechanizmaDescription` *(string)* — description of the load (door)\n- `-.houseId` *(optional)* *(integer)* — house identifier\n- `-.entranceId` *(optional)* *(integer)* — login ID\n- `-.cameraId` *(optional)* *(integer)* — camera identifier\n- `-.event` *(string=\"1 - not answered\",\"2 - answered\",\"3 - opening with a key\",\"4 - opening by application\",\"5 - opening by face\",\"6 - opening by opening code\",\"7 - opening by call (guest, gate)\",\"9 - opening by car number\")* - event type\n- `-.preview` *(optional)* *(string)* — url of the image\n- `-.previewType` *(integer=\"0\",\"1\",\"2\")* — picture type (0 - no, 1 - DVR, 2 - FRS)\n- `-.detail` *(optional)* *(string)* - incomprehensible garbage\n- `-.detailX` *(optional)* *(object)* — event details\n- `-.detailX.opened` *(optional)* *(string=\"t\",\"f\")* — opened or not (1, 2)\n- `-.detailX.key` *(optional)* *(string)* – key (3)\n- `-.detailX.phone` *(optional)* *(string)* — phone (4)\n- `-.detailX.faceId` *(optional)* *(string)* — face identifier (5+)\n- `-.detailX.code` *(optional)* *(string)* — opening code (6)\n- `-.detailX.phoneFrom` *(optional)* *(string)* — phone (7)\n- `-.detailX.phoneTo` *(optional)* *(string)* — phone (7)\n- `-.detailX.flags` *(optional)* *(object)* — additional. flags\n- `-.detailX.flags.canLike` *(optional)* *(void)* — you can “like”\n- `-.detailX.flags.canDislike` *(optional)* *(void)* — you can “dislike”\n- `-.detailX.flags.liked` *(optional)* *(void)* — already “liked”\n- `-.detailX.face` *(optional)* *(object)* — additional information on the recognized face\n- `-.detailX.face.left` *(optional)* *(integer)* — indentation along X\n- `-.detailX.face.top` *(optional)* *(integer)* — Y indent\n- `-.detailX.face.width` *(optional)* *(integer)* — width\n- `-.detailX.face.height` *(optional)* *(integer)* — height\n- `-.detailX.vehicle` *(optional)* *(object)* — information on the recognized license plate\n- `-.detailX.vehicle.vehicleBox` *(optional)* *(integer[])* — coordinates of the upper left and lower right corners of the rectangular area defining the position of the car\n- `-.detailX.vehicle.plateKeyPoints` *(optional)* *(integer[])* — quadrilateral coordinates that determine the position of the license plate\n- `-.detailX.vehicle.plateNumber` *(optional)* *(string)* — license plate number"
+                "description": "## get the object's event log for the day\n\n**POST** `/mobile/address/plog`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**in progress**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(string)* — apartment identifier\n- `day` *(string=\"Y-m-d\")* - date (day)\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.date` *(string=\"Y-m-d H:i:s\")* — date\n- `-.timezone` *(optional)* *(integer)* — time zone (default - Moscow Time)\n- `-.uuid` *(UUID)* — UUID of the event (unique)\n- `-.objectId` *(integer)* — object identifier (intercom)\n- `-.objectType` *(integer=\"0\")* - object type (0 - intercom)\n- `-.objectMechanizma` *(integer=\"0\",\"1\",\"2\")* - load (door) identifier\n- `-.mechanizmaDescription` *(string)* — description of the load (door)\n- `-.houseId` *(optional)* *(integer)* — house identifier\n- `-.entranceId` *(optional)* *(integer)* — login ID\n- `-.cameraId` *(optional)* *(integer)* — camera identifier\n- `-.event` *(string=\"1 - not answered\",\"2 - answered\",\"3 - opening by key\",\"4 - opening by application\",\"5 - opening by face\",\"6 - opening by opening code\",\"7 - opening by call (guest, gate)\",\"9 - opening by car number\")* - event type\n- `-.preview` *(optional)* *(string)* — url of the image\n- `-.previewType` *(integer=\"0\",\"1\",\"2\")* — picture type (0 - no, 1 - DVR, 2 - FRS)\n- `-.detailX` *(optional)* *(object)* — event details\n- `-.detailX.opened` *(optional)* *(string=\"t\",\"f\")* — opened or not (1, 2)\n- `-.detailX.key` *(optional)* *(string)* – key (3)\n- `-.detailX.phone` *(optional)* *(string)* — phone (4)\n- `-.detailX.faceId` *(optional)* *(string)* — face identifier (5+)\n- `-.detailX.code` *(optional)* *(string)* — opening code (6)\n- `-.detailX.phoneFrom` *(optional)* *(string)* — phone (7)\n- `-.detailX.phoneTo` *(optional)* *(string)* — phone (7)\n- `-.detailX.flags` *(optional)* *(object)* — additional. flags\n- `-.detailX.flags.canLike` *(optional)* *(void)* - you can “like”\n- `-.detailX.flags.canDislike` *(optional)* *(void)* — you can “dislike”\n- `-.detailX.flags.liked` *(optional)* *(void)* — already “liked”\n- `-.detailX.groupId` *(optional)* *(integer)* — user group identifier\n- `-.detailX.face` *(optional)* *(object)* — additional information on the recognized face\n- `-.detailX.face.left` *(optional)* *(integer)* — indentation along X\n- `-.detailX.face.top` *(optional)* *(integer)* — Y indent\n- `-.detailX.face.width` *(optional)* *(integer)* — width\n- `-.detailX.face.height` *(optional)* *(integer)* — height\n- `-.detailX.vehicle` *(optional)* *(object)* — information on the recognized license plate\n- `-.detailX.vehicle.vehicleBox` *(optional)* *(integer[])* — coordinates of the upper left and lower right corners of the rectangular area defining the position of the car\n- `-.detailX.vehicle.plateKeyPoints` *(optional)* *(integer[])* — quadrilateral coordinates that determine the position of the license plate\n- `-.detailX.vehicle.plateNumber` *(optional)* *(string)* — license plate number"
               }
             },
             {
@@ -10005,14 +9971,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"eventType\": 5,\n  \"eventDetail\": \"1\",\n  \"comments\": \"Demo face group\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(integer)* — apartment identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `eventDetail` *(string)* — event details (key, phone number, person ID, car number)\n- `comments` *(string)* — observation comment\n\n### Success response\n- `-` *(optional)* *(Object)* - object\n- `-.watcherId` *(Number)* — watcherId"
+                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(integer)* — apartment identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `eventDetail` *(string)* — event details (key, phone number, person group ID, car number)\n- `comments` *(string)* — observation comment\n\n### Success response\n- `-` *(optional)* *(Object)* - object\n- `-.watcherId` *(Number)* — watcherId"
               }
             },
             {
@@ -10177,7 +10143,7 @@
                     }
                   }
                 },
-                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(integer)* — apartment identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `eventDetail` *(string)* — event details (key, phone number, person ID, car number)\n- `comments` *(string)* — observation comment\n\n### Success response\n- `-` *(optional)* *(Object)* - object\n- `-.watcherId` *(Number)* — watcherId"
+                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(integer)* — apartment identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `eventDetail` *(string)* — event details (key, phone number, person group ID, car number)\n- `comments` *(string)* — observation comment\n\n### Success response\n- `-` *(optional)* *(Object)* - object\n- `-.watcherId` *(Number)* — watcherId"
               }
             },
             {
@@ -10232,7 +10198,7 @@
                     }
                   }
                 },
-                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(optional)* *(integer)* — apartment identifier\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.flatId` *(integer)* — apartment identifier\n- `-.watcherId` *(integer)* — observation identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `-.eventDetail` *(string)* — event details (key, phone number, person ID, car number)\n- `-.comments` *(string)* — observation comment"
+                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**should work**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(optional)* *(integer)* — apartment identifier\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.flatId` *(integer)* — apartment identifier\n- `-.watcherId` *(integer)* — observation identifier\n- `-.eventType` *(integer=\"3 - opening with a key\",\"4 - opening with an application\",\"5 - opening by face\",\"6 - opening with an opening code\",\"9 - opening by car number\")* - event type\n- `-.eventDetail` *(string)* — event details (key, phone number, person group identifier, car number)\n- `-.comments` *(string)* — observation comment"
               }
             }
           ]
@@ -11171,14 +11137,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"prefixName\": \"group\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## cluster faces by similarity\n\n**POST** `/mobile/frs/clusterFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**ready**\n\n### Headers\n- `authorization` *(string)* — authorization token\n\n### Body\n- `faces` *(string[])* — array of face identifiers\n- `flatId` *(integer)* — flat identifier\n- `prefixName` *(string)* — prefix used to generate group names (e.g. \"group\" → \"group 1\", \"group 2\")."
+                "description": "## clusters ungrouped faces by similarity\n\n**POST** `/mobile/frs/clusterFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**ready**\n\n### Headers\n- `authorization` *(string)* — authorization token\n\n### Body\n- `flatId` *(integer)* — flat identifier\n- `prefixName` *(string)* — prefix used to generate group names (e.g. \"group\" → \"group 1\", \"group 2\")."
               }
             },
             {
@@ -11391,14 +11357,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"groupId\": 1\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## list of \"persons\"\n\n**POST** `/mobile/frs/listFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**in progress**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(integer)* — apartment identifier (address)\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.faceId` *(string)* — “person” identifier\n- `-.image` *(string)* — url of the image\n- `-.groupId` *(optional)* *(integer)* — group identifier"
+                "description": "## list of \"persons\"\n\n**POST** `/mobile/frs/listFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**in progress**\n\n###Headers\n- `authorization` *(string)* — authorization token\n\n###Body\n- `flatId` *(integer)* — apartment identifier (address)\n- `groupId` *(optional)* *(integer)* — group identifier\n\n### Success response\n- `-` *(object[])* — array of objects\n- `-.faceId` *(string)* — “person” identifier\n- `-.image` *(string)* — url of the image\n- `-.groupId` *(optional)* *(integer)* — group identifier"
               }
             }
           ]
@@ -13301,7 +13267,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"groupId\": 1,\n  \"flatId\": 1\n}",
                   "options": {
                     "raw": {
                       "language": "json"
