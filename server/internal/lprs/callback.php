@@ -25,7 +25,8 @@ if ($redis->get($frs_key) != null) {
 
 function openDoor($entrance): void
 {
-    global $households, $redis, $frs_key;
+    return;
+    global $households, $redis, $frs_key, $config;
 
     $domophone_id = $entrance["domophoneId"];
     $domophone_output = $entrance["domophoneOutput"];
@@ -80,20 +81,28 @@ if (!isset($plates)) {
 
 $flats = [];
 $e_flats = [];
-$number = "";
+$flat_numbers = [];
 foreach ($plates as $plate) {
-    $f = $households->getFlats("car", ["number" => (string)$plate["number"]]);
+    $plate_number = (string)$plate["number"];
+    $country_code = substr((string)$plate["type"], 0, 2);
+    $f = $households->getFlats("car", ["number" => $plate_number, "countryCode" => $country_code]);
     foreach ($f as $item) {
-        if ($number === "") {
-            $number = (string)$plate["number"];
+        $flat_id = (int)$item["flatId"];
+        if (!isset($flat_numbers[$flat_id])) {
+            $flat_numbers[$flat_id] = $plate_number;
         }
         $is_allowed = ($item['autoBlock'] === 0 && $item['manualBlock'] === 0 && $item['adminBlock'] === 0);
         if ($is_allowed) {
             foreach ($item['entrances'] as $entrance) {
                 $e_id = $entrance['entranceId'];
                 if (in_array($e_id, $entrance_ids)) {
-                    $flats[(int)$item["flatId"]] = $item;
-                    $e_flats[$e_id][] = $item['flatId'];
+                    $flats[$flat_id] = $item;
+                    if (!isset($e_flats[$e_id])) {
+                        $e_flats[$e_id] = [];
+                    }
+                    if (!in_array($flat_id, $e_flats[$e_id])) {
+                        $e_flats[$e_id][] = $flat_id;
+                    }
                 }
             }
         }
@@ -111,6 +120,7 @@ foreach ($e_flats as $key => $values) {
         foreach ($values as $value) {
             if (!in_array($value, $flats_with_event)) {
                 $flats_with_event[] = $value;
+                $number = $flat_numbers[$value] ?? "";
                 $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_VEHICLE, $domophone_output,
                     $number . "|" . $value . "|" . $event_id . "|" . $camera_id);
 
