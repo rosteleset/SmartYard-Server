@@ -11,6 +11,7 @@
  *
  * @apiBody {integer} flatId flat identifier
  * @apiBody {String} number license plate number
+ * @apiBody {String} [validTo] expiration date/time
  */
 
 auth();
@@ -41,11 +42,12 @@ if (!isValidPlateNumber($number)) {
     response(422, false, i18n("mobile.invalidPlateNumber"));
 }
 
+$valid_to = @$postdata['validTo'] ?? @$postdata['valid_to'] ?? null;
+if ($valid_to !== null && trim((string)$valid_to) === '') {
+    $valid_to = null;
+}
+
 $households = loadBackend("households");
-$numbers = array_filter(explode("\n", $households->getFlat($flat_id)['cars']));
-$numbers[] = $number;
-$numbers = array_unique($numbers);
-$params = ["cars" => implode("\n", $numbers)];
-$households->modifyFlat($flat_id, $params);
+$households->addFlatPlateNumber($flat_id, $number, $valid_to);
 
 response(204);

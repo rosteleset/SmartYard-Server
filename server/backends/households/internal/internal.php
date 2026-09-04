@@ -44,7 +44,6 @@
                         contract,
                         login,
                         password,
-                        cars,
                         subscribers_limit,
                         sip_alt
                     from
@@ -71,7 +70,6 @@
                     "contract" => "contract",
                     "login" => "login",
                     "password" => "password",
-                    "cars" => "cars",
                     "subscribers_limit" => "subscribersLimit",
                     "sip_alt" => "sipAlt",
                 ],
@@ -80,6 +78,9 @@
                 ]);
 
                 if ($flat) {
+                    $numbers = $this->getFlatPlateNumbers($flat["flatId"]);
+                    $flat["cars"] = (is_array($numbers) && count($numbers) > 0) ? implode("\n", $numbers) : null;
+                    $flat["licensePlates"] = $this->getFlatLicensePlates($flat["flatId"]);
                     $entrances = $this->db->get("
                         select
                             house_entrance_id,
@@ -450,10 +451,12 @@
                         break;
 
                     case "car":
-                        $q = "select house_flat_id from houses_flats where cars is not null and cars like concat('%', cast(:number as varchar), '%') group by house_flat_id";
+                        $number = is_array($params) ? ($params["number"] ?? "") : $params;
+                        $country_code = is_array($params) ? ($params["countryCode"] ?? "ru") : $params;
+                        $q = "select link_lp_flat.flat_id as house_flat_id from license_plate_numbers join link_lp_flat using (lp_id) where license_plate_numbers.lp_number = :number and license_plate_numbers.country_code = :country_code";
                         $p = [
-                            // TODO: $params["number"] -> $params
-                            "number" => $params["number"],
+                            "number" => $number,
+                            "country_code" => $country_code,
                         ];
                         break;
 
@@ -927,22 +930,10 @@
                         return false;
                     }
 
-                    if (array_key_exists("cars", $params)) {
-                        $cars = $params["cars"];
-                        $t = [];
-                        $cars = explode("\n", $cars);
-                        foreach ($cars as $number) {
-                            if (trim($number)) {
-                                $t[] = strtoupper(trim($number));
-                            }
-                        }
-                        if (count($t)) {
-                            $t = array_unique($t);
-                            $cars = implode("\n", $t);
-                        } else {
-                            $cars = null;
-                        }
-                        $params["cars"] = $cars;
+                    if (array_key_exists("licensePlates", $params)) {
+                        $this->modifyFlatPlateNumbers($flatId, $params["licensePlates"]);
+                    } elseif (array_key_exists("cars", $params)) {
+                        $this->modifyFlatPlateNumbers($flatId, $params["cars"]);
                     }
 
                     if (array_key_exists("subscribersLimit", $params)) {
@@ -972,7 +963,6 @@
                         "contract" => "contract",
                         "login" => "login",
                         "password" => "password",
-                        "cars" => "cars",
                         "subscribers_limit" => "subscribersLimit",
                         "sip_alt" => "sipAlt",
                     ], $params);
@@ -1049,6 +1039,8 @@
                     $r = $customFields->deleteValues("flat", $flatId);
                 }
 
+                $r = $r && $this->db->modify("delete from link_lp_flat where flat_id = $flatId") !== false;
+                $r = $r && $this->db->modify("delete from license_plate_numbers where lp_id not in (select lp_id from link_lp_flat)") !== false;
                 $r = $r && $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false;
                 $r = $r && $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
                 $r = $r && $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
@@ -4411,6 +4403,409 @@
                 ], [], ["singlify"]);
 
                 return $r && $r['result'] === true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getFlatPlateNumbers($flatId) {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                $rows = $this->db->get("
+                    select
+                        lpn.lp_number
+                    from
+                        license_plate_numbers lpn
+                        join link_lp_flat llf on lpn.lp_id = llf.lp_id
+                    where
+                        llf.flat_id = $flatId
+                    order by
+                        lpn.lp_id asc
+                ");
+
+                $numbers = [];
+                if ($rows && is_array($rows)) {
+                    foreach ($rows as $row) {
+                        if (isset($row['lp_number']) && trim((string)$row['lp_number']) !== '') {
+                            $numbers[] = $row['lp_number'];
+                        }
+                    }
+                }
+
+                return $numbers;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getFlatLicensePlates($flatId) {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                $rows = $this->db->get("
+                    select
+                        lpn.lp_id,
+                        lpn.country_code,
+                        lpn.lp_number,
+                        llf.valid_to
+                    from
+                        license_plate_numbers lpn
+                        join link_lp_flat llf on lpn.lp_id = llf.lp_id
+                    where
+                        llf.flat_id = $flatId
+                    order by
+                        lpn.lp_id asc
+                ", false, [
+                    "lp_id" => "lpId",
+                    "country_code" => "countryCode",
+                    "lp_number" => "number",
+                    "valid_to" => "validTo",
+                ]);
+
+                if (!$rows || !is_array($rows)) {
+                    return [];
+                }
+
+                return $rows;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function addFlatPlateNumber($flatId, $number, $validTo = null, $countryCode = 'ru') {
+                if (!checkInt($flatId) || !trim((string)$number)) {
+                    return false;
+                }
+
+                $number = strtoupper(trim((string)$number));
+                $countryCode = trim((string)$countryCode) ?: 'ru';
+
+                if ($validTo === null || trim((string)$validTo) === '') {
+                    $validToValue = null;
+                } else {
+                    $validToValue = trim((string)$validTo);
+                }
+
+                $existing = $this->db->get("
+                    select
+                        lp_id
+                    from
+                        license_plate_numbers
+                    where
+                        lp_number = :lp_number
+                        and country_code = :country_code
+                ", [
+                    "lp_number" => $number,
+                    "country_code" => $countryCode,
+                ], [
+                    "lp_id" => "lpId",
+                ], [
+                    "singlify",
+                ]);
+
+                if ($existing && isset($existing["lpId"])) {
+                    $lpId = (int)$existing["lpId"];
+                } else {
+                    $lpId = $this->db->insert("
+                        insert into license_plate_numbers (country_code, lp_number)
+                        values (:country_code, :lp_number)
+                    ", [
+                        ":country_code" => $countryCode,
+                        ":lp_number" => $number,
+                    ]);
+                }
+
+                if (!$lpId) {
+                    return false;
+                }
+
+                $linkExists = $this->db->get("
+                    select 1 from link_lp_flat
+                    where lp_id = :lp_id and flat_id = :flat_id
+                ", [
+                    "lp_id" => $lpId,
+                    "flat_id" => $flatId,
+                ]);
+
+                if ($linkExists) {
+                    $this->db->modify("
+                        update link_lp_flat
+                        set valid_to = :valid_to
+                        where lp_id = :lp_id and flat_id = :flat_id
+                    ", [
+                        ":valid_to" => $validToValue,
+                        ":lp_id" => $lpId,
+                        ":flat_id" => $flatId,
+                    ]);
+                } else {
+                    $this->db->modify("
+                        insert into link_lp_flat (lp_id, flat_id, valid_to)
+                        values (:lp_id, :flat_id, :valid_to)
+                    ", [
+                        ":lp_id" => $lpId,
+                        ":flat_id" => $flatId,
+                        ":valid_to" => $validToValue,
+                    ]);
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("flat", $flatId);
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function removeFlatPlateNumber($flatId, $number, $countryCode = 'ru') {
+                if (!checkInt($flatId) || !trim((string)$number)) {
+                    return false;
+                }
+
+                $number = strtoupper(trim((string)$number));
+                $countryCode = trim((string)$countryCode) ?: 'ru';
+
+                $plate = $this->db->get("
+                    select lp_id from license_plate_numbers
+                    where lp_number = :lp_number and country_code = :country_code
+                ", [
+                    "lp_number" => $number,
+                    "country_code" => $countryCode,
+                ], [
+                    "lp_id" => "lpId",
+                ], [
+                    "singlify",
+                ]);
+
+                if (!$plate || !isset($plate["lpId"])) {
+                    return true;
+                }
+
+                $lpId = (int)$plate["lpId"];
+
+                $this->db->modify("
+                    delete from link_lp_flat
+                    where lp_id = :lp_id and flat_id = :flat_id
+                ", [
+                    ":lp_id" => $lpId,
+                    ":flat_id" => $flatId,
+                ]);
+
+                $otherLinks = $this->db->get("
+                    select 1 from link_lp_flat
+                    where lp_id = :lp_id
+                    limit 1
+                ", [
+                    "lp_id" => $lpId,
+                ]);
+
+                if (!$otherLinks) {
+                    $this->db->modify("
+                        delete from license_plate_numbers
+                        where lp_id = :lp_id
+                    ", [
+                        ":lp_id" => $lpId,
+                    ]);
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("flat", $flatId);
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function modifyFlatPlateNumbers($flatId, $cars) {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                $targetNumbers = [];
+                if (is_string($cars)) {
+                    $lines = explode("\n", $cars);
+                    foreach ($lines as $line) {
+                        $n = strtoupper(trim($line));
+                        if ($n !== '') {
+                            $targetNumbers[] = ["number" => $n, "validTo" => null, "countryCode" => 'ru'];
+                        }
+                    }
+                } elseif (is_array($cars)) {
+                    foreach ($cars as $item) {
+                        if (is_string($item)) {
+                            $n = strtoupper(trim($item));
+                            if ($n !== '') {
+                                $targetNumbers[] = ["number" => $n, "validTo" => null, "countryCode" => 'ru'];
+                            }
+                        } elseif (is_array($item)) {
+                            $n = strtoupper(trim((string)($item["number"] ?? $item["lp_number"] ?? "")));
+                            $vt = $item["validTo"] ?? $item["valid_to"] ?? null;
+                            $cc = $item["countryCode"] ?? $item["country_code"] ?? 'ru';
+                            if ($n !== '') {
+                                $targetNumbers[] = ["number" => $n, "validTo" => $vt, "countryCode" => $cc];
+                            }
+                        }
+                    }
+                }
+
+                $uniqueTargets = [];
+                $targetKeys = [];
+                foreach ($targetNumbers as $tn) {
+                    $key = $tn["countryCode"] . ":" . $tn["number"];
+                    if (!isset($targetKeys[$key])) {
+                        $targetKeys[$key] = true;
+                        $uniqueTargets[] = $tn;
+                    }
+                }
+
+                $targetLpIds = [];
+                foreach ($uniqueTargets as $target) {
+                    $this->addFlatPlateNumber($flatId, $target["number"], $target["validTo"], $target["countryCode"]);
+                    $p = $this->db->get("
+                        select lp_id from license_plate_numbers
+                        where lp_number = :lp_number and country_code = :country_code
+                    ", [
+                        "lp_number" => $target["number"],
+                        "country_code" => $target["countryCode"],
+                    ], [
+                        "lp_id" => "lpId",
+                    ], [
+                        "singlify",
+                    ]);
+                    if ($p && isset($p["lpId"])) {
+                        $targetLpIds[] = (int)$p["lpId"];
+                    }
+                }
+
+                $currentLinks = $this->db->get("
+                    select lp_id from link_lp_flat where flat_id = $flatId
+                ");
+
+                if ($currentLinks && is_array($currentLinks)) {
+                    foreach ($currentLinks as $link) {
+                        $lpId = (int)$link["lp_id"];
+                        if (!in_array($lpId, $targetLpIds, true)) {
+                            $this->db->modify("
+                                delete from link_lp_flat
+                                where flat_id = $flatId and lp_id = $lpId
+                            ");
+                            $other = $this->db->get("
+                                select 1 from link_lp_flat
+                                where lp_id = $lpId limit 1
+                            ");
+                            if (!$other) {
+                                $this->db->modify("
+                                    delete from license_plate_numbers
+                                    where lp_id = $lpId
+                                ");
+                            }
+                        }
+                    }
+                }
+
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("flat", $flatId);
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function updatePlateValidTo($number, $validTo = null, $countryCode = 'ru') {
+                if (!trim((string)$number)) {
+                    return false;
+                }
+                $number = strtoupper(trim((string)$number));
+                $countryCode = trim((string)$countryCode) ?: 'ru';
+
+                if ($validTo === null || trim((string)$validTo) === '') {
+                    $validToValue = null;
+                } else {
+                    $validToValue = trim((string)$validTo);
+                }
+
+                $plate = $this->db->get("
+                    select lp_id from license_plate_numbers
+                    where lp_number = :lp_number and country_code = :country_code
+                ", [
+                    "lp_number" => $number,
+                    "country_code" => $countryCode,
+                ], [
+                    "lp_id" => "lpId",
+                ], [
+                    "singlify",
+                ]);
+
+                if (!$plate || !isset($plate["lpId"])) {
+                    return false;
+                }
+
+                $lpId = (int)$plate["lpId"];
+
+                return $this->db->modify("
+                    update link_lp_flat
+                    set valid_to = :valid_to
+                    where lp_id = :lp_id
+                ", [
+                    ":valid_to" => $validToValue,
+                    ":lp_id" => $lpId,
+                ]) !== false;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function updateFlatPlateValidTo($flatId, $number, $validTo = null, $countryCode = 'ru') {
+                if (!checkInt($flatId) || !trim((string)$number)) {
+                    return false;
+                }
+                $number = strtoupper(trim((string)$number));
+                $countryCode = trim((string)$countryCode) ?: 'ru';
+
+                if ($validTo === null || trim((string)$validTo) === '') {
+                    $validToValue = null;
+                } else {
+                    $validToValue = trim((string)$validTo);
+                }
+
+                $plate = $this->db->get("
+                    select lp_id from license_plate_numbers
+                    where lp_number = :lp_number and country_code = :country_code
+                ", [
+                    "lp_number" => $number,
+                    "country_code" => $countryCode,
+                ], [
+                    "lp_id" => "lpId",
+                ], [
+                    "singlify",
+                ]);
+
+                if (!$plate || !isset($plate["lpId"])) {
+                    return false;
+                }
+
+                $lpId = (int)$plate["lpId"];
+
+                return $this->db->modify("
+                    update link_lp_flat
+                    set valid_to = :valid_to
+                    where lp_id = :lp_id and flat_id = :flat_id
+                ", [
+                    ":valid_to" => $validToValue,
+                    ":lp_id" => $lpId,
+                    ":flat_id" => $flatId,
+                ]) !== false;
             }
         }
     }
