@@ -42,9 +42,6 @@ if (!isValidPlateNumber($number)) {
 }
 
 $households = loadBackend("households");
-$numbers = array_filter(explode("\n", $households->getFlat($flat_id)['cars']));
-$numbers = array_diff($numbers, [$number]);
-$params = ["cars" => implode("\n", $numbers)];
-$households->modifyFlat($flat_id, $params);
+$households->removeFlatPlateNumber($flat_id, $number);
 
 response(204);

@@ -12,6 +12,251 @@
     fiases: {},
     marker: false,
 
+    countryOptions: [
+        { code: "ru", flag: "🇷🇺", name: i18n("addresses.country_ru") },
+    ],
+
+    getCountryFlag: function (code) {
+        let found = modules.addresses.houses.countryOptions.find(c => c.code === String(code || "").toLowerCase());
+        return found ? found.flag : "🏳️";
+    },
+
+    formatPlateValidTo: function (validTo) {
+        if (!validTo) {
+            return `<span class="text-muted">${i18n("addresses.plateValidForever") || "бессрочно"}</span>`;
+        }
+        let str = String(validTo).trim();
+        let match = str.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+        if (match) {
+            let y = match[1], m = match[2], d = match[3], hh = match[4], mm = match[5];
+            let formatted = `${d}.${m}.${y}`;
+            if (hh !== undefined && mm !== undefined) {
+                formatted += ` ${hh}:${mm}`;
+            }
+            return `${i18n("addresses.until") || "до"} ${formatted}`;
+        }
+        return `${i18n("addresses.until") || "до"} ${escapeHTML(str)}`;
+    },
+
+    initPlatesUI: function (prefx, licensePlates) {
+        function renderPlatesList() {
+            let container = $(`#${prefx}-cars-container`);
+            if (!container.length) return;
+
+            let html = `
+                <div class="card card-outline card-secondary mb-3 shadow-none border">
+                    <div class="card-body p-0 table-responsive">
+                        <table class="table table-hover table-striped mb-0 text-sm">
+                            <thead>
+                                <tr>
+                                    <th style="width: 140px;">${i18n("addresses.plateCountry")}</th>
+                                    <th>${i18n("addresses.plateNumber")}</th>
+                                    <th style="width: 200px;">${i18n("addresses.plateValidTo")}</th>
+                                    <th style="width: 90px; text-align: right;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            if (licensePlates.length === 0) {
+                html += `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            ${i18n("addresses.noPlateNumbers")}
+                        </td>
+                    </tr>
+                `;
+            } else {
+                for (let i = 0; i < licensePlates.length; i++) {
+                    let p = licensePlates[i];
+                    let flag = modules.addresses.houses.getCountryFlag(p.countryCode);
+                    html += `
+                        <tr data-index="${i}">
+                            <td class="align-middle">
+                                <span style="font-size: 1.15em;" class="mr-1">${flag}</span>
+                                <span class="badge badge-light border text-uppercase" style="font-size: 0.85em;">${escapeHTML(p.countryCode)}</span>
+                            </td>
+                            <td class="align-middle">
+                                <strong class="text-monospace" style="font-size: 1.1em; letter-spacing: 0.5px;">${escapeHTML(p.number)}</strong>
+                            </td>
+                            <td class="align-middle">
+                                ${modules.addresses.houses.formatPlateValidTo(p.validTo)}
+                            </td>
+                            <td class="align-middle text-right text-nowrap">
+                                <button type="button" class="btn btn-xs btn-outline-warning mr-1 edit-plate-btn" data-index="${i}" title="${i18n("edit")}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-danger delete-plate-btn" data-index="${i}" title="${i18n("delete")}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <button type="button" class="btn btn-sm btn-primary" id="${prefx}-add-plate-btn">
+                        <i class="fas fa-plus mr-1"></i> ${i18n("add")}
+                    </button>
+                </div>
+                <div id="${prefx}-plate-form-card" class="card card-outline card-primary mt-3 shadow-none border" style="display: none;">
+                    <div class="card-header py-2">
+                        <h3 class="card-title text-bold" id="${prefx}-plate-form-title" style="font-size: 0.95rem;">${i18n("addresses.addPlateNumber")}</h3>
+                    </div>
+                    <div class="card-body py-2">
+                        <input type="hidden" id="${prefx}-plate-form-index" value="-1">
+                        <div class="form-row">
+                            <div class="form-group col-md-4 mb-2">
+                                <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.plateCountry")} <span class="text-danger">*</span></label>
+                                <select id="${prefx}-plate-country" class="form-control form-control-sm">
+                                    ${modules.addresses.houses.countryOptions.map(c => `<option value="${c.code}">${c.flag} ${c.code} — ${c.name}</option>`).join("")}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3 mb-2">
+                                <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.plateNumber")} <span class="text-danger">*</span></label>
+                                <input type="text" id="${prefx}-plate-number" class="form-control form-control-sm text-uppercase" placeholder="A123BC777" autocomplete="off">
+                            </div>
+                            <div class="form-group col-md-3 mb-2">
+                                <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.plateValidTo")}</label>
+                                <input type="date" id="${prefx}-plate-valid-to-date" class="form-control form-control-sm">
+                            </div>
+                            <div class="form-group col-md-2 mb-2">
+                                <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.time") || "Время"}</label>
+                                <input type="text" id="${prefx}-plate-valid-to-time" class="form-control form-control-sm text-center" placeholder="23:59" maxlength="5" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer py-2 text-right bg-light">
+                        <button type="button" class="btn btn-sm btn-secondary mr-2" id="${prefx}-plate-form-cancel">${i18n("cancel")}</button>
+                        <button type="button" class="btn btn-sm btn-primary" id="${prefx}-plate-form-save">${i18n("save") || "Сохранить"}</button>
+                    </div>
+                </div>
+            `;
+
+            container.html(html);
+
+            $(`#${prefx}-plate-valid-to-time`).off("input").on("input", function () {
+                let val = $(this).val().replace(/[^0-9:]/g, "");
+                $(this).val(val);
+            });
+
+            $(`#${prefx}-add-plate-btn`).off("click").on("click", function () {
+                $(`#${prefx}-plate-form-index`).val("-1");
+                $(`#${prefx}-plate-form-title`).text(i18n("addresses.addPlateNumber"));
+                $(`#${prefx}-plate-country`).val("ru");
+                $(`#${prefx}-plate-number`).val("").removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-to-date`).val("");
+                $(`#${prefx}-plate-valid-to-time`).val("").removeClass("is-invalid");
+                $(`#${prefx}-plate-form-card`).slideDown(150, () => {
+                    $(`#${prefx}-plate-number`).focus();
+                });
+            });
+
+            container.find(".edit-plate-btn").off("click").on("click", function () {
+                let idx = parseInt($(this).data("index"));
+                let p = licensePlates[idx];
+                if (!p) return;
+                $(`#${prefx}-plate-form-index`).val(idx);
+                $(`#${prefx}-plate-form-title`).text(i18n("addresses.editPlateNumber"));
+                $(`#${prefx}-plate-country`).val(p.countryCode || "ru");
+                $(`#${prefx}-plate-number`).val(p.number || "").removeClass("is-invalid");
+                let dateVal = "";
+                let timeVal = "";
+                if (p.validTo) {
+                    let m = String(p.validTo).trim().match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+                    if (m) {
+                        dateVal = m[1];
+                        if (m[2] !== undefined && m[3] !== undefined) {
+                            timeVal = `${m[2]}:${m[3]}`;
+                        }
+                    }
+                }
+                $(`#${prefx}-plate-valid-to-date`).val(dateVal);
+                $(`#${prefx}-plate-valid-to-time`).val(timeVal).removeClass("is-invalid");
+                $(`#${prefx}-plate-form-card`).slideDown(150, () => {
+                    $(`#${prefx}-plate-number`).focus();
+                });
+            });
+
+            container.find(".delete-plate-btn").off("click").on("click", function () {
+                let idx = parseInt($(this).data("index"));
+                let p = licensePlates[idx];
+                if (!p) return;
+                mConfirm(i18n("addresses.confirmDeletePlateNumber", p.number), i18n("confirm"), "danger:" + i18n("delete"), () => {
+                    licensePlates.splice(idx, 1);
+                    renderPlatesList();
+                });
+            });
+
+            $(`#${prefx}-plate-form-cancel`).off("click").on("click", function () {
+                $(`#${prefx}-plate-form-card`).slideUp(150);
+            });
+
+            $(`#${prefx}-plate-form-save`).off("click").on("click", function () {
+                let idx = parseInt($(`#${prefx}-plate-form-index`).val());
+                let numInput = $(`#${prefx}-plate-number`);
+                let num = $.trim(numInput.val()).toUpperCase();
+                let cc = $.trim($(`#${prefx}-plate-country`).val()).toLowerCase() || "ru";
+                let dateVal = $.trim($(`#${prefx}-plate-valid-to-date`).val());
+                let timeInput = $(`#${prefx}-plate-valid-to-time`);
+                let timeVal = $.trim(timeInput.val());
+                let vt = null;
+
+                if (num.length === 0) {
+                    numInput.addClass("is-invalid");
+                    return;
+                }
+                numInput.removeClass("is-invalid");
+
+                if (dateVal !== "") {
+                    if (timeVal !== "") {
+                        let timeMatch = timeVal.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
+                        if (timeMatch) {
+                            let hh = parseInt(timeMatch[1], 10);
+                            let mm = parseInt(timeMatch[2], 10);
+                            let hhStr = hh < 10 ? "0" + hh : "" + hh;
+                            let mmStr = mm < 10 ? "0" + mm : "" + mm;
+                            vt = `${dateVal} ${hhStr}:${mmStr}:00`;
+                        } else {
+                            timeInput.addClass("is-invalid");
+                            return;
+                        }
+                    } else {
+                        vt = dateVal;
+                    }
+                }
+                timeInput.removeClass("is-invalid");
+
+                if (idx >= 0 && licensePlates[idx]) {
+                    licensePlates[idx].number = num;
+                    licensePlates[idx].countryCode = cc;
+                    licensePlates[idx].validTo = vt;
+                } else {
+                    let existingIdx = licensePlates.findIndex(p => p.number.toUpperCase() === num && p.countryCode.toLowerCase() === cc);
+                    if (existingIdx >= 0) {
+                        licensePlates[existingIdx].validTo = vt;
+                    } else {
+                        licensePlates.push({
+                            number: num,
+                            countryCode: cc,
+                            validTo: vt
+                        });
+                    }
+                }
+
+                renderPlatesList();
+            });
+        }
+
+        renderPlatesList();
+    },
+
     getFlatCustomFieldsConfiguration: function () {
         if (modules.addresses.houses.customFieldsConfiguration && Array.isArray(modules.addresses.houses.customFieldsConfiguration.flat)) {
             return modules.addresses.houses.customFieldsConfiguration.flat;
@@ -2725,6 +2970,22 @@
                     }
                 }
 
+                let licensePlates = [];
+                if (Array.isArray(flat.licensePlates)) {
+                    licensePlates = flat.licensePlates.map(p => ({
+                        lpId: p.lpId,
+                        number: String(p.number || p.lp_number || "").toUpperCase().trim(),
+                        countryCode: String(p.countryCode || p.country_code || "ru").toLowerCase().trim(),
+                        validTo: p.validTo || p.valid_to || null,
+                    }));
+                } else if (flat.cars && typeof flat.cars === "string") {
+                    licensePlates = flat.cars.split("\n").map(l => l.trim()).filter(l => l.length > 0).map(n => ({
+                        number: n.toUpperCase(),
+                        countryCode: "ru",
+                        validTo: null,
+                    }));
+                }
+
                 let fields = [
                     {
                         id: "flatId",
@@ -3012,12 +3273,11 @@
                     },
                     {
                         id: "cars",
-                        type: "area",
+                        type: "none",
                         title: false,
                         noHover: true,
-                        placeholder: i18n("addresses.carsNumbers"),
-                        value: flat.cars,
                         tab: i18n("addresses.cars"),
+                        value: `<div id="${prefx}-cars-container" class="p-2" style="min-height: 180px;"></div>`,
                     },
                     {
                         id: "subscribersLimit",
@@ -3063,6 +3323,8 @@
                             result.flatId = flatId;
                             result.apartmentsAndLevels = apartmentsAndLevels;
                             result.houseId = houseId;
+                            result.cars = licensePlates;
+                            result.licensePlates = licensePlates;
                             modules.addresses.houses.doModifyFlat(result, true).done(() => {
                                 if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
                                     PUT("houses", "customFields", "flat", {
@@ -3076,6 +3338,8 @@
                         }
                     },
                 });
+
+                modules.addresses.houses.initPlatesUI(prefx, licensePlates);
 
                 for (let i in entrances_selected) {
                     $("." + prefx + "[data-entrance-id='" + entrances_selected[i] + "']").show();

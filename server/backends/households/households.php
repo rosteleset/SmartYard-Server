@@ -166,6 +166,73 @@
             /**
              * @param $flatId
              *
+             * @return array|false
+             */
+
+            abstract function getFlatPlateNumbers($flatId);
+
+            /**
+             * @param $flatId
+             *
+             * @return array|false
+             */
+
+            abstract function getFlatLicensePlates($flatId);
+
+            /**
+             * @param $flatId
+             * @param $number
+             * @param $validTo
+             * @param $countryCode
+             *
+             * @return boolean
+             */
+
+            abstract function addFlatPlateNumber($flatId, $number, $validTo = null, $countryCode = 'ru');
+
+            /**
+             * @param $flatId
+             * @param $number
+             * @param $countryCode
+             *
+             * @return boolean
+             */
+
+            abstract function removeFlatPlateNumber($flatId, $number, $countryCode = 'ru');
+
+            /**
+             * @param $flatId
+             * @param $cars
+             *
+             * @return boolean
+             */
+
+            abstract function modifyFlatPlateNumbers($flatId, $cars);
+
+            /**
+             * @param $number
+             * @param $validTo
+             * @param $countryCode
+             *
+             * @return boolean
+             */
+
+            abstract function updatePlateValidTo($number, $validTo = null, $countryCode = 'ru');
+
+            /**
+             * @param $flatId
+             * @param $number
+             * @param $validTo
+             * @param $countryCode
+             *
+             * @return boolean
+             */
+
+            abstract function updateFlatPlateValidTo($flatId, $number, $validTo = null, $countryCode = 'ru');
+
+            /**
+             * @param $flatId
+             *
              * @return boolean
              */
 

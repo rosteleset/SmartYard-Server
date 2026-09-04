@@ -173,6 +173,14 @@
     "altCameraId": "Alt. camera #",
     "cars": "Cars",
     "carsNumbers": "Cars numbers (one per line)",
+    "addPlateNumber": "Add license plate",
+    "editPlateNumber": "Edit license plate",
+    "plateNumber": "License plate",
+    "plateCountry": "Country code",
+    "plateValidTo": "Valid until",
+    "plateValidForever": "forever",
+    "noPlateNumbers": "No license plates",
+    "confirmDeletePlateNumber": "Delete license plate \"%s\"?",
     "ext": "Ext. settings",
     "domophoneOutputPrimary": "Primary",
     "domophoneOutputSecondary": "Secondary \"#%s\"",
@@ -438,5 +446,8 @@
                 "DELETE": "Delete"
             }
         }
-    }
+    },
+    "until": "until",
+    "time": "Time",
+    "country_ru": "Russia"
 }

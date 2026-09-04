@@ -28,10 +28,10 @@ if (!$f) {
 }
 
 $households = loadBackend("households");
-$numbers = array_filter(explode("\n", $households->getFlat($flat_id)['cars']));
+$numbers = $households->getFlatPlateNumbers($flat_id);
 
-if (count($numbers) > 0) {
-    response(200, $numbers);
+if ($numbers && count($numbers) > 0) {
+    response(200, array_values($numbers));
 } else {
     response();
 }

@@ -173,6 +173,14 @@
     "altCameraId": "Доп. камера #",
     "cars": "Машины",
     "carsNumbers": "Номера машин (по одному в строке)",
+    "addPlateNumber": "Добавить автомобильный номер",
+    "editPlateNumber": "Редактирование автомобильного номера",
+    "plateNumber": "Автомобильный номер",
+    "plateCountry": "Код страны",
+    "plateValidTo": "Дата окончания действия",
+    "plateValidForever": "бессрочно",
+    "noPlateNumbers": "Нет привязанных автомобильных номеров",
+    "confirmDeletePlateNumber": "Удалить автомобильный номер \"%s\"?",
     "ext": "Доп. настройки",
     "domophoneOutputPrimary": "Основной",
     "domophoneOutputSecondary": "Дополнительный \"#%s\"",
@@ -445,5 +453,8 @@
                 "DELETE": "Удаление"
             }
         }
-    }
+    },
+    "until": "до",
+    "time": "Время",
+    "country_ru": "Россия"
 }
