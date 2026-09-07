@@ -19,6 +19,10 @@
 + increased the maximum height of Select2 dropdowns
 - fixed house state corruption after closing the add-camera form without saving
 + added camera and intercom IDs to device dropdowns and search
+- fixed DVR video stream URLs in incoming-call push notifications
++ added face grouping and group-based face opening event tracking
++ added support for SMTP encryption modes and connection timeout in email configuration
+- fixed license plate association with flats in LPRS opening events
 - fixed Zabbix SIP registration status handling for Akuvox-compatible intercoms
 ```
 
