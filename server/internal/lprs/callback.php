@@ -25,7 +25,6 @@ if ($redis->get($frs_key) != null) {
 
 function openDoor($entrance): void
 {
-    return;
     global $households, $redis, $frs_key, $config;
 
     $domophone_id = $entrance["domophoneId"];
