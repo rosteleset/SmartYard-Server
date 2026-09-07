@@ -19,6 +19,7 @@
 + increased the maximum height of Select2 dropdowns
 - fixed house state corruption after closing the add-camera form without saving
 + added camera and intercom IDs to device dropdowns and search
+- fixed Zabbix SIP registration status handling for Akuvox-compatible intercoms
 ```
 
 ## v1.1.0

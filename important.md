@@ -1,3 +1,12 @@
+# 2026-09-07
+
+Akuvox-compatible Zabbix monitoring templates have been updated to align SIP registration statuses with API values.
+After updating SmartYard, re-import monitoring templates:
+
+```bash
+php /opt/rbt/server/cli.php --init-monitoring-config
+```
+
 # 2026-08-13
 
 The `households::addSubscriber()` method now accepts an optional seventh `$owner` argument:
