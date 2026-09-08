@@ -1,0 +1,10 @@
+{
+    "title": "BASIP CR-02BD",
+    "vendor": "BASIP",
+    "model": "CR-02BD",
+    "class": "CR02BD",
+    "eventServer": "basip",
+    "outputs": 2,
+    "useSmartConfigurator": true,
+    "cmses": []
+}
