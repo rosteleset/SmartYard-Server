@@ -13,8 +13,108 @@
     marker: false,
 
     countryOptions: [
-        { code: "ru", flag: "🇷🇺", name: i18n("addresses.country_ru") },
+        {
+            code: "ru",
+            flag: "🇷🇺",
+            name: i18n("addresses.country_ru"),
+            plateRegex: "^[ABCEHKMOPTXY]\\d{3}[ABCEHKMOPTXY]{2}\\d{2,3}$"
+        },
     ],
+
+    getCountryOption: function (code) {
+        let cc = String(code || "").toLowerCase();
+        return modules.addresses.houses.countryOptions.find(c => c.code === cc) || null;
+    },
+
+    parsePlateRegexRules: function (regexStr) {
+        let clean = String(regexStr || "").replace(/^\^|\$$/g, "");
+        let positionRules = [];
+        let minLen = 0;
+        let maxLen = 0;
+
+        let tokenRegex = /\[([^\]]+)\](?:\{(\d+)(?:,\s*(\d+))?\})?|\\d(?:\{(\d+)(?:,\s*(\d+))?\})?|\\?([A-Za-z0-9])(?:\{(\d+)(?:,\s*(\d+))?\})?/g;
+
+        let match;
+        let segments = [];
+
+        while ((match = tokenRegex.exec(clean)) !== null) {
+            if (match[1] !== undefined) {
+                let classContent = match[1];
+                let min = match[2] ? parseInt(match[2], 10) : 1;
+                let max = match[3] ? parseInt(match[3], 10) : (match[2] ? min : 1);
+                segments.push({
+                    type: 'class',
+                    content: classContent,
+                    min: min,
+                    max: max,
+                    test: ch => new RegExp("^(?:[" + classContent + "])$").test(ch)
+                });
+            } else if (match[0].startsWith("\\d")) {
+                let min = match[4] ? parseInt(match[4], 10) : 1;
+                let max = match[5] ? parseInt(match[5], 10) : (match[4] ? min : 1);
+                segments.push({
+                    type: 'digit',
+                    min: min,
+                    max: max,
+                    test: ch => /^\d$/.test(ch)
+                });
+            } else if (match[6] !== undefined) {
+                let char = match[6];
+                let min = match[7] ? parseInt(match[7], 10) : 1;
+                let max = match[8] ? parseInt(match[8], 10) : (match[7] ? min : 1);
+                segments.push({
+                    type: 'literal',
+                    char: char.toUpperCase(),
+                    min: min,
+                    max: max,
+                    test: ch => ch === char.toUpperCase()
+                });
+            }
+        }
+
+        for (let seg of segments) {
+            for (let k = 0; k < seg.max; k++) {
+                positionRules.push({
+                    test: seg.test,
+                    required: k < seg.min
+                });
+            }
+            minLen += seg.min;
+            maxLen += seg.max;
+        }
+
+        return {
+            positionRules: positionRules,
+            minLen: minLen,
+            maxLen: maxLen
+        };
+    },
+
+    filterPlateNumber: function (value, countryCode) {
+        let country = modules.addresses.houses.getCountryOption(countryCode);
+        let str = String(value || "").toUpperCase();
+        if (!country || !country.plateRegex) {
+            return str;
+        }
+
+        let rules = modules.addresses.houses.parsePlateRegexRules(country.plateRegex);
+        if (!rules || !rules.maxLen) {
+            return str;
+        }
+
+        let filtered = "";
+        for (let i = 0; i < str.length; i++) {
+            if (filtered.length >= rules.maxLen) {
+                break;
+            }
+            let ch = str[i];
+            let rule = rules.positionRules[filtered.length];
+            if (rule && rule.test(ch)) {
+                filtered += ch;
+            }
+        }
+        return filtered;
+    },
 
     getCountryFlag: function (code) {
         let found = modules.addresses.houses.countryOptions.find(c => c.code === String(code || "").toLowerCase());
@@ -141,6 +241,20 @@
 
             container.html(html);
 
+            $(`#${prefx}-plate-number`).off("input").on("input", function () {
+                let inputEl = this;
+                let cc = $.trim($(`#${prefx}-plate-country`).val()).toLowerCase() || "ru";
+                let rawVal = $(inputEl).val();
+                let filtered = modules.addresses.houses.filterPlateNumber(rawVal, cc);
+                if (inputEl.value !== filtered) {
+                    inputEl.value = filtered;
+                    try {
+                        inputEl.setSelectionRange(filtered.length, filtered.length);
+                    } catch (e) {}
+                }
+                $(inputEl).removeClass("is-invalid");
+            });
+
             $(`#${prefx}-plate-valid-to-time`).off("input").on("input", function () {
                 let val = $(this).val().replace(/[^0-9:]/g, "");
                 $(this).val(val);
@@ -212,6 +326,16 @@
                     numInput.addClass("is-invalid");
                     return;
                 }
+
+                let country = modules.addresses.houses.getCountryOption(cc);
+                if (country && country.plateRegex) {
+                    let regex = new RegExp(country.plateRegex);
+                    if (!regex.test(num)) {
+                        numInput.addClass("is-invalid");
+                        return;
+                    }
+                }
+
                 numInput.removeClass("is-invalid");
 
                 if (dateVal !== "") {
