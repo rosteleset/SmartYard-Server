@@ -1248,6 +1248,7 @@
                       frs_links_faces lf
                       inner join subscriber_groups sg
                         on sg.house_subscriber_id = lf.house_subscriber_id
+                        and sg.flat_id = lf.flat_id
                       inner join link_face_subscriber_group lfsg
                         on lfsg.subscriber_group_id = sg.subscriber_group_id
                         and lfsg.face_id = lf.face_id
