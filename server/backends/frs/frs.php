@@ -237,10 +237,10 @@
              * @param string $event_uuid
              * @param bool $is_owner
              *
-             * @return bool
+             * @return array
              */
 
-            abstract public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool;
+            abstract public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): array;
 
             /**
              * List all liked faces in the flat by subscriber or all faces in the flat for owner

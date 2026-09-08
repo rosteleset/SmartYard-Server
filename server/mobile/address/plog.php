@@ -161,7 +161,8 @@
                         }
                         $subscriber_id = (int)$subscriber['subscriberId'];
                         if ($subscriber_id > 0) {
-                            if ($frs->isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $row[plog::COLUMN_EVENT_UUID], $flat_owner)) {
+                            [$is_liked, $face_id] = $frs->isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $row[plog::COLUMN_EVENT_UUID], $flat_owner);
+                            if ($is_liked) {
                                 $e_details['detailX']['flags'][] = frs::FLAG_LIKED;
                                 $e_details['detailX']['flags'][] = frs::FLAG_CAN_DISLIKE;
                                 if ($face_id > 0) {

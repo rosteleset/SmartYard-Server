@@ -964,7 +964,8 @@
              * @inheritDoc
              */
 
-            public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool {
+            public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): array {
+                $registered_face_id = null;
                 $is_liked1 = false;
                 if ($event_uuid !== null) {
                     $query = "select face_id from frs_faces where event_uuid = :event_uuid";
@@ -976,6 +977,9 @@
                             $query .= " and house_subscriber_id = " . $subscriber_id;
                         }
                         $is_liked1 = count($this->db->get($query)) > 0;
+                        if (!$is_liked1) {
+                            $registered_face_id = null;
+                        }
                     }
                 }
                 $is_liked2 = false;
@@ -985,9 +989,12 @@
                         $query .= " and house_subscriber_id = " . $subscriber_id;
                     }
                     $is_liked2 = count($this->db->get($query)) > 0;
+                    if ($is_liked2) {
+                        $registered_face_id = $face_id;
+                    }
                 }
 
-                return $is_liked1 || $is_liked2;
+                return [$is_liked1 || $is_liked2, $registered_face_id];
             }
 
             /**
