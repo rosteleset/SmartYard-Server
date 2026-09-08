@@ -1,3 +1,18 @@
+# 2026-09-08
+
+The return type and result format of `isLikedFlagFrs()` have changed. Custom `frs` backends must update the method
+signature:
+
+```php
+isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): array
+```
+
+The result must contain the liked state and the matched face ID:
+
+```php
+[$is_liked, $registered_face_id]
+```
+
 # 2026-09-07
 
 Akuvox-compatible Zabbix monitoring templates have been updated to align SIP registration statuses with API values.

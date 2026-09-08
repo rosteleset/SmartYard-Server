@@ -24,6 +24,12 @@
 + added support for SMTP encryption modes and connection timeout in email configuration
 - fixed license plate association with flats in LPRS opening events
 - fixed Zabbix SIP registration status handling for Akuvox-compatible intercoms
+# removed the experimental Makefile installer
++ added an experimental justfile-based installer
+! changed the abstract FRS backend isLikedFlagFrs() contract to return the matched face ID
++ added watcherId to the mobile listGroups API response
+- added ownership checks for face group tracking, deletion and clustering
++ added support for BasIP CR-02BD network reader
 ```
 
 ## v1.1.0
