@@ -4362,13 +4362,18 @@
                 $group_data = [];
                 $query = "
                     select
-                        subscriber_group_id,
-                        subscriber_group_name
+                        sg.subscriber_group_id,
+                        sg.subscriber_group_name,
+                        w.house_watcher_id
                     from
-                        subscriber_groups
+                        subscriber_groups sg
+                        left join houses_watchers w
+                            on w.house_flat_id = sg.flat_id
+                            and w.event_type = '5'
+                            and w.event_detail = cast(sg.subscriber_group_id as varchar)
                     where
-                        house_subscriber_id = :subscriber_id
-                        and flat_id = :flat_id
+                        sg.house_subscriber_id = :subscriber_id
+                        and sg.flat_id = :flat_id
                     order by
                         subscriber_group_name
                 ";
@@ -4378,7 +4383,11 @@
                 ]);
                 if ($r) {
                     foreach ($r as $row) {
-                        $group_data[] = ['groupId' => $row['subscriber_group_id'], 'groupName' => $row['subscriber_group_name']];
+                        $item = ['groupId' => $row['subscriber_group_id'], 'groupName' => $row['subscriber_group_name']];
+                        if (isset($row['house_watcher_id'])) {
+                            $item['watcherId'] = $row['house_watcher_id'];
+                        }
+                        $group_data[] = $item;
                     }
                 }
 
