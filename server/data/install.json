@@ -304,5 +304,9 @@
     ],
     "96": [
         "v96_faces_groups.sql"
+    ],
+    "97": [
+        "v97_frs.sql",
+        "v97_lprs.sql"
     ]
 }
