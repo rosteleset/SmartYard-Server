@@ -4449,6 +4449,51 @@
             /**
              * @inheritDoc
              */
+            function getFlatPlateNumbersV2($flatId) {
+                if (!checkInt($flatId)) {
+                    return false;
+                }
+
+                $rows = $this->db->get("
+                    select
+                        lpn.lp_number,
+                        lpn.country_code,
+                        llf.valid_to
+                    from
+                        license_plate_numbers lpn
+                        join link_lp_flat llf on lpn.lp_id = llf.lp_id
+                    where
+                        llf.flat_id = $flatId
+                    order by
+                        lpn.lp_id asc
+                ", false, [
+                    "lp_number" => "plateNumber",
+                    "country_code" => "countryCode",
+                    "valid_to" => "validTo",
+                ]);
+
+                $result = [];
+                if ($rows && is_array($rows)) {
+                    foreach ($rows as $row) {
+                        if (isset($row['plateNumber']) && trim((string)$row['plateNumber']) !== '') {
+                            $item = [
+                                'plateNumber' => $row['plateNumber'],
+                                'countryCode' => isset($row['countryCode']) && trim((string)$row['countryCode']) !== '' ? trim((string)$row['countryCode']) : 'ru',
+                            ];
+                            if (isset($row['validTo'])) {
+                                $item['validTo'] = $row['validTo'];
+                            }
+                            $result[] = $item;
+                        }
+                    }
+                }
+
+                return $result;
+            }
+
+            /**
+             * @inheritDoc
+             */
             function getFlatLicensePlates($flatId) {
                 if (!checkInt($flatId)) {
                     return false;

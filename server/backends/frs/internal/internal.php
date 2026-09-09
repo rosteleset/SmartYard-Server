@@ -301,6 +301,12 @@
                     if (!$this->stopSyncing())
                         return false;
                 }
+
+                $period = $this->config['backends']['frs']['cron_clear_expired_license_plate_numbers'] ?? "5min";
+                if ($part === $period) {
+                    $result = $this->removeExpiredLicensePlateNumbers();
+                }
+
                 return $result;
             }
 
@@ -833,6 +839,25 @@
                 $r2 = $this->syncDataLprs();
 
                 return $r1 && $r2;
+            }
+
+            private function removeExpiredLicensePlateNumbers(): bool {
+                debugMsg("Start of removing expired license plate numbers.");
+                $query = "
+                    delete from
+                        link_lp_flat
+                    where
+                        valid_to is not null
+                        and valid_to < now()
+                ";
+                try {
+                    $this->db->exec($query);
+                    debugMsg("End of removing expired license plate numbers.");
+                    return true;
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+                return false;
             }
 
             /**

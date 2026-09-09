@@ -56,6 +56,12 @@
 
         // Enables or disables face clustering. Supported in FALPRS 1.1.0 and later. Check the installed version with `/opt/falprs/falprs --version`. The default value is false.
         "face_clustering": false,
+
+        // Version of the built-in task tracker system (supported versions: "1", "2"). Defaults to "1".
+        "issues_version": "1",
+
+        // LPRS mobile API version (supported versions: "1", "2"). Version "2" adds the listNumbersV2 method with country code and expiration date/time. Defaults to "1".
+        "lprs_api_version": "1",
     },
 
     "db": {
@@ -268,6 +274,8 @@
 
             // http timeout for API calls
             "http_timeout": 3,
+
+            "cron_clear_expired_license_plate_numbers": "5min",
 
             "servers": [
                 {

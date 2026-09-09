@@ -177,6 +177,14 @@
              * @return array|false
              */
 
+            abstract function getFlatPlateNumbersV2($flatId);
+
+            /**
+             * @param $flatId
+             *
+             * @return array|false
+             */
+
             abstract function getFlatLicensePlates($flatId);
 
             /**

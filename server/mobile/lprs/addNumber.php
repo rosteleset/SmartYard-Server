@@ -11,7 +11,8 @@
  *
  * @apiBody {integer} flatId flat identifier
  * @apiBody {String} number license plate number
- * @apiBody {String} [validTo] expiration date/time
+ * @apiBody {String} [countryCode="ru"] two-letter country code in lowercase
+ * @apiBody {String} [validTo] expiration date/time (ISO 8601)
  */
 
 auth();
@@ -34,11 +35,12 @@ if (!$number) {
 }
 
 $number = trim($number);
+$country_code = strtolower(trim((string)(@$postdata['countryCode'] ?? 'ru'))) ?: 'ru';
 
 // convert and validate license plate number
 require_once __DIR__ . "/helpers/converters.php";
 $number = toLatin($number);
-if (!isValidPlateNumber($number)) {
+if (!isValidPlateNumber($number, $country_code)) {
     response(422, false, i18n("mobile.invalidPlateNumber"));
 }
 
@@ -48,6 +50,6 @@ if ($valid_to !== null && trim((string)$valid_to) === '') {
 }
 
 $households = loadBackend("households");
-$households->addFlatPlateNumber($flat_id, $number, $valid_to);
+$households->addFlatPlateNumber($flat_id, $number, $valid_to, $country_code);
 
 response(204);
