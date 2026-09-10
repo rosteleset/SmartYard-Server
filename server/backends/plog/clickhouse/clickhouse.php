@@ -1622,7 +1622,7 @@
                     }
 
                     //получение кадра события
-                    $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DOMOPHONE]['domophone_output'], $event_data[self::COLUMN_DATE], $event_data[self::COLUMN_EVENT_UUID]);
+                    $image_data = $this->getCamshot(domophone_id: $domophone_id, output: $event_data[self::COLUMN_DOMOPHONE]['domophone_output'], date: $event_data[self::COLUMN_DATE], event_uuid: $event_data[self::COLUMN_EVENT_UUID]);
                     if ($image_data) {
                         if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
