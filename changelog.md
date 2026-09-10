@@ -30,6 +30,7 @@
 + added watcherId to the mobile listGroups API response
 - added ownership checks for face group tracking, deletion and clustering
 + added support for BasIP CR-02BD network reader
++ added support for instance-specific Nginx location snippets
 ```
 
 ## v1.1.0
