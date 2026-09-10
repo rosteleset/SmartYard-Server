@@ -1,3 +1,23 @@
+# 2026-09-09
+
+The abstract `households` backend contract has changed to support structured license plate records. Backend
+implementations that directly extend the abstract `households` backend must implement the following methods, or they
+will fail to load:
+
+```php
+getFlatPlateNumbers($flatId)
+getFlatPlateNumbersV2($flatId)
+getFlatLicensePlates($flatId)
+addFlatPlateNumber($flatId, $number, $validTo = null, $countryCode = 'ru')
+removeFlatPlateNumber($flatId, $number, $countryCode = 'ru')
+modifyFlatPlateNumbers($flatId, $cars)
+updatePlateValidTo($number, $validTo = null, $countryCode = 'ru')
+updateFlatPlateValidTo($flatId, $number, $validTo = null, $countryCode = 'ru')
+```
+
+Backends that extend `households/internal` inherit these methods and require no changes. Existing license plate numbers
+from `houses_flats.cars` are migrated automatically by database migration v97.
+
 # 2026-09-08
 
 The return type and result format of `isLikedFlagFrs()` have changed. Custom `frs` backends must update the method
