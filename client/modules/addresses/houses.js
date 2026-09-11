@@ -2794,6 +2794,25 @@
                 return !value || /^\d+\s*(?:-\s*\d+\s*)?(?:,\s*\d+\s*(?:-\s*\d+\s*)?)*$/.test(value);
             }
 
+            function updatePathViewType(el, id, prefix) {
+                let selected = $(`#${prefix}path`).jstree().get_selected();
+                if (!selected || !selected.length) {
+                    return;
+                }
+
+                let node = $(`#${prefix}path`).jstree().get_node(selected[0]);
+                let type = el.val();
+                PUT("houses", "path", node.id, {
+                    text: node.text,
+                    type: type,
+                }).
+                done(() => {
+                    node.original = node.original || {};
+                    node.original.viewType = type;
+                }).
+                fail(FAIL);
+            }
+
             cardForm({
                 title: i18n("addresses.path"),
                 footer: true,
@@ -2940,6 +2959,7 @@
                             { value: "list", text: i18n("addresses.pathViewTypeList") },
                             { value: "map", text: i18n("addresses.pathViewTypeMap") },
                         ],
+                        select: updatePathViewType,
                     },
                     {
                         id: "pathVisibleForFlats",
@@ -2979,23 +2999,6 @@
                     }
 
                     $(`#${prefix}path`).off("select_node.jstree.cctvPathSettings deselect_node.jstree.cctvPathSettings changed.jstree.cctvPathSettings ready.jstree.cctvPathSettings").on("select_node.jstree.cctvPathSettings deselect_node.jstree.cctvPathSettings changed.jstree.cctvPathSettings ready.jstree.cctvPathSettings", syncPathSettings);
-                    $(`#${prefix}pathViewType`).off("change.cctvType").on("change.cctvType", () => {
-                        let node = selectedPathNode();
-                        if (!node) {
-                            return;
-                        }
-
-                        let type = $(`#${prefix}pathViewType`).val();
-                        PUT("houses", "path", node.id, {
-                            text: node.text,
-                            type: type,
-                        }).
-                        done(() => {
-                            node.original = node.original || {};
-                            node.original.viewType = type;
-                        }).
-                        fail(FAIL);
-                    });
                     $(`#${prefix}pathVisibleForFlats`).off("change.cctvVisibleForFlats").on("change.cctvVisibleForFlats", () => {
                         let node = selectedPathNode();
                         if (!node) {
