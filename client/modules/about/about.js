@@ -3,8 +3,15 @@
 
     init: function () {
         this.menuItem = leftSide("fas fa-fw fa-info-circle", i18n("about.about"), "?#about", "about");
+        let subModules = [];
         if (AVAIL("server", "systemInfo")) {
-            loadSubModules("about", [ "systemInfo" ], this);
+            subModules.push("systemInfo");
+        }
+        if (AVAIL("server", "statistics")) {
+            subModules.push("statistics");
+        }
+        if (subModules.length) {
+            loadSubModules("about", subModules, this);
         } else {
             moduleLoaded("about", this);
         }
