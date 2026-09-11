@@ -38,7 +38,7 @@
 + added support for instance-specific Nginx location snippets
 - fixed camera group visibility filtering for cameras also assigned to entrances
 - fixed saving CCTV group display modes when using the cyclic select button
-- fixed empty group handling in camera trees
+- fixed empty and nested group handling in camera trees
 ```
 
 ## v1.1.0

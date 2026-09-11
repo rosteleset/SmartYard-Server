@@ -37,7 +37,7 @@
     foreach ($ret as $cam) {
         $cam["__allTreeIndex"] = $camera_index++;
         if (isset($cam["path"])) {
-            $paths[] = $households->getPath($cam['path'], true);
+            $paths = array_merge($paths, $households->getPath($cam['path'], true));
             $path_to_cameras[$cam['path']][] = $cam;
         } else {
             $data["cameras"][] = $cam;
@@ -80,7 +80,7 @@
         sortCamerasByPathOrder($data["cameras"]);
     }
 
-    $r = $households->mergePaths($paths);
+    $r = [ $households->mergePaths($paths) ];
 
     if (count($r) && count($r[0])) {
         function traverseTree($tree): array
