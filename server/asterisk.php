@@ -70,6 +70,12 @@
         return $r;
     }
 
+    function sipTlsPort($server) {
+        $port = $server["sip_tls_port"] ?? null;
+
+        return (is_numeric($port) && (int)$port > 0) ? (int)$port : null;
+    }
+
     function isTlsEnabled() {
         static $tlsEnabled = null;
 
@@ -82,7 +88,7 @@
 
                 if (is_array($servers)) {
                     foreach ($servers as $server) {
-                        if (!empty($server["sip_tls_port"])) {
+                        if (sipTlsPort($server)) {
                             $tlsEnabled = true;
                             break;
                         }
@@ -92,15 +98,6 @@
         }
 
         return $tlsEnabled;
-    }
-
-    function addMediaEncryptionIfNeeded(array $params) {
-        if (isTlsEnabled()) {
-            $params["media_encryption"] = "srtp";
-            $params["media_encryption_optimistic"] = "yes";
-        }
-
-        return $params;
     }
 
     function getExtension($extension, $section) {
@@ -136,7 +133,7 @@
 
                 case "endpoints":
                     if ($panel && $panel["credentials"]) {
-                        $params = [
+                        return [
                             "id" => $extension,
                             "auth" => $extension,
                             "outbound_auth" => $extension,
@@ -154,8 +151,6 @@
                             "dtmf_mode" => "rfc4733",
                             "ice_support" => "no",
                         ];
-
-                        return addMediaEncryptionIfNeeded($params);
                     }
                     break;
             }
@@ -212,10 +207,15 @@
                             "allow_subscribe" => "yes",
                             "dtmf_mode" => "rfc4733",
                             "ice_support" => "yes",
-                            "transport" => "transport-tls",
                         ];
 
-                        return addMediaEncryptionIfNeeded($params);
+                        if (isTlsEnabled()) {
+                            $params["transport"] = "transport-tls";
+                            $params["media_encryption"] = "srtp";
+                            $params["media_encryption_optimistic"] = "yes";
+                        }
+
+                        return $params;
                     }
 
                     break;
@@ -255,7 +255,7 @@
 
                 case "endpoints":
                     if ($cred) {
-                        $params = [
+                        return [
                             "id" => $extension,
                             "auth" => $extension,
                             "outbound_auth" => $extension,
@@ -273,8 +273,6 @@
                             "dtmf_mode" => "rfc4733",
                             "ice_support" => "no",
                         ];
-
-                        return addMediaEncryptionIfNeeded($params);
                     }
 
                     break;
@@ -505,6 +503,7 @@
                     $isdn = loadBackend("isdn");
                     $sip = loadBackend("sip");
                     $server = $sip->server("extension", $params["extension"]);
+                    $tlsPort = sipTlsPort($server);
 
                     $_params = [
                         "token" => $params["token"],
@@ -512,8 +511,8 @@
                         "hash" => $params["hash"],
                         "extension" => $params["extension"],
                         "server" => $server["ip"],
-                        "transport" => isset($server["sip_tls_port"])? "tls" : "tcp",//usage TLS protocol if enabled
-                        "port" => $server["sip_tls_port"] ?? $server["sip_tcp_port"] ?? 5060, //usage TLS port, default usage TCP port
+                        "transport" => $tlsPort ? "tls" : "tcp",
+                        "port" => $tlsPort ?? ($server["sip_tcp_port"] ?? 5060),
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
                         "ttl" => 30,

@@ -247,6 +247,8 @@
                     "ip": "<!-- your asterisk server external ip (or domain name) here --!>",
                     "sip_tcp_port": 5060,
                     "sip_udp_port": 5060,
+                    // optional: enable mobile SIP over TLS/SRTP (requires pjsip.tls-sample.conf)
+                    // "sip_tls_port": 5061,
                 },
                 {
                     "title": "SBC server | Kamailio",
