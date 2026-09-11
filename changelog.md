@@ -37,6 +37,7 @@
 + added a mobile event information endpoint and passed event UUIDs to FRS snapshot requests
 + added support for instance-specific Nginx location snippets
 - fixed camera group visibility filtering for cameras also assigned to entrances
+- fixed saving CCTV group display modes when using the cyclic select button
 ```
 
 ## v1.1.0
