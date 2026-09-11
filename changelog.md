@@ -24,6 +24,19 @@
 + added support for SMTP encryption modes and connection timeout in email configuration
 - fixed license plate association with flats in LPRS opening events
 - fixed Zabbix SIP registration status handling for Akuvox-compatible intercoms
+# removed the experimental Makefile installer
++ added an experimental justfile-based installer
+! changed the abstract FRS backend isLikedFlagFrs() contract to return the matched face ID
++ added watcherId to the mobile listGroups API response
+- added ownership checks for face group tracking, deletion and clustering
++ added support for BasIP CR-02BD network reader
+! migrated flat license plates from houses_flats.cars to dedicated tables
++ added country codes and expiration dates for flat license plates
++ added Russian license plate format validation in the web UI
++ added the mobile listNumbersV2 API method for license plate country codes and expiration dates
++ added a mobile event information endpoint and passed event UUIDs to FRS snapshot requests
++ added support for instance-specific Nginx location snippets
+- fixed camera group visibility filtering for cameras also assigned to entrances
 ```
 
 ## v1.1.0

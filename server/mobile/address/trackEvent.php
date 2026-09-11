@@ -34,6 +34,20 @@
         response(422);
     }
 
+    $flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
+    $f = in_array($flat_id, $flat_ids);
+    if (!$f) {
+        response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'flatId'));
+    }
+
+    if ($postdata["eventType"] == 5) {
+        $group_id = $postdata["eventDetail"];
+        $subscriber_id = (int)$subscriber['subscriberId'];
+        if (!$households->groupBelongsToSubscriber($group_id, $subscriber_id)) {
+            response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'eventDetail'));
+        }
+    }
+
     $result = $households->watch($device["deviceId"], $flat_id, $postdata["eventType"], $postdata["eventDetail"], $postdata["comments"]);
     if ($result) {
         response(200, ['watcherId' => (int)$result]);

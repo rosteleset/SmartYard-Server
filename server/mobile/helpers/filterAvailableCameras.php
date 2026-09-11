@@ -107,3 +107,21 @@
             return $filtered;
         }
     }
+
+    if (!function_exists("mobile_append_camera_if_missing")) {
+        function mobile_append_camera_if_missing(array &$cameras, $camera): void
+        {
+            if (!is_array($camera) || !isset($camera["cameraId"])) {
+                return;
+            }
+
+            foreach ($cameras as $existingCamera) {
+                if (is_array($existingCamera) && isset($existingCamera["cameraId"]) &&
+                    $existingCamera["cameraId"] == $camera["cameraId"]) {
+                    return;
+                }
+            }
+
+            $cameras[] = $camera;
+        }
+    }

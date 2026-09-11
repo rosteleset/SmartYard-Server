@@ -301,6 +301,12 @@
                     if (!$this->stopSyncing())
                         return false;
                 }
+
+                $period = $this->config['backends']['frs']['cron_clear_expired_license_plate_numbers'] ?? "5min";
+                if ($part === $period) {
+                    $result = $this->removeExpiredLicensePlateNumbers();
+                }
+
                 return $result;
             }
 
@@ -835,6 +841,25 @@
                 return $r1 && $r2;
             }
 
+            private function removeExpiredLicensePlateNumbers(): bool {
+                debugMsg("Start of removing expired license plate numbers.");
+                $query = "
+                    delete from
+                        link_lp_flat
+                    where
+                        valid_to is not null
+                        and valid_to < now()
+                ";
+                try {
+                    $this->db->exec($query);
+                    debugMsg("End of removing expired license plate numbers.");
+                    return true;
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+                return false;
+            }
+
             /**
              * @inheritDoc
              */
@@ -964,7 +989,8 @@
              * @inheritDoc
              */
 
-            public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool {
+            public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): array {
+                $registered_face_id = null;
                 $is_liked1 = false;
                 if ($event_uuid !== null) {
                     $query = "select face_id from frs_faces where event_uuid = :event_uuid";
@@ -976,6 +1002,9 @@
                             $query .= " and house_subscriber_id = " . $subscriber_id;
                         }
                         $is_liked1 = count($this->db->get($query)) > 0;
+                        if (!$is_liked1) {
+                            $registered_face_id = null;
+                        }
                     }
                 }
                 $is_liked2 = false;
@@ -985,9 +1014,12 @@
                         $query .= " and house_subscriber_id = " . $subscriber_id;
                     }
                     $is_liked2 = count($this->db->get($query)) > 0;
+                    if ($is_liked2) {
+                        $registered_face_id = $face_id;
+                    }
                 }
 
-                return $is_liked1 || $is_liked2;
+                return [$is_liked1 || $is_liked2, $registered_face_id];
             }
 
             /**
@@ -1241,6 +1273,7 @@
                       frs_links_faces lf
                       inner join subscriber_groups sg
                         on sg.house_subscriber_id = lf.house_subscriber_id
+                        and sg.flat_id = lf.flat_id
                       inner join link_face_subscriber_group lfsg
                         on lfsg.subscriber_group_id = sg.subscriber_group_id
                         and lfsg.face_id = lf.face_id

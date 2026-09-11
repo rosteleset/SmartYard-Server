@@ -37,6 +37,10 @@ if (!$group_id) {
 }
 
 $subscriber_id = (int)$subscriber['subscriberId'];
+$households = loadBackend("households");
+if (!$households->groupBelongsToSubscriber($group_id, $subscriber_id)) {
+    response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'groupId'));
+}
 
 $frs = loadBackend("frs");
 if ($frs) {
@@ -57,7 +61,6 @@ if ($frs) {
     }
 }
 
-$households = loadBackend("households");
 $r = $households->deleteSubscriberGroup($subscriber_id, $group_id, $flat_id);
 if ($r === true) {
     response(204);

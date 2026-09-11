@@ -32,7 +32,8 @@
      * @apiBody {Boolean} manualBlock
      * @apiBody {Boolean} adminBlock
      * @apiBody {String} openCode
-     * @apiBody {Boolean} plog
+     * @apiBody {Number=0,1,2,3} plog event log access: 0 - disabled, 1 - visible to all subscribers,
+     * 2 - visible to flat owners only, 3 - disabled by administrator
      * @apiBody {Number} autoOpen
      * @apiBody {Number} whiteRabbit
      * @apiBody {Boolean} sipEnabled
@@ -62,7 +63,8 @@
      * @apiBody {Boolean} [adminBlock]
      * @apiBody {Boolean} [autoBlock]
      * @apiBody {String} [openCode]
-     * @apiBody {Boolean} [plog]
+     * @apiBody {Number=0,1,2,3} [plog] event log access: 0 - disabled, 1 - visible to all subscribers,
+     * 2 - visible to flat owners only, 3 - disabled by administrator
      * @apiBody {Number} [autoOpen]
      * @apiBody {Number} [whiteRabbit]
      * @apiBody {Boolean} [sipEnabled]
