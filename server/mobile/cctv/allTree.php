@@ -95,7 +95,7 @@
                 $t["cameras"] = $path_to_cameras[$tree["id"]];
                 sortCamerasByPathOrder($t["cameras"]);
             }
-            if (isset($tree["children"]) && $tree["children"] !== false)
+            if (isset($tree["children"]) && is_array($tree["children"]))
                 if (count($tree["children"])) {
                     foreach ($tree["children"] as $child) {
                         $t["childGroups"][] = traverseTree($child);
