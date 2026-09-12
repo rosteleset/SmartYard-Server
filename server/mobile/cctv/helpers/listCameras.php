@@ -83,7 +83,7 @@
 
             if ($e['cameraId']) {
                 $cam = $cameras->getCamera($e["cameraId"]);
-                $house['cameras'][] = $cam;
+                mobile_append_camera_if_missing($house['cameras'], $cam);
             }
 
             $house['doors'][$entrance['entranceId']] = $door;

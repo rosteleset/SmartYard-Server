@@ -36,6 +36,8 @@
      * @apiSuccess {String="t","f"} [stories="f"] Stories flag
      * @apiSuccess {String="t","f"} [faceGroups="f"] Face groups flag
      * @apiSuccess {String="t","f"} [faceClustering="f"] Face clustering flag
+     * @apiSuccess {String="1","2"} [issuesVersion=1] Version of the built-in task tracker system
+     * @apiSuccess {String="1","2"} [lprsVersion=1] LPRS mobile API version
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
@@ -132,6 +134,9 @@
 
     // Face Clustering
     $response["faceClustering"] = ($config["mobile"]["face_clustering"] ?? false) ? "t" : "f";
+
+    // LPRS mobile API Version
+    //$response["lprsVersion"] = $config["mobile"]["lprs_api_version"] ?? "1";
 
     mobileCustomize('ext.options.response', $response, [
         'subscriber' => $subscriber,

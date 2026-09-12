@@ -14,6 +14,7 @@
  * @apiSuccess {object[]} - array of objects
  * @apiSuccess {integer} -.groupId group identifier
  * @apiSuccess {string} -.groupName name of the group
+ * @apiSuccess {integer} [-.watcherId] идентификатор наблюдения
  *
  * @apiErrorExample Errors
  * 422 Invalid parameter

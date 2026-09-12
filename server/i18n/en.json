@@ -60,6 +60,8 @@
         "paranoidMsgApp": "%s, %s opened from app by user \"%s\"",
         "paranoidTitleCode": "Door opened by code",
         "paranoidMsgCode": "%s, %s opened by code \"%s\"",
+        "paranoidTitleFace": "Door opened by face",
+        "paranoidMsgFace": "%s, %s opened by face \"%s\"",
         "paranoidTitleLP": "Entrance opened by license plate number",
         "paranoidMsgLP": "%s, %s opened by \"%s\"",
         "overLimit": "Device limit per mobile number exceeded",

@@ -37,8 +37,30 @@ if (!$group_id) {
 }
 
 $subscriber_id = (int)$subscriber['subscriberId'];
-
 $households = loadBackend("households");
+if (!$households->groupBelongsToSubscriber($group_id, $subscriber_id)) {
+    response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'groupId'));
+}
+
+$frs = loadBackend("frs");
+if ($frs) {
+    $flat_owner = false;
+    foreach ($subscriber['flats'] as $flat) {
+        if ($flat['flatId'] == $flat_id) {
+            $flat_owner = ($flat['role'] == 0);
+            break;
+        }
+    }
+    $faces = $frs->getFacesFromGroupIdFrs($group_id);
+    foreach ($faces as $face_id) {
+        if ($flat_owner) {
+            $frs->detachFaceIdFromFlatFrs($face_id, $flat_id);
+        } else {
+            $frs->detachFaceIdFrs($face_id, $subscriber_id);
+        }
+    }
+}
+
 $r = $households->deleteSubscriberGroup($subscriber_id, $group_id, $flat_id);
 if ($r === true) {
     response(204);

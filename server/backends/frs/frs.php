@@ -237,10 +237,10 @@
              * @param string $event_uuid
              * @param bool $is_owner
              *
-             * @return bool
+             * @return array
              */
 
-            abstract public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool;
+            abstract public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): array;
 
             /**
              * List all liked faces in the flat by subscriber or all faces in the flat for owner
@@ -289,14 +289,27 @@
             abstract public function detachFaceFromGroupFrs(int $face_id, int $group_id): bool;
 
             /**
+             * @param int $flat_id
+             * @param int $subscriber_id
+             * @param int $face_id
+             * @return ?int
+             */
+            abstract public function getFaceGroupIdFrs(int $flat_id, int $subscriber_id, int $face_id): ?int;
+
+            /**
+             * @param int $group_id
+             * @return array
+             */
+            abstract public function getFacesFromGroupIdFrs(int $group_id): array;
+
+            /**
              * Build face similarity clusters (applies to FALPRS version 1.1.0 or later)
-             * @param array $faces
              * @param string $prefix_name
              * @param int $subscriber_id
              * @param int $flat_id
              * @return bool
              */
-            abstract public function clusterFacesBySimilarityFrs(array $faces, string $prefix_name, int $subscriber_id, int $flat_id): bool;
+            abstract public function clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id): bool;
 
             //LPRS API methods calls
 

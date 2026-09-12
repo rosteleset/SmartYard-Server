@@ -14,8 +14,8 @@
      * @apiSuccess {object[]} - массив объектов
      * @apiSuccess {integer} -.flatId идентификатор квартиры
      * @apiSuccess {integer} -.watcherId идентификатор наблюдения
-     * @apiSuccess {integer="3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","9 - открытие по номеру машины"} -.eventType тип события
-     * @apiSuccess {string} -.eventDetail детали события (ключ, номер телефона, идентификатор лица, номер машины)
+     * @apiSuccess {integer="3 - открытие ключом","4 - открытие приложением","5 - открытие по лицу","6 - открытие кодом открытия","9 - открытие по номеру машины"} -.eventType тип события
+     * @apiSuccess {string} -.eventDetail детали события (ключ, номер телефона, идентификатор группы лиц, номер машины)
      * @apiSuccess {string} -.comments комментарий наблюдения
      *
      * @apiErrorExample Ошибки
@@ -51,13 +51,17 @@
     foreach ($r as $v) {
         $f_id = (int)$v["flatId"];
         if ($flat_id == $f_id || $flat_id === false) {
-            $data[] = [
+            $item = [
                 "watcherId" => (int)$v["houseWatcherId"],
                 "flatId" => $f_id,
                 "eventType" => (int)$v["eventType"],
                 "eventDetail" => $v["eventDetail"],
                 "comments" => $v["comments"],
             ];
+            if ($item["eventType"] == 5) {
+                $item["comments"] = $households->getSubscriberGroupById($item["eventDetail"]);
+            }
+            $data[] = $item;
         }
     }
 

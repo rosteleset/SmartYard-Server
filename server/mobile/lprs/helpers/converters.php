@@ -20,23 +20,14 @@ function toLatin(string $number): string {
     return strtr($number, RU_TO_LAT);
 }
 
-function isValidPlateNumber(string $number): bool {
-    $digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    $chars = ['A', 'B', 'C', 'E', 'H', 'K', 'M', 'O', 'P', 'T', 'X', 'Y'];
+function isValidPlateNumber(string $number, string $countryCode = 'ru'): bool {
+    $countryCode = strtolower(trim($countryCode));
 
-    if (strlen($number) < 8 || strlen($number) > 9) {
-        return false;
-    }
-
-    for ($i = 0; $i < strlen($number); $i++) {
-        if ($i == 0 || $i == 4 || $i == 5) {
-            if (!in_array($number[$i], $chars)) {
-                return false;
-            }
-        } elseif (!in_array($number[$i], $digits)) {
+    switch ($countryCode) {
+        case 'ru':
+            $regex = '/^[ABCEHKMOPTXY]\d{3}[ABCEHKMOPTXY]{2}\d{2,3}$/';
+            return preg_match($regex, $number) === 1;
+        default:
             return false;
-        }
     }
-
-    return true;
 }

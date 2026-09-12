@@ -10,8 +10,8 @@
      * @apiHeader {string} authorization токен авторизации
      *
      * @apiBody {integer} flatId идентификатор квартиры
-     * @apiBody {integer="3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","9 - открытие по номеру машины"} -.eventType тип события
-     * @apiBody {string} eventDetail детали события (ключ, номер телефона, идентификатор лица, номер машины)
+     * @apiBody {integer="3 - открытие ключом","4 - открытие приложением","5 - открытие по лицу","6 - открытие кодом открытия","9 - открытие по номеру машины"} -.eventType тип события
+     * @apiBody {string} eventDetail детали события (ключ, номер телефона, идентификатор группы лиц, номер машины)
      * @apiBody {string} comments комментарий наблюдения
      *
      * @apiSuccess {Object} [-] объект
@@ -32,6 +32,20 @@
     $flat_id = (int)@$postdata['flatId'];
     if (!$flat_id) {
         response(422);
+    }
+
+    $flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
+    $f = in_array($flat_id, $flat_ids);
+    if (!$f) {
+        response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'flatId'));
+    }
+
+    if ($postdata["eventType"] == 5) {
+        $group_id = $postdata["eventDetail"];
+        $subscriber_id = (int)$subscriber['subscriberId'];
+        if (!$households->groupBelongsToSubscriber($group_id, $subscriber_id)) {
+            response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'eventDetail'));
+        }
     }
 
     $result = $households->watch($device["deviceId"], $flat_id, $postdata["eventType"], $postdata["eventDetail"], $postdata["comments"]);

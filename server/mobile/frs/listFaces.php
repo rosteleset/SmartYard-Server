@@ -10,6 +10,7 @@
      * @apiHeader {string} authorization токен авторизации
      *
      * @apiBody {integer} flatId идентификатор квартиры (адрес)
+     * @apiBody {integer} [groupId] идентификатор группы
      *
      * @apiSuccess {object[]} - массив объектов
      * @apiSuccess {string} -.faceId идентификатор "лица"
@@ -47,16 +48,20 @@
         }
     }
 
+    $group_id = (int)@$postdata['groupId'];
+
     $subscriber_id = (int)$subscriber['subscriberId'];
     $faces = $frs->listFacesFrs($flat_id, $subscriber_id, $flat_owner);
     $result = [];
     foreach ($faces as $face) {
         $item = ['faceId' => strval($face[frs::P_FACE_ID]), 'image' => @$config["api"]["mobile"] . "/address/plogCamshot/" . $face[frs::P_FACE_IMAGE]];
-        $group_id = $face[frs::P_GROUP_ID];
-        if (isset($group_id)) {
-            $item[frs::P_GROUP_ID] = (int)$group_id;
+        $grp_id = $face[frs::P_GROUP_ID] ?? null;
+        if (isset($grp_id)) {
+            $item[frs::P_GROUP_ID] = (int)$grp_id;
         }
-        $result[] = $item;
+        if ($group_id > 0 && isset($grp_id) && $group_id == $grp_id || $group_id == 0) {
+            $result[] = $item;
+        }
     }
 
     if ($result) {

@@ -60,6 +60,7 @@ zabbix_export:
           key: intercom.sipstatus
           delay: '0'
           history: 7d
+          value_type: FLOAT
           trends: 90d
           description: 'Check SIP registration'
           valuemap:
@@ -137,9 +138,13 @@ zabbix_export:
         - uuid: 0954e785c8ef426bbc8affde11a937d6
           name: 'SIP registration status'
           mappings:
+            - value: '3'
+              newvalue: Failure
             - value: '2'
               newvalue: Online
             - value: '1'
-              newvalue: Failure
+              newvalue: Registering
             - value: '0'
               newvalue: Disable
+            - value: '-1'
+              newvalue: Unregistered

@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "c564af3c-e3ef-41fa-9c95-069de11b4b9b",
+    "_postman_id": "fb881430-92dd-431c-8a17-95f8581412f9",
     "name": "SmartYard RBT",
     "description": "Postman collection for [SmartYard-Server / RBT](https://github.com/rosteleset/SmartYard-Server).\n\n## Gateways\n- **Frontend** (`/frontend` или `/api`) — REST API админки, Bearer-токен оператора\n- **Mobile** (`/mobile`) — API мобильного приложения, Bearer accessToken\n- **Internal** (`/internal`) — сервисные callback'и, только localhost\n\n## Быстрый старт\n1. Импортируйте environment `SmartYard-RBT.postman_environment.json`\n2. Укажите `base_url`, `operator_login`, `operator_password`\n3. Выполните **Auth → Frontend Login** — токен сохранится автоматически\n4. Для mobile: **Auth → Mobile requestCode** → **Mobile confirmCode**\n\n## Форматы ответов\n- Frontend: плоский JSON `{ \"field\": ... }` или `{ \"error\": \"...\" }`\n- Mobile/Internal: обёртка `{ \"code\", \"name\", \"message\", \"data\" }`\n\nДокументация: `doc/billing.api.ru.md`, apidoc в `doc/api/` и `doc/mobile/`.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -4417,40 +4417,6 @@
                   }
                 },
                 "description": "## send message\n\n**POST** `/api/inbox/message/:subscriberId`\n\n- **Group:** inbox\n- **Version:** 1.0.0\n- **Name:** sendMessage\n\n### Headers\n- `Authorization` *(String)* — authentication token\n\n### Path parameters\n- `subscriberId` *(Number)*\n\n### Body\n- `title` *(String)*\n- `body` *(String)*\n- `action` *(String)*\n\n### Success response\n- `sent` *(Object)*"
-              }
-            },
-            {
-              "name": "message (DELETE)",
-              "request": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/frontend/inbox/message",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "frontend",
-                    "inbox",
-                    "message"
-                  ]
-                },
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{operator_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "description": "## delete message\n\n**DELETE** `/api/inbox/message/:subscriberId`\n\n- **Group:** inbox\n- **Version:** 1.0.0\n- **Name:** deleteMessage\n\n### Headers\n- `Authorization` *(String)* — authentication token\n\n### Path parameters\n- `subscriberId` *(Number)*\n\n### Body\n- `messageId` *(Number)*\n\n### Success response\n- `operationResult` *(Boolean)*"
               }
             },
             {
@@ -9400,14 +9366,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(optional)* *(integer)* — идентификатор квартиры\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.flatId` *(integer)* — идентификатор квартиры\n- `-.watcherId` *(integer)* — идентификатор наблюдения\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по морде лица\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `-.eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор лица, номер машины)\n- `-.comments` *(string)* — комментарий наблюдения"
+                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(optional)* *(integer)* — идентификатор квартиры\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.flatId` *(integer)* — идентификатор квартиры\n- `-.watcherId` *(integer)* — идентификатор наблюдения\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по лицу\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `-.eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор группы лиц, номер машины)\n- `-.comments` *(string)* — комментарий наблюдения"
               }
             },
             {
@@ -9675,14 +9641,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"day\": \"2026-09-02\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## получить журнал событий объекта за день\n\n**POST** `/mobile/address/plog`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**в работе**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(string)* — идентификатор квартиры\n- `day` *(string=\"Y-m-d\")* — дата (день)\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.date` *(string=\"Y-m-d H:i:s\")* — дата\n- `-.timezone` *(optional)* *(integer)* — часовой пояс (default - Moscow Time)\n- `-.uuid` *(UUID)* — UUID события (уникален)\n- `-.objectId` *(integer)* — идентификатор объекта (домофона)\n- `-.objectType` *(integer=\"0\")* — тип объекта (0 - домофон)\n- `-.objectMechanizma` *(integer=\"0\",\"1\",\"2\")* — идентификатор нагрузки (двери)\n- `-.mechanizmaDescription` *(string)* — описание нагрузки (двери)\n- `-.houseId` *(optional)* *(integer)* — идентификатор дома\n- `-.entranceId` *(optional)* *(integer)* — идентификатор входа\n- `-.cameraId` *(optional)* *(integer)* — идентификатор камеры\n- `-.event` *(string=\"1 - не отвечен\",\"2 - отвечен\",\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по морде лица\",\"6 - открытие кодом открытия\",\"7 - открытие звонком (гость, калитка)\",\"9 - открытие по номеру машины\")* — тип события\n- `-.preview` *(optional)* *(string)* — url картинки\n- `-.previewType` *(integer=\"0\",\"1\",\"2\")* — тип каринки (0 - нет, 1 - DVR, 2 - FRS)\n- `-.detail` *(optional)* *(string)* — непонятная фигня\n- `-.detailX` *(optional)* *(object)* — детализация события\n- `-.detailX.opened` *(optional)* *(string=\"t\",\"f\")* — открыли или нет (1, 2)\n- `-.detailX.key` *(optional)* *(string)* — ключ (3)\n- `-.detailX.phone` *(optional)* *(string)* — телефон (4)\n- `-.detailX.faceId` *(optional)* *(string)* — идентификатор лица (5+)\n- `-.detailX.code` *(optional)* *(string)* — код открытия (6)\n- `-.detailX.phoneFrom` *(optional)* *(string)* — телефон (7)\n- `-.detailX.phoneTo` *(optional)* *(string)* — телефон (7)\n- `-.detailX.flags` *(optional)* *(object)* — доп. флаги\n- `-.detailX.flags.canLike` *(optional)* *(void)* — можно \"лайкать\"\n- `-.detailX.flags.canDislike` *(optional)* *(void)* — можно \"дизлайкать\"\n- `-.detailX.flags.liked` *(optional)* *(void)* — уже \"лайкнуто\"\n- `-.detailX.face` *(optional)* *(object)* — дополнительная информация по распознанному лицу\n- `-.detailX.face.left` *(optional)* *(integer)* — отступ по X\n- `-.detailX.face.top` *(optional)* *(integer)* — отступ по Y\n- `-.detailX.face.width` *(optional)* *(integer)* — ширина\n- `-.detailX.face.height` *(optional)* *(integer)* — высота\n- `-.detailX.vehicle` *(optional)* *(object)* — информация по распознанному автомобильному номеру\n- `-.detailX.vehicle.vehicleBox` *(optional)* *(integer[])* — координаты левого верхнего и правого нижнего угла прямоугольной области, определяющей положение автомобиля\n- `-.detailX.vehicle.plateKeyPoints` *(optional)* *(integer[])* — координаты четырёхугольника, определяющие положение автомобильного номера\n- `-.detailX.vehicle.plateNumber` *(optional)* *(string)* — автомобильный номер"
+                "description": "## получить журнал событий объекта за день\n\n**POST** `/mobile/address/plog`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**в работе**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(string)* — идентификатор квартиры\n- `day` *(string=\"Y-m-d\")* — дата (день)\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.date` *(string=\"Y-m-d H:i:s\")* — дата\n- `-.timezone` *(optional)* *(integer)* — часовой пояс (default - Moscow Time)\n- `-.uuid` *(UUID)* — UUID события (уникален)\n- `-.objectId` *(integer)* — идентификатор объекта (домофона)\n- `-.objectType` *(integer=\"0\")* — тип объекта (0 - домофон)\n- `-.objectMechanizma` *(integer=\"0\",\"1\",\"2\")* — идентификатор нагрузки (двери)\n- `-.mechanizmaDescription` *(string)* — описание нагрузки (двери)\n- `-.houseId` *(optional)* *(integer)* — идентификатор дома\n- `-.entranceId` *(optional)* *(integer)* — идентификатор входа\n- `-.cameraId` *(optional)* *(integer)* — идентификатор камеры\n- `-.event` *(string=\"1 - не отвечен\",\"2 - отвечен\",\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по лицу\",\"6 - открытие кодом открытия\",\"7 - открытие звонком (гость, калитка)\",\"9 - открытие по номеру машины\")* — тип события\n- `-.preview` *(optional)* *(string)* — url картинки\n- `-.previewType` *(integer=\"0\",\"1\",\"2\")* — тип каринки (0 - нет, 1 - DVR, 2 - FRS)\n- `-.detailX` *(optional)* *(object)* — детализация события\n- `-.detailX.opened` *(optional)* *(string=\"t\",\"f\")* — открыли или нет (1, 2)\n- `-.detailX.key` *(optional)* *(string)* — ключ (3)\n- `-.detailX.phone` *(optional)* *(string)* — телефон (4)\n- `-.detailX.faceId` *(optional)* *(string)* — идентификатор лица (5+)\n- `-.detailX.code` *(optional)* *(string)* — код открытия (6)\n- `-.detailX.phoneFrom` *(optional)* *(string)* — телефон (7)\n- `-.detailX.phoneTo` *(optional)* *(string)* — телефон (7)\n- `-.detailX.flags` *(optional)* *(object)* — доп. флаги\n- `-.detailX.flags.canLike` *(optional)* *(void)* — можно \"лайкать\"\n- `-.detailX.flags.canDislike` *(optional)* *(void)* — можно \"дизлайкать\"\n- `-.detailX.flags.liked` *(optional)* *(void)* — уже \"лайкнуто\"\n- `-.detailX.groupId` *(optional)* *(integer)* — идентификатор группы пользователя\n- `-.detailX.face` *(optional)* *(object)* — дополнительная информация по распознанному лицу\n- `-.detailX.face.left` *(optional)* *(integer)* — отступ по X\n- `-.detailX.face.top` *(optional)* *(integer)* — отступ по Y\n- `-.detailX.face.width` *(optional)* *(integer)* — ширина\n- `-.detailX.face.height` *(optional)* *(integer)* — высота\n- `-.detailX.vehicle` *(optional)* *(object)* — информация по распознанному автомобильному номеру\n- `-.detailX.vehicle.vehicleBox` *(optional)* *(integer[])* — координаты левого верхнего и правого нижнего угла прямоугольной области, определяющей положение автомобиля\n- `-.detailX.vehicle.plateKeyPoints` *(optional)* *(integer[])* — координаты четырёхугольника, определяющие положение автомобильного номера\n- `-.detailX.vehicle.plateNumber` *(optional)* *(string)* — автомобильный номер"
               }
             },
             {
@@ -10005,14 +9971,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"eventType\": 5,\n  \"eventDetail\": \"1\",\n  \"comments\": \"Demo face group\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(integer)* — идентификатор квартиры\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по морде лица\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор лица, номер машины)\n- `comments` *(string)* — комментарий наблюдения\n\n### Success response\n- `-` *(optional)* *(Object)* — объект\n- `-.watcherId` *(Number)* — watcherId"
+                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(integer)* — идентификатор квартиры\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по лицу\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор группы лиц, номер машины)\n- `comments` *(string)* — комментарий наблюдения\n\n### Success response\n- `-` *(optional)* *(Object)* — объект\n- `-.watcherId` *(Number)* — watcherId"
               }
             },
             {
@@ -10177,7 +10143,7 @@
                     }
                   }
                 },
-                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(integer)* — идентификатор квартиры\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по морде лица\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор лица, номер машины)\n- `comments` *(string)* — комментарий наблюдения\n\n### Success response\n- `-` *(optional)* *(Object)* — объект\n- `-.watcherId` *(Number)* — watcherId"
+                "description": "## track an event\n\n**POST** `/mobile/address/trackEvent`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(integer)* — идентификатор квартиры\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по лицу\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор группы лиц, номер машины)\n- `comments` *(string)* — комментарий наблюдения\n\n### Success response\n- `-` *(optional)* *(Object)* — объект\n- `-.watcherId` *(Number)* — watcherId"
               }
             },
             {
@@ -10232,7 +10198,7 @@
                     }
                   }
                 },
-                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(optional)* *(integer)* — идентификатор квартиры\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.flatId` *(integer)* — идентификатор квартиры\n- `-.watcherId` *(integer)* — идентификатор наблюдения\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по морде лица\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `-.eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор лица, номер машины)\n- `-.comments` *(string)* — комментарий наблюдения"
+                "description": "## get the list of the tracked events\n\n**POST** `/mobile/address/getTrackedEvents`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**должен работать**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(optional)* *(integer)* — идентификатор квартиры\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.flatId` *(integer)* — идентификатор квартиры\n- `-.watcherId` *(integer)* — идентификатор наблюдения\n- `-.eventType` *(integer=\"3 - открытие ключом\",\"4 - открытие приложением\",\"5 - открытие по лицу\",\"6 - открытие кодом открытия\",\"9 - открытие по номеру машины\")* — тип события\n- `-.eventDetail` *(string)* — детали события (ключ, номер телефона, идентификатор группы лиц, номер машины)\n- `-.comments` *(string)* — комментарий наблюдения"
               }
             }
           ]
@@ -11171,14 +11137,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"prefixName\": \"group\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## cluster faces by similarity\n\n**POST** `/mobile/frs/clusterFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**ready**\n\n### Headers\n- `authorization` *(string)* — authorization token\n\n### Body\n- `faces` *(string[])* — array of face identifiers\n- `flatId` *(integer)* — flat identifier\n- `prefixName` *(string)* — prefix used to generate group names (e.g. \"group\" → \"group 1\", \"group 2\")."
+                "description": "## clusters ungrouped faces by similarity\n\n**POST** `/mobile/frs/clusterFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**ready**\n\n### Headers\n- `authorization` *(string)* — authorization token\n\n### Body\n- `flatId` *(integer)* — flat identifier\n- `prefixName` *(string)* — prefix used to generate group names (e.g. \"group\" → \"group 1\", \"group 2\")."
               }
             },
             {
@@ -11391,14 +11357,14 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"flatId\": 1,\n  \"groupId\": 1\n}",
                   "options": {
                     "raw": {
                       "language": "json"
                     }
                   }
                 },
-                "description": "## список \"лиц\"\n\n**POST** `/mobile/frs/listFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**в работе**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(integer)* — идентификатор квартиры (адрес)\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.faceId` *(string)* — идентификатор \"лица\"\n- `-.image` *(string)* — url картинки\n- `-.groupId` *(optional)* *(integer)* — идентификатор группы"
+                "description": "## список \"лиц\"\n\n**POST** `/mobile/frs/listFaces`\n\n- **Group:** FRS\n- **Version:** 1.0.0\n\n### Description\n**в работе**\n\n### Headers\n- `authorization` *(string)* — токен авторизации\n\n### Body\n- `flatId` *(integer)* — идентификатор квартиры (адрес)\n- `groupId` *(optional)* *(integer)* — идентификатор группы\n\n### Success response\n- `-` *(object[])* — массив объектов\n- `-.faceId` *(string)* — идентификатор \"лица\"\n- `-.image` *(string)* — url картинки\n- `-.groupId` *(optional)* *(integer)* — идентификатор группы"
               }
             }
           ]
@@ -13301,7 +13267,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{}",
+                  "raw": "{\n  \"groupId\": 1,\n  \"flatId\": 1\n}",
                   "options": {
                     "raw": {
                       "language": "json"

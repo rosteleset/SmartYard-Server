@@ -201,6 +201,9 @@ server {
         location /.well-known {
                 root /var/www/html;
         }
+
+        # Instance-specific locations
+        include /etc/nginx/rbt.d/*.conf;
 }
 
 ## Event webhook for sputnik

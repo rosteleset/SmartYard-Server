@@ -1,3 +1,67 @@
+# 2026-09-09
+
+The abstract `households` backend contract has changed to support structured license plate records. Backend
+implementations that directly extend the abstract `households` backend must implement the following methods, or they
+will fail to load:
+
+```php
+getFlatPlateNumbers($flatId)
+getFlatPlateNumbersV2($flatId)
+getFlatLicensePlates($flatId)
+addFlatPlateNumber($flatId, $number, $validTo = null, $countryCode = 'ru')
+removeFlatPlateNumber($flatId, $number, $countryCode = 'ru')
+modifyFlatPlateNumbers($flatId, $cars)
+updatePlateValidTo($number, $validTo = null, $countryCode = 'ru')
+updateFlatPlateValidTo($flatId, $number, $validTo = null, $countryCode = 'ru')
+```
+
+Backends that extend `households/internal` inherit these methods and require no changes. Existing license plate numbers
+from `houses_flats.cars` are migrated automatically by database migration v97.
+
+# 2026-09-08
+
+The return type and result format of `isLikedFlagFrs()` have changed. Custom `frs` backends must update the method
+signature:
+
+```php
+isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): array
+```
+
+The result must contain the liked state and the matched face ID:
+
+```php
+[$is_liked, $registered_face_id]
+```
+
+# 2026-09-07
+
+Akuvox-compatible Zabbix monitoring templates have been updated to align SIP registration statuses with API values.
+After updating SmartYard, re-import monitoring templates:
+
+```bash
+php /opt/rbt/server/cli.php --init-monitoring-config
+```
+
+# 2026-09-02
+
+Face grouping and group-based face opening event tracking have changed the custom backend contracts.
+Custom `frs` backends must implement `getFaceGroupIdFrs()` and `getFacesFromGroupIdFrs()`,
+and update the `clusterFacesBySimilarityFrs()` signature:
+
+```php
+getFaceGroupIdFrs(int $flat_id, int $subscriber_id, int $face_id): ?int
+getFacesFromGroupIdFrs(int $group_id): array
+clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id): bool
+```
+
+Custom `households` backends must implement:
+
+```php
+getSubscriberGroupById($subscriberGroupId): ?string
+```
+
+Backends that inherit the implementations from `frs/internal` and `households/internal` require no changes.
+
 # 2026-08-13
 
 The `households::addSubscriber()` method now accepts an optional seventh `$owner` argument:
@@ -132,7 +196,8 @@ Then add the recommended `autocompact` value for the `files` backend in `/opt/rb
 }
 ```
 
-This enables automatic weekly disk space reclamation in MongoDB after file deletions and helps reduce long-term GridFS fragmentation.
+This enables automatic weekly disk space reclamation in MongoDB after file deletions and helps reduce long-term GridFS
+fragmentation.
 
 # 2026-01-05
 
@@ -140,7 +205,8 @@ Since version 0.0.19e, backend tt type "mongo" renamed to "internal" (need modif
 
 # 2025-11-08
 
-Since version 0.0.18c, rbt/install/systemd/mongodb.service renamed to mongod.service (check your /etc/systemd/system folder)
+Since version 0.0.18c, rbt/install/systemd/mongodb.service renamed to mongod.service (check your /etc/systemd/system
+folder)
 
 # 2025-10-31
 
@@ -150,7 +216,8 @@ Since version 0.0.17, backend issue_adapter renamed to issueAdapter (need modify
 
 # 2025-09-03
 
-Since version 0.0.15, server configs "max_allowed_tokens" and "token_idle_ttl" moved from "redis" section to "backends->authentication" section
+Since version 0.0.15, server configs "max_allowed_tokens" and "token_idle_ttl" moved from "redis" section to
+"backends->authentication" section
 
 # 2025-08-14
 
@@ -163,10 +230,12 @@ rm /opt/rbt/client/version.app
 
 ONCE **before** updating to versions 0.0.11+ (to avoid git conflicts),
 and
+
 ```
 php /opt/rbt/server/cli.php --init-db
 ln -sf /opt/rbt/version /opt/rbt/client/version.app
 ```
+
 ONCE **after** updating
 
 # 2025-04-11

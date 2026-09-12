@@ -12,6 +12,33 @@
 ```diff
 - fixed authenticated snapshot URL generation for Flussonic and Sesame DVR servers when secure_token is configured
 + added a DVR service-token customization hook for requests outside a subscriber context
+- fixed SIP event parsing for the updated Ufanet log format
++ added archive range support for Forpost media servers
++ documented bulk installation and activation of event services
++ added Postman API collections
++ increased the maximum height of Select2 dropdowns
+- fixed house state corruption after closing the add-camera form without saving
++ added camera and intercom IDs to device dropdowns and search
+- fixed DVR video stream URLs in incoming-call push notifications
++ added face grouping and group-based face opening event tracking
++ added support for SMTP encryption modes and connection timeout in email configuration
+- fixed license plate association with flats in LPRS opening events
+- fixed Zabbix SIP registration status handling for Akuvox-compatible intercoms
+# removed the experimental Makefile installer
++ added an experimental justfile-based installer
+! changed the abstract FRS backend isLikedFlagFrs() contract to return the matched face ID
++ added watcherId to the mobile listGroups API response
+- added ownership checks for face group tracking, deletion and clustering
++ added support for BasIP CR-02BD network reader
+! migrated flat license plates from houses_flats.cars to dedicated tables
++ added country codes and expiration dates for flat license plates
++ added Russian license plate format validation in the web UI
++ added the mobile listNumbersV2 API method for license plate country codes and expiration dates
++ added a mobile event information endpoint and passed event UUIDs to FRS snapshot requests
++ added support for instance-specific Nginx location snippets
+- fixed camera group visibility filtering for cameras also assigned to entrances
+- fixed saving CCTV group display modes when using the cyclic select button
+- fixed empty and nested group handling in camera trees
 ```
 
 ## v1.1.0

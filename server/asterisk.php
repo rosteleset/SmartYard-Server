@@ -501,7 +501,7 @@
                                 $_params["videoServer"] = $dvr["type"];
                                 $_params["videoToken"] = $dvrs->getDVRTokenForCam($camera, -1);
                                 $_params["videoType"] = $domophone["video"];
-                                $_params["videoStream"] = $camera["dvrStream"];
+                                $_params["videoStream"] = $dvrs->getDVRStreamURLForCam($camera);
                             }
                         }
                     }

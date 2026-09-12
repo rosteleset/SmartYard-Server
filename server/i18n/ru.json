@@ -60,6 +60,8 @@
         "paranoidMsgApp": "%s, %s открыта из приложения пользователем \"%s\"",
         "paranoidTitleCode": "Открытие двери по коду",
         "paranoidMsgCode": "%s, %s открыта кодом \"%s\"",
+        "paranoidTitleFace": "Открытие двери по лицу",
+        "paranoidMsgFace": "%s, %s открыта по лицу \"%s\"",
         "paranoidTitleLP": "Открытие въезда по номеру автомобиля",
         "paranoidMsgLP": "%s, %s открыт по номеру \"%s\"",
         "overLimit": "Превышен лимит устройств на мобильный номер",
