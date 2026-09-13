@@ -1,0 +1,16 @@
+/* Scoped to the entrance panel; native apartment forms use their own styles. */
+.virtual-intercom-form .table { table-layout: fixed; width: 100%; }
+.virtual-intercom-form .tdform, .virtual-intercom-form .tdform-right {
+  white-space: normal !important; overflow-wrap: anywhere; width: auto !important;
+}
+.virtual-intercom-form .card-header { display: flex; align-items: flex-start; }
+.virtual-intercom-form .card-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.virtual-intercom-links { display: flex; flex-wrap: wrap; gap: .5rem; }
+.virtual-intercom-links > .btn { margin: 0 !important; max-width: 100%; white-space: normal; }
+.virtual-intercom-qr canvas, .virtual-intercom-qr img { max-width: 100%; height: auto; }
+@media (max-width: 575.98px) {
+  .virtual-intercom-form .table, .virtual-intercom-form tbody, .virtual-intercom-form tfoot,
+  .virtual-intercom-form tr, .virtual-intercom-form td { display: block; width: 100% !important; }
+  .virtual-intercom-form .tdform { padding-bottom: .25rem; }
+  .virtual-intercom-form .tdform + .tdform-right { padding-top: .25rem; }
+}

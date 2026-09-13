@@ -21,7 +21,11 @@
             this.menuItem = leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "?#addresses", "households");
         }
 
-        loadSubModules("addresses", JSON.parse(JSON.stringify(this.subModules)), this);
+        modules.addresses = this;
+        $.getScript('modules/addresses/virtualIntercom/virtualIntercom.js?ver=' + version)
+            .done(() => this.virtualIntercom.ready.always(() =>
+                loadSubModules('addresses', [...this.subModules], this)))
+            .fail(FAIL);
     },
 
     allLoaded: function () {

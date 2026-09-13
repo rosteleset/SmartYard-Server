@@ -681,6 +681,8 @@ extensions = {
     },
 }
 
+require 'virtual-intercom.extensions'
+
 if custom ~= nil then
     for i, c in ipairs(custom) do
         require(c)

@@ -3875,6 +3875,12 @@
                                         },
                                     },
                                     {
+                                        icon: "fas fa-qrcode",
+                                        title: i18n("addresses.virtualIntercom"),
+                                        hidden: !AVAIL("houses", "virtualIntercom", "GET"),
+                                        click: entranceId => modules.addresses.virtualIntercom.edit(entranceId),
+                                    },
+                                    {
                                         icon: "fas fa-video",
                                         title: i18n("camera"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].cameraId,

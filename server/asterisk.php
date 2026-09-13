@@ -58,6 +58,8 @@
         exit(1);
     }
 
+    require_once __DIR__ . '/virtual-intercom/Asterisk.php';
+
     function paramsToResponse($params) {
         $r = "";
 
@@ -72,6 +74,9 @@
 
     function getExtension($extension, $section) {
         global $redis;
+
+        $virtual = \VirtualIntercom\Asterisk::endpoint($extension, $section);
+        if ($virtual !== null) return $virtual;
 
         // domophone panel
         if ($extension[0] === "1" && strlen($extension) === 6) {
@@ -322,6 +327,10 @@
             $params = json_decode(file_get_contents("php://input"), true);
 
             switch ($path[1]) {
+                case "virtual-intercom":
+                    echo json_encode(\VirtualIntercom\Asterisk::request($params));
+                    break;
+
                 case "log":
                     logMsg($params);
 
@@ -462,6 +471,7 @@
                     break;
 
                 case "push":
+                    if (\VirtualIntercom\Asterisk::push($params)) break;
                     $isdn = loadBackend("isdn");
                     $sip = loadBackend("sip");
                     $server = $sip->server("extension", $params["extension"]);
