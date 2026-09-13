@@ -264,6 +264,12 @@
             "stuns": [
                 "stun:stun.l.google.com:19302",
             ],
+            // Optional credentials for browser TURN entries without username/credential.
+            // URLs come from client config asterisk.ice. Default: shared Redis, realm "rbt".
+            // "turn": {
+            //     "realm": "rbt", // must match coturn and Asterisk's realm
+            //     "secret": "...", // optional coturn static-auth-secret; replaces Redis auth
+            // },
         },
 
         "frs": {
