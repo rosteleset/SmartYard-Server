@@ -187,6 +187,13 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    margin: 0;
+                    line-height: 1;
+                    pointer-events: none;
+                }
+
+                .flat-plog-preview-wrap .flat-plog-preview-loading .fa-spinner {
+                    margin: 0;
                 }
 
                 .flat-plog-preview-wrap .flat-plog-preview-thumb {
@@ -682,7 +689,7 @@
         let missing = escapeHTML(i18n("addresses.plogNoPreview"));
         return `
             <div class="flat-plog-preview-wrap">
-                <i class="fas fa-spinner fa-spin flat-plog-preview-loading text-secondary"></i>
+                <div class="flat-plog-preview-loading text-secondary"><i class="fas fa-spinner fa-spin"></i></div>
                 <span class="flat-plog-preview-missing text-muted small" style="display: none;">${missing}</span>
                 <img class="flat-plog-preview-thumb" src="${escapeHTML(url)}" data-url="${escapeHTML(url)}" alt="" title="${escapeHTML(i18n("addresses.plogPreview"))}">
             </div>`;
