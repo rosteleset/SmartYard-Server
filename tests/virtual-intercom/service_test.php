@@ -10,6 +10,7 @@ final class MemoryRedis {
     public function set($key, $value, $options) { if (isset($this->data[$key])) return false; $this->data[$key] = $value; return true; }
     public function del(...$keys) { foreach ($keys as $key) unset($this->data[$key]); }
     public function eval($script, $args, $keys) {
+        if (str_contains($script, 'DECR')) return isset($this->data[$args[0]]) ? --$this->data[$args[0]] : 0;
         if (str_contains($script, 'SETEX')) {
             if (($this->data[$args[0]] ?? null) !== $args[2]) return 0;
             $this->data[$args[1]] = $args[4]; return 1;

@@ -18,7 +18,7 @@ try {
         $result = $service->metadata((string)($_GET['panel'] ?? ''));
     } elseif ($method === 'GET' && $action === 'status') {
         $result = $service->status($id, $token);
-    } elseif ($method === 'POST' && $action === 'session') {
+    } elseif ($method === 'POST' && in_array($action, ['session', 'open-code'], true)) {
         if (($_SERVER['CONTENT_TYPE'] ?? '') !== 'application/json') {
             throw new RuntimeException('Ожидается JSON', 415);
         }
@@ -27,7 +27,14 @@ try {
             throw new RuntimeException('Слишком большой запрос', 413);
         }
         $data = json_decode($body, true, 8, JSON_THROW_ON_ERROR);
-        $result = $service->create((string)($data['panel'] ?? ''), (int)($data['flatId'] ?? 0), $_SERVER['REMOTE_ADDR']);
+        if ($action === 'open-code') {
+            if (!is_string($data['panel'] ?? null) || !is_string($data['code'] ?? null)) {
+                throw new RuntimeException('Некорректный запрос', 400);
+            }
+            $result = $service->openByCode($data['panel'], $data['code'], $_SERVER['REMOTE_ADDR']);
+        } else {
+            $result = $service->create((string)($data['panel'] ?? ''), (int)($data['flatId'] ?? 0), $_SERVER['REMOTE_ADDR']);
+        }
     } elseif ($method === 'POST' && $action === 'frame') {
         $service->frame($id, $token, file_get_contents('php://input', false, null, 0, 180001));
     } elseif ($method === 'POST' && $action === 'cancel') {

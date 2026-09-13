@@ -74,6 +74,9 @@ body:not(.busy) .controls{grid-column:1/-1;justify-self:center;width:100%;max-wi
 .keypad button{border:1px solid transparent;background:var(--panel);border-radius:10px;height:48px;color:var(--foreground);font-size:28px;line-height:1;font-weight:400}
 .keypad button:hover,.number-box button:hover{background:var(--primary-soft);color:var(--primary-ink)}
 .keypad button:active{background:#d9ebff;border-color:var(--primary-border)}
+.keypad #code-mode{color:var(--primary-ink)}
+#code-mode svg{width:26px;height:26px;vertical-align:middle}
+#code-mode[aria-pressed="true"]{background:var(--primary-soft);border-color:var(--primary-border)}
 .status{min-height:48px;display:flex;justify-content:center;align-items:center;text-align:center;overflow-wrap:anywhere;font-size:14px;line-height:1.35;padding:12px 0;margin-top:auto;color:var(--muted)}
 .status.error{color:#c52620}
 .status.success{color:#158449;font-weight:600}
