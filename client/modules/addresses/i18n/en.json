@@ -1,4 +1,6 @@
 {
+    "customFields.cctv.tab": "Video surveillance",
+    "customFields.cctv.adminCamBlock.fieldDisplay": "Administrative camera block",
     "addresses": "\"Smart\" Yard",
     "address": "Address",
     "addHouse": "Add house",
