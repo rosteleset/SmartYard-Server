@@ -6,6 +6,7 @@
     subModules: [
         "keys",
         "cms",
+        "virtualIntercom",
         "houses",
         "domophones",
         "cameras",
@@ -21,11 +22,7 @@
             this.menuItem = leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "?#addresses", "households");
         }
 
-        modules.addresses = this;
-        $.getScript('modules/addresses/virtualIntercom/virtualIntercom.js?ver=' + version)
-            .done(() => this.virtualIntercom.ready.always(() =>
-                loadSubModules('addresses', [...this.subModules], this)))
-            .fail(FAIL);
+        loadSubModules("addresses", JSON.parse(JSON.stringify(this.subModules)), this);
     },
 
     allLoaded: function () {

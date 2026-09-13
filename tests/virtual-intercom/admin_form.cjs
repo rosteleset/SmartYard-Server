@@ -7,7 +7,7 @@ const output=process.env.VI_BROWSER_OUTPUT || '/tmp/virtual-intercom-admin-form'
 const libraries={'adminlte.min.css':'AdminLTE/dist/css/adminlte.min.css','jquery.min.js':'AdminLTE/plugins/jquery/jquery.min.js','jquery-ui.min.js':'AdminLTE/plugins/jquery-ui/jquery-ui.min.js','bootstrap.bundle.min.js':'AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js','qrcode.min.js':'qrcodejs/qrcode.min.js'};
 const read=p=>fs.readFileSync(path.join(repo,p),'utf8');
 const fn=(file,name)=>read(file).match(new RegExp('^function '+name+'\\([\\s\\S]*?^}', 'm'))[0];
-const translations={...JSON.parse(read('client/modules/addresses/i18n/ru.json')),...JSON.parse(read('client/modules/addresses/virtualIntercom/i18n/ru.json'))};
+const translations=JSON.parse(read('client/modules/addresses/i18n/ru.json'));
 const helpers=['xblur','autoZ','escapeHTML','parseIntEx'].map(n=>fn('client/js/utils.js',n)).join('\n')+'\n'+fn('client/js/widgets.js','modal');
 const bootstrap=`
 window.version='fixture';window.config={defaultLanguage:'ru'};window.lStore=()=>null;window.lang={addresses:{}};
@@ -33,7 +33,6 @@ await page.route('**/*',async route=>{
  if(u.hostname!=='virtual-intercom.test') throw Error('Unexpected external request');
  if(u.pathname==='/') return route.fulfill({contentType:'text/html',body:'<!doctype html><html lang="ru"><meta charset="utf-8"><link rel="stylesheet" href="/adminlte.min.css"><body><div class="modal p-0" id="modal" role="dialog"><div class="modal-dialog p-0" role="document" style="margin-top:25px"><div class="modal-content p-0" id="modalBody"></div></div></div></body></html>'});
  if(u.pathname.endsWith('/virtualIntercom/style.css'))return route.fulfill({path:path.join(repo,'client/modules/addresses/virtualIntercom/style.css')});
- if(u.pathname.endsWith('/virtualIntercom/i18n/ru.json'))return route.fulfill({json:translations});
  const name=path.basename(u.pathname);if(['adminlte.min.css','jquery.min.js','jquery-ui.min.js','bootstrap.bundle.min.js','qrcode.min.js'].includes(name))return route.fulfill({path:process.env.VI_ADMIN_LIBS ? path.join(process.env.VI_ADMIN_LIBS,name) : path.join(repo,'client/lib',libraries[name])});
  return route.fulfill({status:204});
 });
@@ -45,8 +44,7 @@ await page.addScriptTag({content:read('client/js/phpjs.js')});
 await page.addScriptTag({content:read('client/js/clipboard.min.js')});
 await page.addScriptTag({content:helpers+'\n'+bootstrap});
 await page.addScriptTag({content:read('client/js/form.js')});
-await page.addScriptTag({content:read('client/modules/addresses/virtualIntercom/virtualIntercom.js')});
-await page.evaluate(()=>window.module.ready);
+await page.addScriptTag({content:read('client/modules/addresses/virtualIntercom.js')});
 await page.evaluate(()=>window.module.edit(112));
 const field=id=>page.locator('[id$="-'+id+'"]');
 assert.equal(await field('allowAllFlats').inputValue(),'1');

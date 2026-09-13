@@ -1,10 +1,6 @@
 ({
     init: function () {
-        const assets = 'modules/addresses/virtualIntercom/';
-        $('<link>', {rel: 'stylesheet', href: assets + 'style.css?ver=' + version}).appendTo('head');
-        const locale = lStore('_lang') || config.defaultLanguage || 'ru';
-        this.ready = $.getJSON(assets + 'i18n/' + locale + '.json?ver=' + version)
-            .done(translations => Object.assign(lang.addresses, translations));
+        $('<link>', {rel: 'stylesheet', href: 'modules/addresses/virtualIntercom/style.css?ver=' + version}).appendTo('head');
         moduleLoaded('addresses.virtualIntercom', this);
     },
 
