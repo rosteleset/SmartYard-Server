@@ -120,13 +120,63 @@ final class Service
         }
     }
 
-    public function limit(string $name, int $maximum, int $seconds): void
+    public function limit(string $name, int $maximum, int $seconds): string
     {
         $key = 'VI:RATE:' . hash('sha256', $name) . ':' . intdiv(time(), $seconds);
         $count = $this->redis->eval("local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],ARGV[1]) end; return n", [$key, $seconds + 1], 1);
+        if (!is_int($count) || $count < 1) $this->fail('Сервис временно недоступен', 503);
         if ($count > $maximum) {
             $this->fail('Слишком много попыток. Подождите немного.', 429);
         }
+        return $key;
+    }
+
+    public function openByCode(string $slug, string $code, string $ip): array
+    {
+        $panel = $this->panel($slug);
+        $entranceId = (int)$panel['entranceId'];
+        // Reserve attempts atomically before checking the code. Successful
+        // credentials do not consume the budget for failed guesses.
+        $attempts = [$this->limit('code-ip:' . $ip, 5, 300), $this->limit('code-entrance:' . $entranceId, 20, 3600)];
+        if (!preg_match('/^[1-9][0-9]{4}$/D', $code) || (int)$code < 10001) {
+            $this->fail('Код неверен или недоступен');
+        }
+        $query = $this->db->prepare('SELECT f.house_flat_id
+            FROM houses_flats f JOIN houses_entrances_flats ef USING (house_flat_id)
+            WHERE ef.house_entrance_id = :entrance AND f.open_code = :code
+              AND coalesce(f.manual_block, 0) = 0 AND coalesce(f.admin_block, 0) = 0 AND coalesce(f.auto_block, 0) = 0
+            LIMIT 1');
+        $query->execute(['entrance' => $entranceId, 'code' => $code]);
+        $flatId = $query->fetchColumn();
+        if (!$flatId) $this->fail('Код неверен или недоступен');
+        $entrance = $this->houses->getEntrance($entranceId);
+        $domophone = $entrance ? $this->houses->getDomophone((int)$entrance['domophoneId']) : false;
+        if (!$entrance || $entrance['domophoneOutput'] === null || !$domophone || empty($domophone['enabled']) || $domophone['model'] === 'dummy.json') {
+            $this->fail('Домофон недоступен');
+        }
+        foreach ($attempts as $key) {
+            $this->redis->eval("if redis.call('EXISTS',KEYS[1])==1 then return redis.call('DECR',KEYS[1]); end; return 0", [$key], 1);
+        }
+        $output = (int)$entrance['domophoneOutput'];
+        // Keep the cooldown even after a device timeout: retrying an uncertain
+        // result must not immediately send another physical command.
+        if (!$this->redis->set('VI:CODE:DOOR:' . $entrance['domophoneId'] . ':' . $output, '1', ['nx', 'ex' => 10])) {
+            $this->fail('Команда уже отправлялась. Подождите немного.', 429);
+        }
+        try {
+            $this->openDevice($domophone, $output);
+        } catch (Throwable) {
+            $this->fail('Не удалось подтвердить команду открытия двери', 502);
+        }
+        error_log('virtual-intercom ' . json_encode(['entrance' => $entranceId, 'flat' => (int)$flatId, 'method' => 'code', 'doorStatus' => 'sent']));
+        try {
+            $plog = \loadBackend('plog');
+            if ($plog) $plog->addDoorOpenDataById(time(), (int)$entrance['domophoneId'], $plog::EVENT_OPENED_BY_CODE, $output, $code);
+            $this->houses->paranoidEvent($entranceId, 'code', $code);
+        } catch (Throwable) {
+            error_log('virtual-intercom code opening audit failed for entrance ' . $entranceId);
+        }
+        return ['doorStatus' => 'sent'];
     }
 
     private function access(array $session, ?int $deviceId = null): array

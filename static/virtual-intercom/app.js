@@ -5,6 +5,7 @@
     let metadata, selected, sourceMedia, media, ua, sipSession, call, busy = false, ending = false, doorOpened = false;
     let statusTimer, frameTimer, durationTimer, setupTimer, iceTimer, startedAt, generation = 0;
     let preview;
+    let codeMode = false, opening = false;
     const status = (text, kind = '') => { $('status').textContent = text; $('status').className = 'status ' + kind; };
     const headers = () => ({ Authorization: 'Bearer ' + call.token });
     const flatTitle = flat => flat.name?.trim() || 'Квартира ' + flat.number;
@@ -43,15 +44,52 @@
         renderList();
     }
     function inputChanged() {
+        if (codeMode) {
+            $('call').disabled = opening || !/^[1-9][0-9]{4}$/.test($('apartment').value) || Number($('apartment').value) < 10001;
+            if (!opening) status('Введите код открытия двери');
+            return;
+        }
         const number = $('apartment').value.trim();
         const matches = (metadata?.flats || []).filter(flat => flat.number === number);
         select(matches.length === 1 ? matches[0] : null);
         if (number && matches.length !== 1) status(matches.length > 1 ? 'Выберите адресата из списка' : 'По этому номеру вызов недоступен');
     }
     function tab(list) {
-        if (busy) return;
+        if (busy || opening) return;
+        if (codeMode) setCodeMode(false);
         $('keypad-view').hidden = list; $('list-view').hidden = !list;
         [['keypad-tab', !list], ['list-tab', list]].forEach(([id, active]) => { $(id).classList.toggle('selected', active); $(id).setAttribute('aria-selected', String(active)); });
+    }
+    function setCodeMode(value) {
+        if (busy || opening || !metadata) return;
+        codeMode = value;
+        $('code-mode').setAttribute('aria-pressed', String(value));
+        $('code-mode').setAttribute('aria-label', value ? 'Вернуться к набору номера' : 'Ввести код открытия');
+        $('control-title').textContent = value ? 'Код открытия двери' : idleControlTitle;
+        $('apartment').type = value ? 'password' : 'text';
+        $('apartment').maxLength = value ? 5 : 12;
+        $('apartment').setAttribute('aria-label', value ? 'Код открытия двери' : idleControlTitle);
+        $('apartment').value = '';
+        $('call-label').textContent = value ? 'Открыть дверь' : 'Позвонить';
+        $('call-icon').toggleAttribute('hidden', value); $('open-icon').toggleAttribute('hidden', !value);
+        $('hint').textContent = value ? 'Используйте код, который набирают на домофоне.' : 'На звонок ответят в приложении и смогут открыть дверь.';
+        selected = null; renderList(); inputChanged();
+    }
+    async function openByCode() {
+        if (opening || busy || $('call').disabled) return;
+        ++generation; doorOpened = false; opening = true;
+        const code = $('apartment').value;
+        $('apartment').value = ''; $('apartment').readOnly = true;
+        $('call').disabled = true; $('code-mode').disabled = true;
+        status('Отправляем команду открытия…');
+        try {
+            const result = await api('open-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ panel, code }) });
+            doorMessage(result);
+        } catch (error) {
+            status(error.name === 'AbortError' ? 'Не удалось подтвердить открытие. Проверьте дверь перед повтором.' : error.message, 'error');
+        } finally {
+            opening = false; $('apartment').readOnly = false; $('code-mode').disabled = false;
+        }
     }
     function setBusy(value) {
         busy = value;
@@ -158,6 +196,7 @@
         if (call === current && !ending) statusTimer = setTimeout(poll, 1000);
     }
     async function startCall() {
+        if (codeMode) return openByCode();
         if (busy || !selected) return;
         const attempt = ++generation, flat = selected;
         doorOpened = false;
@@ -254,8 +293,9 @@
             $('status').classList.add('error');
         }
     }
-    document.querySelectorAll('[data-digit]').forEach(button => button.addEventListener('click', () => { if (busy) return; if ($('apartment').value.length < 12) $('apartment').value += button.dataset.digit; inputChanged(); }));
-    $('erase').addEventListener('click', () => { if (busy) return; $('apartment').value = $('apartment').value.slice(0, -1); inputChanged(); });
+    document.querySelectorAll('[data-digit]').forEach(button => button.addEventListener('click', () => { if (busy || opening) return; if ($('apartment').value.length < $('apartment').maxLength) $('apartment').value += button.dataset.digit; inputChanged(); }));
+    $('erase').addEventListener('click', () => { if (busy || opening) return; $('apartment').value = $('apartment').value.slice(0, -1); inputChanged(); });
+    $('code-mode').addEventListener('click', () => setCodeMode(!codeMode));
     $('apartment').addEventListener('input', inputChanged); $('apartment').addEventListener('keydown', event => { if (event.key === 'Enter') startCall(); });
     $('search').addEventListener('input', renderList); $('keypad-tab').addEventListener('click', () => tab(false)); $('list-tab').addEventListener('click', () => tab(true));
     $('door-opened-dismiss').addEventListener('click', () => $('door-opened').close());
@@ -270,6 +310,7 @@
     });
     api('panel', {}, '?panel=' + encodeURIComponent(panel)).then(data => {
         metadata = data; $('entrance-title').textContent = data.title; $('entrance-subtitle').textContent = data.subtitle;
+        $('code-mode').disabled = false;
         document.title = data.title + ' · Виртуальный домофон'; $('selection-mode').hidden = !data.listEnabled; renderList();
     }).catch(error => { $('entrance-subtitle').textContent = 'Проверьте ссылку или отсканируйте QR-код у входа.'; status(error.message, 'error'); });
 })();
