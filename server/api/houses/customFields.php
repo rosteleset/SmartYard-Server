@@ -89,6 +89,7 @@
                 if ($customFields) {
                     return [
                         "GET" => "#same(addresses,house,GET)",
+                        "PUT" => "#same(addresses,house,PUT)",
                     ];
                 } else {
                     return false;
