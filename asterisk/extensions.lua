@@ -53,6 +53,25 @@ function dm(action, request)
     return result
 end
 
+function dmWithTimeout(action, request)
+    local previousTimeout = http.TIMEOUT
+    http.TIMEOUT = 5
+    local ok, result = pcall(dm, action, request)
+    http.TIMEOUT = previousTimeout
+    if not ok then logDebug(action .. ': request failed') end
+    return ok and result or false
+end
+
+function dispatchMobilePush(extension, validate)
+    -- Atomically consume once; GETDEL itself requires Redis 6.2 or newer.
+    local pending = redis:eval("local p = redis.call('GET', KEYS[1]); redis.call('DEL', KEYS[1]); return p", 1, "mobile_push_" .. extension)
+    if not pending then return end
+    local ok, payload = pcall(cjson.decode, pending)
+    if not ok or (validate and not validate(payload)) then return end
+    dmWithTimeout("push", payload)
+    return payload
+end
+
 function logDebug(v)
     local m = ""
 
@@ -253,18 +272,12 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
 end
 
 -- call to mobile application
-function handleMobileIntercom(context, extension)
+function handleMobileIntercom(context, extension, options)
+    options = options or {}
     checkin()
 
-    -- Atomically consume once; GETDEL itself requires Redis 6.2 or newer.
-    local pending = redis:eval("local p = redis.call('GET', KEYS[1]); redis.call('DEL', KEYS[1]); return p", 1, "mobile_push_" .. extension)
-    if pending then
-        local previousTimeout = http.TIMEOUT
-        http.TIMEOUT = 5
-        local ok = pcall(function() dm("push", cjson.decode(pending)) end)
-        http.TIMEOUT = previousTimeout
-        if not ok then logDebug("initial push failed for: " .. extension) end
-    end
+    local payload = dispatchMobilePush(extension, options.validatePush)
+    if options.validatePush and not payload then app.Hangup(21); return end
 
     logDebug("starting loop for: " .. extension)
 
@@ -299,7 +312,7 @@ function handleMobileIntercom(context, extension)
                 logDebug("has registration: " .. extension)
                 skip = true
             end
-            app.Dial(pjsip_extension, 35, "g")
+            app.Dial(pjsip_extension, 35, options.dialOptions or "g")
             status = channel.DIALSTATUS:get()
             if status == "CHANUNAVAIL" then
                 logDebug(extension .. ': sleeping')
@@ -311,7 +324,11 @@ function handleMobileIntercom(context, extension)
             app.Wait(0.5)
             if voip_crutch then
                 if voip_crutch['cycle'] % 10 == 0 then
-                    push(voip_crutch['token'], voip_crutch['tokenType'], voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'], voip_crutch['bundle'])
+                    if options.repeatPush then
+                        options.repeatPush(voip_crutch)
+                    else
+                        push(voip_crutch['token'], voip_crutch['tokenType'], voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'], voip_crutch['bundle'])
+                    end
                 end
                 voip_crutch['cycle'] = voip_crutch['cycle'] + 1
             end
