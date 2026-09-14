@@ -42,6 +42,7 @@
 - [Конфигурация клиента](./client/config.ru.md)
 - [Модули клиента](./client/modules.ru.md)
 - [Модули SPA (`client/modules`)](./client/spa-modules.ru.md)
+- [Журнал событий в админке (plog)](./client/admin-plog.ru.md)
 - [Кастомизация: customFields](./customFields.ru.md)
 - [Примеры кастомизации](./examples/client/README.ru.md)
 

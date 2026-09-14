@@ -1,5 +1,6 @@
 <?php
-            /**
+
+    /**
      * backends plog namespace
      */
 
@@ -8,7 +9,8 @@
         use backends\frs\frs;
         use PDO;
         use Throwable;
-            /**
+
+        /**
          * clickhouse archive class
          */
 

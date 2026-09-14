@@ -42,6 +42,7 @@ The items below are the documentation structure we aim to complete. Some pages m
 - [Client configuration](./client/config.md)
 - [Client modules](./client/modules.md)
 - [SPA modules (`client/modules`)](./client/spa-modules.md)
+- [Admin event log (plog)](./client/admin-plog.md)
 - [Customization: customFields](./customFields.md)
 - [Customization examples](./examples/client/README.md)
 
@@ -106,5 +107,4 @@ The items below are the documentation structure we aim to complete. Some pages m
 - [Server examples](./examples/server/README.md)
 - [Custom server examples](./examples/custom/server/README.md)
 - [Custom client examples](./examples/custom/client/README.md)
-
 
