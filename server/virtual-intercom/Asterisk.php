@@ -29,8 +29,12 @@ final class Asterisk
     /** null: ordinary call; false: rejected virtual call; array: virtual media settings. */
     public static function pushOptions(array $params): array|false|null
     {
-        if (empty($params['virtualCallId'])) return null;
-        $call = self::request(['action' => 'push', 'id' => $params['virtualCallId'], 'extension' => (string)$params['extension']]);
+        global $redis;
+        $extension = (string)$params['extension'];
+        $id = $redis->get('VI:MOBILE:' . $extension);
+        // Expired virtual bindings must not fall through to ordinary delivery.
+        if (!$id) return $redis->get('VI:AUTH:' . $extension) ? false : null;
+        $call = self::request(['action' => 'push', 'id' => $id, 'extension' => $extension]);
         if (!$call['ok']) return false;
         return ['hash' => $call['hash'], 'dtmf' => '5', 'dtmfProtocol' => 'info', 'videoType' => 'inband',
             'bundle' => $params['bundle'] ?? 'default'];

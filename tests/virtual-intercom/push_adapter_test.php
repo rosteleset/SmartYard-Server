@@ -64,7 +64,8 @@ foreach ([false, true] as $virtual) {
     foreach ([1, 2] as $platform) {
         foreach ([0, 5070] as $port) {
             $sip->port = $port; $sip->stun = $port ? null : 'stun:fixture.invalid';
-            $input = $params + ($virtual ? ['virtualCallId' => $guest['id']] : []);
+            $input = $params;
+            $input['extension'] = $virtual ? $leg['extension'] : '2000000099';
             $input['platform'] = $platform;
             if ($port) $input['bundle'] = 'custom';
             $houses->reads = 0;
@@ -82,7 +83,7 @@ foreach ([false, true] as $virtual) {
                 check($push['videoType'] === 'external' && $push['videoStream'] === 'https://camera.invalid/stream' && !isset($push['dtmfProtocol']), 'Physical video changed');
             }
             if ($previous) {
-                $old = deliver($input, $previous);
+                $old = deliver($input + ($virtual ? ['virtualCallId' => $guest['id']] : []), $previous);
                 unset($old[0]['timestamp'], $sent[0]['timestamp']);
                 check($old == $sent, 'Previous provider payload differs');
             }
@@ -90,11 +91,28 @@ foreach ([false, true] as $virtual) {
         }
     }
 }
-foreach ([str_repeat('f', 32), $guest['id']] as $id) {
-    if ($id === $guest['id']) $service->internal('answer', $leg);
-    check(deliver($params + ['virtualCallId' => $id], $current) === [], 'Invalid or answered session fell through to ordinary push');
-}
+// Both initial and repeated notifications use the existing payload with no session ID.
+$binding = 'VI:MOBILE:' . $leg['extension'];
+$redis->data[$binding] = str_repeat('f', 32);
+check(deliver($params, $current) === [], 'Unknown session fell through to ordinary push');
+$redis->data[$binding] = $guest['id'];
+$sessionKey = 'VI:SESSION:' . $guest['id'];
+$savedSession = $redis->data[$sessionKey];
+$expired = json_decode($savedSession, true); $expired['expires'] = time() - 1;
+$redis->data[$sessionKey] = json_encode($expired);
+check(deliver($params, $current) === [], 'Expired session sent a push');
+$redis->data[$sessionKey] = $savedSession;
+$redis->del($binding);
+check(deliver($params, $current) === [], 'Expired binding with remaining SIP credentials became an ordinary call');
+$redis->data[$binding] = $guest['id'];
+$repeat = $params; $repeat['extension'] = (int)$repeat['extension']; $repeat['mobile'] = 'fixture*'; $repeat['uniq'] = 'fixture-unique';
+check(count(deliver($repeat, $current)) === 1, 'Native repeat cannot resolve the virtual session');
+$service->internal('answer', $leg);
+check(deliver($params, $current) === [] && deliver($repeat, $current) === [], 'Answered call still sends initial or repeat pushes');
 $service->cancel($guest['id'], $guest['token']);
-check(deliver($params + ['virtualCallId' => $guest['id']], $current) === [], 'Cancelled session sent a push');
-check(count(deliver($params, $current)) === 1, 'Virtual rejection affected ordinary calls');
+check(deliver($params, $current) === [] && deliver($repeat, $current) === [], 'Cancelled session sent a push');
+$redis->del($sessionKey);
+check(deliver($params, $current) === [], 'Missing session sent a push');
+$ordinary = $params; $ordinary['extension'] = '2000000099';
+check(count(deliver($ordinary, $current)) === 1, 'Virtual rejection affected ordinary calls');
 echo "PASS $count shared-provider payload cases, physical/virtual media isolation and late-push rejection; provider I/O: 0\n";

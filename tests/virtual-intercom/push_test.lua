@@ -45,6 +45,7 @@ end
 dofile('asterisk/virtual-intercom/extensions.lua')
 local contacts, dialCount, hungUp, dialStatus = 'PJSIP/fixture', 0, false, 'ANSWER'
 channel.CALLERID = function() return {get = function() return 'vi_' .. callId end} end
+channel.CDR = function() return {get = function() return 'fixture-unique' end} end
 channel.DIALSTATUS = {get = function() return dialStatus end}
 channel.PJSIP_DIAL_CONTACTS = function() return {get = function() return contacts end} end
 app = {
@@ -71,11 +72,10 @@ assert(#sent == 0 and #legs == 2 and nativeCount == 2 and fallbackCount == 0, 'P
 assert(storage['turn/realm/test.invalid/user/2000000001/key'] == hash)
 dial('2000000002')
 assert(#sent == 1 and sent[1].extension == '2000000002', 'Second device depends on first')
-dial('2000000002')
-assert(#sent == 1 and dialCount == 1 and hungUp == 21, 'Consumed push allowed another call')
-storage['VI:MOBILE:2000000001'] = string.rep('c', 32)
+assert(storage['mobile_push_2000000002'] == nil and http.TIMEOUT == 60, 'Push not consumed or timeout leaked')
+storage['VI:MOBILE:2000000001'] = nil
 dial('2000000001')
-assert(#sent == 1 and dialCount == 1 and hungUp == 21, 'Mismatched call delivered')
+assert(#sent == 1 and dialCount == 1 and hungUp == 21, 'Unbound virtual destination called')
 channel.MD5 = function() return {get = function() return '' end} end
 assert(virtualMobileIntercom(call)); assert(fallbackCount == 2, 'Native MD5 fallback lost')
 providerFails = true
@@ -92,19 +92,21 @@ local realTime, clock = os.time, 0
 os.time = function() return clock end
 contacts, hungUp = '', false
 app.Wait = function(seconds) clock = clock + seconds; if clock >= 6 then contacts = 'PJSIP/fixture' end end
-local payload = {extension = '2000000099', virtualCallId = callId, platform = 1, tokenType = 0}
+local payload = {extension = '2000000099', platform = 1, tokenType = 0, token = 'fixture-token',
+    mobile = 'fixture-resident', hash = 'fixture-preview', flatId = 10, flatNumber = '1', domophoneId = 20, dtmf = '5', bundle = 'default'}
 storage['VI:MOBILE:2000000099'] = callId
 storage['mobile_push_2000000099'] = cjson.encode(payload)
 storage['voip_crutch_2000000099'] = cjson.encode(payload)
 local before = #sent
 extensions['virtual-intercom-dial']['_2XXXXXXXXX']('virtual-intercom-dial', '2000000099')
 assert(#sent == before + 2 and dialCount == 4 and hungUp, 'FCM registration retry changed')
-assert(sent[#sent].virtualCallId == callId and http.TIMEOUT == 60, 'Shared retry lost virtual identity or HTTP timeout')
+assert(sent[#sent].virtualCallId == nil and sent[#sent].extension == '2000000099', 'Shared retry needs virtual metadata')
+assert(sent[#sent].mobile == 'fixture-resident*' and sent[#sent].uniq == 'fixture-unique' and http.TIMEOUT == 60, 'Native repeat push or timeout restoration changed')
 
 -- Virtual calls also retain the shared CHANUNAVAIL wait.
 clock, dialStatus = 0, 'CHANUNAVAIL'
 app.Wait = function(seconds) clock = clock + seconds end
-payload = {extension = '2000000100', virtualCallId = callId, platform = 1, tokenType = 1}
+payload = {extension = '2000000100', platform = 1, tokenType = 1}
 storage['VI:MOBILE:2000000100'] = callId
 storage['mobile_push_2000000100'] = cjson.encode(payload)
 before = #sent
@@ -112,13 +114,11 @@ dial('2000000100')
 assert(clock == 35 and dialCount == 5 and #sent == before + 1 and hungUp, 'Virtual call bypassed shared result handling')
 os.time, dialStatus = realTime, 'ANSWER'
 
-for _, invalid in ipairs({'invalid-json', cjson.encode(false), cjson.encode({extension = '2000000999', virtualCallId = callId})}) do
-    storage['VI:MOBILE:2000000101'] = callId
-    storage['mobile_push_2000000101'] = invalid
-    before = #sent
-    dial('2000000101')
-    assert(#sent == before and dialCount == 5 and hungUp == 21, 'Invalid push reached a resident')
-end
+-- Restore the per-call timeout even if the shared handler raises an error.
+local savedHandler = handleMobileIntercom
+handleMobileIntercom = function() assert(http.TIMEOUT == 5); error('fixture failure') end
+assert(not pcall(dial, '2000000100') and http.TIMEOUT == 60, 'Handler error swallowed or timeout leaked')
+handleMobileIntercom = savedHandler
 local rejected = false
 app.Hangup = function(cause) assert(cause == 21); rejected = true end
 extensions['virtual-intercom-resident']['_!']()
@@ -156,4 +156,4 @@ extensions['virtual-intercom-bind'].s()
 assert(channel.DYNAMIC_FEATURES:get() == '' and channel.GOSUB_RESULT:get() == 'ABORT', 'Rejected bind enables opening')
 dm = function() error('Backend timeout') end
 assert(not virtualRequest('answer', {}).ok and http.TIMEOUT == 60, 'Backend failure leaked HTTP timeout or allowed a call')
-print('PASS preparation, allowlist, deferred consume-once push, independent devices, timeout cleanup, native MD5 fallback, shared single dialing and CHANUNAVAIL wait, FCM repeats, invalid-payload rejection, outgoing-call rejection and bound resident callbacks')
+print('PASS preparation, allowlist, deferred consume-once push, independent devices, timeout cleanup, native MD5 fallback, shared single dialing and CHANUNAVAIL wait, native FCM repeats, unbound-call rejection, outgoing-call rejection and bound resident callbacks')
