@@ -172,6 +172,12 @@ class vdp10m extends akuvox
         return $rfids;
     }
 
+    public function prepare(): void
+    {
+        parent::prepare();
+        $this->setRelayInversion(true, true);
+    }
+
     public function setConciergeNumber(int $sipNumber): void
     {
         $this->setConfigParams([

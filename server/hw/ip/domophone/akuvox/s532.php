@@ -681,25 +681,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
     }
 
     /**
-     * Sets the inversion mode for relays.
-     *
-     * @param bool $invertA Whether relay A should operate in inverted mode.
-     * @param bool $invertB Whether relay B should operate in inverted mode.
-     * @return void
-     */
-    protected function setRelayInversion(bool $invertA = false, bool $invertB = false): void
-    {
-        $this->apiCall('', 'POST', [
-            'target' => 'relay',
-            'action' => 'set',
-            'data' => [
-                'Config.DoorSetting.RELAY.RelayAType' => $invertA ? '1' : '0',
-                'Config.DoorSetting.RELAY.RelayBType' => $invertB ? '1' : '0',
-            ],
-        ]);
-    }
-
-    /**
      * Sets the RTSP password.
      *
      * @param string $password Raw password value.
