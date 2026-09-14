@@ -32,7 +32,7 @@ final class Service
             ? 'https://' . strtolower($url['host']) . (isset($url['port']) && $url['port'] !== 443 ? ':' . $url['port'] : '') : '';
         $sip = $client['asterisk'] ?? [];
         return ['origin' => $origin, 'sipDomain' => $sip['sipDomain'] ?? '', 'ws' => $sip['ws'] ?? '',
-            'iceServers' => $sip['ice'] ?? [], 'turn' => $config['backends']['sip']['turn'] ?? [],
+            'iceServers' => $sip['ice'] ?? [],
             'enabled' => $origin !== '' && !empty($sip['sipDomain']) && parse_url($sip['ws'] ?? '', PHP_URL_SCHEME) === 'wss'];
     }
 
@@ -324,16 +324,9 @@ final class Service
             $turnUrls = preg_grep('/^turns?:/', (array)($server['urls'] ?? []));
             if (!$turnUrls || (isset($server['username']) && isset($server['credential']))) continue;
             if ($credentials === null) {
-                $turn = $this->settings['turn'] ?? [];
-                if (!empty($turn['secret'])) {
-                    $username = $session['expires'] . ':' . $session['id'];
-                    $password = base64_encode(hash_hmac('sha1', $username, $turn['secret'], true));
-                } else {
-                    $username = 'vi_' . $session['id'];
-                    $realm = $turn['realm'] ?? 'rbt';
-                    $password = bin2hex(random_bytes(24));
-                    $this->redis->setex("turn/realm/$realm/user/$username/key", self::TTL, md5("$username:$realm:$password"));
-                }
+                $username = 'vi_' . $session['id'];
+                $password = bin2hex(random_bytes(24));
+                $this->redis->setex("turn/realm/rbt/user/$username/key", self::TTL, md5("$username:rbt:$password"));
                 $credentials = ['username' => $username, 'credential' => $password];
             }
             $server = array_replace($server, $credentials);
