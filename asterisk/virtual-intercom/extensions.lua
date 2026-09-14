@@ -35,7 +35,7 @@ function virtualMobileIntercom(call)
                 local payload = {extension = extension, token = token, tokenType = device.tokenType,
                     platform = device.platform, hash = call.previewHash, callerId = call.callerId,
                     flatId = call.flatId, flatNumber = call.flatNumber, domophoneId = call.domophoneId,
-                    dtmf = '5', mobile = device.subscriber.mobile, virtualCallId = call.id,
+                    dtmf = '5', mobile = device.subscriber.mobile,
                     bundle = device.bundle ~= cjson.null and device.bundle ~= '' and device.bundle or 'default', ttl = 60}
                 redis:setex('mobile_push_' .. extension, 60, cjson.encode(payload))
                 if tonumber(device.platform) == 1 and (tokenType == 0 or tokenType == 4 or tokenType == 5) then
@@ -89,15 +89,13 @@ extensions['virtual-intercom-dial'] = {
     ['_2XXXXXXXXX'] = function(context, extension)
         local id = redis:get('VI:MOBILE:' .. extension)
         if not id or #id ~= 32 or not id:match('^[a-f0-9]+$') then app.Hangup(21); return end
-        handleMobileIntercom(context, extension, {
-            dialOptions = 'gb(virtual-intercom-bind^s^1(' .. id .. '^' .. extension .. '))U(virtual-intercom-answer)',
-            validatePush = function(pending)
-                local ok, payload = pcall(cjson.decode, pending)
-                return ok and type(payload) == 'table' and payload.virtualCallId == id and tonumber(payload.extension) == tonumber(extension)
-            end,
-            -- The server checks the call is still ringing before each push.
-            repeatPush = function(payload) virtualHttp('push', payload) end,
-        })
+        -- Keep HTTP bounded for the shared initial push and FCM retries on this call.
+        local previousTimeout = http.TIMEOUT
+        http.TIMEOUT = 5
+        local ok, err = pcall(handleMobileIntercom, context, extension,
+            'gb(virtual-intercom-bind^s^1(' .. id .. '^' .. extension .. '))U(virtual-intercom-answer)')
+        http.TIMEOUT = previousTimeout
+        if not ok then error(err) end
     end,
 }
 

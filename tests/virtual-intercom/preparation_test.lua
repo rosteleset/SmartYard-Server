@@ -82,7 +82,7 @@ for _, tokenType in ipairs({0, 1, 2, 3, 4, 5}) do
                 assert(payload.bundle == (bundle == 'custom' and 'custom' or 'default'))
                 assert(payload.extension == (virtual and number or tonumber(number)))
                 assert(payload.dtmf == (virtual and '5' or '9') and payload.hash == 'fixture-preview')
-                assert((payload.virtualCallId ~= nil) == virtual and (payload.uniq ~= nil) == not virtual)
+                assert(payload.virtualCallId == nil and (payload.uniq ~= nil) == not virtual)
                 assert(e.storage['mobile_push_' .. number].ttl == 60)
                 assert(e.native == (virtual and 1 or 0) and e.fallback == (virtual and 0 or 1))
                 assert(e.storage['turn/realm/test.invalid/user/' .. number .. '/key'].ttl == 180)
@@ -93,6 +93,10 @@ for _, tokenType in ipairs({0, 1, 2, 3, 4, 5}) do
                 if retry then assert(retry.ttl == 60 and retry.value.token == payload.token and retry.value.virtualCallId == payload.virtualCallId) end
                 if arg[1] then
                     local old = run(arg[1], devices, virtual)
+                    -- The session is now resolved by extension, outside the push payload.
+                    for _, key in ipairs({'mobile_push_' .. number, 'voip_crutch_' .. number}) do
+                        if old.storage[key] then old.storage[key].value.virtualCallId = nil end
+                    end
                     assert(e.dest == old.dest and equal(payload, old.storage['mobile_push_' .. number].value), 'Initial call contract changed')
                     for key, value in pairs(old.storage) do
                         if key:match('^voip_crutch_') then

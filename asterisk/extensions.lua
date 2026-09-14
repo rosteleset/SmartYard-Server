@@ -253,16 +253,11 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
 end
 
 -- call to mobile application
-function handleMobileIntercom(context, extension, options)
-    options = options or {}
+function handleMobileIntercom(context, extension, dialOptions)
     checkin()
 
     -- Atomically consume once; GETDEL itself requires Redis 6.2 or newer.
     local pending = redis:eval("local p = redis.call('GET', KEYS[1]); redis.call('DEL', KEYS[1]); return p", 1, "mobile_push_" .. extension)
-    if options.validatePush and not options.validatePush(pending) then
-        app.Hangup(21)
-        return
-    end
     if pending then
         local previousTimeout = http.TIMEOUT
         http.TIMEOUT = 5
@@ -304,7 +299,7 @@ function handleMobileIntercom(context, extension, options)
                 logDebug("has registration: " .. extension)
                 skip = true
             end
-            app.Dial(pjsip_extension, 35, options.dialOptions or "g")
+            app.Dial(pjsip_extension, 35, dialOptions or "g")
             status = channel.DIALSTATUS:get()
             if status == "CHANUNAVAIL" then
                 logDebug(extension .. ': sleeping')
@@ -316,11 +311,7 @@ function handleMobileIntercom(context, extension, options)
             app.Wait(0.5)
             if voip_crutch then
                 if voip_crutch['cycle'] % 10 == 0 then
-                    if options.repeatPush then
-                        options.repeatPush(voip_crutch)
-                    else
-                        push(voip_crutch['token'], voip_crutch['tokenType'], voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'], voip_crutch['bundle'])
-                    end
+                    push(voip_crutch['token'], voip_crutch['tokenType'], voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'], voip_crutch['bundle'])
                 end
                 voip_crutch['cycle'] = voip_crutch['cycle'] + 1
             end
