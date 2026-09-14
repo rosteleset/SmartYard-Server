@@ -316,25 +316,10 @@ final class Service
             }
         }
         $this->save($session);
-        $ice = $this->settings['iceServers'] ?? [];
-        $credentials = null;
-        // Reuse the existing browser ICE list. Only TURN entries without
-        // configured credentials need a temporary, visitor-specific identity.
-        foreach ($ice as &$server) {
-            $turnUrls = preg_grep('/^turns?:/', (array)($server['urls'] ?? []));
-            if (!$turnUrls || (isset($server['username']) && isset($server['credential']))) continue;
-            if ($credentials === null) {
-                $username = 'vi_' . $session['id'];
-                $password = bin2hex(random_bytes(24));
-                $this->redis->setex("turn/realm/rbt/user/$username/key", self::TTL, md5("$username:rbt:$password"));
-                $credentials = ['username' => $username, 'credential' => $password];
-            }
-            $server = array_replace($server, $credentials);
-        }
-        unset($server);
         return ['id' => $session['id'], 'token' => $session['guestToken'], 'expires' => $session['expires'],
                 'sip' => ['username' => 'vi_' . $session['id'], 'password' => $session['guestPassword'],
-                          'domain' => $this->settings['sipDomain'], 'ws' => $this->settings['ws'], 'iceServers' => $ice]];
+                          'domain' => $this->settings['sipDomain'], 'ws' => $this->settings['ws'],
+                          'iceServers' => $this->settings['iceServers'] ?? []]];
     }
 
     public function guest(string $id, string $token): array

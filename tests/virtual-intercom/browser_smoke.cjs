@@ -17,12 +17,12 @@ fs.mkdirSync(output, { recursive: true });
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
         page.on('response', response => { if (response.status() >= 400) console.log('HTTP_ERROR', response.status(), new URL(response.url()).pathname); });
-        await page.addInitScript(({ relay }) => {
+        await page.addInitScript(() => {
             window.__viPeers = [];
             const Original = window.RTCPeerConnection;
             window.RTCPeerConnection = class extends Original {
                 constructor(config, ...rest) {
-                    super(relay ? { ...config, iceTransportPolicy: 'relay' } : config, ...rest);
+                    super(config, ...rest);
                     this.__createdAt = performance.now(); window.__viPeers.push(this);
                     this.__events = [];
                     for (const event of ['icegatheringstatechange','signalingstatechange','icecandidateerror','icecandidate']) {
@@ -35,7 +35,7 @@ fs.mkdirSync(output, { recursive: true });
 
                 }
             };
-        }, { relay: args.includes('--relay') });
+        });
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.getByRole('tab', { name: 'Выбрать из списка' }).click();
         await page.getByRole('button', { name: /Квартира 1/ }).click();
