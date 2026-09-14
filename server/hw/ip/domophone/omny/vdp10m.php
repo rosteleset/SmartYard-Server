@@ -146,12 +146,8 @@ class vdp10m extends akuvox
 
             unset($codes[$index]);
 
-            if ($codes) {
-                $user->cardCode = implode(';', $codes);
-                $this->updateUser($user);
-            } else {
-                $this->deleteUser($user);
-            }
+            $this->deleteUser($user);
+            $this->pushRfids($codes);
 
             return;
         }
@@ -328,7 +324,7 @@ class vdp10m extends akuvox
                 $scheduleRelay = rtrim($item['ScheduleRelay'] ?? '', ';');
                 $item['Schedule-Relay'] = $scheduleRelay === '' ? '' : $scheduleRelay . ';';
                 $user = User::fromArray($item);
-                $this->users[$user->userId] = $user;
+                $this->users[$user->id] = $user;
             }
         }
 
@@ -394,17 +390,25 @@ class vdp10m extends akuvox
     {
         if ($user->id === '-1') {
             unset($this->usersToAdd[$user->userId]);
+            unset($this->users[$user->userId]);
         } else {
-            $this->usersToDelete[$user->userId] = $user;
+            $this->usersToDelete[$user->id] = $user;
+            unset($this->usersToUpdate[$user->id]);
+            unset($this->users[$user->id]);
         }
-
-        unset($this->usersToUpdate[$user->userId]);
-        unset($this->users[$user->userId]);
     }
 
     private function findFlatUser(int $apartment): ?User
     {
-        return $this->getUsers()[self::USER_ID_PREFIX_FLAT . 'x' . $apartment] ?? null;
+        $userId = self::USER_ID_PREFIX_FLAT . 'x' . $apartment;
+
+        foreach ($this->getUsers() as $user) {
+            if ($user->userId === $userId) {
+                return $user;
+            }
+        }
+
+        return null;
     }
 
     private function getApartmentFromUser(User $user): ?int
@@ -456,7 +460,7 @@ class vdp10m extends akuvox
     private function updateUser(User $user): void
     {
         if ($user->id !== '-1') {
-            $this->usersToUpdate[$user->userId] = $user;
+            $this->usersToUpdate[$user->id] = $user;
         }
     }
 }
