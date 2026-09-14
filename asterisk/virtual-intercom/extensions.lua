@@ -10,28 +10,17 @@ end
 function virtualMobileIntercom(call)
     local allowed, legs, destinations = {}, {}, {}
     for _, id in ipairs(call.deviceIds) do allowed[tonumber(id)] = true end
+    local params = {hash = call.previewHash, callerId = call.callerId, flatId = call.flatId,
+        flatNumber = call.flatNumber, domophoneId = call.domophoneId, dtmf = '5', virtualCallId = call.id}
     for _, device in ipairs(call.devices) do
         if allowed[tonumber(device.deviceId)] then
-            local allocated = tonumber(redis:incr('autoextension'))
-            if allocated > 999999 then redis:set('autoextension', '1') end
-            local extension = string.format('%.0f', allocated + 2000000000)
-            local tokenType = tonumber(device.tokenType)
-            local token = (tokenType == 1 or tokenType == 2) and device.voipToken or device.pushToken
-            local input = extension .. ':' .. realm .. ':' .. call.previewHash
-            local key = channel.MD5(input):get()
-            if not key or not key:match('^[a-f0-9]+$') or #key ~= 32 then key = md5.sumhexa(input) end
-            redis:setex('turn/realm/' .. realm .. '/user/' .. extension .. '/key', 180, key)
-            local payload = {extension = extension, token = token, tokenType = device.tokenType,
-                platform = device.platform, hash = call.previewHash, callerId = call.callerId,
-                flatId = call.flatId, flatNumber = call.flatNumber, domophoneId = call.domophoneId,
-                dtmf = '5', mobile = device.subscriber.mobile, virtualCallId = call.id,
-                bundle = device.bundle ~= cjson.null and device.bundle ~= '' and device.bundle or 'default', ttl = 60}
-            redis:setex('mobile_push_' .. extension, 60, cjson.encode(payload))
-            if tonumber(device.platform) == 1 and (tokenType == 0 or tokenType == 4 or tokenType == 5) then
-                redis:setex('voip_crutch_' .. extension, 60, cjson.encode(payload))
+            local payload = prepareMobileCall(device, params)
+            if payload then
+                payload.extension = string.format('%.0f', payload.extension)
+                queueMobileCall(payload)
+                legs[#legs + 1] = {extension = payload.extension, deviceId = device.deviceId}
+                destinations[#destinations + 1] = 'Local/' .. payload.extension .. '@virtual-intercom-dial/n'
             end
-            legs[#legs + 1] = {extension = extension, deviceId = device.deviceId}
-            destinations[#destinations + 1] = 'Local/' .. extension .. '@virtual-intercom-dial/n'
         end
     end
     if #legs == 0 or not virtualRequest('legs', {id = call.id, legs = legs}).ok then return nil end
