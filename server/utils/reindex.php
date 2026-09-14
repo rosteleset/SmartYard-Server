@@ -19,7 +19,11 @@
 
         foreach ($apis as $api) {
             if ($api != "." && $api != ".." && is_dir(__DIR__ . "/../api/$api")) {
-                $methods = array_unique(array_merge(scandir(__DIR__ . "/../api/$api"), scandir(__DIR__ . "/../api/$api/custom")));
+                $customDir = __DIR__ . "/../api/$api/custom";
+                $methods = scandir(__DIR__ . "/../api/$api");
+                if (is_dir($customDir)) {
+                    $methods = array_unique(array_merge($methods, scandir($customDir)));
+                }
 
                 foreach ($methods as $method) {
                     if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file(__DIR__ . "/../api/$api/$method")) {

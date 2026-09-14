@@ -251,6 +251,17 @@
         }
     }
 
+    if ($api === "plog" && $method === "camshot" && $params["_request_method"] === "GET") {
+        $params["_config"] = $config;
+        require_once __DIR__ . "/api/plog/camshot.php";
+        $result = \api\plog\camshot::GET($params);
+        if (is_array($result)) {
+            $code = array_key_first($result);
+            response($code, $result[$code]);
+        }
+        exit;
+    }
+
     $auth = false;
     if ($api == "accounts" && $method == "forgot") {
         // do nothing

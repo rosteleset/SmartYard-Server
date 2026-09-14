@@ -100,8 +100,9 @@
 
                 $this->dbName = @$config["backends"]["files"]["db"] ?: "rbt";
 
-                if (@$config["mongo"]["uri"]) {
-                    $this->mongo = new Client($config["mongo"]["uri"]);
+                $uri = @$config["backends"]["files"]["uri"] ?: @$config["mongo"]["uri"];
+                if ($uri) {
+                    $this->mongo = new Client($uri);
                 } else {
                     $this->mongo = new Client();
                 }

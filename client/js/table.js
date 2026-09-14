@@ -32,7 +32,7 @@
  * @param {string} [params.dropDownHeader.title] - Tooltip for the dropdown header.
  * @param {string} [params.dropDownHeader.menu] - Custom HTML for dropdown header.
  * @param {Function} [params.dropDownHeader.click] - Click handler for the dropdown header.
- * @param {Function} [params.pageChange] - Callback when page changes; receives new page number.
+ * @param {boolean} [params.dropDownLeft] - If true, renders row dropdown menu before data columns.
  * @param {string|HTMLElement|jQuery} [params.append] - Content to append after the table.
  * @returns {jQuery|string} - If `params.target` is provided, returns the jQuery object for the rendered table; otherwise returns the table's HTML or ID.
  */
@@ -144,8 +144,13 @@ function cardTable(params) {
         }
     }
 
+    let dropDownLeft = params.dropDownLeft === true;
+
     h += `<tr>`;
     if (typeof params.edit === "function") {
+        h += `<th><i class="fa fa-fw"></i></th>`;
+    }
+    if (hasDropDowns && dropDownLeft) {
         h += `<th><i class="fa fa-fw"></i></th>`;
     }
 
@@ -176,7 +181,7 @@ function cardTable(params) {
             h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
         }
     } else {
-        if (hasDropDowns) {
+        if (hasDropDowns && !dropDownLeft) {
             h += `<th><i class="fa fa-fw"></i></th>`;
         }
     }
@@ -187,6 +192,83 @@ function cardTable(params) {
     let tableClass = "tableClass-" + md5(guid());
     let clickableClass = "clickableClass-" + md5(guid());
     let editClass = "editClass-" + md5(guid());
+
+    function dropDownCell(i) {
+        let cell = `<td>`;
+        let t = '';
+        let o = false;
+
+        if (rows[i].dropDown.items.length === 1 && rows[i].dropDown.items[0].icon) {
+            t += `<span class="pointer`;
+            if (rows[i].dropDown.items[0].class) {
+                t += " " + rows[i].dropDown.items[0].class;
+            }
+            if (rows[i].dropDown.items[0].disabled || typeof rows[i].dropDown.items[0].click !== "function") {
+                t += ` disabled opacity-disabled cursor`;
+            } else {
+                t += ` menuItem-${tableClass}`;
+                o = true;
+            }
+            t += `" title="${rows[i].dropDown.items[0].title}" data-row-id="${i}" data-dropdown-id="0" data-uid="${rows[i].uid}" data-action="${rows[i].dropDown.items[0].action ? rows[i].dropDown.items[0].action : ""}">`;
+            t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw"></i>`;
+            t += `</span>`;
+        } else {
+            let ddId = "ddId-" + md5(guid());
+            t += `<div class="dropdown">`;
+            t += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
+            if (rows[i].dropDown.icon) {
+                t += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
+            } else {
+                t += `<i class="fa-fw fas fa-bars"></i>`;
+            }
+            t += `</span>`;
+            t += `<ul class="dropdown-menu${dropDownLeft ? "" : " dropdown-menu-right"} noselect click-suppress" aria-labelledby="${ddId}">`;
+            for (let j in rows[i].dropDown.items) {
+                if (rows[i].dropDown.items[j].title === "-") {
+                    if (j != rows[i].dropDown.items.length - 1) {
+                        if (rows[i].dropDown.items[j].hint) {
+                            t += `<li class="dropdown-divider hr-text-white" data-content="${rows[i].dropDown.items[j].hint}"></li>`;
+                        } else {
+                            t += `<li class="dropdown-divider"></li>`;
+                        }
+                    }
+                } else {
+                    t += `<li class="pointer dropdown-item`;
+                    if (rows[i].dropDown.items[j].class) {
+                        t += " " + rows[i].dropDown.items[j].class;
+                    }
+                    if (rows[i].dropDown.items[j].hidden) {
+                        t += " hidden";
+                    }
+                    if (rows[i].dropDown.items[j].disabled || typeof rows[i].dropDown.items[j].click !== "function") {
+                        t += ` disabled opacity-disabled cursor`;
+                    } else {
+                        t += ` menuItem-${tableClass}`;
+                        o = true;
+                    }
+                    t += `" data-row-id="${i}" data-dropdown-id="${j}" data-uid="${rows[i].uid}" data-action="${rows[i].dropDown.items[j].action ? rows[i].dropDown.items[j].action : ""}">`;
+                    if (rows[i].dropDown.items[j].icon) {
+                        t += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
+                    } else {
+                        if (hasDropDownIcons) {
+                            t += `<i class="fa fa-fw mr-2"></i>`;
+                        }
+                    }
+                    t += `${rows[i].dropDown.items[j].title}</li>`;
+                }
+            }
+            t += `</ul>`;
+            t += `</div>`;
+        }
+
+        if (o) {
+            cell += t;
+        } else {
+            cell += '<i class="fa fa-fw"></i>';
+        }
+        cell += `</td>`;
+        return cell;
+    }
 
     h += `<tbody id="${tableClass}">`;
 
@@ -206,6 +288,11 @@ function cardTable(params) {
             h += `>`;
             if (typeof params.edit === "function") {
                 h += `<td class="hoverable pointer ${editClass}" data-uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
+                w++;
+            }
+
+            if (rows[i].dropDown && hasDropDowns && dropDownLeft) {
+                h += dropDownCell(i);
                 w++;
             }
 
@@ -250,81 +337,11 @@ function cardTable(params) {
                 w++;
             }
 
-            if (rows[i].dropDown && hasDropDowns) {
-                h += `<td>`;
-                let t = '';
-                let o = false;
-                if (rows[i].dropDown.items.length === 1 && rows[i].dropDown.items[0].icon) {
-                    t += `<span class="pointer`;
-                    if (rows[i].dropDown.items[0].class) {
-                        t += " " + rows[i].dropDown.items[0].class;
-                    }
-                    if (rows[i].dropDown.items[0].disabled || typeof rows[i].dropDown.items[0].click !== "function") {
-                        t += ` disabled opacity-disabled cursor`;
-                    } else {
-                        t += ` menuItem-${tableClass}`;
-                        o = true;
-                    }
-                    t += `" title="${rows[i].dropDown.items[0].title}" data-row-id="${i}" data-dropdown-id="0" data-uid="${rows[i].uid}" data-action="${rows[i].dropDown.items[0].action ? rows[i].dropDown.items[0].action : ""}">`;
-                    t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw"></i>`;
-                    t += `</span>`;
-                } else {
-                    let ddId = "ddId-" + md5(guid());
-                    t += `<div class="dropdown">`;
-                    t += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
-                    if (rows[i].dropDown.icon) {
-                        t += `<i class="fa-fw ${rows[i].dropDown.icon}"></i>`;
-                    } else {
-                        t += `<i class="fa-fw fas fa-bars"></i>`;
-                    }
-                    t += `</span>`;
-                    t += `<ul class="dropdown-menu dropdown-menu-right noselect click-suppress" aria-labelledby="${ddId}">`;
-                    for (let j in rows[i].dropDown.items) {
-                        if (rows[i].dropDown.items[j].title === "-") {
-                            if (j != rows[i].dropDown.items.length - 1) {
-                                if (rows[i].dropDown.items[j].hint) {
-                                    t += `<li class="dropdown-divider hr-text-white" data-content="${rows[i].dropDown.items[j].hint}"></li>`;
-                                } else {
-                                    t += `<li class="dropdown-divider"></li>`;
-                                }
-                            }
-                        } else {
-                            t += `<li class="pointer dropdown-item`;
-                            if (rows[i].dropDown.items[j].class) {
-                                t += " " + rows[i].dropDown.items[j].class;
-                            }
-                            if (rows[i].dropDown.items[j].hidden) {
-                                t += " hidden";
-                            }
-                            if (rows[i].dropDown.items[j].disabled || typeof rows[i].dropDown.items[j].click !== "function") {
-                                t += ` disabled opacity-disabled cursor`;
-                            } else {
-                                t += ` menuItem-${tableClass}`;
-                                o = true;
-                            }
-                            t += `" data-row-id="${i}" data-dropdown-id="${j}" data-uid="${rows[i].uid}" data-action="${rows[i].dropDown.items[j].action ? rows[i].dropDown.items[j].action : ""}">`;
-                            if (rows[i].dropDown.items[j].icon) {
-                                t += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
-                            } else {
-                                if (hasDropDownIcons) {
-                                    t += `<i class="fa fa-fw mr-2"></i>`;
-                                }
-                            }
-                            t += `${rows[i].dropDown.items[j].title}</li>`;
-                        }
-                    }
-                    t += `</ul>`;
-                    t += `</div>`;
-                }
-                if (o) {
-                    h += t;
-                } else {
-                    h += '<i class="fa fa-fw"></i>';
-                }
-                h += `</td>`;
+            if (rows[i].dropDown && hasDropDowns && !dropDownLeft) {
+                h += dropDownCell(i);
                 w++;
             } else {
-                if (hasDropDowns) {
+                if (hasDropDowns && !dropDownLeft) {
                     h += `<td><i class="fa fa-fw"></i></td>`;
                     w++;
                 }
@@ -647,3 +664,4 @@ function modalTable(params) {
 
     $('#tableModal').modal('show');
 }
+

@@ -13,6 +13,7 @@
         "subscriberInbox",
         "subscriberDevices",
         "watchers",
+        "flatPlog",
         "_search",
     ],
 
@@ -2421,6 +2422,13 @@
                             ],
                             dropDown: {
                                 items: [
+                                    {
+                                        icon: "fas fa-history",
+                                        title: i18n("addresses.housePlog"),
+                                        click: houseId => {
+                                            modules.addresses.flatPlog.modalHousePlog(houseId, houses[houseId]);
+                                        },
+                                    },
                                     {
                                         icon: "fas fa-key",
                                         title: i18n("addresses.objectKeys", i18n("addresses.keysType4")),
