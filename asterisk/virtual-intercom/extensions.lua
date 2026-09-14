@@ -1,19 +1,17 @@
 -- DYNAMIC_FEATURES is enabled only on the resident PJSIP leg. Guest credentials
 -- enter a separate context; Caller-ID and user-supplied SIP headers are not trusted.
-function virtualRequest(action, params)
-    params.action = action
+local function virtualHttp(path, params)
     local previousTimeout = http.TIMEOUT
     http.TIMEOUT = 5
-    local started = require('socket').gettime()
-    local ok, result = pcall(dm, 'virtual-intercom', params)
-    local elapsed = math.floor((require('socket').gettime() - started) * 1000)
+    local ok, result = pcall(dm, path, params)
     http.TIMEOUT = previousTimeout
-    if ok and type(result) == 'table' then
-        logDebug('virtual action ' .. action .. ': ok=' .. tostring(result.ok) .. ', status=' .. tostring(result.status) .. ', elapsedMs=' .. elapsed)
-        return result
-    end
-    logDebug('virtual action ' .. action .. ': request failed')
-    return {ok = false}
+    if not ok then logDebug('virtual ' .. (params.action or path) .. ': request failed') end
+    return ok and type(result) == 'table' and result or {ok = false}
+end
+
+function virtualRequest(action, params)
+    params.action = action
+    return virtualHttp('virtual-intercom', params)
 end
 
 function virtualDispatchPush(extension, callId)
@@ -21,14 +19,7 @@ function virtualDispatchPush(extension, callId)
     if not payload then return end
     local valid, decoded = pcall(cjson.decode, payload)
     if not valid or type(decoded) ~= 'table' or decoded.virtualCallId ~= callId or tonumber(decoded.extension) ~= tonumber(extension) then return end
-    local previousTimeout = http.TIMEOUT
-    http.TIMEOUT = 5
-    local started = require('socket').gettime()
-    logDebug('virtual push started: ' .. extension)
-    local ok = pcall(dm, 'push', decoded)
-    http.TIMEOUT = previousTimeout
-    logDebug('virtual push dispatched: ' .. extension .. ', elapsedMs=' .. math.floor((require('socket').gettime() - started) * 1000))
-    if not ok then logDebug('virtual push request failed: ' .. extension) end
+    virtualHttp('push', decoded)
     return decoded
 end
 
@@ -70,16 +61,8 @@ local function legParams()
     }
 end
 
-function virtualMobileDialOptions(id, extension)
-    if not id:match('^[a-f0-9]+$') or #id ~= 32 or not extension:match('^2%d%d%d%d%d%d%d%d%d$') then
-        return ''
-    end
-    return 'b(virtual-intercom-bind^s^1(' .. id .. '^' .. extension .. '))U(virtual-intercom-answer^' .. id .. '^' .. extension .. ')'
-end
-
 extensions['virtual-intercom'] = {
     ['call'] = function()
-        local started = require('socket').gettime()
         channel.DYNAMIC_FEATURES:set('')
         local result = virtualRequest('begin', {
             endpoint = channel.CHANNEL('endpoint'):get(),
@@ -90,13 +73,9 @@ extensions['virtual-intercom'] = {
         channel.CALLERID('name'):set(result.callerId)
         channel.TIMEOUT('absolute'):set(150)
         app.Ringing()
-        -- Negotiate WebRTC while push/registration is in progress. Otherwise
-        -- ICE, DTLS and the browser H.264 encoder start only after the resident
-        -- answers, leaving several seconds of audio before the first video.
-        -- Progress sends 183/SDP; it does not mark this call as answered.
+        -- Start WebRTC/video before the resident answers, using 183/SDP.
         app.Progress()
         local dest = virtualMobileIntercom(result)
-        logDebug('virtual setup ready: elapsedMs=' .. math.floor((require('socket').gettime() - started) * 1000))
         if dest then app.Dial(dest, 45, 'g') end
         app.Hangup()
     end,
@@ -111,7 +90,7 @@ extensions['virtual-intercom'] = {
 extensions['virtual-intercom-dial'] = {
     ['_2XXXXXXXXX'] = function(_, extension)
         local id = redis:get('VI:MOBILE:' .. extension)
-        if not id then app.Hangup(21); return end
+        if not id or #id ~= 32 or not id:match('^[a-f0-9]+$') then app.Hangup(21); return end
         local payload = virtualDispatchPush(extension, id)
         if not payload then app.Hangup(21); return end
         local tokenType = tonumber(payload.tokenType)
@@ -120,15 +99,14 @@ extensions['virtual-intercom-dial'] = {
         while os.time() < deadline do
             local contacts = channel.PJSIP_DIAL_CONTACTS(extension):get()
             if contacts and contacts ~= '' then
-                app.Dial(contacts, 35, 'g' .. virtualMobileDialOptions(id, extension))
+                app.Dial(contacts, 35, 'gb(virtual-intercom-bind^s^1(' .. id .. '^' .. extension .. '))U(virtual-intercom-answer)')
                 -- A resident leg belongs to one attempt; never redial after hangup.
                 break
             end
             app.Wait(0.5)
             if repeatPush and os.time() >= nextPush then
                 -- The server checks the call is still ringing before each push.
-                redis:setex('VI:PUSH:' .. extension, 60, cjson.encode(payload))
-                virtualDispatchPush(extension, id)
+                virtualHttp('push', payload)
                 nextPush = os.time() + 5
             end
         end
@@ -161,10 +139,8 @@ extensions['virtual-intercom-answer'] = {
 
 extensions['virtual-intercom-open'] = {
     ['s'] = function()
-        local result = virtualRequest('open', legParams())
-        -- The API persists the outcome for the guest; never report a relay state
-        -- based merely on successful transmission of SIP INFO.
-        channel.VIRTUAL_DOOR_RESULT:set(result.status or 'denied')
+        -- The API persists the opening outcome for the visitor's page.
+        virtualRequest('open', legParams())
         app.Return()
     end,
 }

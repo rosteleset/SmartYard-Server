@@ -92,4 +92,37 @@ local rejected = false
 app.Hangup = function(cause) assert(cause == 21); rejected = true end
 extensions['virtual-intercom-resident']['_!']()
 assert(rejected, 'Resident endpoint can originate a call')
-print('PASS isolated preparation, allowlist, deferred push, consume-once dispatch, independent devices, timeout cleanup, native MD5 fallback, resident hangup, FCM repeats and outgoing-call rejection')
+
+local function variable(value)
+    return {get = function() return value end, set = function(_, next) value = next end}
+end
+channel.ARG1, channel.ARG2 = variable(callId), variable('2000000001')
+channel.VIRTUAL_CALL_ID, channel.VIRTUAL_EXTENSION = variable(''), variable('')
+channel.DYNAMIC_FEATURES, channel.GOSUB_RESULT = variable('untrusted'), variable('')
+channel.CHANNEL = function(name) return variable(name == 'name' and 'PJSIP/2000000001-1' or 'resident-channel') end
+local actions, accepted = {}, true
+dm = function(path, params)
+    assert(http.TIMEOUT == 5 and path == 'virtual-intercom')
+    assert(params.id == callId and params.extension == '2000000001', 'Resident identity lost between Gosubs')
+    assert(params.channel == 'PJSIP/2000000001-1' and params.uniqueid == 'resident-channel')
+    actions[#actions + 1] = params.action
+    return {ok = accepted}
+end
+local returned = 0
+app.Return = function() returned = returned + 1 end
+extensions['virtual-intercom-bind'].s()
+assert(channel.DYNAMIC_FEATURES:get() == 'virtual_door_open')
+-- U() and DTMF Gosubs must use the binding, not require repeated arguments.
+channel.ARG1:set(''); channel.ARG2:set('')
+extensions['virtual-intercom-answer'].s()
+extensions['virtual-intercom-open'].s()
+assert(table.concat(actions, ',') == 'bind,answer,open' and returned == 3)
+accepted = false
+extensions['virtual-intercom-answer'].s()
+assert(channel.GOSUB_RESULT:get() == 'ABORT', 'Rejected answer entered the bridge')
+channel.ARG1:set(callId); channel.ARG2:set('2000000001')
+extensions['virtual-intercom-bind'].s()
+assert(channel.DYNAMIC_FEATURES:get() == '' and channel.GOSUB_RESULT:get() == 'ABORT', 'Rejected bind enables opening')
+dm = function() error('Backend timeout') end
+assert(not virtualRequest('answer', {}).ok and http.TIMEOUT == 60, 'Backend failure leaked HTTP timeout or allowed a call')
+print('PASS preparation, allowlist, deferred consume-once push, independent devices, timeout cleanup, native MD5 fallback, single dialing, FCM repeats, outgoing-call rejection and bound resident callbacks')
