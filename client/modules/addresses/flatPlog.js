@@ -5,6 +5,25 @@
     init: function () {
         moduleLoaded("addresses.flatPlog", this);
 
+        if (this._closePlogModalOnEscape) {
+            document.removeEventListener("keydown", this._closePlogModalOnEscape, true);
+        }
+        this._closePlogModalOnEscape = e => {
+            let isEscape = e.key === "Escape" || e.key === "Esc" || e.which === 27 || e.keyCode === 27;
+            if (!isEscape || $("#flatPlogPreviewPopup").is(":visible")) {
+                return;
+            }
+            let $modal = $("#tableModal");
+            if (!modules.addresses.flatPlog.activeScope || !$modal.hasClass("show")) {
+                return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            $modal.modal("hide");
+        };
+        $(document).off("keydown.flatPlogModal").on("keydown.flatPlogModal", this._closePlogModalOnEscape);
+        document.addEventListener("keydown", this._closePlogModalOnEscape, true);
+
         $("#tableModalHeader").
         on("change.flatPlog", ".flat-plog-day-select", function () {
             let scope = modules.addresses.flatPlog.activeScope;
