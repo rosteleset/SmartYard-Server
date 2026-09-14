@@ -5,16 +5,50 @@ namespace hw\ip\domophone\omny;
 use hw\ip\domophone\akuvox\{
     akuvox,
     Entities\Dialplan,
+    Entities\User,
 };
 
 class vdp10m extends akuvox
 {
+    protected const ITEMS_CHUNK_SIZE = 1000;
+    private const USER_ID_PREFIX_FLAT = 'FLAT';
+
+    /** @var array<int|string, User>|null */
+    protected ?array $usersToAdd = null;
+
+    /** @var array<int|string, User>|null */
+    protected ?array $usersToDelete = null;
+
+    /** @var array<int|string, User>|null */
+    protected ?array $usersToUpdate = null;
+
     /** @var array<int|string, Dialplan>|null */
     private ?array $dialplans = null;
+
+    /** @var array<int|string, User>|null */
+    private ?array $users = null;
+
+    /** @var string[]|null */
+    private ?array $rfidsToAdd = null;
 
     protected static function getMaxUsers(): int
     {
         return 5000; // Found by Codex
+    }
+
+    public function addRfids(array $rfids): void
+    {
+        if (!$rfids) {
+            return;
+        }
+
+        $neededSlots = ceil((count($this->rfidsToAdd ?? []) + count($rfids)) / self::MAX_RFIDS_PER_USER);
+        if (count($this->getUsers()) + $neededSlots > static::getMaxUsers()) {
+            $rfids = array_merge($this->getRfids(), $rfids);
+            $this->deleteRfid();
+        }
+
+        $this->pushRfids($rfids);
     }
 
     public function configureApartment(
@@ -36,29 +70,35 @@ class vdp10m extends akuvox
             if ($dialplan !== null) {
                 $this->deleteDialplan($dialplan);
             }
-
-            return;
-        }
-
-        if ($dialplan === null) {
-            $dialplan = new Dialplan($apartment);
-        }
-
-        foreach (['replace1', 'replace2', 'replace3', 'replace4', 'replace5'] as $index => $property) {
-            $dialplan->$property = $sipNumbers[$index] ?? '';
-        }
-
-        if ($dialplan->id === '-1') {
-            $this->addDialplan($dialplan);
         } else {
-            $this->updateDialplan($dialplan);
+            $changed = false;
+            if ($dialplan === null) {
+                $dialplan = new Dialplan($apartment);
+            }
+
+            foreach (['replace1', 'replace2', 'replace3', 'replace4', 'replace5'] as $index => $property) {
+                $number = $sipNumbers[$index] ?? '';
+                if ($dialplan->$property !== $number) {
+                    $dialplan->$property = $number;
+                    $changed = true;
+                }
+            }
+
+            if ($dialplan->id === '-1') {
+                $this->addDialplan($dialplan);
+            } elseif ($changed) {
+                $this->updateDialplan($dialplan);
+            }
         }
+
+        $this->setFlatCode($apartment, $code);
     }
 
     public function deleteApartment(int $apartment = 0): void
     {
         if ($apartment === 0) {
             $this->clearDialplans();
+            $this->clearApartmentUsers();
             return;
         }
 
@@ -67,6 +107,73 @@ class vdp10m extends akuvox
         if ($dialplan !== null) {
             $this->deleteDialplan($dialplan);
         }
+
+        $user = $this->findFlatUser($apartment);
+        if ($user !== null) {
+            $this->deleteUser($user);
+        }
+    }
+
+    public function deleteRfid(string $code = ''): void
+    {
+        if ($code === '') {
+            $this->rfidsToAdd = null;
+            foreach ($this->getUsers() as $user) {
+                if ($user->cardCode !== '') {
+                    $this->deleteUser($user);
+                }
+            }
+
+            return;
+        }
+
+        $normalizedCode = self::getNormalizedRfid($code);
+
+        if ($this->rfidsToAdd !== null) {
+            $this->rfidsToAdd = array_filter(
+                $this->rfidsToAdd,
+                static fn(string $rfid) => self::getNormalizedRfid($rfid) !== $normalizedCode,
+            );
+        }
+
+        foreach ($this->getUsers() as $user) {
+            $codes = array_filter(explode(';', $user->cardCode));
+            $index = array_search($normalizedCode, $codes, true);
+
+            if ($index === false) {
+                continue;
+            }
+
+            unset($codes[$index]);
+
+            if ($codes) {
+                $user->cardCode = implode(';', $codes);
+                $this->updateUser($user);
+            } else {
+                $this->deleteUser($user);
+            }
+
+            return;
+        }
+    }
+
+    public function getRfids(): array
+    {
+        $rfids = [];
+
+        foreach ($this->rfidsToAdd ?? [] as $code) {
+            $code = str_pad(self::getNormalizedRfid($code), 14, '0', STR_PAD_LEFT);
+            $rfids[$code] = $code;
+        }
+
+        foreach ($this->getUsers() as $user) {
+            foreach (array_filter(explode(';', $user->cardCode)) as $code) {
+                $code = str_pad($code, 14, '0', STR_PAD_LEFT);
+                $rfids[$code] = $code;
+            }
+        }
+
+        return $rfids;
     }
 
     public function setConciergeNumber(int $sipNumber): void
@@ -78,7 +185,65 @@ class vdp10m extends akuvox
 
     public function syncData(): void
     {
+        if ($this->usersToDelete !== null) {
+            $this->deleteUsers($this->usersToDelete);
+        }
+
+        if ($this->usersToUpdate !== null) {
+            $this->updateUsers($this->usersToUpdate);
+        }
+
+        if ($this->usersToAdd !== null) {
+            $this->addUsers($this->usersToAdd);
+        }
+
+        if ($this->rfidsToAdd) {
+            parent::pushRfids($this->rfidsToAdd);
+        }
+
         $this->dialplans = null;
+        $this->users = null;
+        $this->rfidsToAdd = null;
+        $this->usersToAdd = null;
+        $this->usersToDelete = null;
+        $this->usersToUpdate = null;
+    }
+
+    public function transformDbConfig(array $dbConfig): array
+    {
+        unset($dbConfig['apartments'][9999]);
+
+        foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['cmsEnabled'] = false;
+        }
+
+        return $dbConfig;
+    }
+
+    /** @param User[] $users */
+    protected function addUsers(array $users): void
+    {
+        $this->executeChunkOperation('user', 'add', $users, static fn(User $user) => $user->toArray());
+    }
+
+    /** @param User[] $users */
+    protected function deleteUsers(array $users): void
+    {
+        $this->executeChunkOperation('user', 'del', $users, static fn(User $user) => ['ID' => $user->id]);
+    }
+
+    /** @param User[] $entities */
+    protected function executeChunkOperation(string $target, string $action, array $entities, callable $mapper): void
+    {
+        foreach (array_chunk($entities, self::ITEMS_CHUNK_SIZE) as $chunk) {
+            $this->apiCall('', 'POST', [
+                'target' => $target,
+                'action' => $action,
+                'data' => ['item' => array_map($mapper, $chunk)],
+            ]);
+
+            sleep(1);
+        }
     }
 
     protected function findDialplan(string $prefix): ?Dialplan
@@ -115,6 +280,24 @@ class vdp10m extends akuvox
             ];
         }
 
+        foreach ($this->getUsers() as $user) {
+            $apartment = $this->getApartmentFromUser($user);
+
+            if ($apartment === null) {
+                continue;
+            }
+
+            $apartments[$apartment] ??= [
+                'apartment' => $apartment,
+                'code' => 0,
+                'sipNumbers' => [],
+                'cmsEnabled' => false,
+                'cmsLevels' => [],
+            ];
+
+            $apartments[$apartment]['code'] = (int)$user->privatePin;
+        }
+
         return $apartments;
     }
 
@@ -134,6 +317,35 @@ class vdp10m extends akuvox
         return $this->dialplans;
     }
 
+    /** @return array<int|string, User> */
+    protected function getUsers(): array
+    {
+        if ($this->users === null) {
+            $response = $this->apiCall('/user/get');
+
+            $this->users = [];
+            foreach ($response['data']['item'] ?? [] as $item) {
+                $scheduleRelay = rtrim($item['ScheduleRelay'] ?? '', ';');
+                $item['Schedule-Relay'] = $scheduleRelay === '' ? '' : $scheduleRelay . ';';
+                $user = User::fromArray($item);
+                $this->users[$user->userId] = $user;
+            }
+        }
+
+        return $this->users;
+    }
+
+    protected function pushRfids(array $rfids): void
+    {
+        $this->rfidsToAdd = array_merge($this->rfidsToAdd ?? [], $rfids);
+    }
+
+    /** @param User[] $users */
+    protected function updateUsers(array $users): void
+    {
+        $this->executeChunkOperation('user', 'set', $users, static fn(User $user) => $user->toArray());
+    }
+
     private function addDialplan(Dialplan $dialplan): void
     {
         $response = $this->apiCall('', 'POST', [
@@ -144,6 +356,21 @@ class vdp10m extends akuvox
 
         $dialplan->id = $response['data']['item'][0]['ID'] ?? '-1';
         $this->dialplans[$dialplan->prefix] = $dialplan;
+    }
+
+    private function addUser(User $user): void
+    {
+        $this->usersToAdd[$user->userId] = $user;
+        $this->users[$user->userId] = $user;
+    }
+
+    private function clearApartmentUsers(): void
+    {
+        foreach ($this->getUsers() as $user) {
+            if ($this->getApartmentFromUser($user) !== null) {
+                $this->deleteUser($user);
+            }
+        }
     }
 
     private function clearDialplans(): void
@@ -163,6 +390,58 @@ class vdp10m extends akuvox
         unset($this->dialplans[$dialplan->prefix]);
     }
 
+    private function deleteUser(User $user): void
+    {
+        if ($user->id === '-1') {
+            unset($this->usersToAdd[$user->userId]);
+        } else {
+            $this->usersToDelete[$user->userId] = $user;
+        }
+
+        unset($this->usersToUpdate[$user->userId]);
+        unset($this->users[$user->userId]);
+    }
+
+    private function findFlatUser(int $apartment): ?User
+    {
+        return $this->getUsers()[self::USER_ID_PREFIX_FLAT . 'x' . $apartment] ?? null;
+    }
+
+    private function getApartmentFromUser(User $user): ?int
+    {
+        if (!preg_match('/^' . self::USER_ID_PREFIX_FLAT . 'x([1-9]\\d*)$/', $user->userId, $matches)) {
+            return null;
+        }
+
+        return (int)$matches[1];
+    }
+
+    private function setFlatCode(int $apartment, int $code): void
+    {
+        $user = $this->findFlatUser($apartment);
+
+        if ($code === 0) {
+            if ($user !== null) {
+                $this->deleteUser($user);
+            }
+
+            return;
+        }
+
+        if ($user === null) {
+            $user = new User(self::USER_ID_PREFIX_FLAT . 'x' . $apartment);
+            $user->name = self::USER_ID_PREFIX_FLAT;
+            $user->privatePin = $code;
+            $this->addUser($user);
+            return;
+        }
+
+        if ($user->privatePin != $code) {
+            $user->privatePin = $code;
+            $this->updateUser($user);
+        }
+    }
+
     private function updateDialplan(Dialplan $dialplan): void
     {
         $this->apiCall('', 'POST', [
@@ -172,5 +451,12 @@ class vdp10m extends akuvox
         ]);
 
         $this->dialplans[$dialplan->prefix] = $dialplan;
+    }
+
+    private function updateUser(User $user): void
+    {
+        if ($user->id !== '-1') {
+            $this->usersToUpdate[$user->userId] = $user;
+        }
     }
 }
