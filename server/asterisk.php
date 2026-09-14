@@ -471,7 +471,8 @@
                     break;
 
                 case "push":
-                    if (\VirtualIntercom\Asterisk::push($params)) break;
+                    $virtual = \VirtualIntercom\Asterisk::pushOptions($params);
+                    if ($virtual === false) break;
                     $isdn = loadBackend("isdn");
                     $sip = loadBackend("sip");
                     $server = $sip->server("extension", $params["extension"]);
@@ -498,7 +499,8 @@
 
                     $households = loadBackend("households");
 
-                    $domophone = $households->getDomophone((int)$params["domophoneId"]);
+                    $domophone = $virtual === null ? $households->getDomophone((int)$params["domophoneId"]) : false;
+                    if ($virtual !== null) $_params = array_replace($_params, $virtual);
 
                     if ($domophone && $domophone["video"] != "inband") {
                         $entrance = $households->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
