@@ -251,25 +251,12 @@
                         peerconnection.addTransceiver('video', { direction: 'sendrecv' });
                     } } });
                 const current = sipSession;
-                const relayedMedia = new Set();
                 // SIP uses a complete SDP offer. Some interfaces never finish ICE
                 // gathering; send collected candidates after a bounded grace period.
                 current.on('icecandidate', event => {
                     if (!iceTimer) iceTimer = setTimeout(() => {
                         if (active() && current.connection.iceGatheringState === 'gathering') event.ready();
                     }, 2500);
-                    // Once TURN has candidates for every media section, the
-                    // offer already has a usable fallback for restrictive NAT.
-                    // Do not wait for the remaining unused network interfaces.
-                    if (event.candidate?.type === 'relay') {
-                        relayedMedia.add(event.candidate.sdpMLineIndex);
-                        if (relayedMedia.size >= current.connection.getTransceivers().length) {
-                            clearTimeout(iceTimer);
-                            iceTimer = setTimeout(() => {
-                                if (active() && current.connection.iceGatheringState === 'gathering') event.ready();
-                            }, 100);
-                        }
-                    }
                 });
                 const addAudio = event => {
                     if (event.track.kind !== 'audio') return;

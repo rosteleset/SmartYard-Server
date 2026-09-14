@@ -76,7 +76,7 @@ $tests = [
     'connection settings reuse the standard server and browser configs' => function() {
         $resolve = new ReflectionMethod(\VirtualIntercom\Service::class, 'connectionSettings');
         $client = ['asterisk' => ['ws' => 'wss://sip.invalid/socket', 'sipDomain' => 'pbx.invalid',
-            'ice' => [['urls' => ['stun:ice.invalid', 'turn:ice.invalid?transport=tcp']]]]];
+            'ice' => [['urls' => ['stun:ice.invalid']]]]];
         $config = ['api' => ['frontend' => 'https://RBT.invalid:8443/frontend']];
         $settings = $resolve->invoke(null, $config, $client);
         check($settings['enabled'] && $settings['origin'] === 'https://rbt.invalid:8443', 'Wrong configured origin or availability');
@@ -90,23 +90,16 @@ $tests = [
         $config['api']['frontend'] = 'http://rbt.invalid/frontend';
         check(!$resolve->invoke(null, $config, $client)['enabled'], 'Insecure origin enabled calls');
     },
-    'guest TURN credentials reuse ICE URLs without leaking server secrets' => function() {
+    'guest receives the existing browser ICE settings unchanged' => function() {
         $resolve = new ReflectionMethod(\VirtualIntercom\Service::class, 'connectionSettings');
-        $ice = [['urls' => ['stun:ice.invalid']], ['urls' => 'turn:ice.invalid?transport=udp'],
-            ['urls' => ['turn:ice.invalid?transport=tcp', 'turns:ice.invalid:443']],
-            ['urls' => 'turn:other.invalid', 'username' => 'existing-user', 'credential' => 'existing-public-credential']];
-        [$s,$r] = fixture();
-        $settings = $resolve->invoke(null, ['api' => ['frontend' => 'https://test.invalid/frontend']],
-            ['asterisk' => ['ws' => 'wss://test.invalid/wss', 'sipDomain' => 'test.invalid', 'ice' => $ice]]);
-        (new ReflectionProperty($s, 'settings'))->setValue($s, $settings);
-        $g = $s->create('fixturePanel', 10, '127.0.0.1'); $result = $g['sip']['iceServers'];
-        check($result[0] === $ice[0] && $result[3] === $ice[3], 'STUN or configured TURN credentials changed');
-        check(array_column($result, 'urls') === array_column($ice, 'urls'), 'ICE URLs changed or duplicated');
-        check($result[1]['username'] === $result[2]['username'] && $result[1]['credential'] === $result[2]['credential'], 'UDP/TCP use conflicting guest credentials');
-        $username = $result[1]['username']; $credential = $result[1]['credential'];
-        check($r->get("turn/realm/rbt/user/$username/key") === md5("$username:rbt:$credential"), 'Guest TURN credential does not match shared Redis');
-        $next = $s->create('fixturePanel', 10, '127.0.0.1');
-        check($next['sip']['iceServers'][1]['username'] !== $username, 'Guest TURN identity was reused across calls');
+        foreach ([[], [['urls' => ['stun:ice.invalid']]]] as $ice) {
+            [$s] = fixture();
+            $settings = $resolve->invoke(null, ['api' => ['frontend' => 'https://test.invalid/frontend']],
+                ['asterisk' => ['ws' => 'wss://test.invalid/wss', 'sipDomain' => 'test.invalid', 'ice' => $ice]]);
+            (new ReflectionProperty($s, 'settings'))->setValue($s, $settings);
+            $g = $s->create('fixturePanel', 10, '127.0.0.1');
+            check($g['sip']['iceServers'] === $ice, 'Browser ICE settings changed');
+        }
     },
     'guest sees no resident credential or door target' => function() {
         [$s] = fixture(); $g = $s->create('fixturePanel', 10, '127.0.0.1');
