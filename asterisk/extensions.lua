@@ -114,10 +114,11 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId, bundle)
-    logDebug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophoneId .. ")")
+function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId, bundle, defer)
+    local action = defer and "preparing push for: " or "sending push for: "
+    logDebug(action .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophoneId .. ")")
 
-    dm("push", {
+    local payload = {
         token = token,
         tokenType = tokenType,
         platform = platform,
@@ -132,7 +133,13 @@ function push(token, tokenType, platform, extension, hash, callerId, flatId, dtm
         domophoneId = domophoneId,
         bundle = bundle,
         ttl = 60,
-    })
+    }
+    if defer then
+        -- Each Local channel sends its push after Dial starts that channel.
+        redis:setex("mobile_push_" .. string.format('%.0f', tonumber(extension)), 60, cjson.encode(payload))
+    else
+        dm("push", payload)
+    end
 end
 
 function camshow(domophoneId)
@@ -230,7 +237,7 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
                         }))
                     end
 
-                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, device.subscriber.mobile, flatNumber, domophoneId, bundle)
+                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, device.subscriber.mobile, flatNumber, domophoneId, bundle, true)
 
                     res = res .. "&Local/" .. extension
                 end
@@ -248,6 +255,16 @@ end
 -- call to mobile application
 function handleMobileIntercom(context, extension)
     checkin()
+
+    -- Atomically consume once; GETDEL itself requires Redis 6.2 or newer.
+    local pending = redis:eval("local p = redis.call('GET', KEYS[1]); redis.call('DEL', KEYS[1]); return p", 1, "mobile_push_" .. extension)
+    if pending then
+        local previousTimeout = http.TIMEOUT
+        http.TIMEOUT = 5
+        local ok = pcall(function() dm("push", cjson.decode(pending)) end)
+        http.TIMEOUT = previousTimeout
+        if not ok then logDebug("initial push failed for: " .. extension) end
+    end
 
     logDebug("starting loop for: " .. extension)
 
@@ -288,6 +305,8 @@ function handleMobileIntercom(context, extension)
                 logDebug(extension .. ': sleeping')
                 app.Wait(35)
             end
+            -- Do not dial again after handling the completed attempt.
+            break
         else
             app.Wait(0.5)
             if voip_crutch then
