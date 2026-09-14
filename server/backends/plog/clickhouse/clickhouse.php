@@ -425,7 +425,7 @@
              */
 
             public function getEventsDaysByEntrance(int $entrance_id, $filter_events) {
-                $where = "hidden = 0 and JSONExtractInt(toJSONString(domophone), 'entrance_id') = $entrance_id";
+                $where = "hidden = 0 and JSONExtractInt(cast(domophone as String), 'entrance_id') = $entrance_id";
                 if ($filter_events) {
                     $where .= " and event in ($filter_events)";
                 }
@@ -460,7 +460,6 @@
              */
 
             public function getDetailEventsByDayAndEntrance(int $entrance_id, string $date) {
-                // Приводим 'YYYY-MM-DD' к числу YYYYMMDD
                 $cleanDate = (int) str_replace('-', '', $date);
 
                 $query = "
@@ -482,7 +481,7 @@
                     from
                         plog
                     where
-                        not hidden
+                        hidden = 0
                         and toYYYYMMDD(FROM_UNIXTIME(date)) = {$cleanDate}
                         and JSONExtractInt(cast(domophone as String), 'entrance_id') = {$entrance_id}
                     order by
@@ -508,12 +507,13 @@
                     }
                 }
 
+                $domophoneJson = "cast(domophone as String)";
                 $conditions = [
-                    "JSONExtractInt(toJSONString(domophone), 'house_id') = " . (int)$house_id,
+                    "JSONExtractInt($domophoneJson, 'house_id') = " . (int)$house_id,
                 ];
                 $entrance_ids = array_values(array_unique($entrance_ids));
                 if ($entrance_ids) {
-                    $conditions[] = "JSONExtractInt(toJSONString(domophone), 'entrance_id') in (" . implode(',', $entrance_ids) . ")";
+                    $conditions[] = "JSONExtractInt($domophoneJson, 'entrance_id') in (" . implode(',', $entrance_ids) . ")";
                 }
 
                 return "(" . implode(" or ", $conditions) . ")";
@@ -522,6 +522,7 @@
             /**
              * @inheritDoc
              */
+
             public function getEventsDaysByHouse(int $house_id, $filter_events) {
                 $where = "hidden = 0 and " . $this->getHouseScopeCondition($house_id);
                 if ($filter_events) {
@@ -559,22 +560,9 @@
 
             public function getDetailEventsByDayAndHouse(int $house_id, string $date) {
                 $cleanDate = (int) str_replace('-', '', $date);
-                $households = loadBackend('households');
-                $entrances = $households ? $households->getEntrances('houseId', $house_id) : [];
-                $events = [];
+                $where = "hidden = 0 and toYYYYMMDD(FROM_UNIXTIME(date)) = {$cleanDate} and " . $this->getHouseScopeCondition($house_id);
 
-                foreach ($entrances ?: [] as $entrance) {
-                    if (!isset($entrance['entranceId'])) {
-                        continue;
-                    }
-
-                    $events = array_merge(
-                        $events,
-                        $this->getDetailEventsByDayAndEntrance((int)$entrance['entranceId'], $date)
-                    );
-                }
-
-                $houseQuery = "
+                $query = "
                     select
                         date,
                         event_uuid,
@@ -590,32 +578,15 @@
                         toJSONString(phones) phones,
                         preview,
                         vehicle
-                    from plog
+                    from
+                        plog
                     where
-                        not hidden
-                        and toYYYYMMDD(FROM_UNIXTIME(date)) = {$cleanDate}
-                        and JSONExtractInt(cast(domophone as String), 'house_id') = " . (int)$house_id . "
+                        $where
+                    order by
+                        date desc
                 ";
 
-                $events = array_merge($events, $this->clickhouse->select($houseQuery));
-                $uniqueEvents = [];
-                $seenEventUuids = [];
-                foreach ($events as $event) {
-                    $eventUuid = $event['event_uuid'] ?? null;
-                    if ($eventUuid !== null) {
-                        if (isset($seenEventUuids[$eventUuid])) {
-                            continue;
-                        }
-                        $seenEventUuids[$eventUuid] = true;
-                    }
-                    $uniqueEvents[] = $event;
-                }
-                $events = array_values($uniqueEvents);
-                usort($events, static function ($left, $right) {
-                    return (int)$right['date'] <=> (int)$left['date'];
-                });
-
-                return $events;
+                return $this->clickhouse->select($query);
             }
 
             /**
