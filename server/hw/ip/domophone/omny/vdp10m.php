@@ -2,13 +2,14 @@
 
 namespace hw\ip\domophone\omny;
 
+use hw\Interface\LanguageInterface;
 use hw\ip\domophone\akuvox\{
     akuvox,
     Entities\Dialplan,
     Entities\User,
 };
 
-class vdp10m extends akuvox
+class vdp10m extends akuvox implements LanguageInterface
 {
     protected const ITEMS_CHUNK_SIZE = 1000;
     private const USER_ID_PREFIX_FLAT = 'FLAT';
@@ -182,6 +183,13 @@ class vdp10m extends akuvox
     {
         $this->setConfigParams([
             'Config.Programable.SOFTKEY01.LocalParam1' => $sipNumber . str_repeat(';', 7),
+        ]);
+    }
+
+    public function setLanguage(string $language): void
+    {
+        $this->setConfigParams([
+            'Config.Settings.LANGUAGE.WebLang' => $language === 'ru' ? '3' : '0',
         ]);
     }
 
