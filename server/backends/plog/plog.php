@@ -72,8 +72,10 @@
             abstract public function getDetailEventsByDay(int $flat_id, string $date);
 
             /**
-             * @param int $entrance_id
-             * @param mixed $filter_events
+             * Получить список дней с событиями по входу
+             * @param int $entrance_id идентификатор входа
+             * @param mixed $filter_events фильтр типов событий
+             *
              * @return false|array
              */
 
@@ -82,8 +84,10 @@
             }
 
             /**
-             * @param int $entrance_id
-             * @param string $date
+             * Получить детальный список событий по входу за день
+             * @param int $entrance_id идентификатор входа
+             * @param string $date день событий
+             *
              * @return false|array
              */
 
@@ -92,8 +96,10 @@
             }
 
             /**
-             * @param int $house_id
-             * @param mixed $filter_events
+             * Получить список дней с событиями по дому
+             * @param int $house_id идентификатор дома
+             * @param mixed $filter_events фильтр типов событий
+             *
              * @return false|array
              */
 
@@ -102,8 +108,10 @@
             }
 
             /**
-             * @param int $house_id
-             * @param string $date
+             * Получить детальный список событий по дому за день
+             * @param int $house_id идентификатор дома
+             * @param string $date день событий
+             *
              * @return false|array
              */
 
