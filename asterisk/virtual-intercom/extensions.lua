@@ -1,26 +1,9 @@
 -- DYNAMIC_FEATURES is enabled only on the resident PJSIP leg. Guest credentials
 -- enter a separate context; Caller-ID and user-supplied SIP headers are not trusted.
-local function virtualHttp(path, params)
-    local previousTimeout = http.TIMEOUT
-    http.TIMEOUT = 5
-    local ok, result = pcall(dm, path, params)
-    http.TIMEOUT = previousTimeout
-    if not ok then logDebug('virtual ' .. (params.action or path) .. ': request failed') end
-    return ok and type(result) == 'table' and result or {ok = false}
-end
-
 function virtualRequest(action, params)
     params.action = action
-    return virtualHttp('virtual-intercom', params)
-end
-
-function virtualDispatchPush(extension, callId)
-    local payload = redis:eval("local v=redis.call('GET',KEYS[1]); if v then redis.call('DEL',KEYS[1]) end; return v", 1, 'VI:PUSH:' .. extension)
-    if not payload then return end
-    local valid, decoded = pcall(cjson.decode, payload)
-    if not valid or type(decoded) ~= 'table' or decoded.virtualCallId ~= callId or tonumber(decoded.extension) ~= tonumber(extension) then return end
-    virtualHttp('push', decoded)
-    return decoded
+    local result = dmWithTimeout('virtual-intercom', params)
+    return type(result) == 'table' and result or {ok = false}
 end
 
 -- Separate dial destinations keep the physical-panel flow unchanged.
@@ -43,7 +26,10 @@ function virtualMobileIntercom(call)
                 flatId = call.flatId, flatNumber = call.flatNumber, domophoneId = call.domophoneId,
                 dtmf = '5', mobile = device.subscriber.mobile, virtualCallId = call.id,
                 bundle = device.bundle ~= cjson.null and device.bundle ~= '' and device.bundle or 'default', ttl = 60}
-            redis:setex('VI:PUSH:' .. extension, 60, cjson.encode(payload))
+            redis:setex('mobile_push_' .. extension, 60, cjson.encode(payload))
+            if tonumber(device.platform) == 1 and (tokenType == 0 or tokenType == 4 or tokenType == 5) then
+                redis:setex('voip_crutch_' .. extension, 60, cjson.encode(payload))
+            end
             legs[#legs + 1] = {extension = extension, deviceId = device.deviceId}
             destinations[#destinations + 1] = 'Local/' .. extension .. '@virtual-intercom-dial/n'
         end
@@ -88,29 +74,17 @@ extensions['virtual-intercom'] = {
 }
 
 extensions['virtual-intercom-dial'] = {
-    ['_2XXXXXXXXX'] = function(_, extension)
+    ['_2XXXXXXXXX'] = function(context, extension)
         local id = redis:get('VI:MOBILE:' .. extension)
         if not id or #id ~= 32 or not id:match('^[a-f0-9]+$') then app.Hangup(21); return end
-        local payload = virtualDispatchPush(extension, id)
-        if not payload then app.Hangup(21); return end
-        local tokenType = tonumber(payload.tokenType)
-        local repeatPush = tonumber(payload.platform) == 1 and (tokenType == 0 or tokenType == 4 or tokenType == 5)
-        local deadline, nextPush = os.time() + 35, os.time() + 5
-        while os.time() < deadline do
-            local contacts = channel.PJSIP_DIAL_CONTACTS(extension):get()
-            if contacts and contacts ~= '' then
-                app.Dial(contacts, 35, 'gb(virtual-intercom-bind^s^1(' .. id .. '^' .. extension .. '))U(virtual-intercom-answer)')
-                -- A resident leg belongs to one attempt; never redial after hangup.
-                break
-            end
-            app.Wait(0.5)
-            if repeatPush and os.time() >= nextPush then
-                -- The server checks the call is still ringing before each push.
-                virtualHttp('push', payload)
-                nextPush = os.time() + 5
-            end
-        end
-        app.Hangup()
+        handleMobileIntercom(context, extension, {
+            dialOptions = 'gb(virtual-intercom-bind^s^1(' .. id .. '^' .. extension .. '))U(virtual-intercom-answer)',
+            validatePush = function(payload)
+                return type(payload) == 'table' and payload.virtualCallId == id and tonumber(payload.extension) == tonumber(extension)
+            end,
+            -- The server checks the call is still ringing before each push.
+            repeatPush = function(payload) dmWithTimeout('push', payload) end,
+        })
     end,
 }
 
