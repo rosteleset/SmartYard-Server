@@ -1,8 +1,17 @@
 -- DYNAMIC_FEATURES is enabled only on the resident PJSIP leg. Guest credentials
 -- enter a separate context; Caller-ID and user-supplied SIP headers are not trusted.
+local function virtualHttp(action, params)
+    local previousTimeout = http.TIMEOUT
+    http.TIMEOUT = 5
+    local ok, result = pcall(dm, action, params)
+    http.TIMEOUT = previousTimeout
+    if not ok then logDebug(action .. ': request failed') end
+    return ok and result or false
+end
+
 function virtualRequest(action, params)
     params.action = action
-    local result = dmWithTimeout('virtual-intercom', params)
+    local result = virtualHttp('virtual-intercom', params)
     return type(result) == 'table' and result or {ok = false}
 end
 
@@ -10,16 +19,30 @@ end
 function virtualMobileIntercom(call)
     local allowed, legs, destinations = {}, {}, {}
     for _, id in ipairs(call.deviceIds) do allowed[tonumber(id)] = true end
-    local params = {hash = call.previewHash, callerId = call.callerId, flatId = call.flatId,
-        flatNumber = call.flatNumber, domophoneId = call.domophoneId, dtmf = '5', virtualCallId = call.id}
     for _, device in ipairs(call.devices) do
         if allowed[tonumber(device.deviceId)] then
-            local payload = prepareMobileCall(device, params)
-            if payload then
-                payload.extension = string.format('%.0f', payload.extension)
-                queueMobileCall(payload)
-                legs[#legs + 1] = {extension = payload.extension, deviceId = device.deviceId}
-                destinations[#destinations + 1] = 'Local/' .. payload.extension .. '@virtual-intercom-dial/n'
+            local allocated = tonumber(redis:incr('autoextension'))
+            if allocated > 999999 then redis:set('autoextension', '1') end
+            local extension = string.format('%.0f', allocated + 2000000000)
+            local tokenType = tonumber(device.tokenType)
+            local token = device.pushToken
+            if tokenType == 1 or tokenType == 2 then token = device.voipToken end
+            if token ~= nil and token ~= cjson.null and token ~= '' then
+                local input = extension .. ':' .. realm .. ':' .. call.previewHash
+                local key = channel.MD5(input):get()
+                if not key or not key:match('^[a-f0-9]+$') or #key ~= 32 then key = md5.sumhexa(input) end
+                redis:setex('turn/realm/' .. realm .. '/user/' .. extension .. '/key', 180, key)
+                local payload = {extension = extension, token = token, tokenType = device.tokenType,
+                    platform = device.platform, hash = call.previewHash, callerId = call.callerId,
+                    flatId = call.flatId, flatNumber = call.flatNumber, domophoneId = call.domophoneId,
+                    dtmf = '5', mobile = device.subscriber.mobile, virtualCallId = call.id,
+                    bundle = device.bundle ~= cjson.null and device.bundle ~= '' and device.bundle or 'default', ttl = 60}
+                redis:setex('mobile_push_' .. extension, 60, cjson.encode(payload))
+                if tonumber(device.platform) == 1 and (tokenType == 0 or tokenType == 4 or tokenType == 5) then
+                    redis:setex('voip_crutch_' .. extension, 60, cjson.encode(payload))
+                end
+                legs[#legs + 1] = {extension = extension, deviceId = device.deviceId}
+                destinations[#destinations + 1] = 'Local/' .. extension .. '@virtual-intercom-dial/n'
             end
         end
     end
@@ -68,11 +91,12 @@ extensions['virtual-intercom-dial'] = {
         if not id or #id ~= 32 or not id:match('^[a-f0-9]+$') then app.Hangup(21); return end
         handleMobileIntercom(context, extension, {
             dialOptions = 'gb(virtual-intercom-bind^s^1(' .. id .. '^' .. extension .. '))U(virtual-intercom-answer)',
-            validatePush = function(payload)
-                return type(payload) == 'table' and payload.virtualCallId == id and tonumber(payload.extension) == tonumber(extension)
+            validatePush = function(pending)
+                local ok, payload = pcall(cjson.decode, pending)
+                return ok and type(payload) == 'table' and payload.virtualCallId == id and tonumber(payload.extension) == tonumber(extension)
             end,
             -- The server checks the call is still ringing before each push.
-            repeatPush = function(payload) dmWithTimeout('push', payload) end,
+            repeatPush = function(payload) virtualHttp('push', payload) end,
         })
     end,
 }

@@ -1,7 +1,7 @@
 -- Shared and virtual dialplans: no SIP traffic, providers, live Redis or relay I/O.
 local file = assert(io.open('asterisk/extensions.lua'))
 local source = file:read('*a'); file:close()
-local first = assert(source:find('\nfunction dmWithTimeout(', 1, true))
+local first = assert(source:find('\nfunction logDebug(', 1, true))
 local last = assert(source:find('\nfunction handleCMSIntercom(', first, true))
 assert((loadstring or load)(source:sub(first + 1, last - 1)))()
 local storage, encoded, sent, legs = {}, {}, {}, {}

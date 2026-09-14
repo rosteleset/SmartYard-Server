@@ -37,7 +37,7 @@ local function run(root, devices, virtual, counter, race, fallback)
     local function loadFile(path, extract)
         local file = assert(io.open(root .. '/' .. path)); local source = file:read('*a'); file:close()
         if extract then
-            local first = assert(source:find('\nfunction dmWithTimeout(', 1, true))
+            local first = source:find('\nfunction dmWithTimeout(', 1, true) or assert(source:find('\nfunction logDebug(', 1, true))
             local last = assert(source:find('\nfunction handleCMSIntercom(', first, true))
             source = source:sub(first + 1, last - 1)
         end
@@ -83,7 +83,8 @@ for _, tokenType in ipairs({0, 1, 2, 3, 4, 5}) do
                 assert(payload.extension == (virtual and number or tonumber(number)))
                 assert(payload.dtmf == (virtual and '5' or '9') and payload.hash == 'fixture-preview')
                 assert((payload.virtualCallId ~= nil) == virtual and (payload.uniq ~= nil) == not virtual)
-                assert(e.storage['mobile_push_' .. number].ttl == 60 and e.native == 1 and e.fallback == 0)
+                assert(e.storage['mobile_push_' .. number].ttl == 60)
+                assert(e.native == (virtual and 1 or 0) and e.fallback == (virtual and 0 or 1))
                 assert(e.storage['turn/realm/test.invalid/user/' .. number .. '/key'].ttl == 180)
                 assert((e.storage['mobile_extension_' .. number] ~= nil) == not virtual, 'Virtual device acquired ordinary SIP access')
                 assert((e.storage['mobile_token_' .. number] ~= nil) == (not virtual and not voip))
@@ -124,11 +125,11 @@ for _, token in ipairs({null, ''}) do
     local missing = device(1, 1); missing.voipToken = token
     assert(not run('.', {missing}, false).dest and not run('.', {missing}, true).dest, 'Invalid VoIP token fell back to another token')
 end
-e = run('.', {valid}, false, 0, true)
-assert(e.dest == 'Local/2000000001', 'Another call can replace the number allocated by INCR')
+e = run('.', {valid}, true, 0, true)
+assert(e.dest == 'Local/2000000001@virtual-intercom-dial/n', 'Another call can replace the number allocated by INCR')
 for _, virtual in ipairs({false, true}) do
     e = run('.', {valid}, virtual, 999999, false, true)
     assert(e.counter == 1 and e.dest:find('2001000000', 1, true), 'Counter rollover changed')
-    assert(e.native == 1 and e.fallback == 1, 'Native MD5 fallback lost')
+    assert(e.native == (virtual and 1 or 0) and e.fallback == 1, 'Authentication key calculation changed')
 end
-print('PASS ' .. checked .. ' preparation combinations, direct push compatibility, access isolation, atomic allocation and MD5 fallback')
+print('PASS ' .. checked .. ' preparation combinations, direct push compatibility, access isolation, virtual atomic allocation and MD5 fallback')

@@ -53,25 +53,6 @@ function dm(action, request)
     return result
 end
 
-function dmWithTimeout(action, request)
-    local previousTimeout = http.TIMEOUT
-    http.TIMEOUT = 5
-    local ok, result = pcall(dm, action, request)
-    http.TIMEOUT = previousTimeout
-    if not ok then logDebug(action .. ': request failed') end
-    return ok and result or false
-end
-
-function dispatchMobilePush(extension, validate)
-    -- Atomically consume once; GETDEL itself requires Redis 6.2 or newer.
-    local pending = redis:eval("local p = redis.call('GET', KEYS[1]); redis.call('DEL', KEYS[1]); return p", 1, "mobile_push_" .. extension)
-    if not pending then return end
-    local ok, payload = pcall(cjson.decode, pending)
-    if not ok or (validate and not validate(payload)) then return end
-    dmWithTimeout("push", payload)
-    return payload
-end
-
 function logDebug(v)
     local m = ""
 
@@ -133,63 +114,32 @@ function blacklist(flatId)
     return false
 end
 
-function sendMobilePush(payload, defer)
+function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId, bundle, defer)
     local action = defer and "preparing push for: " or "sending push for: "
-    logDebug(action .. payload.extension .. " [" .. payload.mobile .. "] (" .. payload.tokenType .. ", " .. payload.platform .. ", " .. payload.domophoneId .. ")")
+    logDebug(action .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophoneId .. ")")
+
+    local payload = {
+        token = token,
+        tokenType = tokenType,
+        platform = platform,
+        extension = extension,
+        hash = hash,
+        callerId = callerId,
+        flatId = flatId,
+        dtmf = dtmf,
+        mobile = mobile,
+        uniq = channel.CDR("uniqueid"):get(),
+        flatNumber = flatNumber,
+        domophoneId = domophoneId,
+        bundle = bundle,
+        ttl = 60,
+    }
     if defer then
         -- Each Local channel sends its push after Dial starts that channel.
-        redis:setex("mobile_push_" .. string.format('%.0f', tonumber(payload.extension)), 60, cjson.encode(payload))
+        redis:setex("mobile_push_" .. string.format('%.0f', tonumber(extension)), 60, cjson.encode(payload))
     else
         dm("push", payload)
     end
-end
-
-function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId, bundle, defer)
-    sendMobilePush({
-        token = token, tokenType = tokenType, platform = platform, extension = extension,
-        hash = hash, callerId = callerId, flatId = flatId, dtmf = dtmf, mobile = mobile,
-        uniq = channel.CDR("uniqueid"):get(), flatNumber = flatNumber, domophoneId = domophoneId,
-        bundle = bundle, ttl = 60,
-    }, defer)
-end
-
--- Prepare one device; callers retain their own membership and SIP access policy.
-function prepareMobileCall(device, params)
-    -- Use the value allocated by INCR; a separate GET can read another call's number.
-    local allocated = tonumber(redis:incr("autoextension"))
-    if allocated > 999999 then redis:set("autoextension", "1") end
-    local extension = allocated + 2000000000
-    local tokenType = tonumber(device.tokenType)
-    local voip = tokenType == 1 or tokenType == 2
-    local token = device.pushToken
-    if voip then token = device.voipToken end
-    if token == nil or token == cjson.null or token == "" then return end
-
-    local payload = {}
-    for key, value in pairs(params) do payload[key] = value end
-    payload.extension, payload.token = extension, token
-    payload.tokenType, payload.platform = device.tokenType, device.platform
-    payload.mobile, payload.ttl = device.subscriber.mobile, 60
-    payload.bundle = device.bundle
-    if payload.bundle == nil or payload.bundle == cjson.null or payload.bundle == "" then payload.bundle = "default" end
-
-    local input = string.format('%.0f', extension) .. ":" .. realm .. ":" .. payload.hash
-    local key = channel.MD5(input):get()
-    if not key or not key:match('^[a-f0-9]+$') or #key ~= 32 then key = md5.sumhexa(input) end
-    redis:setex("turn/realm/" .. realm .. "/user/" .. string.format('%.0f', extension) .. "/key", 3 * 60, key)
-    return payload, voip
-end
-
-function queueMobileCall(payload)
-    local tokenType = tonumber(payload.tokenType)
-    if tonumber(payload.platform) == 1 and (tokenType == 0 or tokenType == 4 or tokenType == 5) then
-        -- ios over fcm (with repeat); retain the existing retry metadata.
-        local retry = {}
-        for key, value in pairs(payload) do retry[key] = value end
-        retry.id = payload.extension
-        redis:setex("voip_crutch_" .. payload.extension, 60, cjson.encode(retry))
-    end
-    sendMobilePush(payload, true)
 end
 
 function camshow(domophoneId)
@@ -230,8 +180,6 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
     local hash = camshow(domophoneId)
 
     callerId = channel.CALLERID("name"):get()
-    local params = {hash = hash, callerId = callerId, flatId = flatId, dtmf = dtmf,
-        flatNumber = flatNumber, domophoneId = domophoneId, uniq = channel.CDR("uniqueid"):get()}
 
     for i, device in ipairs(devices) do
         if device.platform ~= cjson.null and tonumber(device.voipEnabled) == 1 then
@@ -243,15 +191,54 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
             end
 
             if flatVoipEnabled == 1 then
-                local payload, voip = prepareMobileCall(device, params)
-                if payload then
-                    extension = payload.extension
+                redis:incr("autoextension")
+
+                extension = tonumber(redis:get("autoextension"))
+                if extension > 999999 then
+                    redis:set("autoextension", "1")
+                end
+                extension = extension + 2000000000
+
+                local token = ""
+                if tonumber(device.tokenType) == 1 or tonumber(device.tokenType) == 2 then
+                    token = device.voipToken
+                else
+                    token = device.pushToken
+                end
+
+                if token ~= cjson.null and token ~= nil and token ~= "" then
+                    redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5.sumhexa(extension .. ":" .. realm .. ":" .. hash))
                     redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
-                    if not voip then
-                        -- not for apple's voips
-                        redis:setex("mobile_token_" .. extension, 3 * 60, payload.token)
+
+                    local bundle = "default"
+                    if device.bundle ~= cjson.null and device.bundle ~= nil and device.bundle ~= "" then
+                        bundle = device.bundle
                     end
-                    queueMobileCall(payload)
+
+                    if tonumber(device.tokenType) ~= 1 and tonumber(device.tokenType) ~= 2 then
+                        -- not for apple's voips
+                        redis:setex("mobile_token_" .. extension, 3 * 60, token)
+                    end
+
+                    if tonumber(device.platform) == 1 and (tonumber(device.tokenType) == 0 or tonumber(device.tokenType) == 4 or tonumber(device.tokenType) == 5) then
+                        -- ios over fcm (with repeat)
+                        redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
+                            id = extension,
+                            token = token,
+                            tokenType = device.tokenType,
+                            hash = hash,
+                            platform = device.platform,
+                            flatId = flatId,
+                            dtmf = dtmf,
+                            mobile = device.subscriber.mobile,
+                            flatNumber = flatNumber,
+                            domophoneId = domophoneId,
+                            bundle = bundle,
+                        }))
+                    end
+
+                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, device.subscriber.mobile, flatNumber, domophoneId, bundle, true)
+
                     res = res .. "&Local/" .. extension
                 end
             end
@@ -270,8 +257,19 @@ function handleMobileIntercom(context, extension, options)
     options = options or {}
     checkin()
 
-    local payload = dispatchMobilePush(extension, options.validatePush)
-    if options.validatePush and not payload then app.Hangup(21); return end
+    -- Atomically consume once; GETDEL itself requires Redis 6.2 or newer.
+    local pending = redis:eval("local p = redis.call('GET', KEYS[1]); redis.call('DEL', KEYS[1]); return p", 1, "mobile_push_" .. extension)
+    if options.validatePush and not options.validatePush(pending) then
+        app.Hangup(21)
+        return
+    end
+    if pending then
+        local previousTimeout = http.TIMEOUT
+        http.TIMEOUT = 5
+        local ok = pcall(function() dm("push", cjson.decode(pending)) end)
+        http.TIMEOUT = previousTimeout
+        if not ok then logDebug("initial push failed for: " .. extension) end
+    end
 
     logDebug("starting loop for: " .. extension)
 

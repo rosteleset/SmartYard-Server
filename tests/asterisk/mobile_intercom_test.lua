@@ -1,7 +1,7 @@
 -- Run from the repository root. No live SIP, HTTP, Redis or subscriber calls.
 local file = assert(io.open(arg[1] or 'asterisk/extensions.lua'))
 local source = file:read('*a'); file:close()
-local first = assert(source:find('\nfunction dmWithTimeout(', 1, true))
+local first = assert(source:find('\nfunction handleMobileIntercom(', 1, true))
 local last = assert(source:find('\nfunction handleCMSIntercom(', first, true))
 assert((loadstring or load)(source:sub(first + 1, last - 1)))()
 
