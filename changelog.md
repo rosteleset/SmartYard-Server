@@ -39,6 +39,7 @@
 - fixed camera group visibility filtering for cameras also assigned to entrances
 - fixed saving CCTV group display modes when using the cyclic select button
 - fixed empty and nested group handling in camera trees
+- restored entrance IDs in the mobile address list response for exact camera mapping
 ```
 
 ## v1.1.0
