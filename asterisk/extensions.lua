@@ -253,7 +253,7 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
 end
 
 -- call to mobile application
-function handleMobileIntercom(context, extension)
+function handleMobileIntercom(context, extension, dialOptions)
     checkin()
 
     -- Atomically consume once; GETDEL itself requires Redis 6.2 or newer.
@@ -299,7 +299,7 @@ function handleMobileIntercom(context, extension)
                 logDebug("has registration: " .. extension)
                 skip = true
             end
-            app.Dial(pjsip_extension, 35, "g")
+            app.Dial(pjsip_extension, 35, dialOptions or "g")
             status = channel.DIALSTATUS:get()
             if status == "CHANUNAVAIL" then
                 logDebug(extension .. ': sleeping')
@@ -699,6 +699,8 @@ extensions = {
         end
     },
 }
+
+require 'virtual-intercom.extensions'
 
 if custom ~= nil then
     for i, c in ipairs(custom) do
