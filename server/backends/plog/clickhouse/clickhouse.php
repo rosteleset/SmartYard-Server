@@ -290,6 +290,33 @@
                 }
             }
 
+            private function getServiceAccessType(string $rfid, int $domophone_id): ?int {
+                $households = loadBackend('households');
+                $keys = $households->getKeys("domophoneId", $domophone_id) ?: [];
+                $service_types = [0, 3, 4, 5];
+
+                foreach ($keys as $key) {
+                    if ((string)($key["rfId"] ?? "") !== $rfid) {
+                        continue;
+                    }
+
+                    $access_type = (int)($key["accessType"] ?? -1);
+                    if (in_array($access_type, $service_types, true)) {
+                        return $access_type;
+                    }
+                }
+
+                return null;
+            }
+
+            private function writeServiceEventData(array $event_data, int $access_type): void {
+                debugMsg("      Writing the service event data...");
+                $event_data[self::COLUMN_HIDDEN] = 0;
+                $event_data["access_type"] = $access_type;
+                $this->clickhouse->insert("plog_service", [$event_data]);
+                debugMsg("      Done writing the service event data.");
+            }
+
             /**
              * @inheritDoc
              */
@@ -620,6 +647,39 @@
                 return $this->clickhouse->select($query)[0];
             }
 
+            public function getServiceEventsByDay(string $date, ?int $access_type = null) {
+                $clean_date = (int)str_replace('-', '', $date);
+                $access_condition = $access_type === null ? "" : " and access_type = " . $access_type;
+
+                $query = "
+                    select
+                        date,
+                        event_uuid,
+                        hidden,
+                        image_uuid,
+                        access_type,
+                        toJSONString(domophone) domophone,
+                        event,
+                        opened,
+                        toJSONString(face) face,
+                        rfid,
+                        code,
+                        toJSONString(phones) phones,
+                        preview,
+                        vehicle
+                    from
+                        plog_service
+                    where
+                        hidden = 0
+                        and toYYYYMMDD(FROM_UNIXTIME(date)) = {$clean_date}
+                        {$access_condition}
+                    order by
+                        date desc
+                ";
+
+                return $this->clickhouse->select($query);
+            }
+
             private function getDomophoneId(?string $ip, ?string $sub_id = null): ?int {
                 $households = loadBackend('households');
 
@@ -786,6 +846,7 @@
                         $event_data[self::COLUMN_DOMOPHONE]['domophone_output']
                     );
                     $event_data[self::COLUMN_EVENT_UUID] = GUIDv4();
+                    $service_access_type = null;
 
                     if ($event_type == self::EVENT_OPENED_BY_KEY) {
                         $event_data[self::COLUMN_OPENED] = 1;
@@ -793,8 +854,11 @@
                         $event_data[self::COLUMN_RFID] = $rfid_key;
                         $flat_list = $this->getFlatIdByRfid($rfid_key, $domophone_id);
                         if (!$flat_list) {
-                            debugMsg("    Skip the event because there is no apartment linked to the rfid = $rfid_key.");
-                            continue;
+                            $service_access_type = $this->getServiceAccessType($rfid_key, $domophone_id);
+                            if ($service_access_type === null) {
+                                debugMsg("    Skip the event because the rfid is not linked to an apartment or service access = $rfid_key.");
+                                continue;
+                            }
                         }
                     }
 
@@ -882,7 +946,11 @@
                             $event_data[self::COLUMN_DOMOPHONE]['camera_id'] = $image_data['camera_id'];
                         }
                     }
-                    $this->writeEventData($event_data, $flat_list);
+                    if ($service_access_type !== null) {
+                        $this->writeServiceEventData($event_data, $service_access_type);
+                    } else {
+                        $this->writeEventData($event_data, $flat_list);
+                    }
                 }
 
                 debugMsg("  End of processing data from plog_door_open");
