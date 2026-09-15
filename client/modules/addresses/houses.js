@@ -2017,6 +2017,7 @@
                 apply: i18n("add"),
                 size: "lg",
                 fields: fields,
+                done: prefix => $("#" + prefix + "flat").closest(".card").addClass("flat-form"),
                 callback: result => {
                     let customFields = modules.addresses.houses.extractFlatCustomFields(result, "add");
                     let apartmentsAndLevels = {};
@@ -3432,6 +3433,7 @@
                     apply: i18n("edit"),
                     size: "lg",
                     fields: fields,
+                    done: prefix => $("#" + prefix + "flat").closest(".card").addClass("flat-form"),
                     callback: result => {
                         let cf = modules.addresses.houses.extractFlatCustomFields(result, "modify");
                         delete result.autoBlock;

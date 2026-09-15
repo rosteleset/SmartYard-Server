@@ -1166,3 +1166,8 @@ body.dark-mode .rfid-preview-duplicate > td {
   background-color: rgba(255, 193, 7, 0.16) !important;
   color: #ffe69c !important;
 }
+
+/* Keep apartment labels, hints and tabs inside the modal. */
+.flat-form { overflow-wrap: anywhere; }
+.flat-form > .card-body > .table { table-layout: fixed; }
+.flat-form .tdform, .flat-form .tdform-right { white-space: normal !important; width: auto !important; }
