@@ -39,6 +39,8 @@
 - fixed camera group visibility filtering for cameras also assigned to entrances
 - fixed saving CCTV group display modes when using the cyclic select button
 - fixed empty and nested group handling in camera trees
++ added a system statistics page for flats, equipment, RFID keys and mobile devices
++ added administrative event logs for flats, entrances and houses with filtering, previews and CSV export
 - restored entrance IDs in the mobile address list response for exact camera mapping
 ```
 
