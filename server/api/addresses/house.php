@@ -13,6 +13,8 @@
      * @apiParam {Number} houseId houseId
      *
      * @apiSuccess {Object} house
+     * @apiSuccess {Number[]} house.companyIds Servicing organizations (empty array when unassigned).
+     * @apiSuccess {Number} house.companyId Deprecated: lowest company ID, or 0.
      */
 
     /**
@@ -33,7 +35,8 @@
      * @apiBody {String} houseTypeFull
      * @apiBody {String} houseFull
      * @apiBody {String} house
-     * @apiBody {Number} companyId
+     * @apiBody {Number[]} [companyIds] Complete set of servicing organizations; [] clears all, omission preserves links.
+     * @apiBody {Number} [companyId] Deprecated scalar fallback; ignored when companyIds is supplied.
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -55,7 +58,8 @@
      * @apiBody {String} houseTypeFull
      * @apiBody {String} houseFull
      * @apiBody {String} house
-     * @apiBody {Number} companyId
+     * @apiBody {Number[]} [companyIds] Servicing organizations; defaults to [].
+     * @apiBody {Number} [companyId] Deprecated scalar fallback.
      *
      * @apiSuccess {Number} houseId
      */
@@ -100,7 +104,11 @@
             public static function PUT($params) {
                 $addresses = loadBackend("addresses");
 
-                $success = $addresses->modifyHouse($params["_id"], $params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $params["companyId"]);
+                if (array_key_exists("companyIds", $params) && !is_array($params["companyIds"])) {
+                    return api::ANSWER(false, "notAcceptable");
+                }
+                $companyIds = $params["companyIds"] ?? $params["companyId"] ?? null;
+                $success = $addresses->modifyHouse($params["_id"], $params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $companyIds);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
@@ -111,7 +119,11 @@
                 if (@$params["magic"]) {
                     $houseId = $addresses->addHouseByMagic($params["magic"]);
                 } else {
-                    $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $params["companyId"]);
+                    if (array_key_exists("companyIds", $params) && !is_array($params["companyIds"])) {
+                        return api::ANSWER(false, "notAcceptable");
+                    }
+                    $companyIds = $params["companyIds"] ?? $params["companyId"] ?? [];
+                    $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $companyIds);
                 }
 
                 return api::ANSWER($houseId, ($houseId !== false) ? "houseId" : false);

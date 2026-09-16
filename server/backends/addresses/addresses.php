@@ -252,10 +252,10 @@
              * @param $houseTypeFull
              * @param $houseFull
              * @param $house
-             * @param $companyId
+             * @param array|int|string|null $companyId Company IDs; null preserves existing links.
              * @return boolean
              */
-            abstract function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0);
+            abstract function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = null);
 
             /**
              * @param $settlementId
@@ -265,10 +265,32 @@
              * @param $houseTypeFull
              * @param $houseFull
              * @param $house
-             * @param $companyId
+             * @param array|int|string $companyId Company IDs, or a legacy single ID (0 means none).
              * @return false|integer
              */
-            abstract function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0);
+            abstract function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = []);
+
+            /** Normalize new companyIds arrays and legacy scalar companyId values. */
+            public static function normalizeHouseCompanyIds($value) {
+                if ($value === 0 || $value === "0") {
+                    return [];
+                }
+                $ids = is_array($value) ? $value : [$value];
+                if (!array_is_list($ids)) {
+                    return false;
+                }
+                $result = [];
+                foreach ($ids as $id) {
+                    if ((!is_int($id) && !is_string($id)) || !ctype_digit((string)$id)
+                        || (float)$id < 1 || (float)$id > 2147483647) {
+                        return false;
+                    }
+                    $result[(int)$id] = (int)$id;
+                }
+                $result = array_values($result);
+                sort($result, SORT_NUMERIC);
+                return $result;
+            }
 
             /**
              * @param $houseId

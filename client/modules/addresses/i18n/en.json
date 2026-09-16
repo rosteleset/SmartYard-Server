@@ -1,4 +1,5 @@
 {
+    "servicingCompanies": "Servicing organizations",
     "customFields.cctv.tab": "Video surveillance",
     "customFields.cctv.adminCamBlock.fieldDisplay": "Administrative camera block",
     "addresses": "\"Smart\" Yard",
