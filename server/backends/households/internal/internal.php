@@ -4172,6 +4172,123 @@
             }
 
             /**
+             * Resolve an explicit address scope without loading subscriber lists into PHP.
+             * The alternative parent links also cover cities directly under regions,
+             * settlements directly under areas, and houses without a street.
+             */
+
+            private function addressBroadcastRecipients($by, $query) {
+                $scopes = [
+                    "regionId" => [ "regions", "region", "r" ],
+                    "areaId" => [ "areas", "area", "a" ],
+                    "cityId" => [ "cities", "city", "c" ],
+                    "settlementId" => [ "settlements", "settlement", "s" ],
+                    "streetId" => [ "streets", "street", "st" ],
+                    "houseId" => [ "houses", "house", "h" ],
+                ];
+                $params = [];
+                $where = "";
+
+                if ($by === "all") {
+                    if (!in_array($query, [ null, 0, "0" ], true)) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+                } else {
+                    if (!is_string($by) || !isset($scopes[$by]) ||
+                        (!is_int($query) && !is_string($query)) ||
+                        !preg_match('/^[1-9][0-9]*$/D', (string)$query) ||
+                        filter_var($query, FILTER_VALIDATE_INT, [ "options" => [ "min_range" => 1, "max_range" => 2147483647 ] ]) === false) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    [ $table, $object, $alias ] = $scopes[$by];
+                    $params["address_id"] = (int)$query;
+                    $node = $this->db->get("select address_{$object}_id from addresses_{$table} where address_{$object}_id = :address_id", $params);
+                    if ($node === false) {
+                        return false;
+                    }
+                    if (!$node) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+                    $where = "where {$alias}.address_{$object}_id = :address_id";
+                }
+
+                $sql = "
+                    select distinct mobile.house_subscriber_id
+                    from houses_subscribers_mobile mobile
+                    join houses_flats_subscribers fs on fs.house_subscriber_id = mobile.house_subscriber_id
+                    join houses_flats f on f.house_flat_id = fs.house_flat_id
+                    join addresses_houses h on h.address_house_id = f.address_house_id
+                ";
+
+                if ($by !== "all" && $by !== "houseId") {
+                    $joins = [
+                        "streetId" => "left join addresses_streets st on st.address_street_id = h.address_street_id",
+                        "settlementId" => "left join addresses_settlements s on s.address_settlement_id = h.address_settlement_id or s.address_settlement_id = st.address_settlement_id",
+                        "cityId" => "left join addresses_cities c on c.address_city_id = st.address_city_id or c.address_city_id = s.address_city_id",
+                        "areaId" => "left join addresses_areas a on a.address_area_id = c.address_area_id or a.address_area_id = s.address_area_id",
+                        "regionId" => "left join addresses_regions r on r.address_region_id = c.address_region_id or r.address_region_id = a.address_region_id",
+                    ];
+                    foreach ($joins as $scope => $join) {
+                        $sql .= $join . "\n";
+                        if ($scope === $by) {
+                            break;
+                        }
+                    }
+                }
+
+                return [ $sql . $where, $params ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function getAddressBroadcastRecipientCount($by, $query) {
+                $recipients = $this->addressBroadcastRecipients($by, $query);
+                if ($recipients === false) {
+                    return false;
+                }
+
+                [ $sql, $params ] = $recipients;
+                $result = $this->db->get("select count(*) as recipients from ($sql) audience", $params);
+                return $result === false ? false : (int)$result[0]["recipients"];
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function queueAddressBroadcast($by, $query, $title, $msg, $action = "inbox") {
+                if (!is_string($title) || trim($title) === "" || !is_string($msg) || trim($msg) === "" ||
+                    !in_array($action, [ "inbox", "money" ], true)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $recipients = $this->addressBroadcastRecipients($by, $query);
+                if ($recipients === false) {
+                    return false;
+                }
+
+                [ $sql, $params ] = $recipients;
+                $params["title"] = $title;
+                $params["msg"] = $msg;
+                $params["action"] = $action;
+
+                return $this->db->modify("
+                    insert into houses_subscribers_messages (house_subscriber_id, title, msg, action)
+                    select audience.house_subscriber_id, :title, :msg, :action
+                    from ($sql) audience
+                    order by audience.house_subscriber_id
+                    on conflict (house_subscriber_id, title, msg, action) do nothing
+                ", $params);
+            }
+
+            /**
              * @inheritDoc
              */
 
