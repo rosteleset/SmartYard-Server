@@ -204,6 +204,8 @@ namespace backends\billing {
          *   if settlement is omitted and street is provided, city is required
          * - houseUuid, house (required)
          * - houseFull (optional)
+         * - companyIds (optional) complete array of servicing organization IDs
+         * - companyId (optional, deprecated) single organization; omission preserves links
          * - services (optional) array of:
          *   "internet","iptv","ctv","phone","cctv","domophone","gsm"
          * - flats (optional) array of items:
@@ -424,8 +426,9 @@ namespace backends\billing {
                 $houseType = @$item["houseType"];
                 $houseTypeFull = @$item["houseTypeFull"];
                 $houseFull = @$item["houseFull"];
-                $hasCompanyId = array_key_exists("companyId", $item);
-                $companyId = $hasCompanyId ? $item["companyId"] : 0;
+                $hasCompanyIds = array_key_exists("companyIds", $item);
+                $hasCompanyId = $hasCompanyIds || array_key_exists("companyId", $item);
+                $companyId = $hasCompanyIds ? $item["companyIds"] : ($item["companyId"] ?? 0);
 
                 if (!checkStr($houseType)) {
                     $houseType = "";
@@ -436,10 +439,11 @@ namespace backends\billing {
                 if (!checkStr($houseFull) || $houseFull === "") {
                     $houseFull = $house;
                 }
-                if ($companyId === null || $companyId === "") {
+                if (!$hasCompanyIds && ($companyId === null || $companyId === "")) {
                     $companyId = 0;
                 }
-                if (!checkInt($companyId)) {
+                $normalizedCompanyIds = \backends\addresses\addresses::normalizeHouseCompanyIds($companyId);
+                if (($hasCompanyIds && !is_array($companyId)) || $normalizedCompanyIds === false) {
                     $result["invalid"]++;
                     $result["errors"][] = [
                         "index" => $index,
@@ -997,7 +1001,10 @@ namespace backends\billing {
                         ];
                     }
 
-                    if ($hasCompanyId && (int)@$houseRow["companyId"] !== (int)$companyId) {
+                    $companiesChanged = $hasCompanyIds
+                        ? ($houseRow["companyIds"] ?? []) !== $normalizedCompanyIds
+                        : (int)@$houseRow["companyId"] !== (int)$companyId;
+                    if ($hasCompanyId && $companiesChanged) {
                         if ($addresses->modifyHouse(
                             $houseId,
                             @$houseRow["settlementId"],

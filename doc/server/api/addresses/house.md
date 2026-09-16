@@ -2,6 +2,10 @@
 
 Implemented in `server/api/addresses/house.php`.
 
+Since database migration 98, use `companyIds` (an array) for servicing
+organizations. The old `companyId` is a deprecated compatibility projection.
+See [storage, migration and compatibility rules](../../house-companies.md).
+
 ## Auth and permissions
 
 - Requires `Authorization: Bearer <token>`.
@@ -13,11 +17,11 @@ Implemented in `server/api/addresses/house.php`.
 - **Entry point / dispatch**: `server/frontend.php` → `server/api/addresses/house.php` → class `\api\addresses\house`.
 - **Backends**: `addresses` backend:
   - `getHouse(houseId)`
-  - `modifyHouse(houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyId)`
+  - `modifyHouse(houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyIds)`
   - `addHouse(...)` or `addHouseByMagic(magic)` if `magic` is provided
   - `deleteHouse(houseId)`
 - **Storage**:
-  - internal backend uses `addresses_houses` (and related hierarchy tables).
+  - internal backend uses `addresses_houses`, `addresses_houses_companies` (and related hierarchy tables).
 
 ## GET `/api/addresses/house/:houseId`
 
@@ -28,14 +32,14 @@ Implemented in `server/api/addresses/house.php`.
 ## PUT `/api/addresses/house/:houseId`
 
 - **Params**: `houseId` (number)
-- **Body**: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+- **Body**: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, optional `companyIds`
 - **Success 204**
 - **Error 406**: `{"error":"notAcceptable"}`
 
 ## POST `/api/addresses/house`
 
 - **Body**:
-  - normal create: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+  - normal create: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, optional `companyIds`
   - alternative: `magic` (string) triggers `addHouseByMagic(magic)`
 - **Success 200**: `{"houseId": <number>}`
 - **Error 400**: `{"error":"unknown"}` (returned when handler calls `ANSWER(false)` with no explicit error code)
@@ -83,7 +87,7 @@ Implemented in `server/api/addresses/house.php`.
   - `houseTypeFull` (string)
   - `houseFull` (string)
   - `house` (string)
-  - `companyId` (number)
+  - `companyIds` (optional array of positive organization IDs; omission preserves, `[]` clears)
 - **Success 204**: empty body
 - **Error 406**: `{"error":"notAcceptable"}`
 
@@ -113,4 +117,3 @@ Errors:
 - **Params**: `houseId` (number)
 - **Success 204**: empty body
 - **Error 406**: `{"error":"notAcceptable"}`
-

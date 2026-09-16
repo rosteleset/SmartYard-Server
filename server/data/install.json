@@ -308,5 +308,8 @@
     "97": [
         "v97_frs.sql",
         "v97_lprs.sql"
+    ],
+    "98": [
+        "v98_house_companies.sql"
     ]
 }

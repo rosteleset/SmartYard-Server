@@ -1261,7 +1261,7 @@
                             select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
                                     select house_entrance_id from houses_houses_entrances where address_house_id in (
-                                        select address_house_id from addresses_houses where company_id = $query
+                                        select address_house_id from addresses_houses_companies where company_id = $query
                                     )
                                 ) group by house_domophone_id
                             ) order by house_domophone_id
@@ -2062,8 +2062,8 @@
 
                             foreach ($r as $i) {
                                 $h = $addresses->getHouse($i["houseId"]);
-                                if ((int)$h["companyId"]) {
-                                    $c[] = $h["companyId"];
+                                foreach ($h["companyIds"] ?? [] as $companyId) {
+                                    $c[] = (int)$companyId;
                                 }
                             }
 

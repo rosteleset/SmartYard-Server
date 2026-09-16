@@ -13,6 +13,103 @@
         class internal extends addresses {
             private $houses = [];
 
+            /** Add all company IDs in one query, including a deprecated scalar projection. */
+            private function withHouseCompanies($houses) {
+                if (!$houses) {
+                    return $houses;
+                }
+                $ids = array_map('intval', array_column($houses, 'houseId'));
+                $links = $this->db->get("select address_house_id, company_id from addresses_houses_companies where address_house_id in (" . implode(',', $ids) . ") order by company_id");
+                if ($links === false) {
+                    return false;
+                }
+                $companies = [];
+                foreach ($links as $link) {
+                    $companies[$link['address_house_id']][] = (int)$link['company_id'];
+                }
+                foreach ($houses as &$house) {
+                    $house['companyIds'] = $companies[$house['houseId']] ?? [];
+                    // Compatibility only: relationships are stored exclusively in the link table.
+                    $house['companyId'] = $house['companyIds'][0] ?? 0;
+                }
+                return $houses;
+            }
+
+            /** Save the house and its links atomically, including when called in a transaction. */
+            private function saveHouse($houseId, $values, $companyIds) {
+                $legacyScalar = $companyIds !== null && !is_array($companyIds);
+                $normalized = $companyIds === null ? null : self::normalizeHouseCompanyIds($companyIds);
+                if ($normalized === false) {
+                    setLastError('invalidCompanyIds');
+                    return false;
+                }
+                $values = $this->db->trimParams($values);
+
+                $ownTransaction = !$this->db->inTransaction();
+                if ($ownTransaction) {
+                    $this->db->beginTransaction();
+                }
+                $this->db->exec('SAVEPOINT house_company_links');
+                try {
+                    $current = [];
+                    if ($houseId !== null) {
+                        $statement = $this->db->prepare('select address_house_id from addresses_houses where address_house_id = ? for update');
+                        $statement->execute([$houseId]);
+                        if (!$statement->fetchColumn()) {
+                            throw new \RuntimeException('noHouse');
+                        }
+                        $statement = $this->db->prepare('select company_id from addresses_houses_companies where address_house_id = ? order by company_id');
+                        $statement->execute([$houseId]);
+                        $current = array_map('intval', $statement->fetchAll(\PDO::FETCH_COLUMN));
+                        // An old client must not unknowingly replace several relationships.
+                        if ($legacyScalar && count($current) > 1) {
+                            if ($normalized !== [$current[0]]) {
+                                throw new \RuntimeException('useCompanyIds');
+                            }
+                            $normalized = $current;
+                        }
+                        $statement = $this->db->prepare('update addresses_houses set address_settlement_id = ?, address_street_id = ?, house_uuid = ?, house_type = ?, house_type_full = ?, house_full = ?, house = ? where address_house_id = ?');
+                        $statement->execute([...$values, $houseId]);
+                        $result = $statement->rowCount();
+                    } else {
+                        $statement = $this->db->prepare('insert into addresses_houses (address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house) values (?, ?, ?, ?, ?, ?, ?) returning address_house_id');
+                        $statement->execute($values);
+                        $houseId = (int)$statement->fetchColumn();
+                        $result = $houseId;
+                    }
+
+                    if ($normalized !== null && $normalized !== $current) {
+                        $statement = $this->db->prepare('delete from addresses_houses_companies where address_house_id = ?');
+                        $statement->execute([$houseId]);
+                        $statement = $this->db->prepare('insert into addresses_houses_companies (address_house_id, company_id) values (?, ?)');
+                        foreach ($normalized as $companyId) {
+                            $statement->execute([$houseId, $companyId]);
+                        }
+                        // Both added and removed companies change this house's RFID set.
+                        $queue = loadBackend('queue');
+                        if ($queue) {
+                            $queue->changed('house', $houseId);
+                        }
+                    }
+
+                    $this->db->exec('RELEASE SAVEPOINT house_company_links');
+                    if ($ownTransaction) {
+                        $this->db->commit();
+                    }
+                    $this->houses = [];
+                    return $result;
+                } catch (\Throwable $error) {
+                    if ($ownTransaction) {
+                        $this->db->rollBack();
+                    } else {
+                        $this->db->exec('ROLLBACK TO SAVEPOINT house_company_links');
+                        $this->db->exec('RELEASE SAVEPOINT house_company_links');
+                    }
+                    setLastError($error->getMessage());
+                    return false;
+                }
+            }
+
             /**
              * @inheritDoc
              */
@@ -772,15 +869,15 @@
                 }
 
                 if ($settlementId) {
-                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_settlement_id = $settlementId and coalesce(address_street_id, 0) = 0 order by house";
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_settlement_id = $settlementId and coalesce(address_street_id, 0) = 0 order by house";
                 } else
                 if ($streetId) {
-                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_street_id = $streetId and coalesce(addresses_houses.address_settlement_id, 0) = 0 order by house";
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_street_id = $streetId and coalesce(addresses_houses.address_settlement_id, 0) = 0 order by house";
                 } else {
-                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses order by house";
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses order by house";
                 }
 
-                return $this->db->get($query, false, [
+                return $this->withHouseCompanies($this->db->get($query, false, [
                     "address_house_id" => "houseId",
                     "address_settlement_id" => "settlementId",
                     "address_street_id" => "streetId",
@@ -789,8 +886,7 @@
                     "house_type_full" => "houseTypeFull",
                     "house_full" => "houseFull",
                     "house" => "house",
-                    "company_id" => "companyId",
-                ]);
+                ]));
             }
 
             /**
@@ -806,7 +902,7 @@
                     return $this->houses[$houseId];
                 }
 
-                $house = $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_house_id = $houseId", false,
+                $house = $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_house_id = $houseId", false,
                     [
                         "address_house_id" => "houseId",
                         "address_settlement_id" => "settlementId",
@@ -816,13 +912,15 @@
                         "house_type_full" => "houseTypeFull",
                         "house_full" => "houseFull",
                         "house" => "house",
-                        "company_id" => "companyId",
                     ],
                     [
                         "singlify"
                     ]
                 );
 
+                if ($house) {
+                    $house = $this->withHouseCompanies([$house])[0] ?? false;
+                }
                 $this->houses[$houseId] = $house;
 
                 return $house;
@@ -832,7 +930,7 @@
              * @inheritDoc
              */
 
-            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0) {
+            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = null) {
                 if (!checkInt($houseId)) {
                     return false;
                 }
@@ -853,23 +951,8 @@
                     return false;
                 }
 
-                if (checkInt($companyId) === false) {
-                    return false;
-                }
-
                 if (trim($houseFull) && trim($house)) {
-                    $this->houses = [];
-
-                    return $this->db->modify("update addresses_houses set address_settlement_id = :address_settlement_id, address_street_id = :address_street_id, house_uuid = :house_uuid, house_type = :house_type, house_type_full = :house_type_full, house_full = :house_full, house = :house, company_id = :company_id where address_house_id = $houseId", [
-                        ":address_settlement_id" => $settlementId ?: null,
-                        ":address_street_id" => $streetId ?: null,
-                        ":house_uuid" => $houseUuid,
-                        ":house_type" => $houseType,
-                        ":house_type_full" => $houseTypeFull,
-                        ":house_full" => $houseFull,
-                        ":house" => $house,
-                        ":company_id" => $companyId,
-                    ]);
+                    return $this->saveHouse($houseId, [$settlementId ?: null, $streetId ?: null, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house], $companyId);
                 } else {
                     return false;
                 }
@@ -879,7 +962,7 @@
              * @inheritDoc
              */
 
-            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0) {
+            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = []) {
                 if ($settlementId && $streetId) {
                     return false;
                 }
@@ -896,23 +979,8 @@
                     return false;
                 }
 
-                if (checkInt($companyId) === false) {
-                    return false;
-                }
-
                 if (trim($houseFull) && trim($house)) {
-                    $this->houses = [];
-
-                    return $this->db->insert("insert into addresses_houses (address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id) values (:address_settlement_id, :address_street_id, :house_uuid, :house_type, :house_type_full, :house_full, :house, :company_id)", [
-                        ":address_settlement_id" => $settlementId ?: null,
-                        ":address_street_id" => $streetId ?: null,
-                        ":house_uuid" => $houseUuid,
-                        ":house_type" => $houseType,
-                        ":house_type_full" => $houseTypeFull,
-                        ":house_full" => $houseFull,
-                        ":house" => $house,
-                        ":company_id" => $companyId,
-                    ]);
+                    return $this->saveHouse(null, [$settlementId ?: null, $streetId ?: null, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house], $companyId);
                 } else {
                     return false;
                 }
@@ -1266,7 +1334,7 @@
                         break;
                 }
 
-                return $this->db->get($query, $params, [
+                return $this->withHouseCompanies($this->db->get($query, $params, [
                     "address_house_id" => "houseId",
                     "address_settlement_id" => "settlementId",
                     "address_street_id" => "streetId",
@@ -1275,9 +1343,8 @@
                     "house_type_full" => "houseTypeFull",
                     "house_full" => "houseFull",
                     "house" => "house",
-                    "company_id" => "companyId",
                     "similarity" => "similarity",
-                ]);
+                ]));
             }
         }
     }
