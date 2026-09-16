@@ -69,7 +69,7 @@
                 foreach ($old as $of => $ov) {
                     foreach ($new as $nf => $nv) {
                         if ($of == $nf && $ov != $nv) {
-                            if ($nv) {
+                            if ($nv !== "") {
                                 if ($this->db->modify("update custom_fields_values set value = :value where apply_to = :apply_to and id = :id and field = :field", [
                                     "apply_to" => $applyTo,
                                     "id" => $id,
@@ -93,7 +93,7 @@
 
                 if ($mode === "replace") {
                     foreach ($old as $f => $v) {
-                        if (!@$new[$f]) {
+                        if (!array_key_exists($f, $new) || $new[$f] === "") {
                             if ($this->db->modify("delete from custom_fields_values where apply_to = :apply_to and id = :id and field = :field", [
                                 "apply_to" => $applyTo,
                                 "id" => $id,
@@ -106,7 +106,7 @@
                 }
 
                 foreach ($new as $f => $v) {
-                    if (!@$old[$f] && $v) {
+                    if (!array_key_exists($f, $old) && $v !== "") {
                         if ($this->db->modify("insert into custom_fields_values (apply_to, id, field, value) values (:apply_to, :id, :field, :value)", [
                             "apply_to" => $applyTo,
                             "id" => $id,
