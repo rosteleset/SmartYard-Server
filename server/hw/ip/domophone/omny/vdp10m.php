@@ -26,6 +26,15 @@ class vdp10m extends akuvox implements LanguageInterface
     /** @var array<int|string, Dialplan>|null */
     private ?array $dialplans = null;
 
+    /** @var array<int|string, Dialplan>|null */
+    private ?array $dialplansToAdd = null;
+
+    /** @var array<int|string, Dialplan>|null */
+    private ?array $dialplansToDelete = null;
+
+    /** @var array<int|string, Dialplan>|null */
+    private ?array $dialplansToUpdate = null;
+
     /** @var array<int|string, User>|null */
     private ?array $users = null;
 
@@ -195,6 +204,18 @@ class vdp10m extends akuvox implements LanguageInterface
 
     public function syncData(): void
     {
+        if ($this->dialplansToDelete !== null) {
+            $this->deleteDialplans($this->dialplansToDelete);
+        }
+
+        if ($this->dialplansToUpdate !== null) {
+            $this->updateDialplans($this->dialplansToUpdate);
+        }
+
+        if ($this->dialplansToAdd !== null) {
+            $this->addDialplans($this->dialplansToAdd);
+        }
+
         if ($this->usersToDelete !== null) {
             $this->deleteUsers($this->usersToDelete);
         }
@@ -212,6 +233,9 @@ class vdp10m extends akuvox implements LanguageInterface
         }
 
         $this->dialplans = null;
+        $this->dialplansToAdd = null;
+        $this->dialplansToDelete = null;
+        $this->dialplansToUpdate = null;
         $this->users = null;
         $this->rfidsToAdd = null;
         $this->usersToAdd = null;
@@ -242,7 +266,7 @@ class vdp10m extends akuvox implements LanguageInterface
         $this->executeChunkOperation('user', 'del', $users, static fn(User $user) => ['ID' => $user->id]);
     }
 
-    /** @param User[] $entities */
+    /** @param User[]|Dialplan[] $entities */
     protected function executeChunkOperation(string $target, string $action, array $entities, callable $mapper): void
     {
         foreach (array_chunk($entities, self::ITEMS_CHUNK_SIZE) as $chunk) {
@@ -358,14 +382,19 @@ class vdp10m extends akuvox implements LanguageInterface
 
     private function addDialplan(Dialplan $dialplan): void
     {
-        $response = $this->apiCall('', 'POST', [
-            'target' => 'dialreplace',
-            'action' => 'add',
-            'data' => ['item' => [$dialplan->toArray()]],
-        ]);
-
-        $dialplan->id = $response['data']['item'][0]['ID'] ?? '-1';
+        $this->dialplansToAdd[$dialplan->prefix] = $dialplan;
         $this->dialplans[$dialplan->prefix] = $dialplan;
+    }
+
+    /** @param Dialplan[] $dialplans */
+    private function addDialplans(array $dialplans): void
+    {
+        $this->executeChunkOperation(
+            'dialreplace',
+            'add',
+            $dialplans,
+            static fn(Dialplan $dialplan) => $dialplan->toArray(),
+        );
     }
 
     private function addUser(User $user): void
@@ -387,17 +416,32 @@ class vdp10m extends akuvox implements LanguageInterface
     {
         $this->apiCall('/dialreplace/clear');
         $this->dialplans = [];
+        $this->dialplansToAdd = null;
+        $this->dialplansToDelete = null;
+        $this->dialplansToUpdate = null;
     }
 
     private function deleteDialplan(Dialplan $dialplan): void
     {
-        $this->apiCall('', 'POST', [
-            'target' => 'dialreplace',
-            'action' => 'del',
-            'data' => ['item' => [['ID' => $dialplan->id]]],
-        ]);
+        if ($dialplan->id === '-1') {
+            unset($this->dialplansToAdd[$dialplan->prefix]);
+        } else {
+            $this->dialplansToDelete[$dialplan->id] = $dialplan;
+            unset($this->dialplansToUpdate[$dialplan->id]);
+        }
 
         unset($this->dialplans[$dialplan->prefix]);
+    }
+
+    /** @param Dialplan[] $dialplans */
+    private function deleteDialplans(array $dialplans): void
+    {
+        $this->executeChunkOperation(
+            'dialreplace',
+            'del',
+            $dialplans,
+            static fn(Dialplan $dialplan) => ['ID' => $dialplan->id],
+        );
     }
 
     private function deleteUser(User $user): void
@@ -462,13 +506,20 @@ class vdp10m extends akuvox implements LanguageInterface
 
     private function updateDialplan(Dialplan $dialplan): void
     {
-        $this->apiCall('', 'POST', [
-            'target' => 'dialreplace',
-            'action' => 'set',
-            'data' => ['item' => [$dialplan->toArray()]],
-        ]);
+        if ($dialplan->id !== '-1') {
+            $this->dialplansToUpdate[$dialplan->id] = $dialplan;
+        }
+    }
 
-        $this->dialplans[$dialplan->prefix] = $dialplan;
+    /** @param Dialplan[] $dialplans */
+    private function updateDialplans(array $dialplans): void
+    {
+        $this->executeChunkOperation(
+            'dialreplace',
+            'set',
+            $dialplans,
+            static fn(Dialplan $dialplan) => $dialplan->toArray(),
+        );
     }
 
     private function updateUser(User $user): void
