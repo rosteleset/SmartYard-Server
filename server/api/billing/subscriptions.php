@@ -11,7 +11,7 @@
      * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Object[]} subscribers list of subscribers for auto-block synchronization
-        * @apiParam {Number|Boolean} [subscribers.isActive] contract state (`1|true` => autoBlock=0, `0|false` => autoBlock=1). Optional for phone-only sync; if omitted, `autoBlock` is left unchanged
+        * @apiParam {Number|Boolean} [subscribers.isActive] contract state (`1|true` => autoBlock=0, `0|false` => autoBlock=1). Optional for phone/custom-field-only sync; if omitted, `autoBlock` is left unchanged
         * @apiParam {Number} [subscribers.subscriberID] subscriber ID (contract). Required if `buildingUUID+flatNumber` pair is not provided
         * @apiParam {String} [subscribers.buildingUUID] building UUID. Must be provided together with `flatNumber` if `subscriberID` is omitted
         * @apiParam {String} [subscribers.flatNumber] flat number. Pair field for `buildingUUID`
@@ -22,6 +22,7 @@
         * @apiParam {Object[]} [subscribers.phones] phone numbers to import into RBT for this flat
         * @apiParam {String} subscribers.phones.phone mobile phone number
         * @apiParam {String="owner","regular"} [subscribers.phones.type=regular] desired role for this flat when the subscriber is added to this apartment; existing links in this flat are left unchanged
+        * @apiParam {String|Number|Boolean|Object|Array} [subscribers.<customField>] additional properties matching configured flat custom-field names are applied as a patch; omitted fields are unchanged
      * @apiSuccess {Object} subscriptions synchronization result
      * @apiSuccess {Number} subscriptions.processed total processed subscriber items
      * @apiSuccess {Number} subscriptions.updated successfully updated flats
@@ -70,45 +71,8 @@
                             return "subscriber item must be object at index " . $index;
                         }
 
-                        $item = [];
-
-                        if (array_key_exists("isActive", $subscriber)) {
-                            $item["isActive"] = $subscriber["isActive"];
-                        }
-
-                        if (array_key_exists("subscriberID", $subscriber)) {
-                            $item["subscriberID"] = $subscriber["subscriberID"];
-                        }
-
-                        if (array_key_exists("agreement", $subscriber)) {
-                            $item["agreement"] = $subscriber["agreement"];
-                        }
-
-                        if (array_key_exists("addressText", $subscriber)) {
-                            $item["addressText"] = $subscriber["addressText"];
-                        }
-
-                        if (array_key_exists("login", $subscriber)) {
-                            $item["login"] = $subscriber["login"];
-                        }
-
-                        if (array_key_exists("password", $subscriber)) {
-                            $item["password"] = $subscriber["password"];
-                        }
-
-                        if (array_key_exists("phones", $subscriber)) {
-                            $item["phones"] = $subscriber["phones"];
-                        }
-
-                        if (array_key_exists("buildingUUID", $subscriber)) {
-                            $item["buildingUUID"] = $subscriber["buildingUUID"];
-                        }
-
-                        if (array_key_exists("flatNumber", $subscriber)) {
-                            $item["flatNumber"] = $subscriber["flatNumber"];
-                        }
-
-                        $_subscribers[] = $item;
+                        // The backend maps additional properties only to configured flat custom fields.
+                        $_subscribers[] = $subscriber;
                     }
 
                     $response = $billing->syncAutoBlockByContracts($_subscribers, "skipMissing");

@@ -1286,7 +1286,8 @@ namespace backends\billing {
          * - login (optional, string, stored to flat.login)
          * - password (optional, string, stored to flat.password)
          * - phones (optional, array of objects: phone + type=owner|regular, linked to flat in RBT)
-         * if isActive is omitted, phones must be provided and autoBlock is left unchanged
+         * - other properties matching configured flat custom-field names are validated and patched
+         * if isActive is omitted, phones or configured custom fields must be provided; autoBlock is left unchanged
          * @param $defaultAction string
          * values:
          * - "skipMissing" (default): do not change subscribers not in list
@@ -1306,6 +1307,7 @@ namespace backends\billing {
             // Step 2: load dependencies required for flat search/update.
             $households = loadBackend("households");
             $customFields = null;
+            $customFieldDefinitions = null;
 
             if (!$households) {
                 return false;
@@ -1340,7 +1342,9 @@ namespace backends\billing {
                     $result,
                     $pairs,
                     $contracts,
-                    $hasSubscribersWithoutContract
+                    $hasSubscribersWithoutContract,
+                    $customFields,
+                    $customFieldDefinitions
                 );
 
                 if ($normalized !== false) {
@@ -1368,7 +1372,6 @@ namespace backends\billing {
                             if (!$resolvedByContractOnly) {
                                 $warningContext = [
                                     "index" => $subscriber["index"],
-                                    "subscriber" => is_array(@$subscribers[$subscriber["index"]]) ? $subscribers[$subscriber["index"]] : $subscriber,
                                     "resolvedFlatId" => $fallbackFlatId,
                                 ];
 
@@ -1378,7 +1381,6 @@ namespace backends\billing {
 
                                 error_log("[billing/syncAutoBlockByContracts] warning: fallback flat resolved by contract instead of houseUUID+flatNumber " . json_encode([
                                     "index" => $warningContext["index"],
-                                    "subscriber" => $warningContext["subscriber"],
                                     "resolvedFlatId" => $warningContext["resolvedFlatId"],
                                 ] + ($subscriber["hasIsActive"] ? [ "targetAutoBlock" => $warningContext["targetAutoBlock"] ] : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
                             }
@@ -1432,7 +1434,6 @@ namespace backends\billing {
                                 "flatNumber" => $subscriber["flatNumber"],
                                 "rbtSubscriberID" => $rbtSubscriberId,
                                 "incomingSubscriberID" => $incomingSubscriberId,
-                                "subscriber" => is_array(@$subscribers[$subscriber["index"]]) ? $subscribers[$subscriber["index"]] : $subscriber,
                             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
                         }
                     }
@@ -1503,7 +1504,7 @@ namespace backends\billing {
             $result["errors"][] = $payload;
         }
 
-        private function normalizeSyncSubscriberItem($index, $subscriber, &$result, &$pairs, &$contracts, &$hasSubscribersWithoutContract) {
+        private function normalizeSyncSubscriberItem($index, $subscriber, &$result, &$pairs, &$contracts, &$hasSubscribersWithoutContract, &$customFields, &$customFieldDefinitions) {
             // Helper: normalize one item and prepare pair/contract lookup structures.
             if (!is_array($subscriber)) {
                 $this->appendSyncInvalidError($result, $index, "invalidItem");
@@ -1697,7 +1698,12 @@ namespace backends\billing {
                 }
             }
 
-            if (!$hasIsActive && !$hasPhones) {
+            $customFieldValues = $this->normalizeSyncCustomFields($index, $subscriber, $result, $customFields, $customFieldDefinitions);
+            if ($customFieldValues === false) {
+                return false;
+            }
+
+            if (!$hasIsActive && !$hasPhones && !count($customFieldValues)) {
                 $this->appendSyncInvalidError($result, $index, "phonesRequiredWithoutIsActive");
                 return false;
             }
@@ -1722,6 +1728,7 @@ namespace backends\billing {
                 "isActive" => $hasIsActive ? (int)$isActive : null,
                 "addressText" => $addressText,
                 "hasAddressText" => $hasAddressText,
+                "customFields" => $customFieldValues,
                 "login" => $login,
                 "hasLogin" => $hasLogin,
                 "password" => $password,
@@ -1733,6 +1740,130 @@ namespace backends\billing {
                 "hasPair" => $hasPair,
                 "pairKey" => $pairKey,
             ];
+        }
+
+        private function normalizeSyncCustomFields($index, $subscriber, &$result, &$customFields, &$definitions) {
+            $reserved = [
+                "isActive", "subscriberID", "buildingUUID", "flatNumber", "agreement",
+                "addressText", "login", "password", "phones",
+            ];
+            $values = [];
+            foreach ($subscriber as $field => $value) {
+                if (in_array($field, $reserved, true)) {
+                    continue;
+                }
+
+                if ($definitions === null) {
+                    $customFields = loadBackend("customFields");
+                    $fields = $customFields ? $customFields->getFields("flat") : false;
+                    $definitions = false;
+                    if (is_array($fields)) {
+                        $definitions = [];
+                        foreach ($fields as $definition) {
+                            $definitions[$definition["field"]] = $definition;
+                        }
+                    }
+                }
+
+                if ($definitions === false) {
+                    $result["failed"]++;
+                    $result["errors"][] = [
+                        "index" => $index,
+                        "error" => "cantLoadCustomFieldConfiguration",
+                    ];
+                    return false;
+                }
+
+                if (!array_key_exists($field, $definitions)) {
+                    continue;
+                }
+
+                $normalized = $this->normalizeSyncCustomFieldValue($value, $definitions[$field]);
+                if (!$normalized["ok"]) {
+                    $this->appendSyncInvalidError($result, $index, "invalidCustomFieldValue", [
+                        "field" => $field,
+                        "reason" => $normalized["reason"],
+                    ]);
+                    return false;
+                }
+                $values[$field] = $normalized["value"];
+            }
+            return $values;
+        }
+
+        private function normalizeSyncCustomFieldValue($value, $definition) {
+            $fail = static function ($reason) {
+                return ["ok" => false, "reason" => $reason];
+            };
+            $type = @$definition["type"];
+            $editor = @$definition["editor"];
+            $format = (string)@$definition["format"];
+            $multiple = $type === "select" && strpos($format, "multiple") !== false;
+            $editable = strpos($format, "editable") !== false;
+            $selected = [];
+
+            if ($type === "button") {
+                return $fail("notAValueField");
+            }
+
+            if ($multiple) {
+                if ($value === null || $value === "") {
+                    $value = [];
+                } elseif (is_string($value)) {
+                    $value = json_decode($value, true);
+                }
+                if (!is_array($value) || (count($value) && array_keys($value) !== range(0, count($value) - 1))) {
+                    return $fail("expectedArray");
+                }
+                foreach ($value as $option) {
+                    if (!is_string($option) && !is_int($option) && !is_float($option)) {
+                        return $fail("invalidOption");
+                    }
+                    $selected[] = trim((string)$option);
+                }
+                $selected = array_values(array_unique($selected));
+                $value = count($selected) ? json_encode($selected, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : "";
+            } elseif (is_array($value) || is_object($value)) {
+                if ($editor !== "json") {
+                    return $fail("expectedScalar");
+                }
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                if ($value === false) {
+                    return $fail("invalidJson");
+                }
+            } else {
+                $value = is_bool($value) ? ($value ? "1" : "0") : trim((string)$value);
+            }
+
+            if ((int)@$definition["required"] && $value === "") {
+                return $fail("required");
+            }
+            if ($type === "select" && !$editable && $value !== "") {
+                $allowed = array_map(static function ($option) {
+                    return (string)$option["option"];
+                }, (array)@$definition["options"]);
+                foreach ($multiple ? $selected : [$value] as $option) {
+                    if (!in_array($option, $allowed, true)) {
+                        return $fail("invalidOption");
+                    }
+                }
+            }
+            if ($editor === "json" && $value !== "") {
+                json_decode($value);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    return $fail("invalidJson");
+                }
+            }
+            if ($editor === "number" && $value !== "" && !is_numeric(str_replace(",", ".", $value))) {
+                return $fail("invalidNumber");
+            }
+            if (!empty($definition["regex"]) && $value !== "") {
+                $pattern = "~" . str_replace("~", "\\~", $definition["regex"]) . "~u";
+                if (@preg_match($pattern, $value) !== 1) {
+                    return $fail("regexMismatch");
+                }
+            }
+            return ["ok" => true, "value" => $value];
         }
 
         private function normalizeSyncSubscriberPhoneValue($phone) {
@@ -2078,6 +2209,20 @@ namespace backends\billing {
         }
 
         private function applySyncSubscriberToFlat($households, &$customFields, $flatId, $subscriber, &$result, $options = []) {
+            // The address-mismatch fallback deliberately does not update custom fields.
+            // Surface this instead of claiming that the supplied fields were applied.
+            if (count($subscriber["customFields"]) && !@$options["updateCustomFields"]) {
+                $result["failed"]++;
+                $result["errors"][] = [
+                    "index" => $subscriber["index"],
+                    "error" => "customFieldsRequireExactFlatMatch",
+                    "flatId" => $flatId,
+                    "subscriberID" => $subscriber["subscriberID"],
+                    "fields" => array_keys($subscriber["customFields"]),
+                ];
+                return false;
+            }
+
             $autoBlock = null;
             $flatPatch = [];
 
@@ -2132,7 +2277,7 @@ namespace backends\billing {
                 }
             }
 
-            if (@$options["updateCustomFields"] && ($subscriber["hasAgreement"] || $subscriber["hasAddressText"])) {
+            if (@$options["updateCustomFields"] && ($subscriber["hasAgreement"] || $subscriber["hasAddressText"] || count($subscriber["customFields"]))) {
                 // Lazy-load customFields only when optional payload fields should be persisted.
                 if ($customFields === null) {
                     $customFields = loadBackend("customFields");
@@ -2153,7 +2298,7 @@ namespace backends\billing {
                     return false;
                 }
 
-                $values = [];
+                $values = $subscriber["customFields"];
 
                 if ($subscriber["hasAgreement"]) {
                     $values["agreement"] = $subscriber["agreement"];
