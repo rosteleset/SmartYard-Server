@@ -42,6 +42,10 @@
 + added a system statistics page for flats, equipment, RFID keys and mobile devices
 + added administrative event logs for flats, entrances and houses with filtering, previews and CSV export
 - restored entrance IDs in the mobile address list response for exact camera mapping
+- fixed untranslated CCTV apartment custom-field labels
+- fixed apartment custom-field updates for users with house editing permission
++ added support for assigning multiple servicing organizations to a house
++ added synchronization of configured apartment custom fields through the billing subscriptions API
 ```
 
 ## v1.1.0
