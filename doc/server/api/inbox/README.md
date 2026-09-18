@@ -16,5 +16,10 @@ Response envelope: [`api.php` base class](./api.md).
 | File | Path (under `/api/inbox`) |
 |------|-------------------------------------|
 | `message.php` | `/message` |
+| `broadcast.php` | `/broadcast` |
+
+## Detailed pages
+
+- [Address broadcasts: audience, queue and testing](./broadcast.md)
 
 See also the [API index](../README.md) and [`api.php`](../api.md).
