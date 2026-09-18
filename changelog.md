@@ -46,6 +46,7 @@
 - fixed apartment custom-field updates for users with house editing permission
 + added support for assigning multiple servicing organizations to a house
 + added synchronization of configured apartment custom fields through the billing subscriptions API
++ added support for Omny VDP-10M intercom
 ```
 
 ## v1.1.0
