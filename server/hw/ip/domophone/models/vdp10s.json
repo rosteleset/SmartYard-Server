@@ -1,0 +1,16 @@
+{
+    "title": "OMNY VDP-10S",
+    "vendor": "OMNY",
+    "model": "VDP-10S",
+    "class": "vdp10s",
+    "eventServer": "akuvox",
+    "outputs": 1,
+    "camera": "omny",
+    "useSmartConfigurator": true,
+    "cmses": [],
+    "monitoring": {
+        "zabbix": {
+            "template": "Intercom_AKUVOX_E12"
+        }
+    }
+}
