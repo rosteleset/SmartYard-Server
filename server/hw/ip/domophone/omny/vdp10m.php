@@ -186,6 +186,7 @@ class vdp10m extends akuvox implements LanguageInterface
     {
         parent::prepare();
         $this->setRelayInversion(true, true);
+        $this->setExternalReader(openRelayB: true);
     }
 
     public function setConciergeNumber(int $sipNumber): void
