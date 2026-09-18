@@ -104,6 +104,16 @@ class vdp10m extends akuvox implements LanguageInterface
         $this->setFlatCode($apartment, $code);
     }
 
+    public function configureEventServer(string $url): void
+    {
+        $this->setConfigParams([
+            // VDP-10M emits MakeCall messages required by event and plog parsers only at level 6
+            'Config.Settings.LOGLEVEL.Level' => '6',
+        ]);
+
+        parent::configureEventServer($url);
+    }
+
     public function deleteApartment(int $apartment = 0): void
     {
         if ($apartment === 0) {
