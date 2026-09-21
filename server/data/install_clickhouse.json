@@ -30,8 +30,5 @@
     ],
     "9": [
         "v9_service_plog.sql"
-    ],
-    "10": [
-        "v10_plog_service_drop_hidden.sql"
     ]
 }
