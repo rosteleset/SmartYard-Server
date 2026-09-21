@@ -1,4 +1,7 @@
 {
+    "servicingCompanies": "Обслуживающие организации",
+    "customFields.cctv.tab": "Видеонаблюдение",
+    "customFields.cctv.adminCamBlock.fieldDisplay": "Административная блокировка камер",
     "addresses": "\"Умный\" двор",
     "address": "Адрес",
     "addHouse": "Добавить дом",

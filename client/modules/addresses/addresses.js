@@ -639,7 +639,7 @@
         });
     },
 
-    doAddHouse: function (settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyId) {
+    doAddHouse: function (settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyIds) {
         loadingStart();
         POST("addresses", "house", false, {
             settlementId,
@@ -649,7 +649,7 @@
             houseTypeFull,
             houseFull,
             house,
-            companyId,
+            companyIds,
         }).
         fail(FAIL).
         done(() => {
@@ -805,7 +805,7 @@
         });
     },
 
-    doModifyHouse: function (houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, targetSettlementId, targetStreetId, companyId) {
+    doModifyHouse: function (houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, targetSettlementId, targetStreetId, companyIds) {
         loadingStart();
         PUT("addresses", "house", houseId, {
             houseId,
@@ -816,7 +816,7 @@
             houseTypeFull,
             houseFull,
             house,
-            companyId,
+            companyIds,
         }).
         fail(FAIL).
         done(() => {
@@ -1723,22 +1723,20 @@
                             value: house.house,
                         },
                         {
-                            id: "companyId",
+                            id: "companyIds",
                             hidden: !companies.length,
                             type: "select2",
-                            title: i18n("companies.company"),
+                            title: i18n("addresses.servicingCompanies"),
+                            multiple: true,
                             options: companies,
-                            value: house.companyId,
+                            value: house.companyIds || [],
                         },
                     ],
                     callback: function (result) {
                         if (result.delete === "yes") {
                             modules.addresses.deleteHouse(houseId, parseInt(house.settlementId), parseInt(house.streetId));
                         } else {
-                            if (!companies.length) {
-                                result.companyId = house.companyId;
-                            }
-                            modules.addresses.doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId), parseInt(result.companyId));
+                            modules.addresses.doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId), companies.length ? (result.companyIds || []).map(Number) : undefined);
                         }
                     },
                 });
@@ -1751,11 +1749,6 @@
             GET("companies", "companies", false, true).
             fail(FAIL).
             done(result => {
-                companies.push({
-                    id: "0",
-                    text: "-",
-                });
-
                 for (let i in result.companies) {
                     companies.push({
                         id: result.companies[i].companyId,
@@ -2170,15 +2163,16 @@
                         }
                     },
                     {
-                        id: "companyId",
-                        hidden: companies.length <= 1,
+                        id: "companyIds",
+                        hidden: !companies.length,
                         type: "select2",
-                        title: i18n("companies.company"),
+                        title: i18n("addresses.servicingCompanies"),
+                        multiple: true,
                         options: companies,
                     },
                 ],
                 callback: function (result) {
-                    modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, (companies.length > 1 && result.companyId) ? result.companyId : "0");
+                    modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, (result.companyIds || []).map(Number));
                 },
             });
         }
@@ -2187,11 +2181,6 @@
             GET("companies", "companies", false, true).
             fail(FAIL).
             done(result => {
-                companies.push({
-                    id: "0",
-                    text: "-",
-                });
-
                 for (let i in result.companies) {
                     companies.push({
                         id: result.companies[i].companyId,

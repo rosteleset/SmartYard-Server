@@ -1,3 +1,27 @@
+# 2026-09-14
+
+A new system statistics page is available in the web interface. It displays summary information about flats,
+equipment, RFID keys and mobile devices. On existing installations, the page is not enabled automatically. To enable
+it, add the following backend configuration to `/opt/rbt/server/config/config.json`:
+
+```json5
+{
+    "backends": {
+        "statistics": {
+            "backend": "internal",
+            "inactiveDeviceDays": 30,
+            "cacheTtl": 300
+        }
+    }
+}
+```
+
+Then reindex API permissions:
+
+```bash
+php /opt/rbt/server/cli.php --reindex
+```
+
 # 2026-09-09
 
 The abstract `households` backend contract has changed to support structured license plate records. Backend

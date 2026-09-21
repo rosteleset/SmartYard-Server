@@ -664,4 +664,3 @@ function modalTable(params) {
 
     $('#tableModal').modal('show');
 }
-

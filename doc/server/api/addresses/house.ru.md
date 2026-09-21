@@ -2,6 +2,10 @@
 
 Реализация: `server/api/addresses/house.php`.
 
+Начиная с миграции БД 98 обслуживающие организации задаются массивом
+`companyIds`. Старый `companyId` оставлен только для совместимости.
+Подробности: [хранение, миграция и правила совместимости](../../house-companies.md).
+
 ## Авторизация и права
 
 - Требуется `Authorization: Bearer <token>`.
@@ -13,7 +17,7 @@
 - **Точка входа / dispatch**: `server/frontend.php` → `server/api/addresses/house.php` → класс `\api\addresses\house`.
 - **Backend’и**: backend `addresses`:
   - `getHouse(houseId)`
-  - `modifyHouse(houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyId)`
+  - `modifyHouse(houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyIds)`
   - `addHouse(...)` или `addHouseByMagic(magic)`, если передан `magic`
   - `deleteHouse(houseId)`
 - **Хранилище**:
@@ -28,14 +32,14 @@
 ## PUT `/api/addresses/house/:houseId`
 
 - **Параметр**: `houseId` (number)
-- **Body**: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+- **Body**: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, необязательный `companyIds`
 - **Успех 204**
 - **Ошибка 406**: `{"error":"notAcceptable"}`
 
 ## POST `/api/addresses/house`
 
 - **Body**:
-  - обычное создание: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, `companyId`
+  - обычное создание: `settlementId`, `streetId`, `houseUuid`, `houseType`, `houseTypeFull`, `houseFull`, `house`, необязательный `companyIds`
   - альтернативно: `magic` (string) вызывает `addHouseByMagic(magic)`
 - **Успех 200**: `{"houseId": <number>}`
 - **Ошибка 400**: `{"error":"unknown"}` (когда handler делает `ANSWER(false)` без явного кода ошибки)
@@ -83,7 +87,7 @@
   - `houseTypeFull` (string)
   - `houseFull` (string)
   - `house` (string)
-  - `companyId` (number)
+  - `companyIds` (необязательный массив ID организаций; отсутствие сохраняет связи, `[]` удаляет все)
 - **Успех 204**: пустое тело
 - **Ошибка 406**: `{"error":"notAcceptable"}`
 
@@ -113,4 +117,3 @@
 - **Параметр**: `houseId` (number)
 - **Успех 204**: пустое тело
 - **Ошибка 406**: `{"error":"notAcceptable"}`
-

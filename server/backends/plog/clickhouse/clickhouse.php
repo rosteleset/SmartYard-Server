@@ -464,7 +464,7 @@
 
                 return $this->clickhouse->select($query);
             }
-            
+
             /**
              * @inheritDoc
              */

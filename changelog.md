@@ -10,6 +10,12 @@
 ## devel
 
 ```diff
+
+```
+
+## v1.2.0
+
+```diff
 - fixed authenticated snapshot URL generation for Flussonic and Sesame DVR servers when secure_token is configured
 + added a DVR service-token customization hook for requests outside a subscriber context
 - fixed SIP event parsing for the updated Ufanet log format
@@ -39,6 +45,14 @@
 - fixed camera group visibility filtering for cameras also assigned to entrances
 - fixed saving CCTV group display modes when using the cyclic select button
 - fixed empty and nested group handling in camera trees
++ added a system statistics page for flats, equipment, RFID keys and mobile devices
++ added administrative event logs for flats, entrances and houses with filtering, previews and CSV export
+- restored entrance IDs in the mobile address list response for exact camera mapping
+- fixed untranslated CCTV apartment custom-field labels
+- fixed apartment custom-field updates for users with house editing permission
++ added support for assigning multiple servicing organizations to a house
++ added synchronization of configured apartment custom fields through the billing subscriptions API
++ added support for Omny VDP-10M and Omny VDP-10S intercoms
 ```
 
 ## v1.1.0

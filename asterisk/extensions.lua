@@ -135,11 +135,20 @@ function push(token, tokenType, platform, extension, hash, callerId, flatId, dtm
     })
 end
 
+local function md5Digest(value)
+    -- Avoid Lua bit-operation emulation when Asterisk's func_md5 is available.
+    local digest = channel.MD5(value):get()
+    if digest and #digest == 32 and digest:match("^[a-f0-9]+$") then
+        return digest
+    end
+    return md5.sumhexa(value)
+end
+
 function camshow(domophoneId)
     local hash = channel.HASH:get()
 
     if hash == nil then
-        hash = md5.sumhexa(domophoneId .. os.time())
+        hash = md5Digest(domophoneId .. os.time())
 
         channel.HASH:set(hash)
 
@@ -200,7 +209,7 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
                 end
 
                 if token ~= cjson.null and token ~= nil and token ~= "" then
-                    redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5.sumhexa(extension .. ":" .. realm .. ":" .. hash))
+                    redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5Digest(extension .. ":" .. realm .. ":" .. hash))
                     redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
 
                     local bundle = "default"
