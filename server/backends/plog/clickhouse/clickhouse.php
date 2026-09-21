@@ -292,17 +292,29 @@
 
             private function getServiceAccessType(string $rfid, int $domophone_id): ?int {
                 $households = loadBackend('households');
-                $keys = $households->getKeys("domophoneId", $domophone_id) ?: [];
-                $service_types = [0, 3, 4, 5];
+                $keys = $households->getKeys("rfId", $rfid) ?: [];
+                $access_by = [
+                    3 => "entrance",
+                    4 => "house",
+                    5 => "company",
+                ];
 
                 foreach ($keys as $key) {
-                    if ((string)($key["rfId"] ?? "") !== $rfid) {
+                    $access_type = (int)($key["accessType"] ?? -1);
+
+                    if ($access_type === 0) {
+                        return 0;
+                    }
+
+                    if (!isset($access_by[$access_type])) {
                         continue;
                     }
 
-                    $access_type = (int)($key["accessType"] ?? -1);
-                    if (in_array($access_type, $service_types, true)) {
-                        return $access_type;
+                    $domophones = $households->getDomophones($access_by[$access_type], (int)($key["accessTo"] ?? 0)) ?: [];
+                    foreach ($domophones as $domophone) {
+                        if ((int)($domophone["domophoneId"] ?? 0) === $domophone_id) {
+                            return $access_type;
+                        }
                     }
                 }
 
@@ -311,10 +323,14 @@
 
             private function writeServiceEventData(array $event_data, int $access_type): void {
                 debugMsg("      Writing the service event data...");
-                $event_data[self::COLUMN_HIDDEN] = 0;
-                $event_data["access_type"] = $access_type;
-                $this->clickhouse->insert("plog_service", [$event_data]);
-                debugMsg("      Done writing the service event data.");
+                try {
+                    unset($event_data[self::COLUMN_HIDDEN], $event_data[self::COLUMN_FLAT_ID]);
+                    $event_data["access_type"] = $access_type;
+                    $this->clickhouse->insert("plog_service", [$event_data]);
+                    debugMsg("      Done writing the service event data.");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                }
             }
 
             /**
@@ -655,7 +671,6 @@
                     select
                         date,
                         event_uuid,
-                        hidden,
                         image_uuid,
                         access_type,
                         toJSONString(domophone) domophone,
@@ -670,8 +685,7 @@
                     from
                         plog_service
                     where
-                        hidden = 0
-                        and toYYYYMMDD(FROM_UNIXTIME(date)) = {$clean_date}
+                        toYYYYMMDD(FROM_UNIXTIME(date)) = {$clean_date}
                         {$access_condition}
                     order by
                         date desc

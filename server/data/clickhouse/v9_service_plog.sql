@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS default.plog_service
 (
     `date`        UInt32,
     `event_uuid`  UUID,
-    `hidden`      Int8,
     `image_uuid`  UUID,
     `access_type` Int8,
     `domophone`   JSON,
@@ -19,7 +18,6 @@ CREATE TABLE IF NOT EXISTS default.plog_service
     `vehicle`     String,
     INDEX plog_service_date date TYPE set(100) GRANULARITY 1024,
     INDEX plog_service_event_uuid event_uuid TYPE set(100) GRANULARITY 1024,
-    INDEX plog_service_hidden hidden TYPE set(100) GRANULARITY 1024,
     INDEX plog_service_access_type access_type TYPE set(100) GRANULARITY 1024
 ) ENGINE = MergeTree
       PARTITION BY toYYYYMMDD(FROM_UNIXTIME(date))
