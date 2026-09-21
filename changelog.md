@@ -10,6 +10,12 @@
 ## devel
 
 ```diff
+
+```
+
+## v1.2.0
+
+```diff
 - fixed authenticated snapshot URL generation for Flussonic and Sesame DVR servers when secure_token is configured
 + added a DVR service-token customization hook for requests outside a subscriber context
 - fixed SIP event parsing for the updated Ufanet log format
