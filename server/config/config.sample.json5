@@ -247,6 +247,10 @@
                     "ip": "<!-- your asterisk server external ip (or domain name) here --!>",
                     "sip_tcp_port": 5060,
                     "sip_udp_port": 5060,
+                    // Mobile call push transport: tcp (default) or tls.
+                    // Configure a TLS listener and trusted certificate before enabling tls.
+                    "sip_mobile_transport": "tcp",
+                    "sip_tls_port": 5061,
                 },
                 {
                     "title": "SBC server | Kamailio",

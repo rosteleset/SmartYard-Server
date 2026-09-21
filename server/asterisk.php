@@ -465,6 +465,7 @@
                     $isdn = loadBackend("isdn");
                     $sip = loadBackend("sip");
                     $server = $sip->server("extension", $params["extension"]);
+                    $mobileTransport = ($server["sip_mobile_transport"] ?? "tcp") === "tls" ? "tls" : "tcp";
 
                     $_params = [
                         "token" => $params["token"],
@@ -472,8 +473,8 @@
                         "hash" => $params["hash"],
                         "extension" => $params["extension"],
                         "server" => $server["ip"],
-                        "port" => @$server["sip_tcp_port"] ?: 5060,
-                        "transport" => "tcp",
+                        "port" => $mobileTransport === "tls" ? ($server["sip_tls_port"] ?? 5061) : (@$server["sip_tcp_port"] ?: 5060),
+                        "transport" => $mobileTransport,
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
                         "ttl" => 30,
