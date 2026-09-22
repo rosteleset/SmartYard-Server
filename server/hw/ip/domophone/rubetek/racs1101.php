@@ -158,7 +158,7 @@ class racs1101 extends domophone implements FreePassInterface
 
     public function openLock(int $lockNumber = 0): void
     {
-        // TODO: Implement openLock() method.
+        $this->apiCall('unlock', ['relay_index' => $lockNumber + 1]);
     }
 
     public function reboot(): void
@@ -259,7 +259,15 @@ class racs1101 extends domophone implements FreePassInterface
 
     public function setUnlockTime(int $time = 3): void
     {
-        // TODO: Implement setUnlockTime() method.
+        $this->apiCall('set_config', [
+            'var_list' => [
+                'main' => [
+                    'access' => [
+                        'unlock_time' => $time,
+                    ],
+                ],
+            ],
+        ]);
     }
 
     public function syncData(): void
