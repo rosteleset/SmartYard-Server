@@ -19,6 +19,13 @@ class racs1101 extends domophone
     private const RFID_ADD_BATCH_SIZE = 50;
     private const RFID_DELETE_BATCH_SIZE = 80;
 
+    private const TIME_SYNC_TOLERANCE = 30;
+    private const VIRTUAL_NTP_CONFIG = [
+        'server' => '',
+        'port' => 0,
+        'timezone' => '',
+    ];
+
     private ?WebSocketClient $webSocketClient = null;
     private ?JsonRpcClient $jsonRpcClient = null;
 
@@ -78,7 +85,7 @@ class racs1101 extends domophone
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        // TODO: Implement configureNtp() method.
+        $this->apiCall('set_time', ['time' => time()]);
     }
 
     public function configureSip(
@@ -214,6 +221,7 @@ class racs1101 extends domophone
         $dbConfig['cmsModel'] = '';
         $dbConfig['matrix'] = [];
         $dbConfig['apartments'] = [];
+        $dbConfig['ntp'] = self::VIRTUAL_NTP_CONFIG;
 
         return $dbConfig;
     }
@@ -261,8 +269,16 @@ class racs1101 extends domophone
 
     protected function getNtpConfig(): array
     {
-        // TODO: Implement getNtpConfig() method.
-        return [];
+        $deviceTime = $this->apiCall('get_time', (object)[])['time'] ?? null;
+        if (!is_int($deviceTime)) {
+            throw new RuntimeException('RACS-1101 returned an invalid time');
+        }
+
+        if (abs($deviceTime - time()) <= self::TIME_SYNC_TOLERANCE) {
+            return self::VIRTUAL_NTP_CONFIG;
+        }
+
+        return array_replace(self::VIRTUAL_NTP_CONFIG, ['server' => '__OUT_OF_SYNC__']);
     }
 
     protected function getRfids(): array
