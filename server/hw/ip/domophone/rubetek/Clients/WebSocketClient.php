@@ -6,7 +6,7 @@ use RuntimeException;
 
 final class WebSocketClient
 {
-    private const DEFAULT_TIMEOUT = 5;
+    private const DEFAULT_TIMEOUT = 15;
     private const DEFAULT_MAX_MESSAGE_SIZE = 1048576;
     private const MAX_HTTP_HEADER_SIZE = 16384;
 

@@ -3,6 +3,7 @@
     "vendor": "RUBETEK",
     "model": "RACS-1101",
     "class": "racs1101",
+    "eventServer": "",
     "outputs": 2,
     "useSmartConfigurator": true,
     "cmses": []

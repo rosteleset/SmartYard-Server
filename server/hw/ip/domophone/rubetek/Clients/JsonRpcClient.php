@@ -20,7 +20,7 @@ final class JsonRpcClient
      *
      * @throws RuntimeException If encoding, decoding, or the RPC call fails.
      */
-    public function call(string $method, ?array $params = null): mixed
+    public function call(string $method, array|object|null $params = null): mixed
     {
         $id = ++$this->requestId;
         $request = $this->buildRequest($method, $params, $id);
@@ -53,7 +53,7 @@ final class JsonRpcClient
     /**
      * Sends a JSON-RPC 2.0 request without waiting for its response.
      */
-    public function send(string $method, ?array $params = null): void
+    public function send(string $method, array|object|null $params = null): void
     {
         $request = $this->buildRequest($method, $params, ++$this->requestId);
         $this->transport->send($this->encode($request, $method));
@@ -62,7 +62,7 @@ final class JsonRpcClient
     /**
      * @return array<string, mixed>
      */
-    private function buildRequest(string $method, ?array $params, int $id): array
+    private function buildRequest(string $method, array|object|null $params, int $id): array
     {
         $request = [
             'jsonrpc' => '2.0',

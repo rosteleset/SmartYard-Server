@@ -14,17 +14,40 @@ use RuntimeException;
  */
 class racs1101 extends domophone
 {
+    private const RFID_ACCESS_ALL_RELAYS = 3;
+    private const RFID_READ_BATCH_SIZE = 50;
+    private const RFID_ADD_BATCH_SIZE = 50;
+    private const RFID_DELETE_BATCH_SIZE = 80;
+
     private ?WebSocketClient $webSocketClient = null;
     private ?JsonRpcClient $jsonRpcClient = null;
 
+    /** @var string[] */
+    private array $rfidsToDelete = [];
+
+    private static function normalizeRfid(string $code): string
+    {
+        return strtoupper(ltrim($code, '0')) ?: '0';
+    }
+
     public function addRfid(string $code, int $apartment = 0): void
     {
-        // TODO: Implement addRfid() method.
+        $this->addRfids([$code]);
     }
 
     public function addRfids(array $rfids): void
     {
-        // TODO: Implement addRfids() method.
+        $keys = array_map(
+            static fn(string $code): array => [
+                'key' => self::normalizeRfid($code),
+                'access' => self::RFID_ACCESS_ALL_RELAYS,
+            ],
+            array_values($rfids),
+        );
+
+        foreach (array_chunk($keys, self::RFID_ADD_BATCH_SIZE) as $keyList) {
+            $this->apiCall('add_keys', ['key_list' => $keyList]);
+        }
     }
 
     public function configureApartment(
@@ -83,7 +106,12 @@ class racs1101 extends domophone
 
     public function deleteRfid(string $code = ''): void
     {
-        // TODO: Implement deleteRfid() method.
+        if ($code === '') {
+            $this->apiCall('del_all_keys', waitForResponse: false);
+            return;
+        }
+
+        $this->rfidsToDelete[] = self::normalizeRfid($code);
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -175,7 +203,7 @@ class racs1101 extends domophone
 
     public function syncData(): void
     {
-        // TODO: Implement syncData() method.
+        $this->deleteRfids();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -239,8 +267,32 @@ class racs1101 extends domophone
 
     protected function getRfids(): array
     {
-        // TODO: Implement getRfids() method.
-        return [];
+        $rfids = [];
+        $previousKey = null;
+
+        do {
+            $params = $previousKey === null ? (object)[] : ['prev_key' => $previousKey];
+            $keyList = $this->apiCall('get_keys', $params)['key_list'] ?? [];
+
+            foreach ($keyList as $keyData) {
+                $code = $keyData['key'] ?? null;
+                if (!is_string($code) || $code === '') {
+                    throw new RuntimeException('RACS-1101 returned an invalid RFID key');
+                }
+
+                $normalizedCode = str_pad(strtoupper($code), 14, '0', STR_PAD_LEFT);
+                $rfids[$normalizedCode] = $normalizedCode;
+            }
+
+            $lastKey = $keyList === [] ? null : end($keyList)['key'] ?? null;
+            if ($lastKey !== null && $lastKey === $previousKey) {
+                throw new RuntimeException('RACS-1101 returned a repeated RFID page');
+            }
+
+            $previousKey = $lastKey;
+        } while (count($keyList) === self::RFID_READ_BATCH_SIZE);
+
+        return $rfids;
     }
 
     protected function getSipConfig(): array
@@ -270,7 +322,11 @@ class racs1101 extends domophone
      *
      * @throws RuntimeException If the connection, protocol, or RPC call fails.
      */
-    private function apiCall(string $method, ?array $params = null, bool $waitForResponse = true): array
+    private function apiCall(
+        string            $method,
+        array|object|null $params = null,
+        bool              $waitForResponse = true,
+    ): array
     {
         $this->connect();
 
@@ -314,6 +370,20 @@ class racs1101 extends domophone
             $webSocket->disconnect();
             throw $e;
         }
+    }
+
+    private function deleteRfids(): void
+    {
+        $keys = array_map(
+            static fn(string $code): array => ['key' => $code],
+            array_values(array_unique($this->rfidsToDelete)),
+        );
+
+        foreach (array_chunk($keys, self::RFID_DELETE_BATCH_SIZE) as $keyList) {
+            $this->apiCall('del_keys', ['key_list' => $keyList]);
+        }
+
+        $this->rfidsToDelete = [];
     }
 
     private function getJsonRpcClient(): JsonRpcClient
