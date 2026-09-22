@@ -2,6 +2,7 @@
 
 namespace hw\ip\domophone\rubetek;
 
+use hw\Interface\FreePassInterface;
 use hw\ip\domophone\domophone;
 use hw\ip\domophone\rubetek\Clients\{
     JsonRpcClient,
@@ -13,12 +14,15 @@ use RuntimeException;
 /**
  * Represents a Rubetek RACS-1101 access controller.
  */
-class racs1101 extends domophone
+class racs1101 extends domophone implements FreePassInterface
 {
     private const RFID_ACCESS_ALL_RELAYS = 3;
     private const RFID_READ_BATCH_SIZE = 50;
     private const RFID_ADD_BATCH_SIZE = 50;
     private const RFID_DELETE_BATCH_SIZE = 80;
+
+    private const RELAY_MODE_NORMAL = 0;
+    private const RELAY_MODE_FREE_PASS = 1;
 
     private const TIME_SYNC_TOLERANCE = 30;
     private const VIRTUAL_NTP_CONFIG = [
@@ -139,6 +143,19 @@ class racs1101 extends domophone
         ];
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        $relayModes = $this->apiCall('get_config', [
+            'var_list' => ['main.access.relay_mode'],
+        ])['var_list']['main.access.relay_mode'] ?? null;
+
+        if (!is_array($relayModes) || count($relayModes) !== 2) {
+            throw new RuntimeException('RACS-1101 returned invalid relay modes');
+        }
+
+        return $relayModes === [self::RELAY_MODE_FREE_PASS, self::RELAY_MODE_FREE_PASS];
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         // TODO: Implement openLock() method.
@@ -208,6 +225,21 @@ class racs1101 extends domophone
     ): void
     {
         // Empty implementation
+    }
+
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $relayMode = $enabled ? self::RELAY_MODE_FREE_PASS : self::RELAY_MODE_NORMAL;
+
+        $this->apiCall('set_config', [
+            'var_list' => [
+                'main' => [
+                    'access' => [
+                        'relay_mode' => [$relayMode, $relayMode],
+                    ],
+                ],
+            ],
+        ]);
     }
 
     public function setPublicCode(int $code = 0): void
