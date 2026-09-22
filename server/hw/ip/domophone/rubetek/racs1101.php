@@ -194,7 +194,18 @@ class racs1101 extends domophone implements FreePassInterface
 
     public function setAdminPassword(string $password): void
     {
-        // TODO: Implement setAdminPassword() method.
+        $this->apiCall('set_config', [
+            'var_list' => [
+                'main' => [
+                    'local' => [
+                        'user' => $this->login,
+                        'pass' => $password,
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->password = $password;
     }
 
     public function setAudioLevels(array $levels): void
