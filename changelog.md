@@ -10,7 +10,7 @@
 ## devel
 
 ```diff
-
++ added support for Rubetek RACS-1101 access controller
 ```
 
 ## v1.2.0
