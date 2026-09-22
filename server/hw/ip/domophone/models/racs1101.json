@@ -1,0 +1,11 @@
+{
+    "title": "RUBETEK RACS-1101",
+    "vendor": "RUBETEK",
+    "model": "RACS-1101",
+    "class": "racs1101",
+    "eventServer": "rubetek",
+    "outputs": 2,
+    "camera": "rubetek",
+    "useSmartConfigurator": true,
+    "cmses": []
+}
