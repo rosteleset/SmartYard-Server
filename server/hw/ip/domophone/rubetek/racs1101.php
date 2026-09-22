@@ -7,6 +7,7 @@ use hw\ip\domophone\rubetek\Clients\{
     JsonRpcClient,
     WebSocketClient,
 };
+use JsonException;
 use RuntimeException;
 
 /**
@@ -145,12 +146,33 @@ class racs1101 extends domophone
 
     public function reboot(): void
     {
-        // TODO: Implement reboot() method.
+        $this->connect();
+
+        try {
+            $this->getWebSocketClient()->send(json_encode(
+                ['cmd' => 'reboot'],
+                JSON_THROW_ON_ERROR,
+            ));
+            $response = json_decode(
+                $this->getWebSocketClient()->receive(),
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            );
+
+            if (($response['cmd'] ?? null) !== 'reboot_start') {
+                throw new RuntimeException('RACS-1101 rejected reboot command');
+            }
+        } catch (JsonException $e) {
+            throw new RuntimeException('Invalid RACS-1101 reboot response', 0, $e);
+        } finally {
+            $this->getWebSocketClient()->disconnect();
+        }
     }
 
     public function reset(): void
     {
-        // TODO: Implement reset() method.
+        // Empty implementation
     }
 
     public function setAdminPassword(string $password): void
