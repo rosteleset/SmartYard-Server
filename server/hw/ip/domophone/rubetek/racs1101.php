@@ -3,12 +3,20 @@
 namespace hw\ip\domophone\rubetek;
 
 use hw\ip\domophone\domophone;
+use hw\ip\domophone\rubetek\Clients\{
+    JsonRpcClient,
+    WebSocketClient,
+};
+use RuntimeException;
 
 /**
  * Represents a Rubetek RACS-1101 access controller.
  */
 class racs1101 extends domophone
 {
+    private ?WebSocketClient $webSocketClient = null;
+    private ?JsonRpcClient $jsonRpcClient = null;
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         // TODO: Implement addRfid() method.
@@ -86,8 +94,13 @@ class racs1101 extends domophone
 
     public function getSysinfo(): array
     {
-        // TODO: Implement getSysinfo() method.
-        return [];
+        $info = $this->apiCall('get_device_info');
+
+        return [
+            'DeviceID' => $info['sn'],
+            'DeviceModel' => $info['model'],
+            'SoftwareVersion' => $info['fw_ver'],
+        ];
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -248,5 +261,91 @@ class racs1101 extends domophone
     {
         $this->login = 'admin';
         $this->defaultPassword = 'admin';
+    }
+
+    /**
+     * Calls a JSON-RPC method over the device's local WebSocket API.
+     *
+     * A null $params value omits the params member from the request.
+     *
+     * @throws RuntimeException If the connection, protocol, or RPC call fails.
+     */
+    private function apiCall(string $method, ?array $params = null, bool $waitForResponse = true): array
+    {
+        $this->connect();
+
+        if (!$waitForResponse) {
+            $this->getJsonRpcClient()->send($method, $params);
+            return [];
+        }
+
+        return $this->validateResult(
+            $method,
+            $this->getJsonRpcClient()->call($method, $params),
+        );
+    }
+
+    /**
+     * Opens and authorizes a WebSocket session if one is not active yet.
+     */
+    private function connect(): void
+    {
+        $webSocket = $this->getWebSocketClient();
+
+        if ($webSocket->isConnected()) {
+            return;
+        }
+
+        $webSocket->connect();
+
+        try {
+            $result = $this->validateResult(
+                'authorise',
+                $this->getJsonRpcClient()->call('authorise', [
+                    'login' => $this->login,
+                    'password' => $this->password,
+                ]),
+            );
+
+            if (($result['status'] ?? null) !== 'success') {
+                throw new RuntimeException('RACS-1101 authorization failed');
+            }
+        } catch (RuntimeException $e) {
+            $webSocket->disconnect();
+            throw $e;
+        }
+    }
+
+    private function getJsonRpcClient(): JsonRpcClient
+    {
+        return $this->jsonRpcClient ??= new JsonRpcClient($this->getWebSocketClient());
+    }
+
+    private function getWebSocketClient(): WebSocketClient
+    {
+        $url = preg_replace('/^http(s?):\/\//i', 'ws$1://', $this->url);
+        if ($url === null || $url === $this->url) {
+            throw new RuntimeException("Invalid RACS-1101 URL: $this->url");
+        }
+
+        return $this->webSocketClient ??= new WebSocketClient($url);
+    }
+
+    /**
+     * Applies RACS-1101-specific response validation on top of generic JSON-RPC.
+     *
+     * @return array<string, mixed>
+     */
+    private function validateResult(string $method, mixed $result): array
+    {
+        if (!is_array($result)) {
+            throw new RuntimeException("RACS-1101 method $method returned an invalid result");
+        }
+
+        if (isset($result['status']) && $result['status'] !== 'success') {
+            throw new RuntimeException("RACS-1101 method $method returned status {$result['status']}");
+        }
+
+        return $result;
     }
 }
