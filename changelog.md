@@ -12,6 +12,7 @@
 ```diff
 + added support for Rubetek RACS-1101 access controller
 - fixed short Akuvox RFID codes by padding them to four bytes before uploading to the intercom
+- fixed the permissions page failing to load when a user's rights reference methods hidden from the editor
 ```
 
 ## v1.2.0
