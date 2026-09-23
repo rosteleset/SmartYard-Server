@@ -35,7 +35,8 @@ abstract class akuvox extends domophone
     protected static function getNormalizedRfid(string $code): string
     {
         $trimmedCode = ltrim($code, '0');
-        return strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode;
+        $normalizedCode = strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode;
+        return str_pad($normalizedCode, 8, '0', STR_PAD_LEFT);
     }
 
     public function addRfid(string $code, int $apartment = 0): void
