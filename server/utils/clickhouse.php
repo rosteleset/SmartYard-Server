@@ -48,7 +48,9 @@
         public function select($query, $outputFormat = 'FORMAT JSON') {
             $curl = curl_init();
             $headers = [];
-            $queryParams = [];
+            $queryParams = [
+                'database' => $this->database,
+            ];
 
             curl_setopt($curl, CURLOPT_HTTPHEADER, [
                 'Content-Type: text/plain; charset=UTF-8',
@@ -81,19 +83,34 @@
             curl_setopt($curl, CURLOPT_POST, true);
 
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 30);
             curl_setopt($curl, CURLOPT_VERBOSE, false);
 
             try {
                 $raw = curl_exec($curl);
-                $data = @json_decode($raw, true)['data'];
+                $errno = curl_errno($curl);
+                $error = curl_error($curl);
+                $decoded = @json_decode($raw, true);
+                $data = is_array($decoded) ? ($decoded['data'] ?? null) : null;
             } catch (\Exception $e) {
+                curl_close($curl);
+                error_log("clickhouse select exception: " . $e->getMessage());
                 return false;
             }
             curl_close($curl);
 
+            if ($errno) {
+                error_log("clickhouse select curl($errno): $error");
+                return false;
+            }
+
             if (@$headers['x-clickhouse-exception-code']) {
-                echo "*" . trim($raw) . "*\n";
+                error_log("clickhouse select error: " . trim((string)$raw));
+                return false;
+            }
+
+            if ($data === null) {
+                error_log("clickhouse select bad json: " . substr(trim((string)$raw), 0, 500));
                 return false;
             }
 

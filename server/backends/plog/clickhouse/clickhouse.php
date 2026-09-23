@@ -427,7 +427,7 @@
              */
 
             public function getEventsDaysByEntrance(int $entrance_id, $filter_events) {
-                $where = "hidden = 0 and JSONExtractInt(cast(domophone as String), 'entrance_id') = $entrance_id";
+                $where = "not hidden and " . $this->getEntranceScopeCondition($entrance_id);
                 if ($filter_events) {
                     $where .= " and event in ($filter_events)";
                 }
@@ -447,7 +447,7 @@
                 ";
 
                 $result = $this->clickhouse->select($query);
-                if (count($result)) {
+                if ($result && count($result)) {
                     foreach ($result as &$d) {
                         $d['day'] = substr($d['day'], 0, 4) . '-' . substr($d['day'], 4, 2) . '-' . substr($d['day'], 6, 2);
                     }
@@ -462,7 +462,29 @@
              */
 
             public function getDetailEventsByDayAndEntrance(int $entrance_id, string $date) {
-                $cleanDate = (int) str_replace('-', '', $date);
+                // Same day format as getDetailEventsByDay (Ymd string)
+                $date = preg_replace('/\D+/', '', $date);
+
+                // Prefer the working house path (flat_id index on CH 24), then keep only this entrance
+                $house_id = $this->getHouseIdByEntrance($entrance_id);
+                if ($house_id) {
+                    $rows = $this->getDetailEventsByDayAndHouse($house_id, $date);
+                    if (is_array($rows)) {
+                        $filtered = [];
+                        foreach ($rows as $row) {
+                            $domophone = $row[self::COLUMN_DOMOPHONE] ?? null;
+                            if (is_string($domophone)) {
+                                $domophone = json_decode($domophone, true);
+                            } elseif (is_object($domophone)) {
+                                $domophone = (array)$domophone;
+                            }
+                            if ((int)($domophone['entrance_id'] ?? 0) === (int)$entrance_id) {
+                                $filtered[] = $row;
+                            }
+                        }
+                        return $filtered;
+                    }
+                }
 
                 $query = "
                     select
@@ -483,14 +505,36 @@
                     from
                         plog
                     where
-                        hidden = 0
-                        and toYYYYMMDD(FROM_UNIXTIME(date)) = {$cleanDate}
-                        and JSONExtractInt(cast(domophone as String), 'entrance_id') = {$entrance_id}
+                        not hidden
+                        and toYYYYMMDD(FROM_UNIXTIME(date)) = '$date'
+                        and " . $this->getEntranceScopeCondition($entrance_id) . "
                     order by
                         date desc
                 ";
 
                 return $this->clickhouse->select($query);
+            }
+
+            /**
+             * Scope filter for entrance journal (CH 24 JSON-safe).
+             */
+
+            private function getEntranceScopeCondition(int $entrance_id): string {
+                return "JSONExtractInt(toJSONString(domophone), 'entrance_id') = " . (int)$entrance_id;
+            }
+
+            private function getHouseIdByEntrance(int $entrance_id): ?int {
+                $rows = $this->db->get(
+                    "select address_house_id from houses_houses_entrances where house_entrance_id = :entrance_id order by address_house_id limit 1",
+                    [ "entrance_id" => $entrance_id ],
+                    [ "address_house_id" => "houseId" ]
+                );
+
+                if (is_array($rows) && isset($rows[0]["houseId"])) {
+                    return (int)$rows[0]["houseId"];
+                }
+
+                return null;
             }
 
             /**
@@ -500,6 +544,7 @@
             private function getHouseScopeCondition(int $house_id): string {
                 $households = loadBackend('households');
                 $entrance_ids = [];
+                $flat_ids = [];
 
                 if ($households) {
                     foreach ($households->getEntrances('houseId', $house_id) ?: [] as $entrance) {
@@ -507,15 +552,26 @@
                             $entrance_ids[] = (int)$entrance['entranceId'];
                         }
                     }
+                    foreach ($households->getFlats('houseId', $house_id) ?: [] as $flat) {
+                        if (isset($flat['flatId'])) {
+                            $flat_ids[] = (int)$flat['flatId'];
+                        }
+                    }
                 }
 
-                $domophoneJson = "cast(domophone as String)";
+                // ClickHouse JSON: CAST(... AS String) does not yield parseable JSON; use toJSONString()
+                $domophoneJson = "toJSONString(domophone)";
                 $conditions = [
                     "JSONExtractInt($domophoneJson, 'house_id') = " . (int)$house_id,
                 ];
                 $entrance_ids = array_values(array_unique($entrance_ids));
                 if ($entrance_ids) {
                     $conditions[] = "JSONExtractInt($domophoneJson, 'entrance_id') in (" . implode(',', $entrance_ids) . ")";
+                }
+                // flat_id uses MergeTree index — same path as working flat journal
+                $flat_ids = array_values(array_unique(array_filter($flat_ids)));
+                if ($flat_ids) {
+                    $conditions[] = "flat_id in (" . implode(',', $flat_ids) . ")";
                 }
 
                 return "(" . implode(" or ", $conditions) . ")";
@@ -561,8 +617,9 @@
              */
 
             public function getDetailEventsByDayAndHouse(int $house_id, string $date) {
-                $cleanDate = (int) str_replace('-', '', $date);
-                $where = "hidden = 0 and toYYYYMMDD(FROM_UNIXTIME(date)) = {$cleanDate} and " . $this->getHouseScopeCondition($house_id);
+                // Same day format as getDetailEventsByDay (Ymd string) — numeric compare breaks on some CH builds
+                $date = preg_replace('/\D+/', '', $date);
+                $where = "not hidden and toYYYYMMDD(FROM_UNIXTIME(date)) = '$date' and " . $this->getHouseScopeCondition($house_id);
 
                 $query = "
                     select
