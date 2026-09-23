@@ -346,6 +346,9 @@
         } else {
             for (let i in modules.permissions.rights.users) {
                 let t = modules.permissions.rights.users[i];
+                if (!m[t.aid]) {
+                    continue;
+                }
                 if (!x[t.uid]) {
                     x[t.uid] = {};
                 }
