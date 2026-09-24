@@ -334,6 +334,8 @@
 
         "queue": {
             "backend": "internal",
+            "max_concurrent_tasks": 25,
+            "task_timeout": 3600,
         },
 
         "contacts": {

@@ -94,7 +94,6 @@
                     foreach ($this->tasks[$part] as $task) {
                         $this->$task();
                     }
-                    $this->wait();
                     return true;
                 } else {
                     return parent::cron($part);
@@ -110,9 +109,16 @@
 
                 $deviceTypes = ['domophone', 'camera'];
                 $pid = getmypid();
+                $maxConcurrentTasks = filter_var($this->bconfig['max_concurrent_tasks'] ?? 25, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: 25;
+                $running = (int)$this->db->get("select count(*) from core_running_processes where done is null and (params like '--autoconfigure-device=domophone %' or params like '--autoconfigure-device=camera %')", [], false, ['fieldlify']);
+                $slots = max(0, $maxConcurrentTasks - $running);
 
                 foreach ($deviceTypes as $deviceType) {
-                    $tasks = $this->getTasksForDeviceType($deviceType);
+                    if (!$slots) {
+                        break;
+                    }
+
+                    $tasks = $this->getTasksForDeviceType($deviceType, $slots);
 
                     foreach ($tasks as $task) {
                         $taskChangeId = $task['taskChangeId'];
@@ -126,10 +132,10 @@
                         } elseif ($objectType === 'camera') {
                             $this->autoconfigureCamera($deviceId, $script_filename, $pid);
                         }
+
+                        $slots--;
                     }
                 }
-
-                $this->wait();
             }
 
             /**
@@ -149,10 +155,18 @@
                 }
             }
 
-            private function getTasksForDeviceType($deviceType) {
-                $query = "select * from tasks_changes where object_type = '$deviceType' limit 25";
+            private function getTasksForDeviceType($deviceType, $limit) {
+                $query = "select task_change_id, object_type, object_id from tasks_changes tc
+                    where object_type = :device_type
+                    and not exists (
+                        select 1 from core_running_processes rp
+                        where rp.done is null
+                        and (rp.params = '--autoconfigure-device=' || tc.object_type || ' --id=' || tc.object_id
+                            or rp.params like '--autoconfigure-device=' || tc.object_type || ' --id=' || tc.object_id || ' %')
+                    )
+                    order by task_change_id limit :limit";
 
-                return $this->db->get($query, [], [
+                return $this->db->get($query, ['device_type' => $deviceType, 'limit' => $limit], [
                     'task_change_id' => 'taskChangeId',
                     'object_type' => 'objectType',
                     'object_id' => 'deviceId',
@@ -171,7 +185,7 @@
                     ? " --autoconfigure-device=domophone --id={$domophone["domophoneId"]} --first-time --parent-pid=$pid"
                     : " --autoconfigure-device=domophone --id={$domophone["domophoneId"]} --parent-pid=$pid";
 
-                shell_exec(PHP_BINARY . ' ' . $script_filename . $command . " 1>/dev/null 2>&1 &");
+                $this->startAutoconfiguration($script_filename, $command);
             }
 
             private function autoconfigureCamera($cameraId, $script_filename, $pid) {
@@ -183,7 +197,12 @@
                 }
 
                 $command = " --autoconfigure-device=camera --id={$camera["cameraId"]} --parent-pid=$pid";
-                shell_exec(PHP_BINARY . ' ' . $script_filename . $command . " 1>/dev/null 2>&1 &");
+                $this->startAutoconfiguration($script_filename, $command);
+            }
+
+            private function startAutoconfiguration($scriptFilename, $command) {
+                $timeout = filter_var($this->bconfig['task_timeout'] ?? 3600, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: 3600;
+                shell_exec('timeout -k 5s ' . $timeout . 's ' . PHP_BINARY . ' ' . $scriptFilename . $command . " 1>/dev/null 2>&1 &");
             }
         }
     }
