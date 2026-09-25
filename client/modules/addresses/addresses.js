@@ -11,6 +11,7 @@
         "cameras",
         "subscribers",
         "subscriberInbox",
+        "broadcast",
         "subscriberDevices",
         "watchers",
         "flatPlog",
@@ -2701,6 +2702,7 @@
 
     topMenu: function (wizards) {
         let top = '';
+        wizards = (wizards || []).filter(wizard => wizard.available !== false);
 
         if (AVAIL("geo", "suggestions")) {
             top += `
@@ -2739,7 +2741,17 @@
             params.show = "regions";
         }
 
-        modules.addresses.topMenu();
+        let broadcast = [];
+        if ([ "regions", "region", "area", "city", "settlement", "street" ].indexOf(params.show) >= 0 &&
+            AVAIL("inbox", "broadcast", "GET") && AVAIL("inbox", "broadcast", "POST")) {
+            let by = params.show === "regions" ? "all" : params.show + "Id";
+            let query = by === "all" ? 0 : params[by];
+            broadcast.push({
+                title: i18n("addresses.broadcast"),
+                click: () => modules.addresses.broadcast.open(by, query),
+            });
+        }
+        modules.addresses.topMenu(broadcast);
 
         switch (params.show) {
             case "region":

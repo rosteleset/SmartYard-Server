@@ -4344,79 +4344,9 @@
         },
         {
             title: i18n("addresses.broadcast"),
+            available: Boolean(AVAIL("inbox", "broadcast", "GET") && AVAIL("inbox", "broadcast", "POST")),
             click: function () {
-                loadingStart();
-                QUERY("subscribers", "subscribers", {
-                    by: "houseId",
-                    query: params.houseId
-                }, true).
-                fail(FAIL).
-                done(result => {
-                    loadingDone();
-                    if (result && result.subscribers && result.subscribers.length) {
-                        cardForm({
-                            title: i18n("addresses.messageSend"),
-                            footer: true,
-                            borderless: true,
-                            topApply: true,
-                            apply: "addresses.doMessageSend",
-                            size: "lg",
-                            fields: [
-                                {
-                                    id: "title",
-                                    type: "text",
-                                    title: i18n("addresses.messageTitle"),
-                                    placeholder: i18n("addresses.messageTitle"),
-                                    validate: v => {
-                                        return $.trim(v) !== "";
-                                    }
-                                },
-                                {
-                                    id: "body",
-                                    type: "area",
-                                    title: i18n("addresses.messageBody"),
-                                    placeholder: i18n("addresses.messageBody"),
-                                    validate: v => {
-                                        return $.trim(v) !== "";
-                                    }
-                                },
-                                {
-                                    id: "action",
-                                    type: "select2",
-                                    title: i18n("addresses.messageAction"),
-                                    options: [
-                                        {
-                                            value: "inbox",
-                                            text: i18n("addresses.messageActionInbox"),
-                                        },
-                                        {
-                                            value: "money",
-                                            text: i18n("addresses.messageActionBalancePlus"),
-                                        },
-                                    ]
-                                },
-                            ],
-                            callback: msg => {
-                                let n = 0;
-                                (function send(r) {
-                                    let subscriber = result.subscribers.pop();
-                                    if (r && r.sent) {
-                                        n += r.sent.count;
-                                    }
-                                    if (subscriber) {
-                                        POST("inbox", "message", subscriber.subscriberId, msg).
-                                        fail(FAIL).
-                                        done(send);
-                                    } else {
-                                        message(i18n("addresses.messagesSent", n));
-                                    }
-                                })();
-                            },
-                        });
-                    } else {
-                        warning(i18n("addresses.noSubscribersFond"));
-                    }
-                });
+                modules.addresses.broadcast.open("houseId", params.houseId);
             },
         }]);
 
