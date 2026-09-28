@@ -930,5 +930,17 @@
              * @return bool
              */
             abstract public function groupBelongsToSubscriber($subscriberGroupId, $subscriberId): bool;
+
+            /**
+             * @param $houseId
+             * @return ?array
+             */
+            abstract public function getHouseServices($houseId): ?array;
+
+            /**
+             * @param $flatId
+             * @return ?array
+             */
+            abstract public function getFlatServices($flatId): ?array;
         }
     }

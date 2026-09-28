@@ -4861,5 +4861,75 @@
                     ":flat_id" => $flatId,
                 ]) !== false;
             }
+
+            /**
+             * @inheritDoc
+             */
+            function getHouseServices($houseId): ?array
+            {
+                $result = null;
+                global $RBTServices;
+
+                $services = [];
+
+                $customFields = loadBackend("customFields");
+                if ($customFields) {
+                    $values = $customFields->getValues("house", $houseId);
+
+                    if (is_array($values)) {
+                        $servicesValue = trim((string)@$values["services"]);
+                        foreach (explode(",", $servicesValue) as $service) {
+                            $service = trim(mb_strtolower($service));
+
+                            if (isset($RBTServices[$service])) {
+                                $services[] = $service;
+                            }
+                        }
+                    }
+                }
+
+                $households = loadBackend("households");
+                if ($households->getEntrances('houseId', $houseId)) {
+                    if (!in_array('domophone', $services, true)) {
+                        $services[] = "domophone";
+                    }
+
+                    foreach ($services as $service) {
+                        $s = $RBTServices[$service];
+                        $s['byDefault'] = $service === 'domophone' ? 't' : 'f';
+                        $result[] = $s;
+                    }
+                }
+
+                return $result;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getFlatServices($flatId): ?array
+            {
+                $result = null;
+                global $RBTServices;
+
+                $customFields = loadBackend("customFields");
+                if ($customFields) {
+                    $values = $customFields->getValues("flat", $flatId);
+
+                    if (is_array($values)) {
+                        $servicesValue = trim((string)@$values["services"]);
+
+                        foreach (explode(",", $servicesValue) as $service) {
+                            $service = trim(mb_strtolower($service));
+
+                            if (isset($RBTServices[$service])) {
+                                $result[] = $service;
+                            }
+                        }
+                    }
+                }
+
+                return $result;
+            }
         }
     }

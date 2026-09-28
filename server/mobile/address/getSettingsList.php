@@ -29,6 +29,12 @@
      * @apiSuccess {integer} [-.roommates.timezone] часовой пояс (default - Moscow Time)
      * @apiSuccess {string="Y-m-d H:i:s"} -.roommates.expire дата до которой действует доступ
      * @apiSuccess {string="inner","outer","owner"} -.roommates.type тип inner - доступ к домофону, outer - только калитки и ворота, owner - владелец
+     * @apiSuccess {Object[]} [-.availableServices] массив доступных услуг
+     * @apiSuccess {String="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.availableServices.icon иконка услуги
+     * @apiSuccess {String} -.availableServices.title заголовок
+     * @apiSuccess {String} -.availableServices.description описание
+     * @apiSuccess {String="t","f"} -.availableServices.canChange доступна смена тарифа
+     * @apiSuccess {String="t","f"} -.availableServices.byDefault услуга предоставляется по умолчанию
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
@@ -73,10 +79,36 @@
         // TODO: сделать работу с заявками на изменение услуг. пока блок выбора услуг - "тарелочки" отключены.
         // в услугах должна быть услуга domophone, чтобы было доступно управление доступом.
         // contractOwner = 'f' отключает отображение тарелочек.
-        $f['services'] = ['domophone'];
-        $f['contractOwner'] = 'f';
-        // $f['contractOwner'] = (int)$flat['role']==0?'t':'f';
+        //$f['services'] = ['domophone'];
 
+        // Flat services. Service "domophone" is determined by adminBlock, manualBlock, autoBlock and entrance count
+        $flat_services = $households->getFlatServices($flat['flatId']);
+        if (!isset($flat_services)) {
+            $flat_services = [];
+        }
+        $has_entrances = is_array($h_flat['entrances']) && count($h_flat['entrances']) > 0;
+        $domophone_service = "domophone";
+        $has_domophone_service = !($h_flat['adminBlock'] || $h_flat['manualBlock'] || $h_flat['autoBlock']) && $has_entrances;
+        if ($has_domophone_service) {
+            if (!in_array($domophone_service, $flat_services, true)) {
+                $flat_services[] = $domophone_service;
+            }
+        } else {
+            $key = array_search($domophone_service, $flat_services, true);
+            if ($key !== false) {
+                unset($flat_services[$key]);
+            }
+        }
+        $f['services'] = $flat_services;
+
+        // Available services
+        $house_services = $households->getHouseServices($h_flat['houseId']);
+        if (isset($house_services)) {
+            $f['availableServices'] = $house_services;
+        }
+
+        $f['contractOwner'] = (int)$flat['role']==0 ? 't' : 'f';
+        //$f['contractOwner'] = 'f';
         // $f['contractName'] = '-';
         // $f['clientId'] = '0';
 
