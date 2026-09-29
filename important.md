@@ -1,3 +1,20 @@
+# 2026-09-29
+
+To enable virtual intercoms, link the nginx snippet:
+
+```bash
+mkdir -p /etc/nginx/rbt.d
+ln -s /opt/rbt/install/nginx/virtual-intercom.conf /etc/nginx/rbt.d/virtual-intercom.conf
+nginx -t && systemctl reload nginx
+```
+
+Reload the virtual-call door-opening handler (`features`) and Lua dialplan:
+
+```bash
+asterisk -rx "module reload features"
+asterisk -rx "module reload pbx_lua"
+```
+
 # 2026-09-24
 
 The `backends.queue` section now supports two optional settings. Add them to `/opt/rbt/server/config/config.json`
