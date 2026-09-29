@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#298bff">
+  <meta name="referrer" content="no-referrer">
+  <title>Виртуальный домофон</title>
+  <link rel="stylesheet" href="/virtual-intercom/assets/style.css?v=20260913-auto-code">
+  <script defer src="/virtual-intercom/jssip.min.js"></script>
+  <script defer src="/virtual-intercom/assets/preview.js?v=20260913-auto-code"></script>
+  <script defer src="/virtual-intercom/assets/app.js?v=20260914-stun"></script>
+</head>
+<body>
+  <main>
+    <section class="welcome">
+      <h1 id="entrance-title">Виртуальный домофон</h1>
+      <p class="subtitle" id="entrance-subtitle">Загружаем информацию о входе…</p>
+    </section>
+    <div class="intercom">
+      <section class="camera-panel" aria-label="Камера посетителя">
+        <video id="preview" autoplay muted playsinline></video>
+        <canvas id="preview-canvas" aria-hidden="true" hidden></canvas>
+        <div class="camera-empty" id="camera-empty"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="8" y="18" width="34" height="28" rx="7"/><path d="m42 27 13-7v24l-13-7"/></svg><p>Подключаем камеру<br>и микрофон…</p></div>
+        <div class="camera-top"><span class="camera-label"><span class="dot"></span><span id="camera-label">Камера выключена</span></span><span class="time" id="call-time" hidden>00:00</span></div>
+        <div class="camera-bottom"><button id="mute" class="round" type="button" aria-label="Выключить микрофон" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/><path class="mute-slash" d="m3 3 18 18"/></svg></button></div>
+      </section>
+      <section class="controls">
+        <div class="control-heading"><h2 id="control-title">Номер квартиры или офиса</h2><svg class="door-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-8 9 8M5 9v12h14V9M9 21v-9h6v9"/><path d="M12 16h.01"/></svg></div>
+        <div class="tabs" id="selection-mode" role="tablist" aria-label="Способ выбора адресата" hidden><button class="selected" id="keypad-tab" role="tab" aria-selected="true" aria-controls="keypad-view">Набрать номер</button><button id="list-tab" role="tab" aria-selected="false" aria-controls="list-view">Выбрать из списка</button></div>
+        <div id="keypad-view" role="tabpanel" aria-labelledby="keypad-tab">
+          <div class="number-box"><input id="apartment" inputmode="numeric" autocomplete="off" maxlength="12" aria-label="Номер квартиры или офиса" placeholder="—"><button id="erase" aria-label="Удалить последнюю цифру" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-7-7 7-7Z"/><path d="m12 9 6 6m0-6-6 6"/></svg></button></div>
+          <div class="keypad" aria-label="Клавиатура"><button data-digit="1">1</button><button data-digit="2">2</button><button data-digit="3">3</button><button data-digit="4">4</button><button data-digit="5">5</button><button data-digit="6">6</button><button data-digit="7">7</button><button data-digit="8">8</button><button data-digit="9">9</button><span></span><button data-digit="0">0</button><span></span></div>
+        </div>
+        <div id="list-view" role="tabpanel" aria-labelledby="list-tab" hidden><label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Номер или название" aria-label="Найти по номеру или названию"></label><div id="apartments" class="apartments"></div></div>
+        <div id="status" class="status" role="status" aria-live="polite">Выберите, кому позвонить</div>
+        <button id="call" class="call" type="button" disabled><svg id="call-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H4a1 1 0 0 0-1 1 17 17 0 0 0 17 17 1 1 0 0 0 1-1v-3l-5-2-2 2a13 13 0 0 1-7-7l2-2Z"/></svg><svg id="open-icon" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M5 21V3h14v18M3 21h18M15 12h.01"/></svg><span id="call-label">Позвонить</span></button>
+        <button id="hangup" class="hangup" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H4a1 1 0 0 0-1 1 17 17 0 0 0 17 17 1 1 0 0 0 1-1v-3l-5-2-2 2a13 13 0 0 1-7-7l2-2Z"/></svg><span>Завершить вызов</span></button>
+        <p class="hint" id="hint">На звонок ответят в приложении и смогут открыть дверь.</p>
+      </section>
+    </div>
+  </main>
+  <dialog id="door-opened" class="door-opened" role="alertdialog" aria-labelledby="door-opened-title" aria-describedby="door-opened-hint">
+    <div class="door-opened-content">
+      <div class="door-opened-icon" aria-hidden="true"><svg viewBox="0 0 96 96"><path d="M18 78V20a5 5 0 0 1 5-5h38v63M32 78V28l29-13v63l-29 9V78H13"/><path d="M50 49v5"/><circle cx="73" cy="62" r="19"/><path d="m64 62 6 6 12-13"/></svg></div>
+      <h2 id="door-opened-title">Дверь открыта</h2>
+      <p id="door-opened-hint">Откройте дверь<br>и заходите</p>
+      <button id="door-opened-dismiss" type="button" autofocus>Понятно</button>
+    </div>
+  </dialog>
+  <audio id="remote-audio" autoplay></audio>
+</body>
+</html>
