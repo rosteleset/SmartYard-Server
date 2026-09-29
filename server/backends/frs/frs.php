@@ -70,6 +70,10 @@
             const M_SET_STREAM_DEFAULT_CONFIG = "setStreamDefaultConfig";
             const M_GET_STREAM_DEFAULT_CONFIG = "getStreamDefaultConfig";
             const M_CLUSTER_FACES_BY_SIMILARITY = "clusterFacesBySimilarity";  // applies to FALPRS version 1.1.0 or later
+            const M_ADDITIONAL_FEATURES = "getAdditionalFeatures";  // applies to FALPRS version 1.1.0 or later
+
+            //LPRS method names
+            const M_GET_SUPPORTED_PLATE_NUMBER_FORMATS = "getSupportedPlateNumberFormats";
 
             //response codes
             const R_CODE_OK = 200;
@@ -98,6 +102,9 @@
             const C_SCREENSHOT_URL = "screenshot-url";
             const C_CALLBACK_URL = "callback-url";
             const C_WORK_AREA = "work-area";
+
+            const FEAT_QR_CODE_RECOGNITION = "qrCodeRecognition";
+            const FEAT_FACE_CLUSTERING = "faceClustering";
 
             //FRS API methods calls
 
@@ -311,6 +318,11 @@
              */
             abstract public function clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id): bool;
 
+            /**
+             * @return array
+             */
+            abstract public function getAdditionalFeaturesFrs(): array;
+
             //LPRS API methods calls
 
             /**
@@ -323,5 +335,10 @@
              */
 
             abstract public function apiCallLprs($base_url, $method, $params);
+
+            /**
+             * @return array
+             */
+            abstract public function getSupportedPlateNumberFormats(): array;
         }
     }
