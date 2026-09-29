@@ -97,6 +97,7 @@
             $key = array_search($domophone_service, $flat_services, true);
             if ($key !== false) {
                 unset($flat_services[$key]);
+                $flat_services = array_values($flat_services);
             }
         }
         $f['services'] = $flat_services;
