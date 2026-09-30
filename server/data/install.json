@@ -311,5 +311,8 @@
     ],
     "98": [
         "v98_house_companies.sql"
+    ],
+    "99": [
+        "v99_virtual_intercom.php"
     ]
 }

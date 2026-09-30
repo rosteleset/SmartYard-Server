@@ -12,6 +12,16 @@
 ```diff
 + added support for Rubetek RACS-1101 access controller
 - fixed short Akuvox RFID codes by padding them to four bytes before uploading to the intercom
+- fixed the permissions page failing to load when a user's rights reference methods hidden from the editor
+- fixed autoconfiguration blocking minutely cron
++ added configurable autoconfiguration concurrency and task timeout
++ added availableServices, configurable default services and owner status to the mobile getSettingsList response
++ added supportedPlateNumberFormats and enabled the configured lprsVersion in mobile options
+- fixed mobile face clustering being advertised when unsupported by the FRS server
+! changed the FRS backend contract: getAdditionalFeaturesFrs() and getSupportedPlateNumberFormats() are now required
++ added independent initial mobile call push delivery with a five-second request timeout
+- prevented repeat dialing after a completed mobile call attempt
++ added virtual intercom
 ```
 
 ## v1.2.0

@@ -6,6 +6,7 @@
     subModules: [
         "keys",
         "cms",
+        "virtualIntercom",
         "houses",
         "domophones",
         "cameras",

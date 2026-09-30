@@ -24,6 +24,9 @@ class racs1101 extends domophone implements FreePassInterface
     private const RELAY_MODE_NORMAL = 0;
     private const RELAY_MODE_FREE_PASS = 1;
 
+    private const READER_MODE_NORMAL = 4;
+    private const READER_MODE_INVERSE = 6;
+
     private const TIME_SYNC_TOLERANCE = 30;
     private const VIRTUAL_NTP_CONFIG = [
         'server' => '',
@@ -161,6 +164,12 @@ class racs1101 extends domophone implements FreePassInterface
         $this->apiCall('unlock', ['relay_index' => $lockNumber + 1]);
     }
 
+    public function prepare(): void
+    {
+        parent::prepare();
+        $this->setReaderInverseMode(true);
+    }
+
     public function reboot(): void
     {
         $this->connect();
@@ -256,6 +265,21 @@ class racs1101 extends domophone implements FreePassInterface
     public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
+    }
+
+    public function setReaderInverseMode(bool $enabled): void
+    {
+        $readerMode = $enabled ? self::READER_MODE_INVERSE : self::READER_MODE_NORMAL;
+
+        $this->apiCall('set_config', [
+            'var_list' => [
+                'main' => [
+                    'access' => [
+                        'reader_mode' => [$readerMode, $readerMode],
+                    ],
+                ],
+            ],
+        ]);
     }
 
     public function setSosNumber(int $sipNumber): void

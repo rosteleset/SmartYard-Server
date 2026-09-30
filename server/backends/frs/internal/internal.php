@@ -46,7 +46,7 @@
                     return ($item[self::API_TYPE] ?? null) === self::API_FRS || !isset($item[self::API_TYPE]);
                 });
 
-                return $frs_servers;
+                return array_values($frs_servers);
             }
 
             public function lprsServers() {
@@ -54,7 +54,7 @@
                     return ($item[self::API_TYPE] ?? null) === self::API_LPRS;
                 });
 
-                return $lprs_servers;
+                return array_values($lprs_servers);
             }
 
             private function getAuthToken($base_url) {
@@ -417,7 +417,7 @@
 
             private function syncDataFrs(): bool {
                 // we need only FRS API servers
-                $frs_servers = $this->frsServers();
+                $frs_servers = $this->frsServers() ?? [];
 
                 //syncing all faces
                 $frs_all_faces = [];
@@ -1370,7 +1370,25 @@
             /**
              * @inheritDoc
              */
+            public function getAdditionalFeaturesFrs(): array {
+                $frs_servers = $this->frsServers() ?? [];
+                if (is_array($frs_servers) && count($frs_servers) > 0) {
+                    $frs_server = $frs_servers[0];
+                } else {
+                    return [];
+                }
 
+                $response = $this->apiCallFrs($frs_server[self::FRS_BASE_URL], self::M_ADDITIONAL_FEATURES, null);
+                if ($response && $response[self::P_CODE] == self::R_CODE_OK && $response[self::P_DATA]) {
+                    return $response[self::P_DATA];
+                }
+
+                return [];
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function apiCallLprs($base_url, $method, $params) {
                 $l = strlen($base_url);
                 if ($l <= 1)
@@ -1414,6 +1432,29 @@
                 } else {
                     return json_decode($response, true);
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getSupportedPlateNumberFormats(): array {
+                $default_data = [
+                    ["countryCode" => "ru", "regex" => "^[ABCEHKMOPTXY][0-9]{3}[ABCEHKMOPTXY]{2}[0-9]{2,3}$"]
+                ];
+
+                $lprs_servers = $this->lprsServers() ?? [];
+                if (is_array($lprs_servers) && count($lprs_servers) > 0) {
+                    $lprs_server = $lprs_servers[0];
+                } else {
+                    return $default_data;
+                }
+
+                $response = $this->apiCallLprs($lprs_server[self::FRS_BASE_URL], self::M_GET_SUPPORTED_PLATE_NUMBER_FORMATS, null);
+                if ($response && $response[self::P_CODE] == self::R_CODE_OK && $response[self::P_DATA]) {
+                    return $response[self::P_DATA];
+                }
+
+                return $default_data;
             }
         }
     }

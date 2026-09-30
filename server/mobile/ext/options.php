@@ -36,8 +36,11 @@
      * @apiSuccess {String="t","f"} [stories="f"] Stories flag
      * @apiSuccess {String="t","f"} [faceGroups="f"] Face groups flag
      * @apiSuccess {String="t","f"} [faceClustering="f"] Face clustering flag
-     * @apiSuccess {String="1","2"} [issuesVersion=1] Version of the built-in task tracker system
+     * @apiSuccess {String="1","2","none"} [issuesVersion=1] Version of the built-in task tracker system
      * @apiSuccess {String="1","2"} [lprsVersion=1] LPRS mobile API version
+     * @apiSuccess {Object[]} [supportedPlateNumberFormats] Array of LPRS-supported plate number formats
+     * @apiSuccess {String} [supportedPlateNumberFormats[].countryCode] Two-letter country code in lowercase
+     * @apiSuccess {String} [supportedPlateNumberFormats[].format] Regular expression describing the supported plate number format
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
@@ -46,6 +49,8 @@
      * 410 авторизация отозвана
      * 424 неверный токен
      */
+
+    use backends\frs\frs;
 
     auth();
 
@@ -133,10 +138,14 @@
     $response["faceGroups"] = ($config["mobile"]["face_groups"] ?? false) ? "t" : "f";
 
     // Face Clustering
-    $response["faceClustering"] = ($config["mobile"]["face_clustering"] ?? false) ? "t" : "f";
+    $frs = loadBackend("frs");
+    if ($frs) {
+        $response["faceClustering"] = ($config["mobile"]["face_clustering"] ?? false) && in_array(frs::FEAT_FACE_CLUSTERING, $frs->getAdditionalFeaturesFrs()) ? "t" : "f";
+        $response["supportedPlateNumberFormats"] = $frs->getSupportedPlateNumberFormats();
+    }
 
     // LPRS mobile API Version
-    //$response["lprsVersion"] = $config["mobile"]["lprs_api_version"] ?? "1";
+    $response["lprsVersion"] = $config["mobile"]["lprs_api_version"] ?? "1";
 
     mobileCustomize('ext.options.response', $response, [
         'subscriber' => $subscriber,

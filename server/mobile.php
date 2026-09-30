@@ -63,6 +63,7 @@
             "icon" => "domophone",
             "title" => i18n("services.domophone"),
             "description" => i18n("services.domophoneDescription"),
+            "byDefault" => "t",
             "canChange" => "f",
         ],
         'gsm' => [

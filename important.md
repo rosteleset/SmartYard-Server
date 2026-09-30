@@ -1,10 +1,77 @@
+# 2026-09-30
+
+The optional `mobile.default_services` setting controls the default service catalog exposed to the mobile app.
+Without it, houses without an explicit `services` custom-field value expose the entire built-in catalog.
+To limit the catalog to services you provide, configure this setting using the example and descriptions in
+[config.sample.json5](server/config/config.sample.json5).
+
+# 2026-09-29
+
+## Virtual intercom
+
+To enable virtual intercoms, link the nginx snippet:
+
+```bash
+mkdir -p /etc/nginx/rbt.d
+ln -s /opt/rbt/install/nginx/virtual-intercom.conf /etc/nginx/rbt.d/virtual-intercom.conf
+nginx -t && systemctl reload nginx
+```
+
+Reload the virtual-call door-opening handler:
+
+```bash
+asterisk -rx "module reload features"
+```
+
+## Asterisk dialplan
+
+After updating, reload the Lua dialplan to apply independent initial push delivery and prevent repeat dialing:
+
+```bash
+asterisk -rx "module reload pbx_lua"
+```
+
+## FRS backend contract
+
+The abstract `frs` backend contract has changed. Custom backends that directly extend the abstract `frs` backend
+must implement the following methods, or they will fail to load:
+
+```php
+getAdditionalFeaturesFrs(): array
+getSupportedPlateNumberFormats(): array
+```
+
+Backends that inherit these implementations from `frs/internal` require no changes.
+
+# 2026-09-24
+
+The `backends.queue` section now supports two optional settings. Add them to `/opt/rbt/server/config/config.json`
+to override the defaults:
+
+```json
+{
+    "backends": {
+        "queue": {
+            "backend": "internal",
+            "max_concurrent_tasks": 25,
+            "task_timeout": 3600
+        }
+    }
+}
+```
+
+`max_concurrent_tasks` limits the number of simultaneous device autoconfiguration jobs.
+`task_timeout` is the maximum duration of each such job in seconds, after which the job is terminated.
+
+Existing configurations without these settings continue to use the defaults shown above.
+
 # 2026-09-14
 
 A new system statistics page is available in the web interface. It displays summary information about flats,
 equipment, RFID keys and mobile devices. On existing installations, the page is not enabled automatically. To enable
 it, add the following backend configuration to `/opt/rbt/server/config/config.json`:
 
-```json5
+```json
 {
     "backends": {
         "statistics": {
@@ -121,7 +188,7 @@ The presence of the `tmpfs` backend no longer redirects expiring files to the fi
 
 To store new files in `tmpfs`, configure it explicitly:
 
-```json5
+```json
 {
     "backends": {
         "plog": {

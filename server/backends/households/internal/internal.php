@@ -4861,5 +4861,96 @@
                     ":flat_id" => $flatId,
                 ]) !== false;
             }
+
+            /**
+             * @inheritDoc
+             */
+            function getHouseServices($houseId): ?array
+            {
+                $result = null;
+                global $RBTServices;
+                $default_services = @$this->config["mobile"]["default_services"];
+                if (!isset($default_services)) {
+                    $default_services = $RBTServices;
+                }
+                foreach ($default_services as $service => $data) {
+                    $default_services[$service] = array_merge(
+                        $RBTServices[$service],
+                        $data
+                    );
+                }
+
+                $has_custom_services = false;
+                $services = [];
+
+                $customFields = loadBackend("customFields");
+                if ($customFields) {
+                    $values = $customFields->getValues("house", $houseId);
+
+                    if (is_array($values)) {
+                        if (isset($values["services"])) {
+                            $has_custom_services = true;
+                            $servicesValue = trim((string)@$values["services"]);
+                            foreach (explode(",", $servicesValue) as $service) {
+                                $service = trim(mb_strtolower($service));
+
+                                if (isset($default_services[$service])) {
+                                    $services[] = $service;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!$has_custom_services) {
+                    $services = array_keys($default_services);
+                }
+
+                foreach ($services as $service) {
+                    $s = $default_services[$service];
+                    $result[] = $s;
+                }
+
+                return $result;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function getFlatServices($flatId): ?array
+            {
+                $result = null;
+
+                global $RBTServices;
+                $default_services = @$this->config["mobile"]["default_services"];
+                if (!isset($default_services)) {
+                    $default_services = $RBTServices;
+                }
+                foreach ($default_services as $service => $data) {
+                    $default_services[$service] = array_merge(
+                        $RBTServices[$service],
+                        $data
+                    );
+                }
+
+                $customFields = loadBackend("customFields");
+                if ($customFields) {
+                    $values = $customFields->getValues("flat", $flatId);
+
+                    if (is_array($values)) {
+                        $servicesValue = trim((string)@$values["services"]);
+
+                        foreach (explode(",", $servicesValue) as $service) {
+                            $service = trim(mb_strtolower($service));
+
+                            if (isset($default_services[$service])) {
+                                $result[] = $service;
+                            }
+                        }
+                    }
+                }
+
+                return $result;
+            }
         }
     }
