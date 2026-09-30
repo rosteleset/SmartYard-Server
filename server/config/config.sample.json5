@@ -62,6 +62,32 @@
 
         // LPRS mobile API version (supported versions: "1", "2"). Version "2" adds the listNumbersV2 method with country code and expiration date/time. Defaults to "1".
         "lprs_api_version": "1",
+
+        // Default services. Services enabled by default for the house.
+        // The byDefault parameter indicates whether the service is automatically enabled for every apartment in the house.
+        // The canChange parameter indicates whether the service plan can be changed.
+        "default_services": {
+            "internet": {
+                "byDefault": "f",
+                "canChange": "t"
+            },
+            "iptv": {
+                "byDefault": "f",
+                "canChange": "t"
+            },
+            "phone": {
+                "byDefault": "f",
+                "canChange": "t"
+            },
+            "cctv": {
+                "byDefault": "f",
+                "canChange": "f"
+            },
+            "domophone": {
+                "byDefault": "t",
+                "canChange": "f"
+            }
+	},
     },
 
     "db": {

@@ -22,26 +22,25 @@
      * @apiSuccess {string} [-.doorCode] код открытия двери (если нет значит выключено)
      * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
      * @apiSuccess {string} -.address адрес
-     * @apiSuccess {string[]="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.services подключенные услуги
+     * @apiSuccess {string[]} -.services подключенные услуги: internet, iptv, ctv, phone, cctv, domophone, gsm
      * @apiSuccess {string} [-.lcab] личный кабинет
-     * @apiSuccess {object[]} [-.roommates] сокамерники
+     * @apiSuccess {object[]} [-.roommates] пользователи с доступом
      * @apiSuccess {string} -.roommates.phone телефон
      * @apiSuccess {integer} [-.roommates.timezone] часовой пояс (default - Moscow Time)
-     * @apiSuccess {string="Y-m-d H:i:s"} -.roommates.expire дата до которой действует доступ
+     * @apiSuccess {string="Y-m-d H:i:s"} -.roommates.expire дата, до которой действует доступ
      * @apiSuccess {string="inner","outer","owner"} -.roommates.type тип inner - доступ к домофону, outer - только калитки и ворота, owner - владелец
-     * @apiSuccess {Object[]} [-.availableServices] массив доступных услуг
-     * @apiSuccess {String="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.availableServices.icon иконка услуги
-     * @apiSuccess {String} -.availableServices.title заголовок
-     * @apiSuccess {String} -.availableServices.description описание
-     * @apiSuccess {String="t","f"} -.availableServices.canChange доступна смена тарифа
-     * @apiSuccess {String="t","f"} -.availableServices.byDefault услуга предоставляется по умолчанию
+     * @apiSuccess {object[]} [-.availableServices] массив доступных услуг
+     * @apiSuccess {string="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.availableServices.icon иконка услуги
+     * @apiSuccess {string} -.availableServices.title заголовок
+     * @apiSuccess {string} [-.availableServices.description] описание
+     * @apiSuccess {string="t","f"} [-.availableServices.canChange] доступна смена тарифа (по умолчанию "t")
+     * @apiSuccess {string="t","f"} [-.availableServices.byDefault] услуга предоставляется по умолчанию (по умолчанию "f")
      *
-     * @apiErrorExample Ошибки
-     * 403 требуется авторизация
-     * 422 неверный формат данных
-     * 404 пользователь не найден
-     * 410 авторизация отозвана
-     * 424 неверный токен
+     * @apiError 403 Требуется авторизация
+     * @apiError 422 Неверный формат данных
+     * @apiError 404 Пользователь не найден
+     * @apiError 410 Авторизация отозвана
+     * @apiError 424 Неверный токен
      */
 
     use backends\plog\plog;
@@ -76,37 +75,25 @@
             $f['hasPlog'] = $has_plog ? 't' : 'f';
         }
 
-        // TODO: сделать работу с заявками на изменение услуг. пока блок выбора услуг - "тарелочки" отключены.
-        // в услугах должна быть услуга domophone, чтобы было доступно управление доступом.
-        // contractOwner = 'f' отключает отображение тарелочек.
-        //$f['services'] = ['domophone'];
-
-        // Flat services. Service "domophone" is determined by adminBlock, manualBlock, autoBlock and entrance count
-        $flat_services = $households->getFlatServices($flat['flatId']);
-        if (!isset($flat_services)) {
-            $flat_services = [];
-        }
-        $has_entrances = is_array($h_flat['entrances']) && count($h_flat['entrances']) > 0;
-        $domophone_service = "domophone";
-        $has_domophone_service = !($h_flat['adminBlock'] || $h_flat['manualBlock'] || $h_flat['autoBlock']) && $has_entrances;
-        if ($has_domophone_service) {
-            if (!in_array($domophone_service, $flat_services, true)) {
-                $flat_services[] = $domophone_service;
-            }
-        } else {
-            $key = array_search($domophone_service, $flat_services, true);
-            if ($key !== false) {
-                unset($flat_services[$key]);
-                $flat_services = array_values($flat_services);
-            }
-        }
-        $f['services'] = $flat_services;
-
         // Available services
         $house_services = $households->getHouseServices($h_flat['houseId']);
         if (isset($house_services)) {
             $f['availableServices'] = $house_services;
         }
+        $default_services = array_column(
+            array_filter(
+                $house_services,
+                fn($service) => $service['byDefault'] === 't'),
+            'icon'
+        );
+
+        // Flat services
+        $flat_services = $households->getFlatServices($flat['flatId']);
+        if (!isset($flat_services)) {
+            $flat_services = [];
+        }
+
+        $f['services'] = array_values(array_unique(array_merge($flat_services, $default_services)));
 
         $f['contractOwner'] = (int)$flat['role']==0 ? 't' : 'f';
         //$f['contractOwner'] = 'f';

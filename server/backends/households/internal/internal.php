@@ -4869,7 +4869,18 @@
             {
                 $result = null;
                 global $RBTServices;
+                $default_services = @$this->config["mobile"]["default_services"];
+                if (!isset($default_services)) {
+                    $default_services = $RBTServices;
+                }
+                foreach ($default_services as $service => $data) {
+                    $default_services[$service] = array_merge(
+                        $RBTServices[$service],
+                        $data
+                    );
+                }
 
+                $has_custom_services = false;
                 $services = [];
 
                 $customFields = loadBackend("customFields");
@@ -4877,28 +4888,27 @@
                     $values = $customFields->getValues("house", $houseId);
 
                     if (is_array($values)) {
-                        $servicesValue = trim((string)@$values["services"]);
-                        foreach (explode(",", $servicesValue) as $service) {
-                            $service = trim(mb_strtolower($service));
+                        if (isset($values["services"])) {
+                            $has_custom_services = true;
+                            $servicesValue = trim((string)@$values["services"]);
+                            foreach (explode(",", $servicesValue) as $service) {
+                                $service = trim(mb_strtolower($service));
 
-                            if (isset($RBTServices[$service])) {
-                                $services[] = $service;
+                                if (isset($default_services[$service])) {
+                                    $services[] = $service;
+                                }
                             }
                         }
                     }
                 }
 
-                $households = loadBackend("households");
-                if ($households->getEntrances('houseId', $houseId)) {
-                    if (!in_array('domophone', $services, true)) {
-                        $services[] = "domophone";
-                    }
+                if (!$has_custom_services) {
+                    $services = array_keys($default_services);
+                }
 
-                    foreach ($services as $service) {
-                        $s = $RBTServices[$service];
-                        $s['byDefault'] = $service === 'domophone' ? 't' : 'f';
-                        $result[] = $s;
-                    }
+                foreach ($services as $service) {
+                    $s = $default_services[$service];
+                    $result[] = $s;
                 }
 
                 return $result;
@@ -4910,7 +4920,18 @@
             function getFlatServices($flatId): ?array
             {
                 $result = null;
+
                 global $RBTServices;
+                $default_services = @$this->config["mobile"]["default_services"];
+                if (!isset($default_services)) {
+                    $default_services = $RBTServices;
+                }
+                foreach ($default_services as $service => $data) {
+                    $default_services[$service] = array_merge(
+                        $RBTServices[$service],
+                        $data
+                    );
+                }
 
                 $customFields = loadBackend("customFields");
                 if ($customFields) {
@@ -4922,7 +4943,7 @@
                         foreach (explode(",", $servicesValue) as $service) {
                             $service = trim(mb_strtolower($service));
 
-                            if (isset($RBTServices[$service])) {
+                            if (isset($default_services[$service])) {
                                 $result[] = $service;
                             }
                         }
