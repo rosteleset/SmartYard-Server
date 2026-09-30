@@ -79,11 +79,13 @@
         $house_services = $households->getHouseServices($h_flat['houseId']);
         if (isset($house_services)) {
             $f['availableServices'] = $house_services;
+        } else {
+            $house_services = [];
         }
         $default_services = array_column(
             array_filter(
                 $house_services,
-                fn($service) => $service['byDefault'] === 't'),
+                fn($service) => ($service['byDefault'] ?? 'f') === 't'),
             'icon'
         );
 
