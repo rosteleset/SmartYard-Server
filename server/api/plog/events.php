@@ -105,7 +105,14 @@
                         }
                     }
 
-                    $domophone = json_decode($row[plog::COLUMN_DOMOPHONE]);
+                    $domophoneRaw = $row[plog::COLUMN_DOMOPHONE];
+                    if (is_string($domophoneRaw)) {
+                        $domophone = json_decode($domophoneRaw);
+                    } elseif (is_array($domophoneRaw) || is_object($domophoneRaw)) {
+                        $domophone = json_decode(json_encode($domophoneRaw));
+                    } else {
+                        $domophone = null;
+                    }
                     if (!isset($domophone->domophone_id) || !isset($domophone->domophone_output)) {
                         continue;
                     }
