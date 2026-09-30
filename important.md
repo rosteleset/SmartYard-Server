@@ -1,4 +1,13 @@
+# 2026-09-30
+
+The optional `mobile.default_services` setting controls the default service catalog exposed to the mobile app.
+Without it, houses without an explicit `services` custom-field value expose the entire built-in catalog.
+To limit the catalog to services you provide, configure this setting using the example and descriptions in
+[config.sample.json5](server/config/config.sample.json5).
+
 # 2026-09-29
+
+## Virtual intercom
 
 To enable virtual intercoms, link the nginx snippet:
 
@@ -8,12 +17,31 @@ ln -s /opt/rbt/install/nginx/virtual-intercom.conf /etc/nginx/rbt.d/virtual-inte
 nginx -t && systemctl reload nginx
 ```
 
-Reload the virtual-call door-opening handler (`features`) and Lua dialplan:
+Reload the virtual-call door-opening handler:
 
 ```bash
 asterisk -rx "module reload features"
+```
+
+## Asterisk dialplan
+
+After updating, reload the Lua dialplan to apply independent initial push delivery and prevent repeat dialing:
+
+```bash
 asterisk -rx "module reload pbx_lua"
 ```
+
+## FRS backend contract
+
+The abstract `frs` backend contract has changed. Custom backends that directly extend the abstract `frs` backend
+must implement the following methods, or they will fail to load:
+
+```php
+getAdditionalFeaturesFrs(): array
+getSupportedPlateNumberFormats(): array
+```
+
+Backends that inherit these implementations from `frs/internal` require no changes.
 
 # 2026-09-24
 
