@@ -851,6 +851,25 @@
             abstract public function broadcast($by, $query, $title, $msg, $action = "inbox");
 
             /**
+             * Count distinct mobile subscribers linked to flats below an address node.
+             *
+             * @param string $by regionId, areaId, cityId, settlementId, streetId, houseId, or all
+             * @param integer|null $query Address ID; null or zero for all addresses
+             * @return integer|false
+             */
+
+            abstract public function getAddressBroadcastRecipientCount($by, $query);
+
+            /**
+             * Queue one message per subscriber below an address node.
+             * Existing identical pending messages are not queued again.
+             *
+             * @return integer|false Number of newly queued messages, or false on failure
+             */
+
+            abstract public function queueAddressBroadcast($by, $query, $title, $msg, $action = "inbox");
+
+            /**
              * @param $parent
              * @param $name
              *
