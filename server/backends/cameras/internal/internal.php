@@ -57,6 +57,13 @@
                             "tree" => $query,
                         ];
                         break;
+
+                    case "model_frs":
+                        $q = "select * from cameras where model = :model and length(frs) > 1 order by camera_id";
+                        $p = [
+                            "model" => $query . ".json",
+                        ];
+                        break;
                 }
 
                 $monitoring = loadBackend("monitoring");
