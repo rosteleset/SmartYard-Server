@@ -1,0 +1,9 @@
+{
+    "title": "DAHUA CAMERA",
+    "vendor": "DAHUA",
+    "model": false,
+    "version": false,
+    "eventServer": "dahua",
+    "class": "dahua",
+    "useSmartConfigurator": true
+}
