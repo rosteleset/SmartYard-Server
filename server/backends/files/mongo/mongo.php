@@ -493,7 +493,7 @@
                     while ($files = $this->searchFiles([], $skip, $step)) {
                         $skip += $step;
                         foreach ($files as $file) {
-                            if ($file["metadata"] && is_array($file["metadata"])) {
+                            if (isset($file["metadata"]) && is_array($file["metadata"])) {
                                 foreach ($file["metadata"] as $i => $m) {
                                     $t["metadata.$i"] = 1;
                                 }
