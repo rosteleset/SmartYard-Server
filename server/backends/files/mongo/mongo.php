@@ -502,7 +502,7 @@
                     }
 
                     foreach ($t as $i => $one) {
-                        $indexes[] = "metadata.$i";
+                        $indexes[] = $i;
                     }
 
                     $indexes = array_unique($indexes);

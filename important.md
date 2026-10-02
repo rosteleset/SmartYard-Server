@@ -1,3 +1,15 @@
+# 2026-10-02
+
+For `files/mongo`, `files --create-indexes` previously created indexes on `metadata.metadata.*` instead of
+`metadata.*`, slowing down metadata searches and expired-file cleanup. After updating, repair existing indexes:
+
+```bash
+php /opt/rbt/server/scripts/fixes/repairMongoFileIndexes.php
+```
+
+The script uses the server configuration, creates and verifies correct indexes, then removes the incorrect ones.
+Files and other indexes are untouched; repeated runs are safe. Index creation may increase database load.
+
 # 2026-09-30
 
 The optional `mobile.default_services` setting controls the default service catalog exposed to the mobile app.

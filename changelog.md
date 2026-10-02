@@ -25,6 +25,7 @@
 - fixed house and entrance event journals with ClickHouse 24
 - fixed ClickHouse SELECT queries using the default database instead of the configured one
 ! increased the ClickHouse query timeout from 5 to 30 seconds
+- fixed duplicated metadata prefixes in MongoDB file index creation
 ```
 
 ## v1.2.0
