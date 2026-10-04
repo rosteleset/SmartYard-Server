@@ -26,6 +26,7 @@
 - fixed ClickHouse SELECT queries using the default database instead of the configured one
 ! increased the ClickHouse query timeout from 5 to 30 seconds
 - fixed duplicated metadata prefixes in MongoDB file index creation
+- fixed system statistics device totals excluding devices whose subscribers had no flat link
 ```
 
 ## v1.2.0
