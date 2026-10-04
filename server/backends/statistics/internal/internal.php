@@ -106,10 +106,6 @@
                             )) AS devices_without_flats,
                             count(*) FILTER (WHERE coalesce(last_seen, 0) < :inactive_before) AS devices_inactive
                         FROM houses_subscribers_devices d
-                        WHERE d.house_subscriber_id IN (
-                            SELECT DISTINCT house_subscriber_id
-                            FROM houses_flats_subscribers
-                        )
                     ) d
                 ", [
                     "inactive_before" => time() - ($inactiveDeviceDays * 86400),
