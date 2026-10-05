@@ -21,7 +21,7 @@ class dahua extends camera
     {
         $req = $this->url . $resource;
         if ($params) {
-            $req .= '?' . http_build_query($params);
+            $req .= '?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
         }
 
         $ch = curl_init($req);
@@ -114,10 +114,10 @@ class dahua extends camera
         $region = array_fill(0, dahua::ROWS, 0);
 
         foreach ($zones as $zone) {
-            $x1 = max(0, $zone->x1);
-            $y1 = max(0, $zone->y1);
-            $x2 = min(100, $zone->x1 + $zone->width);
-            $y2 = min(100, $zone->y1 + $zone->height);
+            $x1 = max(0, $zone->x);
+            $y1 = max(0, $zone->y);
+            $x2 = min(100, $zone->x + $zone->width);
+            $y2 = min(100, $zone->y + $zone->height);
 
             $col1 = (int) floor($x1 / 100 * dahua::COLS);
             $row1 = (int) floor($y1 / 100 * dahua::ROWS);
@@ -160,6 +160,7 @@ class dahua extends camera
         $key = "table.VideoWidget[0].UserDefinedTitle[0].Text=";
 
         foreach (explode("\n", $config) as $line) {
+            $line = trim($line);
             if (str_starts_with($line, $key)) {
                 return substr($line, strlen($key));
             }
