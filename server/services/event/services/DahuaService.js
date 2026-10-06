@@ -1,7 +1,7 @@
 import http from "http";
 import https from "https";
 import crypto from "crypto";
-import { API, getTimestamp } from "../utils/index.js";
+import {API, getTimestamp} from "../utils/index.js";
 import logTimestamp from "log-timestamp";
 
 const tz_offset =
@@ -86,11 +86,11 @@ class DahuaService {
             options.reconnectMaxDelay ?? 60000;
 
         /*
-         * If Start is received but Stop is lost, stopWorkflow
+         * If Start is received but Stop is lost, stop-motion detection
          * will eventually be called by this safety timer.
          */
         this.stopTimeout =
-            options.stopTimeout ?? 5000;
+            options.stopTimeout ?? 300000;
 
         this.connecting = 0;
 
@@ -656,12 +656,9 @@ class DahuaService {
                     );
                 }
 
-                const digest =
-                    this.parseDigestChallenge(
-                        challenge
-                    );
-
-                camera.digest = digest;
+                camera.digest = this.parseDigestChallenge(
+                    challenge
+                );
 
                 camera.digestNonceCount = 0;
 
@@ -928,25 +925,16 @@ class DahuaService {
         );
 
         if (event.action === "Start") {
-            await this.motionStart(
-                camera,
-                event
-            );
+            await this.motionStart(camera);
         } else {
-            await this.motionStop(
-                camera,
-                event
-            );
+            await this.motionStop(camera);
         }
     }
 
     /*
      * VideoMotion Start.
      */
-    async motionStart(
-        camera,
-        event
-    ) {
+    async motionStart(camera) {
         /*
          * If motion is already active, don't call
          * the API.motionDetection a second time.
@@ -993,10 +981,7 @@ class DahuaService {
     /*
      * VideoMotion Stop.
      */
-    async motionStop(
-        camera,
-        event
-    ) {
+    async motionStop(camera) {
         if (
             camera.state !== "started"
         ) {
@@ -1021,7 +1006,7 @@ class DahuaService {
         } catch (error) {
             this.error(
                 camera,
-                `stopWorkflow(${camera.streamId}) failed: ${error.message}`
+                `API.motionDetection (streamId=${camera.streamId}) failed: ${error.message}`
             );
         }
     }
@@ -1053,7 +1038,7 @@ class DahuaService {
 
                     this.log(
                         camera,
-                        `Stopping workflow for stream ${camera.streamId} because VideoMotion Stop was not received within ${this.stopTimeout} ms`
+                        `Stopping motion detection for stream ${camera.streamId} because VideoMotion Stop was not received within ${this.stopTimeout} ms`
                     );
 
                     try {
@@ -1061,7 +1046,7 @@ class DahuaService {
                     } catch (error) {
                         this.error(
                             camera,
-                            `stopWorkflow(${camera.streamId}) failed: ${error.message}`
+                            `API.motionDetection (streamId = ${camera.streamId}) failed: ${error.message}`
                         );
                     }
                 },
@@ -1144,7 +1129,7 @@ class DahuaService {
 
         /*
          * If motion was active, don't immediately call
-         * stopWorkflow here. The safety timer handles this.
+         * stop-motion detection here. The safety timer handles this.
          *
          * This avoids changing the state merely because
          * the TCP connection was temporarily interrupted.
@@ -1533,12 +1518,9 @@ class DahuaService {
             const key =
                 match[1].toLowerCase();
 
-            const val =
-                match[2] !== undefined
-                    ? match[2]
-                    : match[3].trim();
-
-            result[key] = val;
+            result[key] = match[2] !== undefined
+                ? match[2]
+                : match[3].trim();
         }
 
         if (
@@ -1944,14 +1926,11 @@ class MultipartEventParser {
                     .trim()
                     .toLowerCase();
 
-            const value =
-                line
-                    .substring(
-                        separator + 1
-                    )
-                    .trim();
-
-            headers[name] = value;
+            headers[name] = line
+                .substring(
+                    separator + 1
+                )
+                .trim();
         }
 
         return headers;
