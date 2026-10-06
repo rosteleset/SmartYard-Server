@@ -13,6 +13,9 @@
     "internal": "http://127.0.0.1/internal"
   },
   "hw": {
+    "dahua": {
+      "cameras": []
+    },
     "beward": {
       "port": 45450
     },

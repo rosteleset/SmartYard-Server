@@ -1,5 +1,6 @@
 import config from "./config.json" with { type: "json" };
 import spamWords from "./spamwords.json" with { type: "json" };
+import { DahuaService } from './services/DahuaService.js';
 
 import {
     AkuvoxService,
@@ -52,6 +53,25 @@ if (!hw[serviceParam]) {
 const serviceConfig = hw[serviceParam];
 
 switch (serviceParam) {
+    case 'dahua': {
+        const service = new DahuaService(serviceConfig, config.api.internal);
+        if (!service.cameras.length) {
+            console.error('No enabled Dahua cameras configured');
+            process.exitCode = 1;
+            break;
+        }
+        let stopping = false;
+        const stop = async () => {
+            if (stopping) return;
+            stopping = true;
+            await service.stop();
+        };
+        process.once('SIGTERM', stop);
+        process.once('SIGINT', stop);
+        service.start().catch(() => { console.error('Dahua service failed'); process.exitCode = 1; });
+        break;
+    }
+
     case SERVICE_BEWARD:
         const bewardService = new BewardService(SERVICE_BEWARD, serviceConfig, spamWords[SERVICE_BEWARD]);
         bewardService.createSyslogServer();

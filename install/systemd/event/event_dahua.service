@@ -1,0 +1,23 @@
+[Unit]
+Description=Dahua camera motion subscriptions for RBT
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/rbt/server/services/event
+ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js dahua
+EnvironmentFile=-/etc/rbt/dahua-events.env
+User=rbt
+Group=rbt
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

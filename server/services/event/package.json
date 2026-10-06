@@ -5,6 +5,8 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
+        "dahua": "node index.js dahua",
+        "test:dahua": "node --test ../../../tests/dahua/events.test.mjs",
         "start": "concurrently -k \"npm run start:*\"",
         "dev": "concurrently -k \"npm run dev:*\"",
         "debug": "NODE_ENV=debug concurrently -k \"npm run dev:*\"",

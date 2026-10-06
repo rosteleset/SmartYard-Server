@@ -57,7 +57,9 @@ class CameraDbConfigCollector implements DbConfigCollectorInterface
      */
     private function addEventServer(): self
     {
-        $url = $this->appConfig['syslog_servers'][$this->cameraData['json']['eventServer']][0];
+        $eventServer = $this->cameraData['json']['eventServer'];
+        // Pull-based cameras do not have a push/syslog destination to configure.
+        $url = $eventServer === false ? '' : $this->appConfig['syslog_servers'][$eventServer][0];
         $this->builder->addEventServer($url);
         return $this;
     }
