@@ -27,6 +27,7 @@
 ! increased the ClickHouse query timeout from 5 to 30 seconds
 - fixed duplicated metadata prefixes in MongoDB file index creation
 - fixed system statistics device totals excluding devices whose subscribers had no flat link
++ increased scrollbar width in the web UI
 ```
 
 ## v1.2.0
