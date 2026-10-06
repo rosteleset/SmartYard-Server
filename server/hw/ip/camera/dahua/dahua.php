@@ -8,7 +8,7 @@ use LogicException;
 use RuntimeException;
 use UnexpectedValueException;
 
-/** Motion/snapshot driver for DH-IPC-HFW1420SP-0280B and its documented CGI layout. */
+/** Dahua IPC motion/snapshot driver for the documented four-window 22x18 CGI layout. */
 class dahua extends camera
 {
     public function __construct(string $url, string $password, bool $firstTime = false, bool $lazy = false)
