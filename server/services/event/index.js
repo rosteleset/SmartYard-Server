@@ -16,6 +16,7 @@ import {
     UfanetService,
     BrovotechService,
     IFlowWebHookService,
+    DahuaService,
 } from "./services/index.js";
 
 import {
@@ -33,6 +34,7 @@ import {
     SERVICE_UFANET_MINI,
     SERVICE_BROVOTECH,
     SERVICE_IFLOW,
+    SERVICE_DAHUA,
 } from "./constants.js";
 
 const { hw } = config;
@@ -124,6 +126,11 @@ switch (serviceParam) {
     case SERVICE_IFLOW:
         const iflowWebhookService = new IFlowWebHookService(SERVICE_IFLOW, serviceConfig);
         iflowWebhookService.start();
+        break;
+
+    case SERVICE_DAHUA:
+        const dahuaService = new DahuaService(serviceConfig);
+        dahuaService.start();
         break;
 
     default:

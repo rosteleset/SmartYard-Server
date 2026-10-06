@@ -13,3 +13,4 @@ export { UfanetMiniService } from "./UfanetMiniService.js";
 export { BrovotechService } from "./BrovotechService.js";
 export { IFlowWebHookService } from "./IFlowWebHookService.js";
 export { BasipService } from "./BasipService.js";
+export { DahuaService } from "./DahuaService.js";

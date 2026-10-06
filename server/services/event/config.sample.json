@@ -57,6 +57,14 @@
     },
     "iflow": {
       "port": 46460
+    },
+    "dahua": {
+      "cameraRefreshInterval": 300000,
+      "maxConcurrentConnections": 20,
+      "initialConnectDelay": 100,
+      "reconnectMinDelay": 1000,
+      "reconnectMaxDelay": 60000,
+      "stopTimeout": 300000
     }
   }
 }

@@ -25,3 +25,4 @@ export const SERVICE_UFANET_MINI = "ufanet_mini";
 export const SERVICE_BROVOTECH = "brovotech";
 export const SERVICE_IFLOW = "iflow";
 export const SERVICE_BASIP = "basip";
+export const SERVICE_DAHUA = "dahua";
