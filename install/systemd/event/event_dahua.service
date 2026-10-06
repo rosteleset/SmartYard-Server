@@ -1,0 +1,22 @@
+[Unit]
+Description=Dahua CCTV Camera Service
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+SyslogIdentifier=event_dahua
+Type=simple
+WorkingDirectory=/opt/rbt/server/services/event/
+ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js dahua
+RestartSec=10
+Restart=always
+User=rbt
+Group=rbt
+LimitCORE=infinity
+KillMode=process
+StandardOutput=null
+#StandardOutput=append:/var/log/event_service/event_dahua.log
+StandardError=append:/var/log/event_service/event_dahua.error.log
+
+[Install]
+WantedBy=multi-user.target

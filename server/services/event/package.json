@@ -20,6 +20,7 @@
         "start:brovotech": "node index.js brovotech",
         "start:iflow": "node index.js iflow",
         "start:basip": "node index.js basip",
+        "start:dahua": "node index.js dahua",
         "dev:akuvox": "nodemon index.js akuvox",
         "dev:beward": "nodemon index.js beward",
         "dev:beward_ds": "nodemon index.js beward_ds",
@@ -32,6 +33,7 @@
         "dev:brovotech": "nodemon index.js brovotech",
         "dev:iflow": "nodemon index.js iflow",
         "dev:basip": "nodemon index.js basip",
+        "dev:dahua": "nodemon index.js dahua",
         "debug:akuvox": "NODE_ENV=debug nodemon index.js akuvox",
         "debug:beward": "NODE_ENV=debug nodemon index.js beward",
         "debug:beward_ds": "NODE_ENV=debug nodemon index.js beward_ds",
@@ -43,7 +45,8 @@
         "debug:ufanet_mini": "NODE_ENV=debug nodemon index.js ufanet_mini",
         "debug:brovotech": "NODE_ENV=debug nodemon index.js brovotech",
         "debug:iflow": "NODE_ENV=debug nodemon index.js iflow",
-        "debug:basip": "NODE_ENV=debug nodemon index.js basip"
+        "debug:basip": "NODE_ENV=debug nodemon index.js basip",
+        "debug:dahua": "NODE_ENV=debug nodemon index.js dahua"
     },
     "keywords": [],
     "author": "",
@@ -51,6 +54,7 @@
     "dependencies": {
         "axios": "^1.1.0",
         "concurrently": "^7.4.0",
+        "log-timestamp": "^0.3.0",
         "syslog-server": "^1.0.1",
         "xml2js": "^0.6.2"
     },

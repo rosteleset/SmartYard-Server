@@ -13,7 +13,7 @@ const internalAPI = axios.create({
 class API {
 
     /**
-     * Send syslog message to ClickHouse
+     * Send a syslog message to ClickHouse
      *
      * @param {number} date event date in timestamp format
      * @param {string|null} ip device IP address
@@ -143,6 +143,15 @@ class API {
             return await internalAPI.post("/actions/openDoor", payload);
         } catch (error) {
             console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| openDoor error: ", error.message);
+        }
+    }
+
+    async getCameras({model}) {
+        try {
+            const response = await internalAPI.get(`/lprs/getCameras/${model}`);
+            return response.data.data;
+        } catch (error) {
+            console.error(model, "|| getCameras error: ", error.message);
         }
     }
 }
