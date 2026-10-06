@@ -968,12 +968,12 @@ class DahuaService {
         try {
             await API.motionDetection({ date: getTimestamp(new Date()), ip: camera.host, motionActive: true });
 
-            this.log(camera, "Motion detection started."
+            this.log(camera, "Motion detection started"
             );
         } catch (error) {
             this.error(
                 camera,
-                `motionDetection failed: ${error.message}`
+                `API.motionDetection failed: ${error.message}`
             );
         }
     }
@@ -1002,11 +1002,11 @@ class DahuaService {
         try {
             await API.motionDetection({ date: getTimestamp(new Date()), ip: camera.host, motionActive: false });
 
-            this.log(camera, "Motion detection completed.");
+            this.log(camera, "Motion detection completed");
         } catch (error) {
             this.error(
                 camera,
-                `API.motionDetection (streamId=${camera.streamId}) failed: ${error.message}`
+                `API.motionDetection failed: ${error.message}`
             );
         }
     }
@@ -1046,7 +1046,7 @@ class DahuaService {
                     } catch (error) {
                         this.error(
                             camera,
-                            `API.motionDetection (streamId = ${camera.streamId}) failed: ${error.message}`
+                            `API.motionDetection failed: ${error.message}`
                         );
                     }
                 },
