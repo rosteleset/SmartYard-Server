@@ -261,10 +261,7 @@ class dahua extends camera
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
-
-        if ($dbConfig['motionDetection']) {
-            $dbConfig['motionDetection'] = $this->zonesToRegion($dbConfig['motionDetection']);
-        }
+        $dbConfig['motionDetection'] = $this->zonesToRegion($dbConfig['motionDetection']);
 
         return $dbConfig;
     }
