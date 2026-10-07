@@ -28,6 +28,7 @@
 - fixed duplicated metadata prefixes in MongoDB file index creation
 - fixed system statistics device totals excluding devices whose subscribers had no flat link
 + increased scrollbar width in the web UI
++ added configurable SIP over TLS transport and port for mobile call pushes
 ```
 
 ## v1.2.0
