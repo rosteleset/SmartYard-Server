@@ -29,6 +29,8 @@
 - fixed system statistics device totals excluding devices whose subscribers had no flat link
 + increased scrollbar width in the web UI
 + added configurable SIP over TLS transport and port for mobile call pushes
++ added queued subscriber broadcasts across the full address hierarchy
+! extended the abstract households backend contract for address broadcasts
 ```
 
 ## v1.2.0

@@ -1,3 +1,16 @@
+# 2026-10-07
+
+The abstract `households` backend contract has changed to support address broadcasts. Backend
+implementations that directly extend the abstract `households` backend must implement the following methods, or they
+will fail to load:
+
+```php
+getAddressBroadcastRecipientCount($by, $query)
+queueAddressBroadcast($by, $query, $title, $msg, $action = "inbox")
+```
+
+Backends that extend `households/internal` inherit these methods and require no changes.
+
 # 2026-10-02
 
 For `files/mongo`, `files --create-indexes` previously created indexes on `metadata.metadata.*` instead of
