@@ -9,6 +9,12 @@ function check($condition, $message) {
 function i18n($value) { return $value; }
 function loadBackend($name) { return $GLOBALS['testBackends'][$name]; }
 
+// Ordinary calls have no virtual bindings; keep the real adapter offline.
+$redis = new class {
+    public function get($key) { return false; }
+};
+require_once __DIR__ . '/../server/virtual-intercom/Asterisk.php';
+
 // Exercise the real push handler without the entrypoint's DB/Redis bootstrap.
 $source = file_get_contents(__DIR__ . '/../server/asterisk.php');
 check(preg_match('/case "push":(.*?)case "concierge":/s', $source, $matches) === 1, 'Push handler not found');
@@ -59,7 +65,7 @@ $cases = [
 $runs = 0;
 foreach ($cases as $name => [$settings, $transport, $port]) {
     foreach ([0 => 'android', 1 => 'ios'] as $platformId => $platform) {
-        foreach ([false, 'stun:stun.example.org:3478'] as $stun) {
+        foreach ([false, 'stun:stun.example.org:3478', 'turn:turn.example.org:3478'] as $stun) {
             $params['platform'] = $platformId;
             $sip->serverConfig = $settings + ['ip' => 'sip.example.org'];
             $sip->stunServer = $stun;

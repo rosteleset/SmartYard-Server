@@ -58,8 +58,12 @@ devices that still use them.
 
 The mobile client must support `transport=tls` and the supplied port. This option
 only changes SIP signaling advertised in the push; it does not enable SRTP,
-change RTP or TURN settings, or change panel connections. It does not guarantee
-that a carrier will allow the call.
+change server-side RTP or TURN settings, or change panel connections. It does not
+guarantee that a carrier will allow the call.
+
+> [!WARNING]
+> When using TURN, enabling SIP over TLS on iOS also switches TURN to TLS.
+> Verify TLS support on the TURN server and check that calls work.
 
 Regression test (PHP CLI only, no database or push delivery):
 
