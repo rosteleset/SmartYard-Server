@@ -31,6 +31,8 @@
 + added configurable SIP over TLS transport and port for mobile call pushes
 + added queued subscriber broadcasts across the full address hierarchy
 ! extended the abstract households backend contract for address broadcasts
+# removed the "Other" devices counter from system statistics
++ added SIP intercom count to flats statistics
 ```
 
 ## v1.2.0

@@ -157,6 +157,7 @@
                             ${row(i18n("about.flatsWithSubscribers"), s.flatsWithSubscribers)}
                             ${row(i18n("about.flatsWithoutSubscribers"), s.flatsWithoutSubscribers)}
                             ${row(i18n("about.blockedFlats"), s.blockedFlats)}
+                            ${row(i18n("about.flatsSipIntercom"), s.flatsSipIntercom)}
                         `)}
                         ${card("teal", i18n("about.equipment"), `
                             ${row(i18n("about.domophones"), s.domophones, true)}
@@ -179,7 +180,6 @@
                             ${row(i18n("about.devicesAndroid"), s.devicesAndroid)}
                             ${row(i18n("about.devicesIos"), s.devicesIos)}
                             ${row(i18n("about.devicesWeb"), s.devicesWeb)}
-                            ${row(i18n("about.devicesOther"), s.devicesOther)}
                             <hr class="my-2" />
                             ${row(i18n("about.devicesWithoutPush"), s.devicesWithoutPush)}
                             ${row(i18n("about.devicesWithoutFlats"), s.devicesWithoutFlats)}
