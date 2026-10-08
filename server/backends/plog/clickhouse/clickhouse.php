@@ -225,6 +225,17 @@
                                         if (is_resource($process)) {
                                             proc_close($process);
                                         }
+                                    } else {
+                                        file_put_contents(
+                                            $filename,
+                                            file_get_contents(
+                                                $urlOfScreenshot,
+                                                false,
+                                                stream_context_create([
+                                                    'http' => ['timeout' => $this->http_timeout],
+                                                ])
+                                            )
+                                        );
                                     }
                                     if (file_exists($filename)) {
                                         $camshot_stream = fopen($filename, "rb");
