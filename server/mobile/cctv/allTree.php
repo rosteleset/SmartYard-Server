@@ -149,8 +149,11 @@
                         unset($data["childGroups"][$key]);
                     }
                 }
+
+                $data["childGroups"] = array_values($data["childGroups"]);
             }
         }
+
         removeUnnecessaryItems($data);
     }
 

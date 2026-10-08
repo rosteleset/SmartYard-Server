@@ -35,6 +35,7 @@
 + added SIP intercom count to flats statistics
 - prevented FFmpeg command injection in DVR event snapshot extraction and restricted snapshot URLs to HTTP(S)
 - fixed mobile CCTV maps not showing cameras from nested groups
+- fixed malformed mobile CCTV tree responses after removing empty groups
 ```
 
 ## v1.2.0
