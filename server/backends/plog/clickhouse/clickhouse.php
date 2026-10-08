@@ -197,11 +197,34 @@
                                     if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) === false) {
                                         throw new \InvalidArgumentException("Invalid URL $urlOfScreenshot");
                                     }
+                                    $scheme = strtolower(parse_url($urlOfScreenshot, PHP_URL_SCHEME) ?? '');
+                                    if (!in_array($scheme, ['http', 'https'], true)) {
+                                        throw new \InvalidArgumentException('Unsupported URL scheme');
+                                    }
                                     if (pathinfo(parse_url($urlOfScreenshot, PHP_URL_PATH), PATHINFO_EXTENSION) === 'mp4') {
-                                        system("ffmpeg -y -timeout " . $this->ffmpeg_timeout . " -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
-                                    } else {
-                                        file_put_contents($filename, file_get_contents($urlOfScreenshot, false,
-                                            stream_context_create(["http" => ["timeout" => $this->http_timeout]])));
+                                        $command = [
+                                            'ffmpeg',
+                                            '-y',
+                                            '-protocol_whitelist', 'http,https,tcp,tls',
+                                            '-timeout', (string)$this->ffmpeg_timeout,
+                                            '-i', $urlOfScreenshot,
+                                            '-vframes', '1',
+                                            $filename,
+                                        ];
+
+                                        $process = proc_open(
+                                            $command,
+                                            [
+                                                0 => ['file', '/dev/null', 'r'],
+                                                1 => ['file', '/dev/null', 'w'],
+                                                2 => ['file', '/dev/null', 'w'],
+                                            ],
+                                            $pipes
+                                        );
+
+                                        if (is_resource($process)) {
+                                            proc_close($process);
+                                        }
                                     }
                                     if (file_exists($filename)) {
                                         $camshot_stream = fopen($filename, "rb");
