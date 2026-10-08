@@ -72,6 +72,8 @@
                          WHERE coalesce(manual_block, 0) <> 0
                             OR coalesce(auto_block, 0) <> 0
                             OR coalesce(admin_block, 0) <> 0) AS blocked_flats,
+                        (SELECT count(*) FROM houses_flats
+                         WHERE coalesce(sip_enabled, 0) <> 0) AS flats_sip_intercom,
                         (SELECT count(*) FROM houses_domophones) AS domophones,
                         (SELECT count(*) FROM houses_domophones WHERE coalesce(enabled, 0) = 0) AS domophones_disabled,
                         (SELECT count(*) FROM cameras) AS cameras,
@@ -87,7 +89,6 @@
                         d.devices_android,
                         d.devices_ios,
                         d.devices_web,
-                        d.devices_other,
                         d.devices_without_push,
                         d.devices_without_flats,
                         d.devices_inactive
@@ -97,7 +98,6 @@
                             count(*) FILTER (WHERE coalesce(platform, -1) = 0) AS devices_android,
                             count(*) FILTER (WHERE coalesce(platform, -1) = 1) AS devices_ios,
                             count(*) FILTER (WHERE coalesce(platform, -1) = 2) AS devices_web,
-                            count(*) FILTER (WHERE platform IS NULL OR platform NOT IN (0, 1, 2)) AS devices_other,
                             count(*) FILTER (WHERE coalesce(btrim(push_token), '') = '') AS devices_without_push,
                             count(*) FILTER (WHERE NOT EXISTS (
                                 SELECT 1
@@ -115,6 +115,7 @@
                     "flats_with_subscribers" => "flatsWithSubscribers",
                     "flats_without_subscribers" => "flatsWithoutSubscribers",
                     "blocked_flats" => "blockedFlats",
+                    "flats_sip_intercom" => "flatsSipIntercom",
                     "domophones" => "domophones",
                     "domophones_disabled" => "domophonesDisabled",
                     "cameras" => "cameras",
@@ -130,7 +131,6 @@
                     "devices_android" => "devicesAndroid",
                     "devices_ios" => "devicesIos",
                     "devices_web" => "devicesWeb",
-                    "devices_other" => "devicesOther",
                     "devices_without_push" => "devicesWithoutPush",
                     "devices_without_flats" => "devicesWithoutFlats",
                     "devices_inactive" => "devicesInactive",
