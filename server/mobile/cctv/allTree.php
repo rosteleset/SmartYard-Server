@@ -15,7 +15,9 @@
      * @apiSuccess {Number} [-.groupId] уникальный идентификатор группы
      * @apiSuccess {String} [-.groupName] наименование группы
      * @apiSuccess {String="map","list"} [-.type] тип представления группы (по умолчанию list)
-     * @apiSuccess {Object[]} [-.childGroups] массив вложенных групп с такой же структурой
+     * @apiSuccess {Object[]} [-.childGroups] массив вложенных групп для списков;
+     * тип "Карта" является конечным: карта содержит собственные камеры и камеры всех
+     * вложенных групп независимо от их типа
      * @apiSuccess {Object[]} [-.cameras] массив камер со структурой из метода all
      * @apiSuccess {Number} [-.cameras.pathOrder] порядок камеры внутри группы
      */
@@ -83,6 +85,24 @@
     $r = [ $households->mergePaths($paths) ];
 
     if (count($r) && count($r[0])) {
+        function collectMapCameras($tree, array &$cameras): void
+        {
+            global $path_to_cameras;
+
+            $ownCameras = $path_to_cameras[$tree["id"]] ?? [];
+            sortCamerasByPathOrder($ownCameras);
+
+            foreach ($ownCameras as $camera) {
+                $cameras[$camera["id"]] ??= $camera;
+            }
+
+            if (is_array($tree["children"] ?? null)) {
+                foreach ($tree["children"] as $child) {
+                    collectMapCameras($child, $cameras);
+                }
+            }
+        }
+
         function traverseTree($tree): array
         {
             global $path_to_cameras;
@@ -91,16 +111,28 @@
                 "groupName" => $tree["text"],
                 "type" => in_array(@$tree["viewType"], [ "list", "map" ]) ? $tree["viewType"] : "list",
             ];
+
+            // Mobile maps are terminal views, so collect already-filtered descendant cameras
+            if ($t["type"] === "map") {
+                $cameras = [];
+                collectMapCameras($tree, $cameras);
+                if ($cameras) {
+                    $t["cameras"] = array_values($cameras);
+                }
+                return $t;
+            }
+
             if (isset($path_to_cameras[$tree["id"]])) {
                 $t["cameras"] = $path_to_cameras[$tree["id"]];
                 sortCamerasByPathOrder($t["cameras"]);
             }
-            if (isset($tree["children"]) && is_array($tree["children"]))
-                if (count($tree["children"])) {
-                    foreach ($tree["children"] as $child) {
-                        $t["childGroups"][] = traverseTree($child);
-                    }
+
+            if (is_array($tree["children"] ?? null)) {
+                foreach ($tree["children"] as $child) {
+                    $t["childGroups"][] = traverseTree($child);
                 }
+            }
+
             return $t;
         }
         foreach ($r[0] as $item) {
