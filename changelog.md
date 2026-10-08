@@ -33,6 +33,7 @@
 ! extended the abstract households backend contract for address broadcasts
 # removed the "Other" devices counter from system statistics
 + added SIP intercom count to flats statistics
+- prevented FFmpeg command injection in DVR event snapshot extraction and restricted snapshot URLs to HTTP(S)
 ```
 
 ## v1.2.0
