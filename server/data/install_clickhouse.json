@@ -27,5 +27,8 @@
     ],
     "8": [
         "v8_json.sql"
+    ],
+    "9": [
+        "v9_service_plog.sql"
     ]
 }
