@@ -6,7 +6,38 @@
 
     namespace backends\dvr {
 
+        require_once __DIR__ . '/RbtAuthBackend.php';
+
         class internal extends dvr {
+
+            private $rbtAuthBackend;
+
+            private function authBackendTokens() {
+                if (!$this->rbtAuthBackend) {
+                    $this->rbtAuthBackend = new RbtAuthBackend($this->redis);
+                }
+                return $this->rbtAuthBackend;
+            }
+
+            public function cron($part) {
+                if ($part !== 'minutely') {
+                    return true;
+                }
+                $ok = true;
+                foreach ($this->getDVRServers() ?: [] as $server) {
+                    if (!RbtAuthBackend::enabled($server)) {
+                        continue;
+                    }
+                    try {
+                        $this->authBackendTokens()->rotate($server);
+                    } catch (\Throwable $error) {
+                        // Do not pass config/exception traces (which can contain secrets) to logs.
+                        error_log('RBT authbackend rotation failed: ' . $error->getMessage());
+                        $ok = false;
+                    }
+                }
+                return $ok;
+            }
 
             private function getForpostTokenParams($dvr) {
                 if (!@$dvr['token']) {
@@ -120,6 +151,14 @@
                 foreach ($dvr_servers as $server) {
                     $u = parse_url($server['url']);
 
+                    if (RbtAuthBackend::enabled($server)) {
+                        // Host/port distinguish local streamer settings and Redis keys.
+                        if (RbtToken::streamerKey($server['url']) === RbtToken::streamerKey($cam['dvrStream'])) {
+                            return $server;
+                        }
+                        continue;
+                    }
+
                     if (
                         ($u['scheme'] == $scheme) &&
                         (!@$u['user'] || @$u['user'] == @$url["user"]) &&
@@ -140,6 +179,10 @@
              */
 
             public function getDVRTokenForCam($cam, $subscriberId) {
+                $server = $this->getDVRServerForCam($cam);
+                if (RbtAuthBackend::enabled($server)) {
+                    return $this->authBackendTokens()->token($server, $cam, $subscriberId);
+                }
                 return $this->getDVRServiceTokenForCam($cam);
             }
 
@@ -147,6 +190,10 @@
                 // Implementation for a static token configured for the DVR server.
 
                 $dvrServer = $this->getDVRServerForCam($cam);
+
+                if (RbtAuthBackend::enabled($dvrServer)) {
+                    return $this->authBackendTokens()->token($dvrServer, $cam, -1);
+                }
 
                 $result = '';
 

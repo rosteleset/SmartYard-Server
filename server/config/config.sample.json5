@@ -269,7 +269,15 @@
                     "hlsMode": "mpegts",
                     "management_ip": "127.0.0.1",
                     "management_port": "8086",
-                    "management_token": "<!-- management token --!>"
+                    "management_token": "<!-- management token --!>",
+                    // SesamePortal RBT-token authorization (sesame/flussonic only).
+                    // Non-empty authbackend.url enables this mode; cron registers secrets.
+                    "authbackend": {
+                        "url": "",
+                        "management_token": "",
+                        "rotation_interval": 43200,
+                        "secret_ttl": 86400
+                    }
                 }
             ],
             "stub": {
