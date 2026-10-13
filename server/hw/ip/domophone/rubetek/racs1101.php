@@ -3,11 +3,11 @@
 namespace hw\ip\domophone\rubetek;
 
 use hw\Interface\FreePassInterface;
-use hw\ip\domophone\domophone;
-use hw\ip\domophone\rubetek\Clients\{
-    JsonRpcClient,
-    WebSocketClient,
+use hw\ip\common\rubetek\Clients\{
+    JsonRpc\WebSocketJsonRpcClient,
+    Transport\WebSocket
 };
+use hw\ip\domophone\domophone;
 use JsonException;
 use RuntimeException;
 
@@ -34,8 +34,8 @@ class racs1101 extends domophone implements FreePassInterface
         'timezone' => '',
     ];
 
-    private ?WebSocketClient $webSocketClient = null;
-    private ?JsonRpcClient $jsonRpcClient = null;
+    private ?WebSocket $webSocket = null;
+    private ?WebSocketJsonRpcClient $jsonRpcClient = null;
 
     /** @var string[] */
     private array $rfidsToDelete = [];
@@ -175,12 +175,12 @@ class racs1101 extends domophone implements FreePassInterface
         $this->connect();
 
         try {
-            $this->getWebSocketClient()->send(json_encode(
+            $this->getWebSocket()->send(json_encode(
                 ['cmd' => 'reboot'],
                 JSON_THROW_ON_ERROR,
             ));
             $response = json_decode(
-                $this->getWebSocketClient()->receive(),
+                $this->getWebSocket()->receive(),
                 true,
                 512,
                 JSON_THROW_ON_ERROR,
@@ -192,7 +192,7 @@ class racs1101 extends domophone implements FreePassInterface
         } catch (JsonException $e) {
             throw new RuntimeException('Invalid RACS-1101 reboot response', 0, $e);
         } finally {
-            $this->getWebSocketClient()->disconnect();
+            $this->getWebSocket()->disconnect();
         }
     }
 
@@ -459,7 +459,7 @@ class racs1101 extends domophone implements FreePassInterface
      */
     private function connect(): void
     {
-        $webSocket = $this->getWebSocketClient();
+        $webSocket = $this->getWebSocket();
 
         if ($webSocket->isConnected()) {
             return;
@@ -499,19 +499,19 @@ class racs1101 extends domophone implements FreePassInterface
         $this->rfidsToDelete = [];
     }
 
-    private function getJsonRpcClient(): JsonRpcClient
+    private function getJsonRpcClient(): WebSocketJsonRpcClient
     {
-        return $this->jsonRpcClient ??= new JsonRpcClient($this->getWebSocketClient());
+        return $this->jsonRpcClient ??= new WebSocketJsonRpcClient($this->getWebSocket());
     }
 
-    private function getWebSocketClient(): WebSocketClient
+    private function getWebSocket(): WebSocket
     {
         $url = preg_replace('/^http(s?):\/\//i', 'ws$1://', $this->url);
         if ($url === null || $url === $this->url) {
             throw new RuntimeException("Invalid RACS-1101 URL: $this->url");
         }
 
-        return $this->webSocketClient ??= new WebSocketClient($url);
+        return $this->webSocket ??= new WebSocket($url);
     }
 
     /**
