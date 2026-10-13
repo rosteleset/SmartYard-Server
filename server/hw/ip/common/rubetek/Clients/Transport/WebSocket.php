@@ -1,10 +1,11 @@
 <?php
 
-namespace hw\ip\domophone\rubetek\Clients;
+namespace hw\ip\common\rubetek\Clients\Transport;
 
+use Exception;
 use RuntimeException;
 
-final class WebSocketClient
+final class WebSocket
 {
     private const DEFAULT_TIMEOUT = 15;
     private const DEFAULT_MAX_MESSAGE_SIZE = 1048576;
@@ -111,7 +112,7 @@ final class WebSocketClient
 
     private function performHandshake(string $host, int $port, string $path, bool $secure): void
     {
-        $key = base64_encode(random_bytes(16));
+        $key = base64_encode($this->randomBytes(16));
         $defaultPort = $secure ? 443 : 80;
         $hostForHeader = str_contains($host, ':') ? "[$host]" : $host;
         $hostHeader = $port === $defaultPort ? $hostForHeader : "$hostForHeader:$port";
@@ -148,6 +149,15 @@ final class WebSocketClient
         $expectedAccept = base64_encode(sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
         if (($headers['sec-websocket-accept'] ?? '') !== $expectedAccept) {
             throw new RuntimeException('Invalid Sec-WebSocket-Accept returned by server');
+        }
+    }
+
+    private function randomBytes(int $length): string
+    {
+        try {
+            return random_bytes($length);
+        } catch (Exception $e) {
+            throw new RuntimeException('Failed to generate random bytes for WebSocket', 0, $e);
         }
     }
 
@@ -315,7 +325,7 @@ final class WebSocketClient
             $header .= chr(0x80 | 127) . pack('NN', 0, $length);
         }
 
-        $mask = random_bytes(4);
+        $mask = $this->randomBytes(4);
         $maskedPayload = $payload ^ substr(str_repeat($mask, (int)ceil($length / 4)), 0, $length);
         $this->write($header . $mask . $maskedPayload);
     }
