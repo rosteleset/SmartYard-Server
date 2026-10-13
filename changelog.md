@@ -36,6 +36,7 @@
 - prevented FFmpeg command injection in DVR event snapshot extraction and restricted snapshot URLs to HTTP(S)
 - fixed mobile CCTV maps not showing cameras from nested groups
 - fixed malformed mobile CCTV tree responses after removing empty groups
+- fixed push requests hanging on APNs, Huawei and RuStore transport errors
 ```
 
 ## v1.2.0

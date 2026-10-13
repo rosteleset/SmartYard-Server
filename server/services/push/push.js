@@ -169,9 +169,10 @@ const realPush = (msg, data, options, token, type, res) => {
                 delete curl;
             });
 
-            curl.on('error', () => {
+            curl.on('error', (error, errorCode) => {
                 curl.close();
                 delete curl;
+                pushFail(token, { errorCode: errorCode, transportError: error.message }, res);
             });
 
             curl.perform();
@@ -234,9 +235,10 @@ const realPush = (msg, data, options, token, type, res) => {
                 delete curl;
             });
 
-            curl.on('error', () => {
+            curl.on('error', (error, errorCode) => {
                 curl.close();
                 delete curl;
+                pushFail(token, { errorCode: errorCode, transportError: error.message }, res);
             });
 
             curl.perform();
@@ -287,9 +289,10 @@ const realPush = (msg, data, options, token, type, res) => {
                 delete curl;
             });
 
-            curl.on('error', () => {
+            curl.on('error', (error, errorCode) => {
                 curl.close();
                 delete curl;
+                pushFail(token, { errorCode: errorCode, transportError: error.message }, res);
             });
 
             curl.perform();
