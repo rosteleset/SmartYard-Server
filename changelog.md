@@ -16,6 +16,7 @@
 - fixed autoconfiguration blocking minutely cron
 + added configurable autoconfiguration concurrency and task timeout
 + added availableServices, configurable default services and owner status to the mobile getSettingsList response
+! extended the abstract households backend contract for mobile service settings
 + added supportedPlateNumberFormats and enabled the configured lprsVersion in mobile options
 - fixed mobile face clustering being advertised when unsupported by the FRS server
 ! changed the FRS backend contract: getAdditionalFeaturesFrs() and getSupportedPlateNumberFormats() are now required
@@ -36,6 +37,9 @@
 - prevented FFmpeg command injection in DVR event snapshot extraction and restricted snapshot URLs to HTTP(S)
 - fixed mobile CCTV maps not showing cameras from nested groups
 - fixed malformed mobile CCTV tree responses after removing empty groups
++ added license plate validity start dates
+! changed the abstract households backend contract for license plate validity periods
+- fixed LPRS opening with expired license plates before cleanup
 - fixed push requests hanging on APNs, Huawei and RuStore transport errors
 ```
 

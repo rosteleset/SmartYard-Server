@@ -1,4 +1,45 @@
-# 2026-10-07
+# devel
+
+## 2026-10-13
+
+### License plate backend contract
+
+The `households::addFlatPlateNumber()` signature has changed:
+
+```php
+addFlatPlateNumber($flatId, $number, $validFrom = null, $validTo = null, $countryCode = 'ru')
+```
+
+Custom backends that override this method must update their signature. Existing positional PHP calls that supply
+the expiration date or country code must use the new argument order: `validFrom` now precedes `validTo`.
+
+Backend implementations that directly extend the abstract `households` backend must also implement these methods,
+or they will fail to load:
+
+```php
+updatePlateValidFrom($number, $validFrom = null, $countryCode = 'ru')
+updateFlatPlateValidFrom($flatId, $number, $validFrom = null, $countryCode = 'ru')
+```
+
+Backends that inherit these methods from `households/internal` require no changes.
+
+### Push service
+
+To apply the APNs, Huawei and RuStore transport-error fixes, restart all active push service instances after updating:
+
+```bash
+systemctl try-restart 'push@*.service'
+```
+
+If your installation uses `rbt-push.service` instead, use:
+
+```bash
+systemctl try-restart rbt-push.service
+```
+
+The SmartYard `--update` command does not restart the push service.
+
+## 2026-10-07
 
 The abstract `households` backend contract has changed to support address broadcasts. Backend
 implementations that directly extend the abstract `households` backend must implement the following methods, or they
@@ -11,7 +52,7 @@ queueAddressBroadcast($by, $query, $title, $msg, $action = "inbox")
 
 Backends that extend `households/internal` inherit these methods and require no changes.
 
-# 2026-10-02
+## 2026-10-02
 
 For `files/mongo`, `files --create-indexes` previously created indexes on `metadata.metadata.*` instead of
 `metadata.*`, slowing down metadata searches and expired-file cleanup. After updating, repair existing indexes:
@@ -23,16 +64,16 @@ php /opt/rbt/server/scripts/fixes/repairMongoFileIndexes.php
 The script uses the server configuration, creates and verifies correct indexes, then removes the incorrect ones.
 Files and other indexes are untouched; repeated runs are safe. Index creation may increase database load.
 
-# 2026-09-30
+## 2026-09-30
 
 The optional `mobile.default_services` setting controls the default service catalog exposed to the mobile app.
 Without it, houses without an explicit `services` custom-field value expose the entire built-in catalog.
 To limit the catalog to services you provide, configure this setting using the example and descriptions in
 [config.sample.json5](server/config/config.sample.json5).
 
-# 2026-09-29
+## 2026-09-29
 
-## Virtual intercom
+### Virtual intercom
 
 To enable virtual intercoms, link the nginx snippet:
 
@@ -48,7 +89,7 @@ Reload the virtual-call door-opening handler:
 asterisk -rx "module reload features"
 ```
 
-## Asterisk dialplan
+### Asterisk dialplan
 
 After updating, reload the Lua dialplan to apply independent initial push delivery and prevent repeat dialing:
 
@@ -56,7 +97,7 @@ After updating, reload the Lua dialplan to apply independent initial push delive
 asterisk -rx "module reload pbx_lua"
 ```
 
-## FRS backend contract
+### FRS backend contract
 
 The abstract `frs` backend contract has changed. Custom backends that directly extend the abstract `frs` backend
 must implement the following methods, or they will fail to load:
@@ -68,7 +109,19 @@ getSupportedPlateNumberFormats(): array
 
 Backends that inherit these implementations from `frs/internal` require no changes.
 
-# 2026-09-24
+## 2026-09-28
+
+The abstract `households` backend contract has changed to support mobile service settings. Backend implementations
+that directly extend the abstract `households` backend must implement the following methods, or they will fail to load:
+
+```php
+getHouseServices($houseId): ?array
+getFlatServices($flatId): ?array
+```
+
+Backends that extend `households/internal` inherit these methods and require no changes.
+
+## 2026-09-24
 
 The `backends.queue` section now supports two optional settings. Add them to `/opt/rbt/server/config/config.json`
 to override the defaults:
@@ -90,7 +143,16 @@ to override the defaults:
 
 Existing configurations without these settings continue to use the defaults shown above.
 
-# 2026-09-14
+## 2026-09-23
+
+Short RFID codes uploaded to Akuvox-compatible intercoms are now padded to at least four bytes. Previously uploaded
+short codes may not be rewritten by regular autoconfiguration because their normalized values already match the
+SmartYard database. For affected keys, remove the old entries through the intercom's web interface, then run SmartYard
+autoconfiguration to upload them in the corrected format. Do not delete these keys from the SmartYard database.
+
+# v1.2.0
+
+## 2026-09-14
 
 A new system statistics page is available in the web interface. It displays summary information about flats,
 equipment, RFID keys and mobile devices. On existing installations, the page is not enabled automatically. To enable
@@ -114,7 +176,7 @@ Then reindex API permissions:
 php /opt/rbt/server/cli.php --reindex
 ```
 
-# 2026-09-09
+## 2026-09-09
 
 The abstract `households` backend contract has changed to support structured license plate records. Backend
 implementations that directly extend the abstract `households` backend must implement the following methods, or they
@@ -134,7 +196,7 @@ updateFlatPlateValidTo($flatId, $number, $validTo = null, $countryCode = 'ru')
 Backends that extend `households/internal` inherit these methods and require no changes. Existing license plate numbers
 from `houses_flats.cars` are migrated automatically by database migration v97.
 
-# 2026-09-08
+## 2026-09-08
 
 The return type and result format of `isLikedFlagFrs()` have changed. Custom `frs` backends must update the method
 signature:
@@ -149,7 +211,7 @@ The result must contain the liked state and the matched face ID:
 [$is_liked, $registered_face_id]
 ```
 
-# 2026-09-07
+## 2026-09-07
 
 Akuvox-compatible Zabbix monitoring templates have been updated to align SIP registration statuses with API values.
 After updating SmartYard, re-import monitoring templates:
@@ -158,7 +220,7 @@ After updating SmartYard, re-import monitoring templates:
 php /opt/rbt/server/cli.php --init-monitoring-config
 ```
 
-# 2026-09-02
+## 2026-09-02
 
 Face grouping and group-based face opening event tracking have changed the custom backend contracts.
 Custom `frs` backends must implement `getFaceGroupIdFrs()` and `getFacesFromGroupIdFrs()`,
@@ -178,7 +240,9 @@ getSubscriberGroupById($subscriberGroupId): ?string
 
 Backends that inherit the implementations from `frs/internal` and `households/internal` require no changes.
 
-# 2026-08-13
+# v1.1.0
+
+## 2026-08-13
 
 The `households::addSubscriber()` method now accepts an optional seventh `$owner` argument:
 
@@ -189,9 +253,9 @@ addSubscriber($mobile, $name, $patronymic, $last, $flatId, $message, $owner = fa
 Custom `households` backends that override this method must update their method signature.
 Backends that inherit the implementation from `households/internal` require no changes.
 
-# 2026-08-10
+## 2026-08-10
 
-## Households path tree contract
+### Households path tree contract
 
 The `households` path tree contract has changed to support camera visibility by flat:
 
@@ -206,7 +270,7 @@ Custom backends that directly extend the abstract `households` backend must upda
 and implement `getPathVisibleForFlats()` or they will fail to load.
 Backends that extend `households/internal` inherit these changes and require no updates.
 
-## File storage
+### File storage
 
 MongoDB GridFS is now the default content storage for event snapshots and DVR exports.
 The presence of the `tmpfs` backend no longer redirects expiring files to the filesystem automatically.
@@ -231,7 +295,9 @@ Keep the `backends.tmpfs` section configured until those files have expired;
 removing it earlier makes their content unavailable. The `tmpfs.ttl_max` option is no longer used.
 File expiration is controlled by each file's `metadata.expire` value.
 
-# 2026-07-02
+# v1.0.0
+
+## 2026-07-02
 
 Ufanet Zabbix monitoring templates have been updated and are now used by Ufanet Secret Mini and Secret Solo.
 After updating SmartYard, re-import monitoring templates:
@@ -240,7 +306,7 @@ After updating SmartYard, re-import monitoring templates:
 php /opt/rbt/server/cli.php --init-monitoring-config
 ```
 
-# 2026-06-23
+## 2026-06-23
 
 IS Sokol Plus (rev.5) Zabbix monitoring template has been updated to correctly detect SIP registration failures.
 After updating SmartYard, re-import monitoring templates:
@@ -249,7 +315,7 @@ After updating SmartYard, re-import monitoring templates:
 php /opt/rbt/server/cli.php --init-monitoring-config
 ```
 
-# 2026-06-16
+## 2026-06-16
 
 Rubetek RV-3434 integration is now targeted at firmware
 [2026.05](https://support.rubetek.com/ru/access-control-system/firmwares/).
@@ -263,13 +329,13 @@ are treated as legacy, **with backward compatibility preserved**.
 For the safest upgrade path, update those devices to firmware 2025.04 before upgrading the SmartYard server.
 After the SmartYard server has been upgraded, update the devices to the current firmware version.
 
-# 2026-06-09
+## 2026-06-09
 
 IS Sokol Plus (rev.5) integration is now targeted at firmware
 [2.5.0.15.26](https://doc.is74.ru/books/umnyi-domofon-sokol-plius/page/cto-novogo-firmware).
 Devices running firmware 2.5.0.14.13 are not expected to be critically affected, but updating is strongly recommended.
 
-# 2026-05-15
+## 2026-05-15
 
 The integration for IS Sokol Plus (rev.5) has been updated. Existing intercom and camera models are now marked
 as legacy and renamed to `IS SOKOL PLUS LEGACY (rev.5)` and `IS SOKOL LEGACY` respectively.
@@ -285,7 +351,7 @@ and switch the intercom to `IS SOKOL PLUS (rev.5)` and the camera to `IS SOKOL`.
 
 ⚠️ The old integration version is no longer maintained and will be removed in future releases.
 
-# 2026-04-21
+## 2026-04-21
 
 Update crontab entries to add the weekly schedule:
 
@@ -315,27 +381,29 @@ Then add the recommended `autocompact` value for the `files` backend in `/opt/rb
 This enables automatic weekly disk space reclamation in MongoDB after file deletions and helps reduce long-term GridFS
 fragmentation.
 
-# 2026-01-05
+# Before v1.0.0
+
+## 2026-01-05
 
 Since version 0.0.19e, backend tt type "mongo" renamed to "internal" (need modify server/config/config.json)
 
-# 2025-11-08
+## 2025-11-08
 
 Since version 0.0.18c, rbt/install/systemd/mongodb.service renamed to mongod.service (check your /etc/systemd/system
 folder)
 
-# 2025-10-31
+## 2025-10-31
 
 Since version 0.0.17, backend dvr_export renamed to dvrExports (need modify server/config/config.json)
 
 Since version 0.0.17, backend issue_adapter renamed to issueAdapter (need modify server/config/config.json)
 
-# 2025-09-03
+## 2025-09-03
 
 Since version 0.0.15, server configs "max_allowed_tokens" and "token_idle_ttl" moved from "redis" section to
 "backends->authentication" section
 
-# 2025-08-14
+## 2025-08-14
 
 Do
 
@@ -354,7 +422,7 @@ ln -sf /opt/rbt/version /opt/rbt/client/version.app
 
 ONCE **after** updating
 
-# 2025-04-11
+## 2025-04-11
 
 You will need to update mongodb php library and driver
 
@@ -365,12 +433,12 @@ cd /opt/rbt/server
 composer update
 ```
 
-# 2025-03-20
+## 2025-03-20
 
 The deprecated syslog service has been removed from the project. You should now use
 the [event service](install/11.event.md).
 
-# 2025-02-07
+## 2025-02-07
 
 Use global composer as dependency manager
 
@@ -394,15 +462,15 @@ Restart php-fpm:
 systemctl restart php<PHP_VERSION>-fpm
 ```
 
-# 2024-12-26
+## 2024-12-26
 
 New mechanism for setting up motion detection zones. **New detection zones need to be configured on all cameras after
 updating!**
 
-# 2024-10-12
+## 2024-10-12
 
 YAML configs support for both (client and server) is now deprecated and will be removed soon
 
-# 2024-08-30
+## 2024-08-30
 
 asterisk config's tree moved from /opt/rbt/install/asterisk to /opt/rbt/asterisk
