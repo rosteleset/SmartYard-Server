@@ -453,7 +453,18 @@
                     case "car":
                         $number = is_array($params) ? ($params["number"] ?? "") : $params;
                         $country_code = is_array($params) ? ($params["countryCode"] ?? "ru") : $params;
-                        $q = "select link_lp_flat.flat_id as house_flat_id from license_plate_numbers join link_lp_flat using (lp_id) where license_plate_numbers.lp_number = :number and license_plate_numbers.country_code = :country_code";
+                        $q = "
+                            select
+                              llf.flat_id house_flat_id
+                            from
+                              license_plate_numbers lpn
+                              join link_lp_flat llf
+                                on lpn.lp_id = llf.lp_id
+                            where
+                              lpn.lp_number = :number
+                              and lpn.country_code = :country_code
+                              and (llf.valid_from is null or llf.valid_from < now())
+                              and (llf.valid_to is null or llf.valid_to > now())";
                         $p = [
                             "number" => $number,
                             "country_code" => $country_code,
@@ -4575,6 +4586,7 @@
                     select
                         lpn.lp_number,
                         lpn.country_code,
+                        llf.valid_from,
                         llf.valid_to
                     from
                         license_plate_numbers lpn
@@ -4586,6 +4598,7 @@
                 ", false, [
                     "lp_number" => "plateNumber",
                     "country_code" => "countryCode",
+                    "valid_from" => "validFrom",
                     "valid_to" => "validTo",
                 ]);
 
@@ -4597,6 +4610,9 @@
                                 'plateNumber' => $row['plateNumber'],
                                 'countryCode' => isset($row['countryCode']) && trim((string)$row['countryCode']) !== '' ? trim((string)$row['countryCode']) : 'ru',
                             ];
+                            if (isset($row['validFrom'])) {
+                                $item['validFrom'] = $row['validFrom'];
+                            }
                             if (isset($row['validTo'])) {
                                 $item['validTo'] = $row['validTo'];
                             }
@@ -4621,6 +4637,7 @@
                         lpn.lp_id,
                         lpn.country_code,
                         lpn.lp_number,
+                        llf.valid_from,
                         llf.valid_to
                     from
                         license_plate_numbers lpn
@@ -4633,6 +4650,7 @@
                     "lp_id" => "lpId",
                     "country_code" => "countryCode",
                     "lp_number" => "number",
+                    "valid_from" => "validFrom",
                     "valid_to" => "validTo",
                 ]);
 
@@ -4646,7 +4664,7 @@
             /**
              * @inheritDoc
              */
-            function addFlatPlateNumber($flatId, $number, $validTo = null, $countryCode = 'ru') {
+            function addFlatPlateNumber($flatId, $number, $validFrom = null, $validTo = null, $countryCode = 'ru') {
                 if (!checkInt($flatId) || !trim((string)$number)) {
                     return false;
                 }
@@ -4658,6 +4676,12 @@
                     $validToValue = null;
                 } else {
                     $validToValue = trim((string)$validTo);
+                }
+
+                if ($validFrom === null || trim((string)$validFrom) === '') {
+                    $validFromValue = null;
+                } else {
+                    $validFromValue = trim((string)$validFrom);
                 }
 
                 $existing = $this->db->get("
@@ -4704,21 +4728,24 @@
                 if ($linkExists) {
                     $this->db->modify("
                         update link_lp_flat
-                        set valid_to = :valid_to
+                        set valid_to = :valid_to,
+                            valid_from = :valid_from
                         where lp_id = :lp_id and flat_id = :flat_id
                     ", [
                         ":valid_to" => $validToValue,
+                        ":valid_from" => $validFromValue,
                         ":lp_id" => $lpId,
                         ":flat_id" => $flatId,
                     ]);
                 } else {
                     $this->db->modify("
-                        insert into link_lp_flat (lp_id, flat_id, valid_to)
-                        values (:lp_id, :flat_id, :valid_to)
+                        insert into link_lp_flat (lp_id, flat_id, valid_to, valid_from)
+                        values (:lp_id, :flat_id, :valid_to, :valid_from)
                     ", [
                         ":lp_id" => $lpId,
                         ":flat_id" => $flatId,
                         ":valid_to" => $validToValue,
+                        ":valid_from" => $validFromValue,
                     ]);
                 }
 
@@ -4806,7 +4833,7 @@
                     foreach ($lines as $line) {
                         $n = strtoupper(trim($line));
                         if ($n !== '') {
-                            $targetNumbers[] = ["number" => $n, "validTo" => null, "countryCode" => 'ru'];
+                            $targetNumbers[] = ["number" => $n, "validTo" => null, "countryCode" => 'ru', "validFrom" => null];
                         }
                     }
                 } elseif (is_array($cars)) {
@@ -4814,14 +4841,15 @@
                         if (is_string($item)) {
                             $n = strtoupper(trim($item));
                             if ($n !== '') {
-                                $targetNumbers[] = ["number" => $n, "validTo" => null, "countryCode" => 'ru'];
+                                $targetNumbers[] = ["number" => $n, "validTo" => null, "countryCode" => 'ru', "validFrom" => null];
                             }
                         } elseif (is_array($item)) {
                             $n = strtoupper(trim((string)($item["number"] ?? $item["lp_number"] ?? "")));
                             $vt = $item["validTo"] ?? $item["valid_to"] ?? null;
+                            $vf = $item["validFrom"] ?? $item["valid_from"] ?? null;
                             $cc = $item["countryCode"] ?? $item["country_code"] ?? 'ru';
                             if ($n !== '') {
-                                $targetNumbers[] = ["number" => $n, "validTo" => $vt, "countryCode" => $cc];
+                                $targetNumbers[] = ["number" => $n, "validTo" => $vt, "countryCode" => $cc, "validFrom" => $vf];
                             }
                         }
                     }
@@ -4839,7 +4867,7 @@
 
                 $targetLpIds = [];
                 foreach ($uniqueTargets as $target) {
-                    $this->addFlatPlateNumber($flatId, $target["number"], $target["validTo"], $target["countryCode"]);
+                    $this->addFlatPlateNumber($flatId, $target["number"], $target["validFrom"], $target["validTo"], $target["countryCode"]);
                     $p = $this->db->get("
                         select lp_id from license_plate_numbers
                         where lp_number = :lp_number and country_code = :country_code
@@ -4888,6 +4916,95 @@
                 }
 
                 return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function updatePlateValidFrom($number, $validFrom = null, $countryCode = 'ru') {
+                if (!trim((string)$number)) {
+                    return false;
+                }
+                $number = strtoupper(trim((string)$number));
+                $countryCode = trim((string)$countryCode) ?: 'ru';
+
+                if ($validFrom === null || trim((string)$validFrom) === '') {
+                    $validFromValue = null;
+                } else {
+                    $validFromValue = trim((string)$validFrom);
+                }
+
+                $plate = $this->db->get("
+                    select lp_id from license_plate_numbers
+                    where lp_number = :lp_number and country_code = :country_code
+                ", [
+                    "lp_number" => $number,
+                    "country_code" => $countryCode,
+                ], [
+                    "lp_id" => "lpId",
+                ], [
+                    "singlify",
+                ]);
+
+                if (!$plate || !isset($plate["lpId"])) {
+                    return false;
+                }
+
+                $lpId = (int)$plate["lpId"];
+
+                return $this->db->modify("
+                    update link_lp_flat
+                    set valid_from = :valid_from
+                    where lp_id = :lp_id
+                ", [
+                    ":valid_from" => $validFromValue,
+                    ":lp_id" => $lpId,
+                ]) !== false;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function updateFlatPlateValidFrom($flatId, $number, $validFrom = null, $countryCode = 'ru') {
+                if (!checkInt($flatId) || !trim((string)$number)) {
+                    return false;
+                }
+                $number = strtoupper(trim((string)$number));
+                $countryCode = trim((string)$countryCode) ?: 'ru';
+
+                if ($validFrom === null || trim((string)$validFrom) === '') {
+                    $validFromValue = null;
+                } else {
+                    $validFromValue = trim((string)$validFrom);
+                }
+
+                $plate = $this->db->get("
+                    select lp_id from license_plate_numbers
+                    where lp_number = :lp_number and country_code = :country_code
+                ", [
+                    "lp_number" => $number,
+                    "country_code" => $countryCode,
+                ], [
+                    "lp_id" => "lpId",
+                ], [
+                    "singlify",
+                ]);
+
+                if (!$plate || !isset($plate["lpId"])) {
+                    return false;
+                }
+
+                $lpId = (int)$plate["lpId"];
+
+                return $this->db->modify("
+                    update link_lp_flat
+                    set valid_from = :valid_from
+                    where lp_id = :lp_id and flat_id = :flat_id
+                ", [
+                    ":valid_from" => $validFromValue,
+                    ":lp_id" => $lpId,
+                    ":flat_id" => $flatId,
+                ]) !== false;
             }
 
             /**

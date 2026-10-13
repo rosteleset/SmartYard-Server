@@ -14,6 +14,7 @@
  * @apiSuccess {Object[]} - list of the license plate numbers with country code
  * @apiSuccess {String} -.plateNumber license plate number
  * @apiSuccess {String} -.countryCode two-letter country code in lowercase
+ * @apiSuccess {String} [-.validFrom] start date/time (ISO 8601)
  * @apiSuccess {String} [-.validTo] expiration date/time (ISO 8601)
  */
 

@@ -190,13 +190,14 @@
             /**
              * @param $flatId
              * @param $number
+             * @param $validFrom
              * @param $validTo
              * @param $countryCode
              *
              * @return boolean
              */
 
-            abstract function addFlatPlateNumber($flatId, $number, $validTo = null, $countryCode = 'ru');
+            abstract function addFlatPlateNumber($flatId, $number, $validFrom = null, $validTo = null, $countryCode = 'ru');
 
             /**
              * @param $flatId
@@ -216,6 +217,27 @@
              */
 
             abstract function modifyFlatPlateNumbers($flatId, $cars);
+
+            /**
+             * @param $number
+             * @param $validFrom
+             * @param $countryCode
+             *
+             * @return boolean
+             */
+
+            abstract function updatePlateValidFrom($number, $validFrom = null, $countryCode = 'ru');
+
+            /**
+             * @param $flatId
+             * @param $number
+             * @param $validFrom
+             * @param $countryCode
+             *
+             * @return boolean
+             */
+
+            abstract function updateFlatPlateValidFrom($flatId, $number, $validFrom = null, $countryCode = 'ru');
 
             /**
              * @param $number

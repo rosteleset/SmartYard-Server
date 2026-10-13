@@ -12,6 +12,7 @@
  * @apiBody {integer} flatId flat identifier
  * @apiBody {String} number license plate number
  * @apiBody {String} [countryCode="ru"] two-letter country code in lowercase
+ * @apiBody {String} [validFrom] start date/time (ISO 8601)
  * @apiBody {String} [validTo] expiration date/time (ISO 8601)
  */
 
@@ -44,12 +45,17 @@ if (!isValidPlateNumber($number, $country_code)) {
     response(422, false, i18n("mobile.invalidPlateNumber"));
 }
 
+$valid_from = @$postdata['validFrom'] ?? @$postdata['valid_from'] ?? null;
+if ($valid_from !== null && trim((string)$valid_from) === '') {
+    $valid_from = null;
+}
+
 $valid_to = @$postdata['validTo'] ?? @$postdata['valid_to'] ?? null;
 if ($valid_to !== null && trim((string)$valid_to) === '') {
     $valid_to = null;
 }
 
 $households = loadBackend("households");
-$households->addFlatPlateNumber($flat_id, $number, $valid_to, $country_code);
+$households->addFlatPlateNumber($flat_id, $number, $valid_from, $valid_to, $country_code);
 
 response(204);

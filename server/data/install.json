@@ -314,5 +314,8 @@
     ],
     "99": [
         "v99_virtual_intercom.php"
+    ],
+    "100": [
+        "v100_lprs_valid_from.sql"
     ]
 }

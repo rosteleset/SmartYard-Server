@@ -6,7 +6,7 @@
     "virtualIntercomFlatName": "Name in the virtual intercom",
     "virtualIntercomFlatNameHint": "Public label instead of “Apartment 12”, up to 120 characters. Leave blank to display the apartment number.",
     "virtualIntercomFlatCalls": "Allow calls from virtual intercoms",
-    "virtualIntercomFlatCallsHint": "When the entrance does not allow calls to all subscribers, this apartment or office can be called only if this field is Yes. A blank field means No.",
+    "virtualIntercomFlatCallsHint": "When the entrance does not allow calls to all subscribers, this apartment or office can be called only if this field is Yes.<br />A blank field means No.",
     "virtualIntercomAllFlats": "Allow calls to all entrance subscribers",
     "virtualIntercomAllFlatsHint": "Yes — all apartments and offices linked to the entrance. No — only apartments and offices with Allow calls from virtual intercoms set to Yes.",
     "virtualIntercomSave": "Save",
@@ -200,6 +200,7 @@
     "editPlateNumber": "Edit license plate",
     "plateNumber": "License plate",
     "plateCountry": "Country code",
+    "plateValidFrom": "Valid from",
     "plateValidTo": "Valid until",
     "plateValidForever": "forever",
     "noPlateNumbers": "No license plates",
@@ -500,6 +501,7 @@
             }
         }
     },
+    "from": "from",
     "until": "until",
     "time": "Time",
     "country_ru": "Russia"

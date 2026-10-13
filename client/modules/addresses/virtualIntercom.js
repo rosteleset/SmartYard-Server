@@ -17,7 +17,7 @@
         const yesNo = [{value: '1', text: i18n('yes')}, {value: '0', text: i18n('no')}];
         cardForm({
             title: i18n('addresses.virtualIntercom') + ' · #' + panel.entranceId,
-            size: 'lg', footer: true, borderless: true, topApply: canEdit,
+            size: 'lx', footer: true, borderless: true, topApply: canEdit,
             apply: i18n('addresses.virtualIntercomSave'),
             fields: [
                 {id: 'description', type: 'none', title: false, value: escapeHTML(i18n('addresses.virtualIntercomDescription'))},

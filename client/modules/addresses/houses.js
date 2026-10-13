@@ -121,6 +121,23 @@
         return found ? found.flag : "🏳️";
     },
 
+    formatPlateValidFrom: function (validFrom) {
+        if (!validFrom) {
+            return "";
+        }
+        let str = String(validFrom).trim();
+        let match = str.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+        if (match) {
+            let y = match[1], m = match[2], d = match[3], hh = match[4], mm = match[5];
+            let formatted = `${d}.${m}.${y}`;
+            if (hh !== undefined && mm !== undefined) {
+                formatted += ` ${hh}:${mm}`;
+            }
+            return `${i18n("addresses.from") || "с"} ${formatted}`;
+        }
+        return `${i18n("addresses.from") || "с"} ${escapeHTML(str)}`;
+    },
+
     formatPlateValidTo: function (validTo) {
         if (!validTo) {
             return `<span class="text-muted">${i18n("addresses.plateValidForever") || "бессрочно"}</span>`;
@@ -151,7 +168,8 @@
                                 <tr>
                                     <th style="width: 140px;">${i18n("addresses.plateCountry")}</th>
                                     <th>${i18n("addresses.plateNumber")}</th>
-                                    <th style="width: 200px;">${i18n("addresses.plateValidTo")}</th>
+                                    <th style="width: 180px;">${i18n("addresses.plateValidFrom")}</th>
+                                    <th style="width: 180px;">${i18n("addresses.plateValidTo")}</th>
                                     <th style="width: 90px; text-align: right;"></th>
                                 </tr>
                             </thead>
@@ -161,7 +179,7 @@
             if (licensePlates.length === 0) {
                 html += `
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">
+                        <td colspan="5" class="text-center text-muted py-4">
                             ${i18n("addresses.noPlateNumbers")}
                         </td>
                     </tr>
@@ -178,6 +196,9 @@
                             </td>
                             <td class="align-middle">
                                 <strong class="text-monospace" style="font-size: 1.1em; letter-spacing: 0.5px;">${escapeHTML(p.number)}</strong>
+                            </td>
+                            <td class="align-middle">
+                                ${modules.addresses.houses.formatPlateValidFrom(p.validFrom)}
                             </td>
                             <td class="align-middle">
                                 ${modules.addresses.houses.formatPlateValidTo(p.validTo)}
@@ -212,17 +233,25 @@
                     <div class="card-body py-2">
                         <input type="hidden" id="${prefx}-plate-form-index" value="-1">
                         <div class="form-row">
-                            <div class="form-group col-md-4 mb-2">
+                            <div class="form-group col-md-2 mb-2">
                                 <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.plateCountry")} <span class="text-danger">*</span></label>
                                 <select id="${prefx}-plate-country" class="form-control form-control-sm">
                                     ${modules.addresses.houses.countryOptions.map(c => `<option value="${c.code}">${c.flag} ${c.code} — ${c.name}</option>`).join("")}
                                 </select>
                             </div>
-                            <div class="form-group col-md-3 mb-2">
+                            <div class="form-group col-md-2 mb-2">
                                 <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.plateNumber")} <span class="text-danger">*</span></label>
                                 <input type="text" id="${prefx}-plate-number" class="form-control form-control-sm text-uppercase" placeholder="A123BC777" autocomplete="off">
                             </div>
-                            <div class="form-group col-md-3 mb-2">
+                            <div class="form-group col-md-2 mb-2">
+                                <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.plateValidFrom")}</label>
+                                <input type="date" id="${prefx}-plate-valid-from-date" class="form-control form-control-sm">
+                            </div>
+                            <div class="form-group col-md-2 mb-2">
+                                <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.time") || "Время"}</label>
+                                <input type="text" id="${prefx}-plate-valid-from-time" class="form-control form-control-sm text-center" placeholder="00:00" maxlength="5" autocomplete="off">
+                            </div>
+                            <div class="form-group col-md-2 mb-2">
                                 <label class="mb-1 text-sm font-weight-normal">${i18n("addresses.plateValidTo")}</label>
                                 <input type="date" id="${prefx}-plate-valid-to-date" class="form-control form-control-sm">
                             </div>
@@ -255,9 +284,21 @@
                 $(inputEl).removeClass("is-invalid");
             });
 
+            $(`#${prefx}-plate-valid-from-time`).off("input").on("input", function () {
+                let val = $(this).val().replace(/[^0-9:]/g, "");
+                $(this).val(val);
+            });
+
             $(`#${prefx}-plate-valid-to-time`).off("input").on("input", function () {
                 let val = $(this).val().replace(/[^0-9:]/g, "");
                 $(this).val(val);
+            });
+
+            $(`#${prefx}-plate-valid-from-time, #${prefx}-plate-valid-to-time, #${prefx}-plate-valid-from-date, #${prefx}-plate-valid-to-date`).off("input change").on("input change", function () {
+                $(`#${prefx}-plate-valid-from-date`).removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-from-time`).removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-to-date`).removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-to-time`).removeClass("is-invalid");
             });
 
             $(`#${prefx}-add-plate-btn`).off("click").on("click", function () {
@@ -265,7 +306,9 @@
                 $(`#${prefx}-plate-form-title`).text(i18n("addresses.addPlateNumber"));
                 $(`#${prefx}-plate-country`).val("ru");
                 $(`#${prefx}-plate-number`).val("").removeClass("is-invalid");
-                $(`#${prefx}-plate-valid-to-date`).val("");
+                $(`#${prefx}-plate-valid-from-date`).val("").removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-from-time`).val("").removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-to-date`).val("").removeClass("is-invalid");
                 $(`#${prefx}-plate-valid-to-time`).val("").removeClass("is-invalid");
                 $(`#${prefx}-plate-form-card`).slideDown(150, () => {
                     $(`#${prefx}-plate-number`).focus();
@@ -280,6 +323,20 @@
                 $(`#${prefx}-plate-form-title`).text(i18n("addresses.editPlateNumber"));
                 $(`#${prefx}-plate-country`).val(p.countryCode || "ru");
                 $(`#${prefx}-plate-number`).val(p.number || "").removeClass("is-invalid");
+                let fromDateVal = "";
+                let fromTimeVal = "";
+                if (p.validFrom) {
+                    let m = String(p.validFrom).trim().match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+                    if (m) {
+                        fromDateVal = m[1];
+                        if (m[2] !== undefined && m[3] !== undefined) {
+                            fromTimeVal = `${m[2]}:${m[3]}`;
+                        }
+                    }
+                }
+                $(`#${prefx}-plate-valid-from-date`).val(fromDateVal).removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-from-time`).val(fromTimeVal).removeClass("is-invalid");
+
                 let dateVal = "";
                 let timeVal = "";
                 if (p.validTo) {
@@ -291,7 +348,7 @@
                         }
                     }
                 }
-                $(`#${prefx}-plate-valid-to-date`).val(dateVal);
+                $(`#${prefx}-plate-valid-to-date`).val(dateVal).removeClass("is-invalid");
                 $(`#${prefx}-plate-valid-to-time`).val(timeVal).removeClass("is-invalid");
                 $(`#${prefx}-plate-form-card`).slideDown(150, () => {
                     $(`#${prefx}-plate-number`).focus();
@@ -317,6 +374,12 @@
                 let numInput = $(`#${prefx}-plate-number`);
                 let num = $.trim(numInput.val()).toUpperCase();
                 let cc = $.trim($(`#${prefx}-plate-country`).val()).toLowerCase() || "ru";
+
+                let fromDateVal = $.trim($(`#${prefx}-plate-valid-from-date`).val());
+                let fromTimeInput = $(`#${prefx}-plate-valid-from-time`);
+                let fromTimeVal = $.trim(fromTimeInput.val());
+                let vf = null;
+
                 let dateVal = $.trim($(`#${prefx}-plate-valid-to-date`).val());
                 let timeInput = $(`#${prefx}-plate-valid-to-time`);
                 let timeVal = $.trim(timeInput.val());
@@ -338,6 +401,25 @@
 
                 numInput.removeClass("is-invalid");
 
+                if (fromDateVal !== "") {
+                    if (fromTimeVal !== "") {
+                        let timeMatch = fromTimeVal.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
+                        if (timeMatch) {
+                            let hh = parseInt(timeMatch[1], 10);
+                            let mm = parseInt(timeMatch[2], 10);
+                            let hhStr = hh < 10 ? "0" + hh : "" + hh;
+                            let mmStr = mm < 10 ? "0" + mm : "" + mm;
+                            vf = `${fromDateVal} ${hhStr}:${mmStr}:00`;
+                        } else {
+                            fromTimeInput.addClass("is-invalid");
+                            return;
+                        }
+                    } else {
+                        vf = fromDateVal;
+                    }
+                }
+                fromTimeInput.removeClass("is-invalid");
+
                 if (dateVal !== "") {
                     if (timeVal !== "") {
                         let timeMatch = timeVal.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
@@ -357,18 +439,37 @@
                 }
                 timeInput.removeClass("is-invalid");
 
+                if (vf && vt) {
+                    let dFrom = new Date(vf);
+                    let dTo = new Date(vt);
+                    if (dFrom.getTime() > dTo.getTime()) {
+                        $(`#${prefx}-plate-valid-from-date`).addClass("is-invalid");
+                        $(`#${prefx}-plate-valid-from-time`).addClass("is-invalid");
+                        $(`#${prefx}-plate-valid-to-date`).addClass("is-invalid");
+                        $(`#${prefx}-plate-valid-to-time`).addClass("is-invalid");
+                        return;
+                    }
+                }
+                $(`#${prefx}-plate-valid-from-date`).removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-from-time`).removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-to-date`).removeClass("is-invalid");
+                $(`#${prefx}-plate-valid-to-time`).removeClass("is-invalid");
+
                 if (idx >= 0 && licensePlates[idx]) {
                     licensePlates[idx].number = num;
                     licensePlates[idx].countryCode = cc;
+                    licensePlates[idx].validFrom = vf;
                     licensePlates[idx].validTo = vt;
                 } else {
                     let existingIdx = licensePlates.findIndex(p => p.number.toUpperCase() === num && p.countryCode.toLowerCase() === cc);
                     if (existingIdx >= 0) {
+                        licensePlates[existingIdx].validFrom = vf;
                         licensePlates[existingIdx].validTo = vt;
                     } else {
                         licensePlates.push({
                             number: num,
                             countryCode: cc,
+                            validFrom: vf,
                             validTo: vt
                         });
                     }
@@ -3103,12 +3204,14 @@
                         lpId: p.lpId,
                         number: String(p.number || p.lp_number || "").toUpperCase().trim(),
                         countryCode: String(p.countryCode || p.country_code || "ru").toLowerCase().trim(),
+                        validFrom: p.validFrom || p.valid_from || null,
                         validTo: p.validTo || p.valid_to || null,
                     }));
                 } else if (flat.cars && typeof flat.cars === "string") {
                     licensePlates = flat.cars.split("\n").map(l => l.trim()).filter(l => l.length > 0).map(n => ({
                         number: n.toUpperCase(),
                         countryCode: "ru",
+                        validFrom: null,
                         validTo: null,
                     }));
                 }
@@ -3430,7 +3533,7 @@
                     delete: canDelete ? (houseId ? i18n("addresses.deleteFlat") : false) : false,
                     deleteTab: canDelete ? (houseId ? i18n("addresses.primary") : false) : false,
                     apply: i18n("edit"),
-                    size: "lg",
+                    size: "xl",
                     fields: fields,
                     callback: result => {
                         let cf = modules.addresses.houses.extractFlatCustomFields(result, "modify");
