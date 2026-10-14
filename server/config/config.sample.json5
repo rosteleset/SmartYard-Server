@@ -60,7 +60,7 @@
         // Version of the built-in task tracker system (supported versions: "1", "2"). Defaults to "1".
         "issues_version": "1",
 
-        // LPRS mobile API version (supported versions: "1", "2"). Version "2" adds the listNumbersV2 method with country code and expiration date/time. Defaults to "1".
+        // LPRS mobile API version (supported versions: "1", "2"). Version "2" adds the listNumbersV2 method with country code, start and expiration date/time. Defaults to "1".
         "lprs_api_version": "1",
 
         // Default services. Services enabled by default for the house.
