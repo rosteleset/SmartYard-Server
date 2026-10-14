@@ -41,6 +41,7 @@
 ! changed the abstract households backend contract for license plate validity periods
 - fixed LPRS opening with expired license plates before cleanup
 - fixed push requests hanging on APNs, Huawei and RuStore transport errors
++ promoted Rubetek RV-3437 integration from beta to stable for firmware 2026.09.210465341
 ```
 
 ## v1.2.0

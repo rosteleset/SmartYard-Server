@@ -481,7 +481,13 @@ abstract class rubetek extends domophone implements
         }
 
         $analogSettings['kkm_addressing'] = $this->getAnalogAddressingTemplate($hundredsCount);
-        $analogSettings['digital_addressing'] = $this->getDigitalAddressingTemplate();
+
+        if (array_key_exists('digit_addressing', $analogSettings)) {
+            $analogSettings['digit_addressing'] = $this->getDigitalAddressingTemplate();
+        } elseif (array_key_exists('digital_addressing', $analogSettings)) {
+            $analogSettings['digital_addressing'] = $this->getDigitalAddressingTemplate();
+        }
+
         $this->apiCall('/settings/analog', 'PATCH', $analogSettings);
     }
 
@@ -866,7 +872,7 @@ abstract class rubetek extends domophone implements
      */
     protected function getDoors(): array
     {
-        return array_slice($this->apiCall('/doors'), 0, -1);
+        return array_slice($this->apiCall('/doors'), 0, 2);
     }
 
     protected function getDtmfConfig(): array

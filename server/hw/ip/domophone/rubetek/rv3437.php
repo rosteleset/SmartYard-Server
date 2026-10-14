@@ -11,10 +11,4 @@ class rv3437 extends rubetek
     {
         return 2;
     }
-
-    protected function isLegacyVersion(): bool
-    {
-        // TODO: beta firmware already uses the current CMS API; revisit after the stable release.
-        return false;
-    }
 }
