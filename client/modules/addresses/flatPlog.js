@@ -191,12 +191,21 @@
 
                 .flat-plog-preview-wrap {
                     position: relative;
+                    box-sizing: border-box;
                     width: 120px;
                     height: 72px;
                     overflow: hidden;
                     border-radius: 4px;
                     background: #f4f6f9;
                     display: block;
+                }
+
+                .flat-plog-preview-wrap.flat-plog-preview-falprs {
+                    border: 2px solid #28a745;
+                }
+
+                .flat-plog-preview-wrap.flat-plog-preview-dvr {
+                    border: 2px solid #007bff;
                 }
 
                 .flat-plog-preview-wrap .flat-plog-preview-loading,
@@ -706,11 +715,20 @@
 
         let url = event.preview || modules.addresses.flatPlog.previewUrl(event.imageUuid);
         let missing = escapeHTML(i18n("addresses.plogNoPreview"));
+        let sourceClass = "";
+        let title = i18n("addresses.plogPreview");
+        if (Number(event.previewType) === 2) {
+            sourceClass = " flat-plog-preview-falprs";
+            title = i18n("addresses.plogPreviewFalprs");
+        } else if (Number(event.previewType) === 1) {
+            sourceClass = " flat-plog-preview-dvr";
+            title = i18n("addresses.plogPreviewDvr");
+        }
         return `
-            <div class="flat-plog-preview-wrap">
+            <div class="flat-plog-preview-wrap${sourceClass}" title="${escapeHTML(title)}">
                 <div class="flat-plog-preview-loading text-secondary"><i class="fas fa-spinner fa-spin"></i></div>
                 <span class="flat-plog-preview-missing text-muted small" style="display: none;">${missing}</span>
-                <img class="flat-plog-preview-thumb" src="${escapeHTML(url)}" data-url="${escapeHTML(url)}" alt="" title="${escapeHTML(i18n("addresses.plogPreview"))}">
+                <img class="flat-plog-preview-thumb" src="${escapeHTML(url)}" data-url="${escapeHTML(url)}" alt="" title="${escapeHTML(title)}">
             </div>`;
     },
 

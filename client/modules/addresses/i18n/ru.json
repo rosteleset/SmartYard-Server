@@ -463,6 +463,8 @@
     "plogFlat": "Квартира",
     "plogDetail": "Детали",
     "plogPreview": "Снимок",
+    "plogPreviewFalprs": "Снимок получен от FALPRS",
+    "plogPreviewDvr": "Снимок получен от медиасервера",
     "plogOpened": "Дверь открыта",
     "plogNotOpened": "Дверь не открыта",
     "plogPreviewMissing": "Снимок недоступен",

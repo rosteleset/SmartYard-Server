@@ -456,6 +456,8 @@
     "plogFlat": "Flat",
     "plogDetail": "Details",
     "plogPreview": "Snapshot",
+    "plogPreviewFalprs": "Snapshot obtained from FALPRS",
+    "plogPreviewDvr": "Snapshot obtained from the media server",
     "plogOpened": "Door opened",
     "plogNotOpened": "Door not opened",
     "plogPreviewMissing": "Snapshot unavailable",
