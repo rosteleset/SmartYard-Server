@@ -17,6 +17,7 @@
         class clickhouse extends plog {
 
             private \clickhouse $clickhouse;
+            private ?bool $domophoneJsonSubcolumns = null;
             private $time_shift;  // сдвиг по времени в секундах от текущего для обработки событий
             private $max_call_length;  // максимальная длительность звонка в секундах
             private $ttl_temp_record;  // значение, которое прибавляется к текущему времени для получения expire
@@ -412,7 +413,7 @@
                 }
 
                 $result = $this->clickhouse->select($query);
-                if (count($result)) {
+                if (is_array($result) && count($result)) {
                     foreach ($result as &$d) {
                         $d['day'] = substr($d['day'], 0, 4) . '-' . substr($d['day'], 4, 2) . '-' . substr($d['day'], 6, 2);
                     }
@@ -481,7 +482,7 @@
                 ";
 
                 $result = $this->clickhouse->select($query);
-                if ($result && count($result)) {
+                if (is_array($result) && count($result)) {
                     foreach ($result as &$d) {
                         $d['day'] = substr($d['day'], 0, 4) . '-' . substr($d['day'], 4, 2) . '-' . substr($d['day'], 6, 2);
                     }
@@ -550,11 +551,28 @@
             }
 
             /**
-             * Scope filter for entrance journal (CH 24 JSON-safe).
+             * Read only the requested path for the new JSON type; retain legacy Object handling.
              */
+            private function getDomophoneScopeExpression(string $field): string {
+                if ($this->domophoneJsonSubcolumns === null) {
+                    $columns = $this->clickhouse->select("
+                        select type from system.columns
+                        where database = currentDatabase() and table = 'plog' and name = 'domophone'
+                    ");
+                    $type = $columns[0]['type'] ?? '';
+                    $this->domophoneJsonSubcolumns = $type === 'JSON' || strpos($type, 'JSON(') === 0;
+                }
+
+                if ($this->domophoneJsonSubcolumns) {
+                    // Dynamic values cannot be compared directly with integer IDs.
+                    return "ifNull(JSONExtractInt(toJSONString(plog.domophone.$field)), 0)";
+                }
+
+                return "JSONExtractInt(toJSONString(plog.domophone), '$field')";
+            }
 
             private function getEntranceScopeCondition(int $entrance_id): string {
-                return "JSONExtractInt(toJSONString(domophone), 'entrance_id') = " . (int)$entrance_id;
+                return $this->getDomophoneScopeExpression('entrance_id') . " = " . (int)$entrance_id;
             }
 
             private function getHouseIdByEntrance(int $entrance_id): ?int {
@@ -593,16 +611,13 @@
                     }
                 }
 
-                // ClickHouse JSON: CAST(... AS String) does not yield parseable JSON; use toJSONString()
-                $domophoneJson = "toJSONString(domophone)";
                 $conditions = [
-                    "JSONExtractInt($domophoneJson, 'house_id') = " . (int)$house_id,
+                    $this->getDomophoneScopeExpression('house_id') . " = " . (int)$house_id,
                 ];
                 $entrance_ids = array_values(array_unique($entrance_ids));
                 if ($entrance_ids) {
-                    $conditions[] = "JSONExtractInt($domophoneJson, 'entrance_id') in (" . implode(',', $entrance_ids) . ")";
+                    $conditions[] = $this->getDomophoneScopeExpression('entrance_id') . " in (" . implode(',', $entrance_ids) . ")";
                 }
-                // flat_id uses MergeTree index — same path as working flat journal
                 $flat_ids = array_values(array_unique(array_filter($flat_ids)));
                 if ($flat_ids) {
                     $conditions[] = "flat_id in (" . implode(',', $flat_ids) . ")";
@@ -636,7 +651,7 @@
                 ";
 
                 $result = $this->clickhouse->select($query);
-                if (count($result)) {
+                if (is_array($result) && count($result)) {
                     foreach ($result as &$d) {
                         $d['day'] = substr($d['day'], 0, 4) . '-' . substr($d['day'], 4, 2) . '-' . substr($d['day'], 6, 2);
                     }

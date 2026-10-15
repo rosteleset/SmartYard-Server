@@ -23,7 +23,7 @@
 + added independent initial mobile call push delivery with a five-second request timeout
 - prevented repeat dialing after a completed mobile call attempt
 + added virtual intercom
-- fixed house and entrance event journals with ClickHouse 24
+- fixed event journal errors and slow house/entrance queries across ClickHouse JSON formats
 - fixed ClickHouse SELECT queries using the default database instead of the configured one
 ! increased the ClickHouse query timeout from 5 to 30 seconds
 - fixed duplicated metadata prefixes in MongoDB file index creation
