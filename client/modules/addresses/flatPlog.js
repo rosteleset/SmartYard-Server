@@ -30,7 +30,7 @@
             if (!scope || !scope._plogDays) {
                 return;
             }
-            modules.addresses.flatPlog.loadDayEvents(scope, scope._plogDays, $(this).val());
+            modules.addresses.flatPlog.loadDayEvents(scope, scope._plogDays, $(this).val()).fail(FAIL);
         }).
         on("click.flatPlog", ".flat-plog-event-type-filter-menu", e => {
             e.stopPropagation();
@@ -509,12 +509,12 @@
 
         loadingStart();
         GET("houses", "house", houseId, true).
-        done(response => {
+        fail(FAIL).
+        then(response => {
             let map = modules.addresses.flatPlog.buildFlatLabels(response.house.flats || []);
             modules.addresses.flatPlog.flatLabelsCache[houseId] = map;
-            callback(map);
+            return callback(map);
         }).
-        fail(FAIL).
         always(loadingDone);
     },
 
@@ -987,12 +987,11 @@
             $tbody.addClass("flat-plog-loading");
         }
 
-        QUERY("plog", "events", modules.addresses.flatPlog.eventsQuery(scope, selectedDay), true).
-        done(result => {
+        return QUERY("plog", "events", modules.addresses.flatPlog.eventsQuery(scope, selectedDay), true).
+        then(result => {
             scope.allEvents = result.events || [];
             modules.addresses.flatPlog.paintEvents(scope, days, selectedDay);
         }).
-        fail(FAIL).
         always(() => {
             $("#flatPlogTable tbody").removeClass("flat-plog-loading");
         });
@@ -1039,7 +1038,7 @@
         }
 
         modules.addresses.flatPlog.ensureEventTypeFilter(scope);
-        modules.addresses.flatPlog.loadDayEvents(scope, days, selectedDay);
+        return modules.addresses.flatPlog.loadDayEvents(scope, days, selectedDay);
     },
 
     openPlog: function (scope, inPlace) {
@@ -1066,19 +1065,19 @@
             loadingStart();
         }
 
-        QUERY("plog", "days", modules.addresses.flatPlog.daysQuery(scope), true).
-        done(result => {
+        return QUERY("plog", "days", modules.addresses.flatPlog.daysQuery(scope), true).
+        then(result => {
             let days = result.days || [];
-            modules.addresses.flatPlog.renderEvents(scope, days);
+            return modules.addresses.flatPlog.renderEvents(scope, days);
         }).
-        fail(FAIL).
         always(() => {
             if (inPlace) {
                 $("#flatPlogTable tbody").removeClass("flat-plog-loading");
             } else {
                 loadingDone();
             }
-        });
+        }).
+        fail(FAIL);
     },
 
     modalFlatPlog: function (flatId, flatLabel) {
@@ -1102,7 +1101,7 @@
     modalEntrancePlog: function (entranceId, entranceLabel, houseId) {
         houseId = houseId || modules.addresses.houses.houseId;
         modules.addresses.flatPlog.ensureFlatLabels(houseId, flatLabels => {
-            modules.addresses.flatPlog.openPlog({
+            return modules.addresses.flatPlog.openPlog({
                 mode: "entrance",
                 id: entranceId,
                 label: entranceLabel,
@@ -1114,7 +1113,7 @@
 
     modalHousePlog: function (houseId, houseLabel) {
         modules.addresses.flatPlog.ensureFlatLabels(houseId, flatLabels => {
-            modules.addresses.flatPlog.openPlog({
+            return modules.addresses.flatPlog.openPlog({
                 mode: "house",
                 id: houseId,
                 label: houseLabel,
