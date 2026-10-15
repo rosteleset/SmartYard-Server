@@ -4586,8 +4586,8 @@
                     select
                         lpn.lp_number,
                         lpn.country_code,
-                        llf.valid_from,
-                        llf.valid_to
+                        to_char(valid_from at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') valid_from,
+                        to_char(valid_to at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') as valid_to
                     from
                         license_plate_numbers lpn
                         join link_lp_flat llf on lpn.lp_id = llf.lp_id
