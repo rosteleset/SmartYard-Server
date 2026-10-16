@@ -2,23 +2,9 @@ import http from "http";
 import https from "https";
 import crypto from "crypto";
 import {API, getTimestamp} from "../utils/index.js";
-import logTimestamp from "log-timestamp";
+import {enableLogTimestamp} from "../utils/logTimestamp.js";
 
-const tz_offset =
-    (new Date()).getTimezoneOffset() * 60000;
-
-logTimestamp(function() {
-    return (
-        "[" +
-        new Date(
-            Date.now() - tz_offset
-        )
-            .toISOString()
-            .slice(0, -1)
-            .replace("T", " ") +
-        "]"
-    );
-});
+enableLogTimestamp();
 
 /*
  * Get current camera configuration.
