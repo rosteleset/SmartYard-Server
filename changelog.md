@@ -45,6 +45,7 @@
 + promoted Rubetek RV-3437 integration from beta to stable for firmware 2026.09.210465341
 - fixed premature loading indicator dismissal when opening the web event journal
 + color-coded FALPRS and media-server snapshots in the web event journal
+- fixed ClickHouse insert failures being reported as successful
 ```
 
 ## v1.2.0

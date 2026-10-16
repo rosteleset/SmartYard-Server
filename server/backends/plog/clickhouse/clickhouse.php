@@ -1080,7 +1080,7 @@
                             date desc
                     ";
 
-                    $result = $this->clickhouse->select($query) ?? [];
+                    $result = $this->clickhouse->select($query) ?: [];
 
                     foreach ($result as $item) {
                         $msg = $item['msg'];

@@ -90,6 +90,7 @@
                 $raw = curl_exec($curl);
                 $errno = curl_errno($curl);
                 $error = curl_error($curl);
+                $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
                 $decoded = @json_decode($raw, true);
                 $data = is_array($decoded) ? ($decoded['data'] ?? null) : null;
             } catch (\Exception $e) {
@@ -104,9 +105,14 @@
                 return false;
             }
 
-            if (@$headers['x-clickhouse-exception-code']) {
-                error_log("clickhouse select error: " . trim((string)$raw));
+            if ($status !== 200 || @$headers['x-clickhouse-exception-code']) {
+                error_log("clickhouse select error: HTTP $status " . trim((string)$raw));
                 return false;
+            }
+
+            // Successful DDL queries return no result set.
+            if ($outputFormat === '' && $raw === '') {
+                return [];
             }
 
             if ($data === null) {
@@ -160,15 +166,26 @@
 
             try {
                 $error = curl_exec($curl);
+                $errno = curl_errno($curl);
+                $message = curl_error($curl);
+                $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
             } catch (\Exception $e) {
+                curl_close($curl);
+                error_log("clickhouse insert exception: " . $e->getMessage());
                 return false;
             }
             curl_close($curl);
 
-            if (@$headers['x-clickhouse-exception-code']) {
-                return $error;
-            } else {
-                return true;
+            if ($errno) {
+                error_log("clickhouse insert curl($errno): $message");
+                return false;
             }
+
+            if ($status !== 200 || @$headers['x-clickhouse-exception-code']) {
+                error_log("clickhouse insert error: HTTP $status " . substr(trim((string)$error), 0, 500));
+                return false;
+            }
+
+            return true;
         }
     }
