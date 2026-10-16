@@ -199,9 +199,11 @@
                         }
                     }
                     if ($update) {
-                        $update = $update && $this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction);
+                        if (!$this->addJournalRecord($issue["issueId"], "modifyIssue", $old, $issue, $workflowAction)) {
+                            error_log("Failed to write TT journal for modified issue " . $issue["issueId"]);
+                        }
                     }
-                    return $update;
+                    return (bool)$update;
                 }
 
                 return false;
@@ -247,9 +249,17 @@
                         }
                     }
 
-                    return $delete && $this->mongo->$db->$acr->deleteMany([
-                        "issueId" => $issueId,
-                    ]) && $this->addJournalRecord($issueId, "deleteIssue", $this->getIssue($issueId), null);
+                    if ($delete) {
+                        $old = $this->getIssue($issueId);
+                        $delete = (bool)$this->mongo->$db->$acr->deleteMany([
+                            "issueId" => $issueId,
+                        ]);
+                        if ($delete && !$this->addJournalRecord($issueId, "deleteIssue", $old, null)) {
+                            error_log("Failed to write TT journal for deleted issue " . $issueId);
+                        }
+                    }
+
+                    return $delete;
                 } else {
                     return false;
                 }
