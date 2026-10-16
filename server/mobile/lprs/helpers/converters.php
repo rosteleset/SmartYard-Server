@@ -25,7 +25,13 @@ function isValidPlateNumber(string $number, string $countryCode = 'ru'): bool {
 
     switch ($countryCode) {
         case 'ru':
-            $regex = '/^[ABCEHKMOPTXY]\d{3}[ABCEHKMOPTXY]{2}\d{2,3}$/';
+            $regex = '/^[ABCEHKMOPTXY][0-9]{3}[ABCEHKMOPTXY]{2}[0-9]{2,3}$/';
+            return preg_match($regex, $number) === 1;
+        case 'by':
+            $regex = '/^[0-9]{4}[ABCEHIKMOPTX]{2}[0-9]$/';
+            return preg_match($regex, $number) === 1;
+        case 'am':
+            $regex = '/^[0-9]{2,3}[A-Z]{2}[0-9]{2,3}$/';
             return preg_match($regex, $number) === 1;
         default:
             return false;
