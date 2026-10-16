@@ -19,7 +19,7 @@
 ! extended the abstract households backend contract for mobile service settings
 + added supportedPlateNumberFormats and enabled the configured lprsVersion in mobile options
 - fixed mobile face clustering being advertised when unsupported by the FRS server
-! changed the FRS backend contract: getAdditionalFeaturesFrs() and getSupportedPlateNumberFormats() are now required
+! extended the abstract FRS backend contract
 + added independent initial mobile call push delivery with a five-second request timeout
 - prevented repeat dialing after a completed mobile call attempt
 + added virtual intercom
@@ -45,6 +45,8 @@
 + promoted Rubetek RV-3437 integration from beta to stable for firmware 2026.09.210465341
 - fixed premature loading indicator dismissal when opening the web event journal
 + color-coded FALPRS and media-server snapshots in the web event journal
++ added beta support for Dahua cameras
++ added Belarusian and Armenian license plate validation to the mobile API
 - fixed ClickHouse insert failures being reported as successful
 ```
 
