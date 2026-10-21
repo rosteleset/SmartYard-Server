@@ -4587,10 +4587,15 @@
                         lpn.lp_number,
                         lpn.country_code,
                         to_char(valid_from at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') valid_from,
-                        to_char(valid_to at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') as valid_to
+                        to_char(valid_to at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') as valid_to,
+                        w.house_watcher_id
                     from
                         license_plate_numbers lpn
                         join link_lp_flat llf on lpn.lp_id = llf.lp_id
+                        left join houses_watchers w
+                            on w.house_flat_id = llf.flat_id
+                            and w.event_type = '9'
+                            and w.event_detail = lpn.lp_number
                     where
                         llf.flat_id = $flatId
                     order by
@@ -4600,6 +4605,7 @@
                     "country_code" => "countryCode",
                     "valid_from" => "validFrom",
                     "valid_to" => "validTo",
+                    "house_watcher_id" => "watcherId",
                 ]);
 
                 $result = [];
@@ -4615,6 +4621,9 @@
                             }
                             if (isset($row['validTo'])) {
                                 $item['validTo'] = $row['validTo'];
+                            }
+                            if (isset($row['watcherId'])) {
+                                $item['watcherId'] = $row['watcherId'];
                             }
                             $result[] = $item;
                         }
