@@ -19,6 +19,8 @@
 - fixed cameras disappearing from the mobile camera tree after their groups are deleted
 + added MQTT event processing and Zabbix monitoring for Rubetek RACS-1101
 + added a server configuration option to override door-code behavior for blocked flats
++ added parking configuration of cameras: parking areas markup, calibration and computed capacity on the new "Parking" tab of the camera form
+! added the optional parking backend ("parking": {"backend": "internal"}), DB version 101
 ```
 
 ## v1.3.0

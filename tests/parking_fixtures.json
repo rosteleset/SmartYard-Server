@@ -1,0 +1,4144 @@
+{
+ "description": "Shared fixtures for server/backends/parking/geometry.php and client/js/parkingGeometry.js; generated with a synthetic tilted camera",
+ "cases": [
+  {
+   "name": "cars 25x5, 2.5x5, 0deg",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10
+    ],
+    "metric": [
+     [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 25,
+       "y": 0
+      },
+      {
+       "x": 25,
+       "y": 5
+      },
+      {
+       "x": 0,
+       "y": 5
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "name": "trucks 21x7, 3x7, 0deg",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.3,
+        "v": 0.618292682927
+       },
+       {
+        "u": 0.684146341463,
+        "v": 0.618292682927
+       },
+       {
+        "u": 0.65,
+        "v": 0.486363636364
+       },
+       {
+        "u": 0.363636363636,
+        "v": 0.486363636364
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 3,
+      "spaceLength": 7,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     7
+    ],
+    "metric": [
+     [
+      {
+       "x": 0,
+       "y": 8
+      },
+      {
+       "x": 21,
+       "y": 8
+      },
+      {
+       "x": 21,
+       "y": 15
+      },
+      {
+       "x": 0,
+       "y": 15
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "name": "angled 25x6, 2.5x5, 45deg",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.376271186441,
+        "v": 0.460169491525
+       },
+       {
+        "u": 0.69406779661,
+        "v": 0.460169491525
+       },
+       {
+        "u": 0.669718309859,
+        "v": 0.399295774648
+       },
+       {
+        "u": 0.405633802817,
+        "v": 0.399295774648
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 45
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     6
+    ]
+   }
+  },
+  {
+   "name": "angled 25x6, 2.5x5, -45deg",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.376271186441,
+        "v": 0.460169491525
+       },
+       {
+        "u": 0.69406779661,
+        "v": 0.460169491525
+       },
+       {
+        "u": 0.669718309859,
+        "v": 0.399295774648
+       },
+       {
+        "u": 0.405633802817,
+        "v": 0.399295774648
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": -45
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     6
+    ]
+   }
+  },
+  {
+   "name": "parallel 25x2.5, 2.5x5, 90deg",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.833333333333,
+        "v": 0.808333333333
+       },
+       {
+        "u": 0.208333333333,
+        "v": 0.808333333333
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 90
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     5
+    ]
+   }
+  },
+  {
+   "name": "partial space at border 26x5",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.92,
+        "v": 0.95
+       },
+       {
+        "u": 0.814285714286,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10
+    ]
+   }
+  },
+  {
+   "name": "two rows 25x10",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.738888888889,
+        "v": 0.572222222222
+       },
+       {
+        "u": 0.322222222222,
+        "v": 0.572222222222
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     20
+    ]
+   }
+  },
+  {
+   "name": "base edge along the short side 25x5",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 1,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10
+    ]
+   }
+  },
+  {
+   "name": "several areas with different parameters",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "A",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "B",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.3,
+        "v": 0.618292682927
+       },
+       {
+        "u": 0.684146341463,
+        "v": 0.618292682927
+       },
+       {
+        "u": 0.65,
+        "v": 0.486363636364
+       },
+       {
+        "u": 0.363636363636,
+        "v": 0.486363636364
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 3,
+      "spaceLength": 7,
+      "spaceAngle": 0
+     },
+     {
+      "name": "C",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.376271186441,
+        "v": 0.460169491525
+       },
+       {
+        "u": 0.69406779661,
+        "v": 0.460169491525
+       },
+       {
+        "u": 0.669718309859,
+        "v": 0.399295774648
+       },
+       {
+        "u": 0.405633802817,
+        "v": 0.399295774648
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 45
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10,
+     7,
+     6
+    ]
+   }
+  },
+  {
+   "name": "counter-clockwise order is canonicalized",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10
+    ],
+    "metric": [
+     [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 25,
+       "y": 0
+      },
+      {
+       "x": 25,
+       "y": 5
+      },
+      {
+       "x": 0,
+       "y": 5
+      }
+     ]
+    ],
+    "baseEdge": [
+     3
+    ]
+   }
+  },
+  {
+   "name": "clockwise order is kept",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       }
+      ],
+      "baseEdge": 3,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10
+    ],
+    "metric": [
+     [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 0,
+       "y": 5
+      },
+      {
+       "x": 25,
+       "y": 5
+      },
+      {
+       "x": 25,
+       "y": 0
+      }
+     ]
+    ],
+    "baseEdge": [
+     3
+    ]
+   }
+  },
+  {
+   "name": "resolution independence 1280x720",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1280,
+    "frameHeight": 720,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10
+    ],
+    "metric": [
+     [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 25,
+       "y": 0
+      },
+      {
+       "x": 25,
+       "y": 5
+      },
+      {
+       "x": 0,
+       "y": 5
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "name": "no calibration",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": null,
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "noCalibration"
+    ],
+    "capacity": [
+     null
+    ]
+   }
+  },
+  {
+   "name": "no areas",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": []
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "noUsableAreas"
+    ],
+    "capacity": []
+   }
+  },
+  {
+   "name": "disabled configuration",
+   "config": {
+    "enabled": 0,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "disabled"
+    ],
+    "capacity": [
+     10
+    ]
+   }
+  },
+  {
+   "name": "disabled area",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 0,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "noUsableAreas"
+    ],
+    "capacity": [
+     10
+    ]
+   }
+  },
+  {
+   "name": "area too small for a space",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.2,
+        "v": 0.95
+       },
+       {
+        "u": 0.284848484848,
+        "v": 0.743939393939
+       },
+       {
+        "u": 0.239393939394,
+        "v": 0.743939393939
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "areaNoSpaces",
+     "noUsableAreas"
+    ],
+    "capacity": [
+     0
+    ]
+   }
+  },
+  {
+   "name": "collinear calibration points",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.44,
+       "v": 0.95,
+       "x": 10,
+       "y": 0
+      },
+      {
+       "u": 0.74,
+       "v": 0.95,
+       "x": 20,
+       "y": 0
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": []
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "calibrationDegenerate"
+    ]
+   }
+  },
+  {
+   "name": "three calibration points",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      }
+     ],
+     "checks": []
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "calibrationPointsCount"
+    ]
+   }
+  },
+  {
+   "name": "calibration check failed",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 4
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "calibrationCheckFailed"
+    ],
+    "capacity": [
+     10
+    ]
+   }
+  },
+  {
+   "name": "calibration check warning",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.2
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [
+     "calibrationCheckWarning"
+    ],
+    "capacity": [
+     10
+    ]
+   }
+  },
+  {
+   "name": "five calibration points with noise",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.139634364244,
+       "v": 0.950347433737,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.890263774619,
+       "v": 0.949755069026,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792852577944,
+       "v": 0.707092348208,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257294450116,
+       "v": 0.707431580494,
+       "x": 0,
+       "y": 5
+      },
+      {
+       "u": 0.521816081809,
+       "v": 0.571750569699,
+       "x": 12,
+       "y": 10
+      }
+     ],
+     "checks": []
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10
+    ]
+   }
+  },
+  {
+   "name": "five calibration points, one wrong",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      },
+      {
+       "u": 0.522222222222,
+       "v": 0.572222222222,
+       "x": 40,
+       "y": 10
+      }
+     ],
+     "checks": []
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "calibrationReprojection"
+    ]
+   }
+  },
+  {
+   "name": "self-intersecting area",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "areaSelfIntersecting"
+    ]
+   }
+  },
+  {
+   "name": "duplicate vertices",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "areaDuplicateVertices"
+    ]
+   }
+  },
+  {
+   "name": "non-convex area",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.455172413793,
+        "v": 0.83275862069
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "areaNotConvex"
+    ]
+   }
+  },
+  {
+   "name": "overlapping areas",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.455172413793,
+        "v": 0.83275862069
+       },
+       {
+        "u": 0.713793103448,
+        "v": 0.83275862069
+       },
+       {
+        "u": 0.671794871795,
+        "v": 0.644871794872
+       },
+       {
+        "u": 0.479487179487,
+        "v": 0.644871794872
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "areasOverlap"
+    ]
+   }
+  },
+  {
+   "name": "touching areas are allowed",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.738888888889,
+        "v": 0.572222222222
+       },
+       {
+        "u": 0.322222222222,
+        "v": 0.572222222222
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "capacity": [
+     10,
+     10
+    ]
+   }
+  },
+  {
+   "name": "area beyond the horizon",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.429411764706,
+        "v": 0.35
+       },
+       {
+        "u": 0.65,
+        "v": 0.35
+       },
+       {
+        "u": 0.7,
+        "v": 0.05
+       },
+       {
+        "u": 0.3,
+        "v": 0.05
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": false,
+    "problems": [
+     "areaBeyondHorizon"
+    ],
+    "capacity": [
+     10,
+     null
+    ]
+   }
+  },
+  {
+   "name": "invalid width",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 0,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidSpaceWidth"
+    ]
+   }
+  },
+  {
+   "name": "invalid length",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 30,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidSpaceLength"
+    ]
+   }
+  },
+  {
+   "name": "invalid angle",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 100
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidSpaceAngle"
+    ]
+   }
+  },
+  {
+   "name": "string instead of number",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": "2.5",
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidSpaceWidth"
+    ]
+   }
+  },
+  {
+   "name": "invalid base edge",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 4,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidBaseEdge"
+    ]
+   }
+  },
+  {
+   "name": "point outside the frame",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 1.5,
+        "v": 0.5
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidPoint"
+    ]
+   }
+  },
+  {
+   "name": "three vertices",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "areaPointsCount"
+    ]
+   }
+  },
+  {
+   "name": "invalid frame",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 0,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidFrame"
+    ]
+   }
+  },
+  {
+   "name": "too many areas",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.17,
+        "v": 0.95
+       },
+       {
+        "u": 0.184615384615,
+        "v": 0.917307692308
+       },
+       {
+        "u": 0.155769230769,
+        "v": 0.917307692308
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.155769230769,
+        "v": 0.917307692308
+       },
+       {
+        "u": 0.184615384615,
+        "v": 0.917307692308
+       },
+       {
+        "u": 0.198148148148,
+        "v": 0.887037037037
+       },
+       {
+        "u": 0.17037037037,
+        "v": 0.887037037037
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.17037037037,
+        "v": 0.887037037037
+       },
+       {
+        "u": 0.198148148148,
+        "v": 0.887037037037
+       },
+       {
+        "u": 0.210714285714,
+        "v": 0.858928571429
+       },
+       {
+        "u": 0.183928571429,
+        "v": 0.858928571429
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.183928571429,
+        "v": 0.858928571429
+       },
+       {
+        "u": 0.210714285714,
+        "v": 0.858928571429
+       },
+       {
+        "u": 0.222413793103,
+        "v": 0.83275862069
+       },
+       {
+        "u": 0.196551724138,
+        "v": 0.83275862069
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.196551724138,
+        "v": 0.83275862069
+       },
+       {
+        "u": 0.222413793103,
+        "v": 0.83275862069
+       },
+       {
+        "u": 0.233333333333,
+        "v": 0.808333333333
+       },
+       {
+        "u": 0.208333333333,
+        "v": 0.808333333333
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.208333333333,
+        "v": 0.808333333333
+       },
+       {
+        "u": 0.233333333333,
+        "v": 0.808333333333
+       },
+       {
+        "u": 0.243548387097,
+        "v": 0.785483870968
+       },
+       {
+        "u": 0.21935483871,
+        "v": 0.785483870968
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.21935483871,
+        "v": 0.785483870968
+       },
+       {
+        "u": 0.243548387097,
+        "v": 0.785483870968
+       },
+       {
+        "u": 0.253125,
+        "v": 0.7640625
+       },
+       {
+        "u": 0.2296875,
+        "v": 0.7640625
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.2296875,
+        "v": 0.7640625
+       },
+       {
+        "u": 0.253125,
+        "v": 0.7640625
+       },
+       {
+        "u": 0.262121212121,
+        "v": 0.743939393939
+       },
+       {
+        "u": 0.239393939394,
+        "v": 0.743939393939
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.239393939394,
+        "v": 0.743939393939
+       },
+       {
+        "u": 0.262121212121,
+        "v": 0.743939393939
+       },
+       {
+        "u": 0.270588235294,
+        "v": 0.725
+       },
+       {
+        "u": 0.248529411765,
+        "v": 0.725
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.248529411765,
+        "v": 0.725
+       },
+       {
+        "u": 0.270588235294,
+        "v": 0.725
+       },
+       {
+        "u": 0.278571428571,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.278571428571,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.286111111111,
+        "v": 0.690277777778
+       },
+       {
+        "u": 0.265277777778,
+        "v": 0.690277777778
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.265277777778,
+        "v": 0.690277777778
+       },
+       {
+        "u": 0.286111111111,
+        "v": 0.690277777778
+       },
+       {
+        "u": 0.293243243243,
+        "v": 0.674324324324
+       },
+       {
+        "u": 0.272972972973,
+        "v": 0.674324324324
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.272972972973,
+        "v": 0.674324324324
+       },
+       {
+        "u": 0.293243243243,
+        "v": 0.674324324324
+       },
+       {
+        "u": 0.3,
+        "v": 0.659210526316
+       },
+       {
+        "u": 0.280263157895,
+        "v": 0.659210526316
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.280263157895,
+        "v": 0.659210526316
+       },
+       {
+        "u": 0.3,
+        "v": 0.659210526316
+       },
+       {
+        "u": 0.30641025641,
+        "v": 0.644871794872
+       },
+       {
+        "u": 0.287179487179,
+        "v": 0.644871794872
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.287179487179,
+        "v": 0.644871794872
+       },
+       {
+        "u": 0.30641025641,
+        "v": 0.644871794872
+       },
+       {
+        "u": 0.3125,
+        "v": 0.63125
+       },
+       {
+        "u": 0.29375,
+        "v": 0.63125
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.29375,
+        "v": 0.63125
+       },
+       {
+        "u": 0.3125,
+        "v": 0.63125
+       },
+       {
+        "u": 0.318292682927,
+        "v": 0.618292682927
+       },
+       {
+        "u": 0.3,
+        "v": 0.618292682927
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.3,
+        "v": 0.618292682927
+       },
+       {
+        "u": 0.318292682927,
+        "v": 0.618292682927
+       },
+       {
+        "u": 0.32380952381,
+        "v": 0.605952380952
+       },
+       {
+        "u": 0.305952380952,
+        "v": 0.605952380952
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.305952380952,
+        "v": 0.605952380952
+       },
+       {
+        "u": 0.32380952381,
+        "v": 0.605952380952
+       },
+       {
+        "u": 0.329069767442,
+        "v": 0.594186046512
+       },
+       {
+        "u": 0.311627906977,
+        "v": 0.594186046512
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.311627906977,
+        "v": 0.594186046512
+       },
+       {
+        "u": 0.329069767442,
+        "v": 0.594186046512
+       },
+       {
+        "u": 0.334090909091,
+        "v": 0.582954545455
+       },
+       {
+        "u": 0.317045454545,
+        "v": 0.582954545455
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.317045454545,
+        "v": 0.582954545455
+       },
+       {
+        "u": 0.334090909091,
+        "v": 0.582954545455
+       },
+       {
+        "u": 0.338888888889,
+        "v": 0.572222222222
+       },
+       {
+        "u": 0.322222222222,
+        "v": 0.572222222222
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.322222222222,
+        "v": 0.572222222222
+       },
+       {
+        "u": 0.338888888889,
+        "v": 0.572222222222
+       },
+       {
+        "u": 0.34347826087,
+        "v": 0.561956521739
+       },
+       {
+        "u": 0.327173913043,
+        "v": 0.561956521739
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.327173913043,
+        "v": 0.561956521739
+       },
+       {
+        "u": 0.34347826087,
+        "v": 0.561956521739
+       },
+       {
+        "u": 0.347872340426,
+        "v": 0.552127659574
+       },
+       {
+        "u": 0.331914893617,
+        "v": 0.552127659574
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.331914893617,
+        "v": 0.552127659574
+       },
+       {
+        "u": 0.347872340426,
+        "v": 0.552127659574
+       },
+       {
+        "u": 0.352083333333,
+        "v": 0.542708333333
+       },
+       {
+        "u": 0.336458333333,
+        "v": 0.542708333333
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.336458333333,
+        "v": 0.542708333333
+       },
+       {
+        "u": 0.352083333333,
+        "v": 0.542708333333
+       },
+       {
+        "u": 0.35612244898,
+        "v": 0.533673469388
+       },
+       {
+        "u": 0.340816326531,
+        "v": 0.533673469388
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.340816326531,
+        "v": 0.533673469388
+       },
+       {
+        "u": 0.35612244898,
+        "v": 0.533673469388
+       },
+       {
+        "u": 0.36,
+        "v": 0.525
+       },
+       {
+        "u": 0.345,
+        "v": 0.525
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.345,
+        "v": 0.525
+       },
+       {
+        "u": 0.36,
+        "v": 0.525
+       },
+       {
+        "u": 0.363725490196,
+        "v": 0.516666666667
+       },
+       {
+        "u": 0.349019607843,
+        "v": 0.516666666667
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.349019607843,
+        "v": 0.516666666667
+       },
+       {
+        "u": 0.363725490196,
+        "v": 0.516666666667
+       },
+       {
+        "u": 0.367307692308,
+        "v": 0.508653846154
+       },
+       {
+        "u": 0.352884615385,
+        "v": 0.508653846154
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.352884615385,
+        "v": 0.508653846154
+       },
+       {
+        "u": 0.367307692308,
+        "v": 0.508653846154
+       },
+       {
+        "u": 0.370754716981,
+        "v": 0.500943396226
+       },
+       {
+        "u": 0.356603773585,
+        "v": 0.500943396226
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.356603773585,
+        "v": 0.500943396226
+       },
+       {
+        "u": 0.370754716981,
+        "v": 0.500943396226
+       },
+       {
+        "u": 0.374074074074,
+        "v": 0.493518518519
+       },
+       {
+        "u": 0.360185185185,
+        "v": 0.493518518519
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.360185185185,
+        "v": 0.493518518519
+       },
+       {
+        "u": 0.374074074074,
+        "v": 0.493518518519
+       },
+       {
+        "u": 0.377272727273,
+        "v": 0.486363636364
+       },
+       {
+        "u": 0.363636363636,
+        "v": 0.486363636364
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.363636363636,
+        "v": 0.486363636364
+       },
+       {
+        "u": 0.377272727273,
+        "v": 0.486363636364
+       },
+       {
+        "u": 0.380357142857,
+        "v": 0.479464285714
+       },
+       {
+        "u": 0.366964285714,
+        "v": 0.479464285714
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.366964285714,
+        "v": 0.479464285714
+       },
+       {
+        "u": 0.380357142857,
+        "v": 0.479464285714
+       },
+       {
+        "u": 0.383333333333,
+        "v": 0.472807017544
+       },
+       {
+        "u": 0.370175438596,
+        "v": 0.472807017544
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     },
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.370175438596,
+        "v": 0.472807017544
+       },
+       {
+        "u": 0.383333333333,
+        "v": 0.472807017544
+       },
+       {
+        "u": 0.386206896552,
+        "v": 0.466379310345
+       },
+       {
+        "u": 0.373275862069,
+        "v": 0.466379310345
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "tooManyAreas"
+    ]
+   }
+  },
+  {
+   "name": "length less than width",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 5,
+      "spaceLength": 2.5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [
+     "spaceLengthLessThanWidth"
+    ],
+    "capacity": [
+     10
+    ]
+   }
+  }
+ ]
+}
