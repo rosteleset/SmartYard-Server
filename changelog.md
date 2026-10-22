@@ -19,6 +19,7 @@
 ! extended the abstract households backend contract for mobile service settings
 + added supportedPlateNumberFormats and enabled the configured lprsVersion in mobile options
 - fixed mobile face clustering being advertised when unsupported by the FRS server
+- fixed face clustering when the FRS server is not first in a mixed FRS/LPRS server list
 ! extended the abstract FRS backend contract
 + added independent initial mobile call push delivery with a five-second request timeout
 - prevented repeat dialing after a completed mobile call attempt
@@ -43,11 +44,13 @@
 - fixed push requests hanging on APNs, Huawei and RuStore transport errors
 + added the mobile listSupportedPlateNumberFormats API method
 + promoted Rubetek RV-3437 integration from beta to stable for firmware 2026.09.210465341
+- standardized license plate validity dates in listNumbersV2 to ISO 8601 UTC
 - fixed premature loading indicator dismissal when opening the web event journal
 + color-coded FALPRS and media-server snapshots in the web event journal
 + added beta support for Dahua cameras
 + added Belarusian and Armenian license plate validation to the mobile API
 - fixed ClickHouse insert failures being reported as successful
++ added watcherId to the mobile listNumbersV2 response
 ```
 
 ## v1.2.0
