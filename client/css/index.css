@@ -199,6 +199,11 @@ select {
   background-color: gray;
 }
 
+/* wider than modal-xl, used by the parking tab of the camera form */
+.modal-dialog.modal-xxl {
+  max-width: min(1800px, calc(100vw - 2rem));
+}
+
 .note-statusbar {
   display: none;
 }

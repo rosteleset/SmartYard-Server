@@ -727,6 +727,7 @@
                         tab: i18n("addresses.rc"),
                         noHover: true,
                     },
+                    ...(modules.addresses.parking && modules.addresses.parking.available() ? [ modules.addresses.parking.field() ] : []),
                     {
                         id: "timezone",
                         type: "select2",
@@ -1032,6 +1033,10 @@
 
                     $("#" + prefix + "rcArea").html(h);
 
+                    if ($("#" + prefix + "parkingArea").length) {
+                        modules.addresses.parking.renderTab(prefix, cameraId);
+                    }
+
                     $(`#${prefix}mdRefresh`).off("click").on("click", () => {
                         GET("cameras", "camshot", cameraId, true).
                         done(r => {
@@ -1217,6 +1222,10 @@
 
                     if (tab == i18n("addresses.map")) {
                         modules.addresses.cameras.map.invalidateSize();
+                    }
+
+                    if (modules.addresses.parking) {
+                        modules.addresses.parking.tabActivated(prefix, tab);
                     }
 
                     modules.addresses.cameras.modifyCameraFormDone(prefix, form, camera, params);

@@ -10,7 +10,8 @@
 ## devel
 
 ```diff
-
++ added parking configuration of cameras: parking areas markup, calibration and computed capacity on the new "Parking" tab of the camera form
+! added the optional parking backend ("parking": {"backend": "internal"}), DB version 101
 ```
 
 ## v1.3.0

@@ -101,7 +101,7 @@ function cardForm(params) {
         h += `<div class="card mt-2">`;
     } else {
         h += `<div class="card mt-0 mb-0" style="max-height: calc(100vh - 50px);">`;
-        $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
+        $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl modal-xxl");
         if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
             $("#modalBody").parent().addClass("modal-" + params.size);
         }
