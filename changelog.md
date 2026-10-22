@@ -10,6 +10,8 @@
 ## devel
 
 ```diff
++ added parking configuration of cameras: parking areas markup, calibration and computed capacity on the new "Parking" tab of the camera form
+! added the optional parking backend ("parking": {"backend": "internal"}), DB version 101
 + added support for Rubetek RACS-1101 access controller
 - fixed short Akuvox RFID codes by padding them to four bytes before uploading to the intercom
 - fixed the permissions page failing to load when a user's rights reference methods hidden from the editor

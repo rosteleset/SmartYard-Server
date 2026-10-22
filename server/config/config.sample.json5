@@ -180,6 +180,11 @@
             "backend": "internal",
         },
 
+        // parking configurations of cameras (parking spaces markup and calibration)
+        "parking": {
+            "backend": "internal",
+        },
+
         "isdn": {
             "push_routes": {
                 "default": "lanta",

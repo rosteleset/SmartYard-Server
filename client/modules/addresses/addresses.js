@@ -10,6 +10,7 @@
         "houses",
         "domophones",
         "cameras",
+        "parking",
         "subscribers",
         "subscriberInbox",
         "broadcast",

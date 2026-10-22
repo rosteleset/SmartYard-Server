@@ -144,7 +144,9 @@
         "notAcceptable": "Not acceptable",
         "cantStoreData": "Can't store data",
         "wrongPassword": "Wrong password",
-        "wrongCode": "Wrong code"
+        "wrongCode": "Wrong code",
+        "parkingInvalidConfig": "Invalid parking configuration: %s",
+        "parkingRevisionConflict": "The parking configuration was changed by another user"
     },
     "images": {
         "maintenance": "maintenance_en.jpg"

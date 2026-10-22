@@ -317,5 +317,8 @@
     ],
     "100": [
         "v100_lprs_valid_from.sql"
+    ],
+    "101": [
+        "v101_parking.sql"
     ]
 }
