@@ -1,7 +1,7 @@
 <?php
 
    /**
-    * @api {post} /mobile/address/offices адреса офисов ООО "ЛанТа"
+    * @api {post} /mobile/address/offices адреса офисов
     * @apiVersion 1.0.0
     * @apiDescription **метод готов**
     *

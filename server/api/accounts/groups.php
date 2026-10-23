@@ -13,7 +13,7 @@
      * @apiSuccess {Object[]} groups groups
      *
      * @apiSuccessExample {json} Success
-     * {"groups":[{"gid":2,"name":"LanTa","acronym":"lanta","users":1,"admin":null,"adminLogin":null},{"gid":1,"name":"users","acronym":"users","users":2,"admin":null,"adminLogin":null}]}
+     * {"groups":[{"gid":2,"name":"Operators","acronym":"operators","users":1,"admin":null,"adminLogin":null},{"gid":1,"name":"users","acronym":"users","users":2,"admin":null,"adminLogin":null}]}
      */
 
     /**

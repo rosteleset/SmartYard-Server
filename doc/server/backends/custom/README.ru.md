@@ -7,7 +7,6 @@
 ## Код
 
 - **Базовый класс**: `server/backends/custom/custom.php`.
-- **Варианты**: `lanta` и др.
 
 ## Конфигурация
 
@@ -22,4 +21,3 @@
 `tt` backend, mobile restore и др. точки, где нужен project-specific hook.
 
 См. также [общий индекс backend’ов](../README.ru.md) и [загрузчик `loader.php`](../../utils/loader.ru.md).
-

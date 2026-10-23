@@ -40,7 +40,7 @@ const getFakeConfig = serial => {
             authName: "",
             pwd: "",
             transportType: 0, // 0 -udp, 1 - tcp
-            sipServer: "rbt-demo.lanta.me",
+            sipServer: "sip.example.com",
             sipPort: "50142",
             stunEnable: 1,
             stunServer: "",

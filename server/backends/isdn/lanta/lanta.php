@@ -7,7 +7,7 @@
     namespace backends\isdn {
 
         /**
-         * LanTa's variant of flash calls and sms sending
+         * Flash calls and SMS integration
          */
 
         require_once __DIR__ . "/../.traits/push.php";

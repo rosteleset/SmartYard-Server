@@ -9538,7 +9538,7 @@
                     }
                   }
                 },
-                "description": "## office addresses of LanTa LLC\n\n**POST** `/mobile/address/offices`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**method ready**\n\n###Headers\n- `authorization` *(String)* — authorization token\n\n### Success response\n- `-` *(Object[])* — array of addresses\n- `-.lat` *(Number)* — latitude\n- `-.lon` *(Number)* — longitude\n- `-.address` *(String)* — address\n- `-.opening` *(String)* — operating time"
+                "description": "## office addresses\n\n**POST** `/mobile/address/offices`\n\n- **Group:**Address\n- **Version:** 1.0.0\n\n### Description\n**method ready**\n\n###Headers\n- `authorization` *(String)* — authorization token\n\n### Success response\n- `-` *(Object[])* — array of addresses\n- `-.lat` *(Number)* — latitude\n- `-.lon` *(Number)* — longitude\n- `-.address` *(String)* — address\n- `-.opening` *(String)* — operating time"
               }
             },
             {

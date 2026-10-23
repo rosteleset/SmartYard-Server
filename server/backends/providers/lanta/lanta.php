@@ -9,7 +9,7 @@
         use http\Message;
 
         /**
-         * LanTa's variant of flash calls and sms sending
+         * Provider registry and token synchronization
          */
 
         class lanta extends providers {

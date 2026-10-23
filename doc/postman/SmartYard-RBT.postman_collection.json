@@ -9538,7 +9538,7 @@
                     }
                   }
                 },
-                "description": "## адреса офисов ООО \"ЛанТа\"\n\n**POST** `/mobile/address/offices`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**метод готов**\n\n### Headers\n- `authorization` *(String)* — токен авторизации\n\n### Success response\n- `-` *(Object[])* — массив адресов\n- `-.lat` *(Number)* — широта\n- `-.lon` *(Number)* — долгота\n- `-.address` *(String)* — адрес\n- `-.opening` *(String)* — время работы"
+                "description": "## адреса офисов\n\n**POST** `/mobile/address/offices`\n\n- **Group:** Address\n- **Version:** 1.0.0\n\n### Description\n**метод готов**\n\n### Headers\n- `authorization` *(String)* — токен авторизации\n\n### Success response\n- `-` *(Object[])* — массив адресов\n- `-.lat` *(Number)* — широта\n- `-.lon` *(Number)* — долгота\n- `-.address` *(String)* — адрес\n- `-.opening` *(String)* — время работы"
               }
             },
             {

@@ -7,7 +7,6 @@ Project-specific hooks behind a small HTTP-like contract (`GET`/`POST`/`PUT`/`DE
 ## Code
 
 - **Base class**: `server/backends/custom/custom.php`.
-- **Variants**: `lanta`, etc.
 
 ## Configuration
 
@@ -22,4 +21,3 @@ Key in `server/config/config.json`: `backends.custom`.
 `tt` backend, mobile flows, optional integrations.
 
 See also the [backends index](../README.md) and [`loader.php`](../../utils/loader.md).
-
