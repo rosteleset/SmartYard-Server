@@ -208,3 +208,263 @@ test('the dialog is wider on the parking tab only', () => {
     state.handlers['hide.bs.modal.parking']();
     assert.ok(!state.classes.has('modal-xxl'), 'removed when the dialog is closed');
 });
+
+test('a ready but disabled configuration is shown as paused, a deep area shows the one-row warning', () => {
+    const {state, parking} = harness();
+    parking.renderTab('p9', 7);
+    parking.activate('p9');
+    const config = JSON.parse(JSON.stringify(fixtures.find(c => c.name.startsWith('deep area')).config));
+    config.enabled = 0;
+    config.revision = 1;
+    state.requests[0].deferred.resolve({parking: config});
+    state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = parking.states.p9;
+    assert.equal(s.analysis.ready, true);
+    assert.equal(s.analysis.areas[0].capacity, 10);
+    const html = Object.values(state.html).join('\n');
+    assert.ok(html.includes('addresses.parkingStatusReadyDisabled'), 'paused status');
+    assert.ok(!/addresses\.parkingStatusReady</.test(html), 'not shown as processed');
+    assert.ok(html.includes('addresses.parkingProblem_areaMultipleRows'), 'one-row warning');
+});
+
+test('detection and interval parameters: defaults, server settings, validation and payload', () => {
+    const {state, parking} = harness();
+    parking.renderTab('p10', 7);
+    parking.activate('p10');
+    state.requests[0].deferred.resolve({parking: null, settings: {interval: 120, minInterval: 30}});
+    state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = parking.states.p10;
+    parking.action(s, 'create');
+    assert.equal(s.draft.detectionImageSize, 320);
+    assert.equal(s.draft.confidenceThreshold, 0.5);
+    assert.equal(s.draft.processingInterval, null);
+    const html = Object.values(state.html).join('\n');
+    assert.ok(html.includes('addresses.parkingDetectionHint 160 1024 120 30'), 'hint with the server settings');
+    assert.ok(html.includes('data-parking-field="processingInterval" value="" placeholder="120"'), 'global interval as a placeholder');
+
+    parking.fieldChanged(s, 'processingInterval', '20');
+    assert.deepEqual(JSON.parse(JSON.stringify(s.analysis.problems.map(p => p.code).filter(c => c.startsWith('invalid')))), ['invalidProcessingInterval'], 'below the server minimum');
+    parking.fieldChanged(s, 'processingInterval', ' ');
+    assert.equal(s.draft.processingInterval, null, 'empty field means the global interval');
+    parking.fieldChanged(s, 'detectionImageSize', '2000');
+    assert.equal(s.analysis.valid, false);
+    parking.fieldChanged(s, 'detectionImageSize', '640');
+    parking.fieldChanged(s, 'confidenceThreshold', '0,35');
+    parking.fieldChanged(s, 'processingInterval', '45');
+    assert.equal(s.analysis.valid, true);
+    const payload = parking.payload(s);
+    assert.equal(payload.detectionImageSize, 640);
+    assert.equal(payload.confidenceThreshold, 0.35);
+    assert.equal(payload.processingInterval, 45);
+});
+
+test('saved detection parameters are loaded into the draft', () => {
+    const {state, parking} = harness();
+    parking.renderTab('p11', 7);
+    parking.activate('p11');
+    const config = Object.assign(JSON.parse(JSON.stringify(fixtures.find(c => c.name.startsWith('cars')).config)), {revision: 2, detectionImageSize: 512, confidenceThreshold: 0.7, processingInterval: 15});
+    state.requests[0].deferred.resolve({parking: config, settings: {interval: 60, minInterval: 10}});
+    state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = parking.states.p11;
+    assert.equal(s.draft.detectionImageSize, 512);
+    assert.equal(s.draft.confidenceThreshold, 0.7);
+    assert.equal(s.draft.processingInterval, 15);
+    assert.equal(s.analysis.valid, true);
+    assert.equal(s.dirty, false);
+});
+
+// timers under the control of a test
+function fakeTimers(context) {
+    const timers = new Map();
+    let next = 1;
+    context.setTimeout = (fn, ms) => { timers.set(next, {fn, ms}); return next++; };
+    context.clearTimeout = id => { timers.delete(id); };
+    return {
+        pending: () => [...timers.values()].map(t => t.ms),
+        fire() { const [[id, t]] = timers; timers.delete(id); t.fn(); },
+    };
+}
+
+function loadedWithConfig(name, extra, settings = {interval: 60, minInterval: 10}) {
+    const h = harness();
+    const timers = fakeTimers(h.context);
+    h.parking.renderTab(name, 7);
+    h.parking.activate(name);
+    const config = Object.assign(JSON.parse(JSON.stringify(fixtures.find(c => c.name.startsWith('cars')).config)), {revision: 3}, extra);
+    h.state.requests[0].deferred.resolve({parking: config, settings});
+    h.state.requests[1].deferred.resolve({shot: 'AAAA'});
+    return Object.assign(h, {timers, s: h.parking.states[name]});
+}
+
+const resultRequests = state => state.requests.filter(r => r.name === 'parkingResult');
+const panelHtml = state => Object.values(state.html).join('\n');
+const sample = revision => ({
+    revision, processedAt: '2026-10-23 12:03:00.123+03', frameWidth: 1920, frameHeight: 1080, frame: 'BBBB',
+    freeSpaces: [{parkingAreaId: 1, spaces: [[{x: 1, y: 1}, {x: 2, y: 1}, {x: 2, y: 2}, {x: 1, y: 2}], [{x: 3, y: 1}, {x: 4, y: 1}, {x: 4, y: 2}, {x: 3, y: 2}]]}],
+});
+
+test('the Markup / Result switch is shown for a saved configuration only', () => {
+    const {state, parking} = harness();
+    parking.renderTab('r1', 7);
+    parking.activate('r1');
+    state.requests[0].deferred.resolve({parking: null, settings: {interval: 60, minInterval: 10}});
+    state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = parking.states.r1;
+    parking.action(s, 'create');
+    assert.ok(!panelHtml(state).includes('data-parking-action="viewResult"'), 'no switch for an unsaved configuration');
+    parking.action(s, 'viewResult');
+    assert.equal(s.view, 'markup');
+    assert.equal(resultRequests(state).length, 0);
+
+    const {state: st} = loadedWithConfig('r2');
+    assert.ok(panelHtml(st).includes('data-parking-action="viewResult"'), 'switch for a saved one');
+});
+
+test('the result view shows the latest result and refreshes once per interval while open', () => {
+    const {state, parking, s, timers} = loadedWithConfig('r3', {processingInterval: 15});
+    parking.action(s, 'viewResult');
+    assert.equal(s.view, 'result');
+    assert.equal(resultRequests(state).length, 1);
+    assert.ok(panelHtml(state).includes('addresses.parkingResultLoading'), 'loading');
+    resultRequests(state)[0].deferred.resolve({result: sample(3)});
+    const html = panelHtml(state);
+    assert.ok(html.includes('addresses.parkingFreeSpaces 2'), 'free count');
+    assert.ok(html.includes('addresses.parkingResultTime 2026-10-23 12:03:00'), 'time');
+    assert.ok(html.includes('addresses.parkingResultRevision 3'), 'revision');
+    assert.ok(html.includes('addresses.parkingResultRefreshHint 15'), 'interval hint');
+    assert.deepEqual(timers.pending(), [15000], 'next refresh at the camera interval');
+    timers.fire();
+    assert.equal(resultRequests(state).length, 2, 'refreshed');
+    resultRequests(state)[1].deferred.resolve({result: sample(2)});
+    assert.ok(panelHtml(state).includes('addresses.parkingResultOldRevision 2 3'), 'result of an older revision');
+    parking.action(s, 'refreshResult');
+    assert.equal(resultRequests(state).length, 3, 'refresh button');
+    assert.deepEqual(timers.pending(), [], 'no timer while loading');
+    resultRequests(state)[2].deferred.resolve({result: null});
+    assert.ok(panelHtml(state).includes('addresses.parkingNoResult'), 'no result yet');
+    assert.deepEqual(timers.pending(), [15000]);
+});
+
+test('polling stops when leaving the result view, the tab or the form', () => {
+    const {state, parking, s, timers, cameras} = loadedWithConfig('r4');
+    parking.action(s, 'viewResult');
+    resultRequests(state)[0].deferred.resolve({result: sample(3)});
+    assert.deepEqual(timers.pending(), [60000], 'global interval');
+    parking.action(s, 'viewMarkup');
+    assert.deepEqual(timers.pending(), [], 'markup view');
+
+    parking.action(s, 'viewResult');
+    resultRequests(state)[1].deferred.resolve({result: sample(3)});
+    assert.deepEqual(timers.pending(), [60000]);
+    parking.tabActivated('r4', 'addresses.primary');
+    assert.deepEqual(timers.pending(), [], 'another tab');
+    parking.tabActivated('r4', 'addresses.parking');
+    assert.equal(resultRequests(state).length, 3, 'reloaded on return');
+    resultRequests(state)[2].deferred.resolve({result: sample(3)});
+    assert.deepEqual(timers.pending(), [60000]);
+
+    parking.destroy('r4');
+    assert.deepEqual(timers.pending(), [], 'form closed');
+
+    // a late answer after closing schedules nothing
+    const late = loadedWithConfig('r5');
+    late.parking.action(late.s, 'viewResult');
+    late.parking.destroy('r5');
+    resultRequests(late.state)[0].deferred.resolve({result: sample(3)});
+    assert.deepEqual(late.timers.pending(), []);
+});
+
+test('a failed result request is shown and retried on the next interval', () => {
+    const {state, parking, s, timers} = loadedWithConfig('r6');
+    parking.action(s, 'viewResult');
+    resultRequests(state)[0].deferred.reject({});
+    assert.ok(panelHtml(state).includes('addresses.parkingResultError'));
+    assert.deepEqual(timers.pending(), [60000]);
+});
+
+// minimal Leaflet: layers remember what they were created with
+function fakeLeaflet(context) {
+    const layer = (type, points, options) => {
+        const l = {type, points, options, addTo(target) { (target.layers || (target.layers = [])).push(l); return l; }, bindTooltip() { return l; }, on() { return l; }, remove() {}, enableEdit() {}, editEnabled: () => false, disableEdit() {}};
+        return l;
+    };
+    const map = {layers: [], addControl() {}, on() {}, setMaxBounds() {}, invalidateSize() {}, fitBounds() {}, remove() {}};
+    context.L = {
+        CRS: {Simple: {}},
+        map: () => map,
+        Control: {Fullscreen: class {}},
+        layerGroup: () => {
+            const g = {layers: [], addTo() { return g; }, eachLayer(fn) { g.layers.forEach(fn); }, clearLayers() { g.layers = []; }};
+            return g;
+        },
+        polygon: (p, o) => layer('polygon', p, o),
+        polyline: (p, o) => layer('polyline', p, o),
+        rectangle: (p, o) => layer('rectangle', p, o),
+        imageOverlay: (url, b) => layer('image', url, b),
+        marker: (p, o) => layer('marker', p, o),
+        circleMarker: (p, o) => layer('circle', p, o),
+        divIcon: () => ({}),
+        latLngBounds: () => ({pad: () => ({})}),
+        DomEvent: {stop() {}},
+    };
+    context.document = {getElementById: () => ({offsetWidth: 800})};
+    return map;
+}
+
+test('the result map shows the processed frame, the current areas and the free spaces', () => {
+    const h = harness();
+    fakeLeaflet(h.context);
+    fakeTimers(h.context);
+    h.parking.renderTab('m1', 7);
+    h.parking.activate('m1');
+    const config = Object.assign(JSON.parse(JSON.stringify(fixtures.find(c => c.name.startsWith('cars')).config)), {revision: 3});
+    h.state.requests[0].deferred.resolve({parking: config, settings: {interval: 60, minInterval: 10}});
+    h.state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = h.parking.states.m1;
+    assert.ok(s.group.layers.length > 0, 'markup is drawn');
+    h.parking.action(s, 'viewResult');
+    resultRequests(h.state)[0].deferred.resolve({result: Object.assign(sample(3), {frameWidth: 1280, frameHeight: 720})});
+    assert.equal(s.overlay.type, 'image');
+    assert.equal(s.overlay.points, 'data:image/jpg;base64,BBBB');
+    const polygons = s.group.layers.filter(l => l.type === 'polygon');
+    assert.equal(polygons.length, 1 + 2, 'one area and two free spaces');
+    // areas are drawn in the result frame, free spaces in its pixels
+    assert.deepEqual(JSON.parse(JSON.stringify(polygons[0].points[0])), [-config.areas[0].imagePoints[0].v * 720, config.areas[0].imagePoints[0].u * 1280]);
+    assert.deepEqual(JSON.parse(JSON.stringify(polygons[1].points)), [[-1, 1], [-1, 2], [-2, 2], [-2, 1]]);
+    h.parking.action(s, 'viewMarkup');
+    assert.equal(s.overlay.type, 'image');
+    assert.equal(s.overlay.points, 'data:image/jpg;base64,AAAA', 'markup snapshot back');
+    h.parking.action(s, 'viewResult');
+    resultRequests(h.state)[1].deferred.resolve({result: null});
+    assert.equal(s.overlay.type, 'rectangle', 'no frame without a result');
+});
+
+test('the result view shows the status of the latest attempt next to the last successful result', () => {
+    const {state, parking, s} = loadedWithConfig('st1');
+    parking.action(s, 'viewResult');
+    resultRequests(state)[0].deferred.resolve({result: sample(3), status: {status: 'cameraUnavailable', reason: 'parking/camshot answered 503', time: '2026-10-23 12:05:00.5+03', revision: 3}});
+    let html = panelHtml(state);
+    assert.ok(html.includes('addresses.parkingResultTime 2026-10-23 12:03:00'), 'last successful result');
+    assert.ok(html.includes('addresses.parkingAttempt_cameraUnavailable 2026-10-23 12:05:00'), 'failed attempt');
+    assert.ok(html.includes('parking/camshot answered 503'), 'reason');
+    assert.ok(html.includes('addresses.parkingFreeSpaces 2'), 'the result is still shown');
+
+    parking.action(s, 'refreshResult');
+    resultRequests(state)[1].deferred.resolve({result: sample(3), status: {status: 'stale', reason: 'frame 1440x1080, markup made on 1920x1080', time: '2026-10-23 12:06:00+03', revision: 3}});
+    html = panelHtml(state);
+    assert.ok(html.includes('alert-warning') && html.includes('addresses.parkingAttempt_stale 2026-10-23 12:06:00'), 'stale');
+
+    parking.action(s, 'refreshResult');
+    resultRequests(state)[2].deferred.resolve({result: null, status: {status: 'notProcessed', reason: 'disabled', time: '2026-10-23 12:07:00+03', revision: null}});
+    html = panelHtml(state);
+    assert.ok(html.includes('addresses.parkingAttempt_notProcessed_disabled') && html.includes('addresses.parkingNoResult'), 'not processed');
+
+    parking.action(s, 'refreshResult');
+    resultRequests(state)[3].deferred.resolve({result: sample(3), status: {status: 'ok', reason: '', time: '2026-10-23 12:08:00+03', revision: 3}});
+    html = panelHtml(state);
+    assert.ok(html.includes('addresses.parkingAttempt_ok 2026-10-23 12:08:00') && !html.includes('alert-danger'), 'ok');
+
+    parking.action(s, 'refreshResult');
+    resultRequests(state)[4].deferred.resolve({result: null, status: null});
+    assert.ok(!panelHtml(state).includes('parkingAttempt_'), 'nothing before the first attempt');
+});

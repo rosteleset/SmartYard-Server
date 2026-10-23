@@ -1,0 +1,13 @@
+{
+  "name": "parking",
+  "version": "1.0.0",
+  "description": "parking occupancy service for SmartYard-server: finds free parking spaces on camera frames with FALPRS",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.10.0"
+  }
+}

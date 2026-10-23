@@ -3,7 +3,9 @@ begin
     -- Do nothing if the target tables already exist.
     if to_regclass('parking_configs') is not null
        and to_regclass('parking_areas') is not null
-       and to_regclass('parking_config_revisions') is not null then
+       and to_regclass('parking_config_revisions') is not null
+       and to_regclass('parking_results') is not null
+       and to_regclass('parking_statuses') is not null then
         return;
     end if;
 
@@ -12,6 +14,9 @@ begin
         parking_config_id serial primary key,
         camera_id integer not null,
         enabled integer default 1 not null,
+        detection_image_size integer default 320 not null,
+        confidence_threshold numeric(3, 2) default 0.5 not null,
+        processing_interval integer,
         frame_width integer not null,
         frame_height integer not null,
         calibration_model character varying(32) default 'homography' not null,
@@ -33,6 +38,15 @@ begin
 
         constraint parking_configs_enabled_check
             check (enabled in (0, 1)),
+
+        constraint parking_configs_detection_image_size_check
+            check (detection_image_size between 160 and 1024),
+
+        constraint parking_configs_confidence_threshold_check
+            check (confidence_threshold between 0 and 1),
+
+        constraint parking_configs_processing_interval_check
+            check (processing_interval is null or processing_interval between 1 and 86400),
 
         constraint parking_configs_frame_check
             check (frame_width between 16 and 16384 and frame_height between 16 and 16384),
@@ -64,6 +78,15 @@ begin
 
     comment on column parking_configs.enabled
         is 'Whether the configuration should be processed by the parking service';
+
+    comment on column parking_configs.detection_image_size
+        is 'Size the frame is resized to before FALPRS looks for vehicles on it (imageSize), pixels';
+
+    comment on column parking_configs.confidence_threshold
+        is 'Minimum FALPRS confidence for a vehicle detection to be taken into account';
+
+    comment on column parking_configs.processing_interval
+        is 'Processing interval override in seconds, null for the global interval of the parking backend';
 
     comment on column parking_configs.frame_width
         is 'Width in pixels of the reference frame used for markup';
@@ -192,5 +215,80 @@ begin
 
     create index if not exists parking_config_revisions_camera_id_index
         on parking_config_revisions (camera_id, revision desc);
+
+    create table if not exists parking_results
+    (
+        camera_id integer primary key,
+        parking_config_id integer not null,
+        revision integer not null,
+        processed_at timestamp with time zone not null,
+        frame_uuid character varying(64) not null,
+        frame_width integer not null,
+        frame_height integer not null,
+        free_spaces jsonb not null,
+
+        constraint parking_results_camera_fk
+            foreign key (camera_id)
+            references cameras (camera_id)
+            on delete cascade,
+
+        constraint parking_results_config_fk
+            foreign key (parking_config_id)
+            references parking_configs (parking_config_id)
+            on delete cascade,
+
+        constraint parking_results_frame_check
+            check (frame_width between 16 and 16384 and frame_height between 16 and 16384),
+
+        constraint parking_results_free_spaces_check
+            check (jsonb_typeof(free_spaces) = 'array')
+    );
+
+    comment on table parking_results
+        is 'Latest successful occupancy result of a camera, computed by the parking occupancy service';
+
+    comment on column parking_results.revision
+        is 'Revision of the parking configuration the result was computed with';
+
+    comment on column parking_results.processed_at
+        is 'Time the frame was processed';
+
+    comment on column parking_results.frame_uuid
+        is 'Processed frame in the files backend (storage of the parking backend config)';
+
+    comment on column parking_results.free_spaces
+        is 'Free spaces: array of {parkingAreaId, spaces: [[{x, y} x 4]]}, pixels of the processed frame';
+
+    create table if not exists parking_statuses
+    (
+        camera_id integer primary key,
+        parking_config_id integer not null,
+        revision integer not null,
+        status character varying(32) not null,
+        reason character varying(1024) default '' not null,
+        attempted_at timestamp with time zone not null,
+
+        constraint parking_statuses_camera_fk
+            foreign key (camera_id)
+            references cameras (camera_id)
+            on delete cascade,
+
+        constraint parking_statuses_config_fk
+            foreign key (parking_config_id)
+            references parking_configs (parking_config_id)
+            on delete cascade,
+
+        constraint parking_statuses_status_check
+            check (status in ('ok', 'cameraUnavailable', 'detectionFailed', 'stale'))
+    );
+
+    comment on table parking_statuses
+        is 'Outcome of the latest processing attempt of a camera by the parking occupancy service';
+
+    comment on column parking_statuses.status
+        is 'ok, cameraUnavailable, detectionFailed or stale (notProcessed is derived from the configuration, never stored)';
+
+    comment on column parking_statuses.reason
+        is 'Details of a failure';
 end;
 $$;

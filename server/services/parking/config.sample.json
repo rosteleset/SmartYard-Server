@@ -1,0 +1,17 @@
+{
+  "api": {
+    "internal": "http://127.0.0.1/internal"
+  },
+  "falprs": {
+    "url": "http://127.0.0.1:9051/lprs/api/",
+    "authToken": null,
+    "timeout": 10
+  },
+  "listen": {
+    "host": "127.0.0.1",
+    "port": 9071
+  },
+  "frameBaseUrl": "http://127.0.0.1:9071",
+  "camerasRefresh": 300,
+  "cameraTimeout": 10
+}

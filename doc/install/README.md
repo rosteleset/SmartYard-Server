@@ -24,6 +24,7 @@ Step-by-step guides live under the repo [`install/`](../../install/) directory (
 ## Optional
 
 1. [Kamailio](../../install/98.kamailio.md)
+2. [Parking occupancy service](../../install/16.parking.md)
 
 ### Monitoring
 

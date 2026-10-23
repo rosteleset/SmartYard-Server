@@ -21,6 +21,8 @@
 + added a server configuration option to override door-code behavior for blocked flats
 + added parking configuration of cameras: parking areas markup, calibration and computed capacity on the new "Parking" tab of the camera form
 ! added the optional parking backend ("parking": {"backend": "internal"}), DB version 101
++ added the parking occupancy service (server/services/parking): free parking spaces found on camera frames with FALPRS vehicle detection, shown on the "Result" view of the "Parking" tab
+! parking areas hold one row of spaces, detection size, confidence threshold and processing interval are set per camera, new "parking" backend options "interval", "minInterval" and "storage"
 ```
 
 ## v1.3.0
