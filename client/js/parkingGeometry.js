@@ -3,7 +3,8 @@
 
     frame coordinates are normalized (u, v in 0..1, origin top-left, v down), plane coordinates are metres.
     this is a port of server/backends/parking/geometry.php, both must produce the same results
-    (shared fixtures: tests/parking_fixtures.json)
+    (shared fixtures: tests/parking_fixtures.json); freeSpaces() exists only here, it is used by the
+    parking occupancy service (tests/parking_free_spaces.test.cjs)
 */
 
 var parkingGeometry = (function () {
@@ -28,6 +29,12 @@ var parkingGeometry = (function () {
         SPACE_WIDTH: [ 1.5, 6 ],
         SPACE_LENGTH: [ 2, 25 ],
         SPACE_ANGLE: [ -90, 90 ],
+
+        DETECTION_IMAGE_SIZE: [ 160, 1024 ],
+        DEFAULT_DETECTION_IMAGE_SIZE: 320,
+        CONFIDENCE_THRESHOLD: [ 0, 1 ],
+        DEFAULT_CONFIDENCE_THRESHOLD: 0.5,
+        MAX_PROCESSING_INTERVAL: 86400,
     };
 
     function round(v, digits) {
@@ -376,7 +383,14 @@ var parkingGeometry = (function () {
         return scale == 0 || Math.abs(cross(a, b, c)) < 1e-3 * scale;
     }
 
-    g.layout = function (points, baseEdge, width, length, angle, withSpaces) {
+    /*
+        geometry of the single row of spaces of a convex metric quadrilateral (layout version 1), shared by
+        layout() and freeSpaces(): local coordinates s along the base edge and t inwards, the footprint f of
+        a space whose corner is at the origin, the pitch between neighbouring spaces and range(t0) - the
+        interval [ lo, hi ] of the start s of a space at depth t0 that keeps it inside the area (with tolerance)
+    */
+
+    function rowGeometry(points, baseEdge, width, length, angle) {
         let p = [];
         for (let i = 0; i < 4; i++) {
             p.push(points[(baseEdge + i) % 4]);
@@ -386,10 +400,8 @@ var parkingGeometry = (function () {
         let ey = p[1][1] - p[0][1];
         let el = Math.hypot(ex, ey);
 
-        let result = { capacity: 0, spaces: [] };
-
         if (el == 0 || width <= 0 || length <= 0) {
-            return result;
+            return null;
         }
 
         ex /= el;
@@ -468,8 +480,12 @@ var parkingGeometry = (function () {
         let tMax = Math.max(...q.map(v => v[1]));
         let tolerance = g.EDGE_TOLERANCE;
 
-        for (let row = 0; (row + 1) * depth <= tMax + tolerance; row++) {
-            let t0 = row * depth;
+        // range [ lo, hi ] of the start s of a space whose row begins at depth t0, null when nothing fits
+        let range = t0 => {
+            if (t0 + depth > tMax + tolerance) {
+                return null;
+            }
+
             let lo = -Infinity;
             let hi = Infinity;
 
@@ -488,26 +504,51 @@ var parkingGeometry = (function () {
             }
 
             if (!isFinite(lo) || !isFinite(hi) || hi < lo) {
-                continue;
+                return null;
             }
 
-            let count = Math.floor((hi - lo) / pitch + 1e-9) + 1;
-            result.capacity += count;
+            return [ lo, hi ];
+        };
 
-            if (withSpaces) {
-                for (let slot = 0; slot < count; slot++) {
-                    let s0 = lo + slot * pitch;
+        return {
+            f,
+            depth,
+            pitch,
+            range,
+            local: (x, y) => [ (x - p[0][0]) * ex + (y - p[0][1]) * ey, (x - p[0][0]) * nx + (y - p[0][1]) * ny ],
+            space: s0 => f.map(v => [ p[0][0] + (v[0] + s0) * ex + v[1] * nx, p[0][1] + (v[0] + s0) * ey + v[1] * ny ]),
+        };
+    }
 
-                    result.spaces.push({
-                        row,
-                        slot,
-                        points: f.map(v => {
-                            let s = v[0] + s0;
-                            let t = v[1] + t0;
-                            return [ p[0][0] + s * ex + t * nx, p[0][1] + s * ey + t * ny ];
-                        }),
-                    });
-                }
+    /*
+        layout of parking spaces inside a convex metric quadrilateral, see geometry::layout():
+        one row along the base edge, multipleRows tells that the area is deep enough for a second row
+    */
+
+    g.layout = function (points, baseEdge, width, length, angle, withSpaces) {
+        let result = { capacity: 0, multipleRows: false, spaces: [] };
+        let r = rowGeometry(points, baseEdge, width, length, angle);
+
+        if (!r) {
+            return result;
+        }
+
+        result.multipleRows = r.range(r.depth) !== null;
+
+        let row = r.range(0);
+
+        if (row === null) {
+            return result;
+        }
+
+        let [ lo, hi ] = row;
+
+        let count = Math.floor((hi - lo) / r.pitch + 1e-9) + 1;
+        result.capacity = count;
+
+        if (withSpaces) {
+            for (let slot = 0; slot < count; slot++) {
+                result.spaces.push({ slot, points: r.space(lo + slot * r.pitch) });
             }
         }
 
@@ -533,10 +574,11 @@ var parkingGeometry = (function () {
     /*
         validate and analyze a parking configuration, see geometry::analyze()
 
-        problem severities: "error" - can't be saved, "notReady" - saved but not ready for processing, "warning" - informational
+        problem severities: "error" - can't be saved, "notReady" - saved but not ready for processing, "warning" - informational,
+        readiness doesn't depend on the enabled flag: a configuration is processed when it is both ready and enabled
     */
 
-    g.analyze = function (input) {
+    g.analyze = function (input, options) {
         let problems = [];
 
         function problem(code, severity, area) {
@@ -551,6 +593,9 @@ var parkingGeometry = (function () {
 
         let result = {
             enabled: 1,
+            detectionImageSize: g.DEFAULT_DETECTION_IMAGE_SIZE,
+            confidenceThreshold: g.DEFAULT_CONFIDENCE_THRESHOLD,
+            processingInterval: null,
             frameWidth: 0,
             frameHeight: 0,
             calibration: null,
@@ -569,6 +614,37 @@ var parkingGeometry = (function () {
                 result.enabled = Number(input.enabled);
             } else {
                 problem("invalidValue", "error");
+            }
+        }
+
+        if (has(input, "detectionImageSize")) {
+            let v = input.detectionImageSize;
+
+            if (!Number.isInteger(v) || v < g.DETECTION_IMAGE_SIZE[0] || v > g.DETECTION_IMAGE_SIZE[1]) {
+                problem("invalidDetectionImageSize", "error");
+            } else {
+                result.detectionImageSize = v;
+            }
+        }
+
+        if (has(input, "confidenceThreshold")) {
+            let v = input.confidenceThreshold;
+
+            if (!isNumber(v) || round(v, 2) < g.CONFIDENCE_THRESHOLD[0] || round(v, 2) > g.CONFIDENCE_THRESHOLD[1]) {
+                problem("invalidConfidenceThreshold", "error");
+            } else {
+                result.confidenceThreshold = round(v, 2);
+            }
+        }
+
+        if (has(input, "processingInterval") && input.processingInterval !== null) {
+            let v = input.processingInterval;
+            let min = Math.max(1, Math.trunc(Number((options || {}).minInterval)) || 0);
+
+            if (!Number.isInteger(v) || v < min || v > g.MAX_PROCESSING_INTERVAL) {
+                problem("invalidProcessingInterval", "error");
+            } else {
+                result.processingInterval = v;
             }
         }
 
@@ -903,10 +979,15 @@ var parkingGeometry = (function () {
                     problem("areaMetricInvalid", "notReady", index);
                 } else {
                     item.metricPoints = metric.map(point => ({ x: point[0], y: point[1] }));
-                    item.capacity = g.layout(metric, baseEdge, params.spaceWidth, params.spaceLength, params.spaceAngle).capacity;
+                    let layout = g.layout(metric, baseEdge, params.spaceWidth, params.spaceLength, params.spaceAngle);
+                    item.capacity = layout.capacity;
 
                     if (item.capacity == 0) {
                         problem("areaNoSpaces", "warning", index);
+                    }
+
+                    if (layout.multipleRows) {
+                        problem("areaMultipleRows", "warning", index);
                     }
 
                     let cu = (uv[0][0] + uv[1][0] + uv[2][0] + uv[3][0]) / 4;
@@ -948,11 +1029,6 @@ var parkingGeometry = (function () {
                 problems.push({ code: "noUsableAreas", severity: "notReady" });
                 notReady = true;
             }
-
-            if (!result.enabled) {
-                problems.push({ code: "disabled", severity: "notReady" });
-                notReady = true;
-            }
         }
 
         result.problems = problems;
@@ -976,13 +1052,182 @@ var parkingGeometry = (function () {
         let metric = area.metricPoints.map(p => [ p.x, p.y ]);
 
         return g.layout(metric, area.baseEdge, area.spaceWidth, area.spaceLength, area.spaceAngle, true).spaces.map(space => ({
-            row: space.row,
             slot: space.slot,
             points: space.points.map(p => {
                 let [ u, v ] = g.apply(hi, p[0], p[1]);
                 return { u, v };
             }),
         }));
+    };
+
+    /*
+        interval of starts s0 at which the footprint f shifted by (s0, 0) intersects the convex polygon v
+        (both in local row coordinates): the open interval ( a, b ) or null, touching doesn't count;
+        separating axis test over the edge normals of both polygons
+    */
+
+    function blockedStarts(f, v) {
+        let a = -Infinity;
+        let b = Infinity;
+
+        for (let poly of [ f, v ]) {
+            let n = poly.length;
+
+            for (let i = 0; i < n; i++) {
+                let j = (i + 1) % n;
+                let ax = poly[i][1] - poly[j][1];
+                let ay = poly[j][0] - poly[i][0];
+                let len = Math.hypot(ax, ay);
+
+                if (len == 0) {
+                    continue;
+                }
+
+                ax /= len;
+                ay /= len;
+
+                let fp = f.map(q => q[0] * ax + q[1] * ay);
+                let vp = v.map(q => q[0] * ax + q[1] * ay);
+                let fMin = Math.min(...fp), fMax = Math.max(...fp);
+                let vMin = Math.min(...vp), vMax = Math.max(...vp);
+
+                // projections overlap when fMin + s0 * ax < vMax and fMax + s0 * ax > vMin
+                if (Math.abs(ax) < 1e-12) {
+                    if (fMin >= vMax - 1e-9 || fMax <= vMin + 1e-9) {
+                        return null;
+                    }
+                    continue;
+                }
+
+                let x1 = (vMax - fMin) / ax;
+                let x2 = (vMin - fMax) / ax;
+
+                a = Math.max(a, Math.min(x1, x2));
+                b = Math.min(b, Math.max(x1, x2));
+            }
+        }
+
+        return b - a > 1e-9 ? [ a, b ] : null;
+    }
+
+    /*
+        free spaces of a revision snapshot on one processed frame
+
+        snapshot: revision snapshot (calibration.homography, confidenceThreshold, areas with metricPoints and space parameters),
+        detections: FALPRS detectVehiclesObb objects { classId, className, confidence, box, angle, corners: [ x1, y1, ..., x4, y4 ] }
+        with corners in pixels of the processed frame, frame: { width, height } of that frame in pixels
+
+        detections below the confidence threshold are ignored (any class counts), the corners of every other one are mapped
+        to the parking plane as if they lay on it (vehicle footprint); along the single row of every enabled area the starts
+        of a space that intersect no footprint form gaps, each gap holds the most spaces of the layout pitch that fit,
+        as one block centred in it; neighbouring blocks keep at least one pitch between starts, so spaces never overlap
+        and an area never has more free spaces than its capacity, an empty area has exactly its capacity
+
+        returns [ { parkingAreaId, spaces: [ [ { x, y } x 4 ] ] } ] for enabled areas, points in pixels of the frame
+    */
+
+    g.freeSpaces = function (snapshot, detections, frame) {
+        let h = snapshot && snapshot.calibration ? snapshot.calibration.homography : null;
+        let inverse = h ? g.invert(h) : null;
+
+        if (!inverse || !frame || !(frame.width > 0) || !(frame.height > 0)) {
+            return [];
+        }
+
+        let threshold = isNumber(snapshot.confidenceThreshold) ? snapshot.confidenceThreshold : g.DEFAULT_CONFIDENCE_THRESHOLD;
+
+        // vehicle footprints on the parking plane
+        let footprints = [];
+
+        for (let d of detections || []) {
+            if (!d || !isNumber(d.confidence) || d.confidence < threshold || !Array.isArray(d.corners) || d.corners.length != 8 || !d.corners.every(isNumber)) {
+                continue;
+            }
+
+            let footprint = [];
+
+            for (let i = 0; i < 4; i++) {
+                let [ x, y, w ] = g.apply(h, d.corners[2 * i] / frame.width, d.corners[2 * i + 1] / frame.height);
+
+                // a corner beyond the horizon of the calibration is not on the parking plane, nor is the vehicle
+                if (x === null || w <= 0) {
+                    footprint = null;
+                    break;
+                }
+
+                footprint.push([ x, y ]);
+            }
+
+            if (footprint) {
+                footprints.push(footprint);
+            }
+        }
+
+        let pixels = points => points.map(([ x, y ]) => {
+            let [ u, v ] = g.apply(inverse, x, y);
+            return { x: u * frame.width, y: v * frame.height };
+        });
+
+        let result = [];
+
+        for (let area of snapshot.areas || []) {
+            if (!area.enabled || !area.metricPoints) {
+                continue;
+            }
+
+            let item = { parkingAreaId: area.parkingAreaId, spaces: [] };
+            result.push(item);
+
+            let r = rowGeometry(area.metricPoints.map(p => [ p.x, p.y ]), area.baseEdge, area.spaceWidth, area.spaceLength, area.spaceAngle);
+            let row = r ? r.range(0) : null;
+
+            if (!row) {
+                continue;
+            }
+
+            let [ lo, hi ] = row;
+
+            let blocked = footprints.
+                map(fp => blockedStarts(r.f, fp.map(([ x, y ]) => r.local(x, y)))).
+                filter(b => b && b[1] > lo && b[0] < hi).
+                sort((x, y) => x[0] - y[0]);
+
+            // gaps: closed intervals of allowed starts between the blocked open intervals
+            let gaps = [];
+            let from = lo;
+
+            for (let [ a, b ] of blocked) {
+                if (a >= from) {
+                    gaps.push([ from, Math.min(a, hi) ]);
+                }
+                from = Math.max(from, b);
+            }
+
+            if (from <= hi) {
+                gaps.push([ from, hi ]);
+            }
+
+            let last = -Infinity;
+
+            for (let [ g0, g1 ] of gaps) {
+                g0 = Math.max(g0, last + r.pitch);
+
+                if (g1 - g0 < -1e-9) {
+                    continue;
+                }
+
+                let count = Math.floor(Math.max(0, g1 - g0) / r.pitch + 1e-9) + 1;
+                let start = g0 + Math.max(0, (g1 - g0) - (count - 1) * r.pitch) / 2;
+
+                for (let k = 0; k < count; k++) {
+                    item.spaces.push(pixels(r.space(start + k * r.pitch)));
+                }
+
+                last = start + (count - 1) * r.pitch;
+            }
+        }
+
+        return result;
     };
 
     return g;

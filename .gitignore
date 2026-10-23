@@ -51,6 +51,7 @@ client/version.app
 !server/services/intercom_provision/package.json
 !server/services/event/package.json
 !server/services/sys_exporter/package.json
+!server/services/parking/package.json
 
 server/db/mongo/
 server/storage/
@@ -84,6 +85,7 @@ server/mqtt/package-lock.json
 server/services/push/assets/*
 server/services/push/.env*
 server/services/event/config.json
+server/services/parking/config.json
 server/services/sys_exporter/.env
 server/mobile/**/custom/**
 server/hw/**/custom

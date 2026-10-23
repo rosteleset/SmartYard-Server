@@ -97,9 +97,7 @@
             $module = $m[1];
             $method = $m[2];
 
-            if ($m[3]){
-                $param = $m[3] ?? null;
-            }
+            $param = $m[3] ?? null;
 
             if (file_exists(__DIR__ . "/internal/{$module}/{$method}.php")) {
                 require_once __DIR__ . "/internal/{$module}/{$method}.php";

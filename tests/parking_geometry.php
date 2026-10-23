@@ -22,13 +22,13 @@ $failed = 0;
 
 // used by tests/parking_geometry.test.cjs to compare the JS port with this implementation
 if (in_array('--dump', $argv)) {
-    echo json_encode(array_map(fn ($case) => geometry::analyze($case['config']), $fixtures['cases']));
+    echo json_encode(array_map(fn ($case) => geometry::analyze($case['config'], $case['options'] ?? []), $fixtures['cases']));
     exit(0);
 }
 
 foreach ($fixtures['cases'] as $case) {
     try {
-        $result = geometry::analyze($case['config']);
+        $result = geometry::analyze($case['config'], $case['options'] ?? []);
         $expect = $case['expect'];
 
         $expectedCodes = $expect['problems'];
@@ -39,6 +39,10 @@ foreach ($fixtures['cases'] as $case) {
 
         if (array_key_exists('capacity', $expect)) {
             check(array_column($result['areas'], 'capacity') === $expect['capacity'], 'capacity ' . json_encode(array_column($result['areas'], 'capacity')));
+        }
+
+        foreach ($expect['parameters'] ?? [] as $key => $value) {
+            check($result[$key] === $value, "$key " . json_encode($result[$key]));
         }
 
         if (array_key_exists('baseEdge', $expect)) {

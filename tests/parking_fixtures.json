@@ -528,7 +528,7 @@
    }
   },
   {
-   "name": "two rows 25x10",
+   "name": "deep area 25x10 counts one row",
    "config": {
     "enabled": 1,
     "frameWidth": 1920,
@@ -602,14 +602,16 @@
    "expect": {
     "valid": true,
     "ready": true,
-    "problems": [],
+    "problems": [
+     "areaMultipleRows"
+    ],
     "capacity": [
-     20
+     10
     ]
    }
   },
   {
-   "name": "base edge along the short side 25x5",
+   "name": "base edge along the short side 25x5 counts one row",
    "config": {
     "enabled": 1,
     "frameWidth": 1920,
@@ -683,9 +685,11 @@
    "expect": {
     "valid": true,
     "ready": true,
-    "problems": [],
+    "problems": [
+     "areaMultipleRows"
+    ],
     "capacity": [
-     10
+     2
     ]
    }
   },
@@ -1235,7 +1239,7 @@
    }
   },
   {
-   "name": "disabled configuration",
+   "name": "disabled configuration stays ready",
    "config": {
     "enabled": 0,
     "frameWidth": 1920,
@@ -1308,10 +1312,8 @@
    },
    "expect": {
     "valid": true,
-    "ready": false,
-    "problems": [
-     "disabled"
-    ],
+    "ready": true,
+    "problems": [],
     "capacity": [
      10
     ]
@@ -1941,6 +1943,7 @@
     "valid": true,
     "ready": false,
     "problems": [
+     "areaMultipleRows",
      "calibrationReprojection"
     ]
    }
@@ -4133,11 +4136,682 @@
     "valid": true,
     "ready": true,
     "problems": [
+     "areaMultipleRows",
      "spaceLengthLessThanWidth"
     ],
     "capacity": [
-     10
+     5
     ]
+   }
+  },
+  {
+   "name": "detection parameters default to 320 and 0.5",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ]
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "parameters": {
+     "detectionImageSize": 320,
+     "confidenceThreshold": 0.5,
+     "processingInterval": null
+    }
+   }
+  },
+  {
+   "name": "detection parameters are kept, threshold is rounded",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ],
+    "detectionImageSize": 1024,
+    "confidenceThreshold": 0.355,
+    "processingInterval": 10
+   },
+   "options": {
+    "minInterval": 10
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "parameters": {
+     "detectionImageSize": 1024,
+     "confidenceThreshold": 0.36,
+     "processingInterval": 10
+    }
+   }
+  },
+  {
+   "name": "detection image size below 160",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ],
+    "detectionImageSize": 159
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidDetectionImageSize"
+    ]
+   }
+  },
+  {
+   "name": "detection image size is not an integer",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ],
+    "detectionImageSize": 320.5
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidDetectionImageSize"
+    ]
+   }
+  },
+  {
+   "name": "confidence threshold above 1",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ],
+    "confidenceThreshold": 1.01
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidConfidenceThreshold"
+    ]
+   }
+  },
+  {
+   "name": "processing interval below the minimum",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ],
+    "processingInterval": 9
+   },
+   "options": {
+    "minInterval": 10
+   },
+   "expect": {
+    "valid": false,
+    "ready": false,
+    "problems": [
+     "invalidProcessingInterval"
+    ]
+   }
+  },
+  {
+   "name": "processing interval of 1 s without a configured minimum",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ],
+    "processingInterval": 1
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "parameters": {
+     "detectionImageSize": 320,
+     "confidenceThreshold": 0.5,
+     "processingInterval": 1
+    }
+   }
+  },
+  {
+   "name": "null processing interval uses the global one",
+   "config": {
+    "enabled": 1,
+    "frameWidth": 1920,
+    "frameHeight": 1080,
+    "calibration": {
+     "points": [
+      {
+       "u": 0.14,
+       "v": 0.95,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "u": 0.89,
+       "v": 0.95,
+       "x": 25,
+       "y": 0
+      },
+      {
+       "u": 0.792857142857,
+       "v": 0.707142857143,
+       "x": 25,
+       "y": 5
+      },
+      {
+       "u": 0.257142857143,
+       "v": 0.707142857143,
+       "x": 0,
+       "y": 5
+      }
+     ],
+     "checks": [
+      {
+       "u1": 0.14,
+       "v1": 0.95,
+       "u2": 0.215,
+       "v2": 0.95,
+       "length": 2.5
+      }
+     ]
+    },
+    "areas": [
+     {
+      "name": "",
+      "enabled": 1,
+      "imagePoints": [
+       {
+        "u": 0.14,
+        "v": 0.95
+       },
+       {
+        "u": 0.89,
+        "v": 0.95
+       },
+       {
+        "u": 0.792857142857,
+        "v": 0.707142857143
+       },
+       {
+        "u": 0.257142857143,
+        "v": 0.707142857143
+       }
+      ],
+      "baseEdge": 0,
+      "spaceWidth": 2.5,
+      "spaceLength": 5,
+      "spaceAngle": 0
+     }
+    ],
+    "processingInterval": null
+   },
+   "options": {
+    "minInterval": 10
+   },
+   "expect": {
+    "valid": true,
+    "ready": true,
+    "problems": [],
+    "parameters": {
+     "detectionImageSize": 320,
+     "confidenceThreshold": 0.5,
+     "processingInterval": null
+    }
    }
   }
  ]
