@@ -9,9 +9,9 @@
   },
   "listen": {
     "host": "127.0.0.1",
-    "port": 9071
+    "port": 5081
   },
-  "frameBaseUrl": "http://127.0.0.1:9071",
+  "frameBaseUrl": "http://127.0.0.1:5081",
   "camerasRefresh": 300,
   "cameraTimeout": 10
 }

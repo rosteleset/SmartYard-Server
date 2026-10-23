@@ -468,3 +468,12 @@ test('the result view shows the status of the latest attempt next to the last su
     resultRequests(state)[4].deferred.resolve({result: null, status: null});
     assert.ok(!panelHtml(state).includes('parkingAttempt_'), 'nothing before the first attempt');
 });
+
+test('a result the server could not store is shown as a failed attempt', () => {
+    const {state, parking, s} = loadedWithConfig('st2');
+    parking.action(s, 'viewResult');
+    resultRequests(state)[0].deferred.resolve({result: null, status: {status: 'saveFailed', reason: 'File storage backend is not available: tmpfs', time: '2026-10-23 16:00:00+03', revision: 3}});
+    const html = panelHtml(state);
+    assert.ok(html.includes('alert-danger') && html.includes('addresses.parkingAttempt_saveFailed 2026-10-23 16:00:00'), 'status');
+    assert.ok(html.includes('File storage backend is not available: tmpfs'), 'reason');
+});

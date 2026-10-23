@@ -405,6 +405,7 @@
     "parkingAttempt_cameraUnavailable": "Камера недоступна, последняя попытка: %s",
     "parkingAttempt_detectionFailed": "Ошибка поиска машин в FALPRS, последняя попытка: %s",
     "parkingAttempt_stale": "Разметка не подходит к кадру камеры (другое соотношение сторон), последняя попытка: %s. Переразметьте парковку",
+    "parkingAttempt_saveFailed": "Не удалось сохранить результат на сервере, последняя попытка: %s",
     "parkingAttempt_notProcessed_disabled": "Не обрабатывается: обработка парковки выключена",
     "parkingAttempt_notProcessed_notReady": "Не обрабатывается: конфигурация не готова к обработке",
     "parkingFrameAspectChanged": "Разметка выполнена на кадре %s, текущий кадр %s имеет другое соотношение сторон. Проверьте и переразметьте парковку.",

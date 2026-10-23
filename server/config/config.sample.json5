@@ -190,7 +190,8 @@
             // the least processing interval a camera can override the global one with, seconds. Defaults to 10.
             "minInterval": 10,
 
-            // storage of the processed frames of the latest occupancy results: tmpfs or gridfs. Defaults to tmpfs.
+            // storage of the processed frames of the latest occupancy results: tmpfs or gridfs.
+            // Defaults to tmpfs when the tmpfs backend is configured, otherwise to gridfs.
             "storage": "tmpfs",
         },
 

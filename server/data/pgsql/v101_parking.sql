@@ -279,14 +279,14 @@ begin
             on delete cascade,
 
         constraint parking_statuses_status_check
-            check (status in ('ok', 'cameraUnavailable', 'detectionFailed', 'stale'))
+            check (status in ('ok', 'cameraUnavailable', 'detectionFailed', 'stale', 'saveFailed'))
     );
 
     comment on table parking_statuses
         is 'Outcome of the latest processing attempt of a camera by the parking occupancy service';
 
     comment on column parking_statuses.status
-        is 'ok, cameraUnavailable, detectionFailed or stale (notProcessed is derived from the configuration, never stored)';
+        is 'ok, cameraUnavailable, detectionFailed, stale or saveFailed (notProcessed is derived from the configuration, never stored)';
 
     comment on column parking_statuses.reason
         is 'Details of a failure';
