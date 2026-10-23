@@ -11,20 +11,23 @@ const context = {};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../client/js/parkingGeometry.js'), 'utf8'), context);
 const g = context.parkingGeometry;
 // results are created in another realm, plain() makes them comparable with deepStrictEqual
-const analyze = config => plain(g.analyze(plain(config)));
+const analyze = (config, options) => plain(g.analyze(plain(config), options));
 const fixtures = JSON.parse(fs.readFileSync(path.join(__dirname, 'parking_fixtures.json'), 'utf8'));
 const codes = problems => [...new Set(problems.map(p => p.code))].sort();
 const plain = value => JSON.parse(JSON.stringify(value));
 
 for (const item of fixtures.cases) {
     test(item.name, () => {
-        const result = analyze(item.config);
+        const result = analyze(item.config, item.options);
         const expect = item.expect;
         assert.deepEqual(codes(result.problems), [...expect.problems].sort());
         assert.equal(result.valid, expect.valid);
         assert.equal(result.ready, expect.ready);
         if ('capacity' in expect) {
             assert.deepEqual(result.areas.map(a => a.capacity), expect.capacity);
+        }
+        for (const [key, value] of Object.entries(expect.parameters || {})) {
+            assert.strictEqual(result[key], value, key);
         }
         if ('baseEdge' in expect) {
             assert.deepEqual(result.areas.map(a => a.baseEdge), expect.baseEdge);
@@ -73,8 +76,11 @@ try {
 
 test('JS and PHP give the same results', {skip: php ? false : 'php is not available'}, () => {
     fixtures.cases.forEach((item, i) => {
-        const js = analyze(item.config);
+        const js = analyze(item.config, item.options);
         const ph = php[i];
+        for (const key of ['detectionImageSize', 'confidenceThreshold', 'processingInterval']) {
+            assert.strictEqual(js[key], ph[key], `${item.name}: ${key}`);
+        }
         assert.deepEqual(js.problems.map(p => [p.code, p.severity, p.area ?? null]), ph.problems.map(p => [p.code, p.severity, p.area ?? null]), item.name);
         assert.equal(js.ready, ph.ready, item.name);
         assert.equal(js.homography === null, ph.homography === null, item.name);

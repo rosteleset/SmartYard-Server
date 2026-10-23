@@ -55,6 +55,8 @@
     "parking_areas",
     "parking_config_revisions",
     "parking_configs",
+    "parking_results",
+    "parking_statuses",
     "plog_call_done",
     "plog_door_open",
     "providers",

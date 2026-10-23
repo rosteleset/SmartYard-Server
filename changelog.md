@@ -12,6 +12,8 @@
 ```diff
 + added parking configuration of cameras: parking areas markup, calibration and computed capacity on the new "Parking" tab of the camera form
 ! added the optional parking backend ("parking": {"backend": "internal"}), DB version 101
++ added the parking occupancy service (server/services/parking): free parking spaces found on camera frames with FALPRS vehicle detection, shown on the "Result" view of the "Parking" tab
+! parking areas hold one row of spaces, detection size, confidence threshold and processing interval are set per camera, new "parking" backend options "interval", "minInterval" and "storage"
 + added support for Rubetek RACS-1101 access controller
 - fixed short Akuvox RFID codes by padding them to four bytes before uploading to the intercom
 - fixed the permissions page failing to load when a user's rights reference methods hidden from the editor

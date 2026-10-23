@@ -76,6 +76,15 @@
             calA: "",
             calB: "",
             checkLength: "2.5",
+            // "markup" or "result": the latest occupancy result of the camera
+            view: "markup",
+            resultAvailable: AVAIL("cameras", "parkingResult", "GET"),
+            result: null,
+            status: null,
+            resultLoaded: false,
+            resultLoading: false,
+            resultError: false,
+            resultTimer: null,
         };
 
         parking.states[prefix] = state;
@@ -115,6 +124,10 @@
 
         dialog.toggleClass("modal-xxl", wide);
 
+        if (!wide && parking.states[prefix]) {
+            parking.stopResult(parking.states[prefix]);
+        }
+
         if (wide) {
             // the class must not stay for other dialogs (cardForm also removes it on the next form)
             $("#modal").off("hide.bs.modal.parking").one("hide.bs.modal.parking", () => dialog.removeClass("modal-xxl"));
@@ -132,6 +145,8 @@
 
         if (!state.loaded && !state.loading) {
             parking.load(state);
+        } else if (state.view == "result") {
+            parking.loadResult(state);
         } else if (state.map) {
             state.map.invalidateSize();
             if (!state.fitted) {
@@ -155,6 +170,10 @@
 
     destroy: function (prefix) {
         let state = modules.addresses.parking.states[prefix];
+
+        if (state) {
+            modules.addresses.parking.stopResult(state);
+        }
 
         if (state && state.map) {
             try {
@@ -206,6 +225,9 @@
         GET("cameras", "parking", state.cameraId, true).
         done(r => {
             config = (r && r.parking) ? r.parking : null;
+            if (r && r.settings) {
+                state.settings = r.settings;
+            }
         }).
         fail(FAIL).
         fail(() => {
@@ -218,6 +240,77 @@
             image = (r && r.shot) ? ("data:image/jpg;base64," + r.shot) : null;
         }).
         always(finish);
+    },
+
+    // occupancy result
+
+    resultInterval: function (state) {
+        let parking = modules.addresses.parking;
+
+        return (state.saved && state.saved.processingInterval) || parking.settings(state).interval;
+    },
+
+    stopResult: function (state) {
+        clearTimeout(state.resultTimer);
+        state.resultTimer = null;
+    },
+
+    // load the latest result now and then once per processing interval while the result view is open
+    loadResult: function (state) {
+        let parking = modules.addresses.parking;
+
+        parking.stopResult(state);
+
+        if (state.view != "result" || parking.states[state.prefix] !== state) {
+            return;
+        }
+
+        state.resultLoading = true;
+        parking.renderPanel(state);
+
+        GET("cameras", "parkingResult", state.cameraId, true).
+        done(r => {
+            state.result = (r && r.result) ? r.result : null;
+            state.status = (r && r.status) ? r.status : null;
+            state.resultError = false;
+        }).
+        fail(() => {
+            state.resultError = true;
+        }).
+        always(() => {
+            state.resultLoading = false;
+            state.resultLoaded = true;
+
+            if (state.view != "result" || parking.states[state.prefix] !== state) {
+                return;
+            }
+
+            parking.renderMap(state, true);
+            parking.renderPanel(state);
+
+            state.resultTimer = setTimeout(() => parking.loadResult(state), parking.resultInterval(state) * 1000);
+        });
+    },
+
+    setView: function (state, view) {
+        let parking = modules.addresses.parking;
+
+        if (view == state.view || (view == "result" && (!state.saved || !state.resultAvailable))) {
+            return;
+        }
+
+        state.view = view;
+        state.mode = null;
+        state.pending = [];
+
+        if (view == "result") {
+            parking.loadResult(state);
+        } else {
+            parking.stopResult(state);
+        }
+
+        parking.renderMap(state, true);
+        parking.renderPanel(state);
     },
 
     setImage: function (state, image, callback) {
@@ -262,6 +355,9 @@
         return {
             revision: config.revision,
             enabled: config.enabled,
+            detectionImageSize: config.detectionImageSize,
+            confidenceThreshold: config.confidenceThreshold,
+            processingInterval: config.processingInterval,
             frameWidth: config.frameWidth,
             frameHeight: config.frameHeight,
             calibration: config.calibration ? {
@@ -306,6 +402,9 @@
         return JSON.parse(JSON.stringify({
             revision: d.revision,
             enabled: d.enabled,
+            detectionImageSize: d.detectionImageSize,
+            confidenceThreshold: d.confidenceThreshold,
+            processingInterval: d.processingInterval,
             frameWidth: d.frameWidth,
             frameHeight: d.frameHeight,
             calibration: d.calibration,
@@ -314,7 +413,9 @@
     },
 
     analyze: function (state) {
-        state.analysis = state.draft ? parkingGeometry.analyze(modules.addresses.parking.payload(state)) : null;
+        let parking = modules.addresses.parking;
+
+        state.analysis = state.draft ? parkingGeometry.analyze(parking.payload(state), { minInterval: parking.settings(state).minInterval }) : null;
     },
 
     changed: function (state, deferPanel) {
@@ -478,6 +579,16 @@
         }
     },
 
+    // processing settings from the server (backend config), used until they are loaded
+    defaultSettings: {
+        interval: 60,
+        minInterval: 10,
+    },
+
+    settings: function (state) {
+        return state.settings || modules.addresses.parking.defaultSettings;
+    },
+
     number: function (v) {
         let n = parseFloat(String(v).replace(",", "."));
 
@@ -515,11 +626,26 @@
                 parking.refreshImage(state);
                 break;
 
+            case "viewMarkup":
+                parking.setView(state, "markup");
+                break;
+
+            case "viewResult":
+                parking.setView(state, "result");
+                break;
+
+            case "refreshResult":
+                parking.loadResult(state);
+                break;
+
             case "create":
                 if (state.imageSize) {
                     state.draft = {
                         revision: 0,
                         enabled: 1,
+                        detectionImageSize: parkingGeometry.DEFAULT_DETECTION_IMAGE_SIZE,
+                        confidenceThreshold: parkingGeometry.DEFAULT_CONFIDENCE_THRESHOLD,
+                        processingInterval: null,
                         frameWidth: state.imageSize.width,
                         frameHeight: state.imageSize.height,
                         calibration: null,
@@ -654,6 +780,15 @@
                 d.enabled = value ? 1 : 0;
                 break;
 
+            case "detectionImageSize":
+            case "confidenceThreshold":
+                d[field] = parking.number(value);
+                break;
+
+            case "processingInterval":
+                d.processingInterval = $.trim(value) === "" ? null : parking.number(value);
+                break;
+
             case "name":
                 area.name = $.trim(value);
                 break;
@@ -714,7 +849,7 @@
         let parking = modules.addresses.parking;
         let d = state.draft;
 
-        if (!state.mode || !d) {
+        if (!state.mode || !d || state.view == "result") {
             return;
         }
 
@@ -836,6 +971,11 @@
 
             state.group = L.layerGroup().addTo(state.map);
             reset = true;
+        }
+
+        if (state.view == "result") {
+            parking.renderResultMap(state);
+            return;
         }
 
         let bounds = [ [ -f.height, 0 ], [ 0, f.width ] ];
@@ -1018,6 +1158,55 @@
         }
     },
 
+    // the processed frame with the areas of the current revision and the free spaces found on it
+    renderResultMap: function (state) {
+        let parking = modules.addresses.parking;
+        let r = state.result;
+        let f = r ? { width: r.frameWidth, height: r.frameHeight } : parking.frame(state);
+        let bounds = [ [ -f.height, 0 ], [ 0, f.width ] ];
+        let el = document.getElementById(state.prefix + "parkingMap");
+
+        if (state.overlay) {
+            state.overlay.remove();
+        }
+
+        state.overlay = (r && r.frame) ? L.imageOverlay("data:image/jpg;base64," + r.frame, bounds) : L.rectangle(bounds, { color: "#343a40", weight: 1, fillOpacity: 0.6, interactive: false });
+        state.overlay.addTo(state.map);
+        state.map.setMaxBounds(L.latLngBounds(bounds).pad(0.5));
+
+        if (el && el.offsetWidth > 0) {
+            state.map.invalidateSize();
+            state.map.fitBounds(bounds);
+        }
+
+        state.group.eachLayer(layer => {
+            if (layer.editEnabled && layer.editEnabled()) {
+                layer.disableEdit();
+            }
+        });
+        state.group.clearLayers();
+
+        if (state.saved) {
+            state.saved.areas.forEach((area, i) => {
+                let polygon = L.polygon(area.imagePoints.map(p => [ -p.v * f.height, p.u * f.width ]), {
+                    color: parking.colors[i % parking.colors.length],
+                    weight: 2,
+                    fillOpacity: 0.05,
+                    dashArray: area.enabled ? null : "6 6",
+                    interactive: false,
+                }).addTo(state.group);
+
+                polygon.bindTooltip(escapeHTML(area.name || ("#" + (i + 1))), { permanent: true, direction: "center", interactive: false });
+            });
+        }
+
+        for (let item of (r ? r.freeSpaces : [])) {
+            for (let space of item.spaces) {
+                L.polygon(space.map(p => [ -p.y, p.x ]), { color: "#28a745", weight: 2, fillColor: "#28a745", fillOpacity: 0.35, interactive: false }).addTo(state.group);
+            }
+        }
+    },
+
     checkLength: function (state, c) {
         let h = state.analysis ? state.analysis.homography : null;
 
@@ -1044,6 +1233,58 @@
         }
 
         return text;
+    },
+
+    resultPanel: function (state, textButton) {
+        let parking = modules.addresses.parking;
+        let r = state.result;
+        let h = "";
+
+        if (!state.resultLoaded) {
+            h += `<div class="text-muted mb-2"><i class="fas fa-fw fa-circle-notch fa-spin mr-1"></i>${i18n("addresses.parkingResultLoading")}</div>`;
+        } else if (state.resultError) {
+            h += `<div class="alert alert-danger p-2 mb-2">${i18n("addresses.parkingResultError")}</div>`;
+        } else if (!r) {
+            h += `<div class="alert alert-secondary p-2 mb-2">${i18n("addresses.parkingNoResult")}</div>`;
+        } else {
+            let free = r.freeSpaces.reduce((s, item) => s + item.spaces.length, 0);
+
+            h += `<div class="mb-1"><span class="badge badge-success mr-2">${i18n("addresses.parkingFreeSpaces", free)}</span></div>`;
+            h += `<div class="small mb-1">${i18n("addresses.parkingResultTime", escapeHTML(String(r.processedAt).substring(0, 19)))}</div>`;
+
+            if (state.saved && r.revision != state.saved.revision) {
+                h += `<div class="alert alert-warning p-2 mb-1 small">${i18n("addresses.parkingResultOldRevision", r.revision, state.saved.revision)}</div>`;
+            } else {
+                h += `<div class="small text-muted mb-1">${i18n("addresses.parkingResultRevision", r.revision)}</div>`;
+            }
+
+            if (!r.frame) {
+                h += `<div class="alert alert-warning p-2 mb-1 small">${i18n("addresses.parkingResultNoFrame")}</div>`;
+            }
+        }
+
+        let st = state.resultLoaded && !state.resultError ? state.status : null;
+
+        if (st) {
+            let time = escapeHTML(String(st.time || "").substring(0, 19));
+
+            if (st.status == "notProcessed") {
+                h += `<div class="alert alert-secondary p-2 mb-1 small">${i18n("addresses.parkingAttempt_notProcessed_" + st.reason)}</div>`;
+            } else if (st.status == "ok") {
+                h += `<div class="small text-muted mb-1">${i18n("addresses.parkingAttempt_ok", time)}</div>`;
+            } else {
+                h += `<div class="alert alert-${st.status == "stale" ? "warning" : "danger"} p-2 mb-1 small">${i18n("addresses.parkingAttempt_" + st.status, time)}`;
+                if (st.reason) {
+                    h += `<div class="text-muted">${escapeHTML(st.reason)}</div>`;
+                }
+                h += `</div>`;
+            }
+        }
+
+        h += `<div class="small text-muted mb-2">${i18n("addresses.parkingResultRefreshHint", parking.resultInterval(state))}</div>`;
+        h += textButton("refreshResult", "fas fa-sync-alt", i18n("addresses.parkingResultRefresh"), "btn-info", state.resultLoading);
+
+        return h;
     },
 
     renderPanel: function (state) {
@@ -1086,12 +1327,26 @@
             return;
         }
 
+        if (state.saved && state.resultAvailable) {
+            h += `<div class="btn-group btn-group-sm mb-2">`;
+            h += `<button type="button" class="btn ${state.view == "markup" ? "btn-secondary" : "btn-outline-secondary"}" data-parking-action="viewMarkup">${i18n("addresses.parkingViewMarkup")}</button>`;
+            h += `<button type="button" class="btn ${state.view == "result" ? "btn-secondary" : "btn-outline-secondary"}" data-parking-action="viewResult">${i18n("addresses.parkingViewResult")}</button>`;
+            h += `</div>`;
+        }
+
+        if (state.view == "result") {
+            panel.html(h + parking.resultPanel(state, textButton));
+            return;
+        }
+
         // status
 
         let codes = a.problems.map(p => p.code);
         let status;
 
-        if (a.ready) {
+        if (a.ready && !a.enabled) {
+            status = [ "secondary", "parkingStatusReadyDisabled" ];
+        } else if (a.ready) {
             status = [ "success", "parkingStatusReady" ];
         } else if (!a.valid) {
             status = [ "danger", "parkingStatusInvalid" ];
@@ -1157,6 +1412,18 @@
         h += `<input type="checkbox" class="custom-control-input" id="${state.prefix}parkingEnabled" data-parking-field="configEnabled"${d.enabled ? " checked" : ""}${state.editable ? "" : " disabled"}>`;
         h += `<label class="custom-control-label" for="${state.prefix}parkingEnabled">${i18n("addresses.parkingEnabled")}</label>`;
         h += `</div>`;
+
+        // detection and processing
+
+        let settings = parking.settings(state);
+        let shown = v => (v === null || typeof v === "undefined" || (typeof v === "number" && !isFinite(v))) ? "" : v;
+
+        h += `<div class="form-row">`;
+        h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingDetectionImageSize")}</label>${input("detectionImageSize", shown(d.detectionImageSize))}</div>`;
+        h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingConfidenceThreshold")}</label>${input("confidenceThreshold", shown(d.confidenceThreshold))}</div>`;
+        h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingProcessingInterval")}</label>${input("processingInterval", shown(d.processingInterval), `placeholder="${settings.interval}"`)}</div>`;
+        h += `</div>`;
+        h += `<div class="small text-muted mb-2">${i18n("addresses.parkingDetectionHint", parkingGeometry.DETECTION_IMAGE_SIZE[0], parkingGeometry.DETECTION_IMAGE_SIZE[1], settings.interval, settings.minInterval)}</div>`;
 
         // areas
 

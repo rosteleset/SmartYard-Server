@@ -183,6 +183,15 @@
         // parking configurations of cameras (parking spaces markup and calibration)
         "parking": {
             "backend": "internal",
+
+            // processing interval of a camera by the parking occupancy service, seconds. Defaults to 60.
+            "interval": 60,
+
+            // the least processing interval a camera can override the global one with, seconds. Defaults to 10.
+            "minInterval": 10,
+
+            // storage of the processed frames of the latest occupancy results: tmpfs or gridfs. Defaults to tmpfs.
+            "storage": "tmpfs",
         },
 
         "isdn": {

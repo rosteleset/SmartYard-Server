@@ -37,6 +37,12 @@
             const SPACE_LENGTH = [ 2, 25 ];
             const SPACE_ANGLE = [ -90, 90 ];
 
+            const DETECTION_IMAGE_SIZE = [ 160, 1024 ];
+            const DEFAULT_DETECTION_IMAGE_SIZE = 320;
+            const CONFIDENCE_THRESHOLD = [ 0, 1 ];
+            const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
+            const MAX_PROCESSING_INTERVAL = 86400;
+
             /**
              * solve a square linear system with partial pivoting
              *
@@ -458,9 +464,10 @@
             /**
              * layout of parking spaces inside a convex metric quadrilateral (layout version 1)
              *
-             * rows are placed along the base edge (vertex baseEdge to vertex baseEdge + 1) starting from it,
+             * an area holds exactly one row of spaces along the base edge (vertex baseEdge to vertex baseEdge + 1),
              * the long axis of a space is rotated by angle degrees from the inward normal of the base edge
-             * towards the base edge direction, only spaces fully inside the area (with tolerance) are counted
+             * towards the base edge direction, only spaces fully inside the area (with tolerance) are counted,
+             * multipleRows tells that the area is deep enough for at least one space of a second row
              *
              * @param array $points metric vertices [ [ x, y ] x 4 ]
              * @param int $baseEdge
@@ -468,7 +475,7 @@
              * @param float $length space length, metres
              * @param float $angle degrees
              * @param bool $withSpaces return space footprints
-             * @return array [ "capacity" => int, "spaces" => [ [ "row" => int, "slot" => int, "points" => [ [ x, y ] x 4 ] ] ] ]
+             * @return array [ "capacity" => int, "multipleRows" => bool, "spaces" => [ [ "slot" => int, "points" => [ [ x, y ] x 4 ] ] ] ]
              */
 
             public static function layout(array $points, int $baseEdge, float $width, float $length, float $angle, bool $withSpaces = false): array {
@@ -481,7 +488,7 @@
                 $ey = $p[1][1] - $p[0][1];
                 $el = hypot($ex, $ey);
 
-                $result = [ "capacity" => 0, "spaces" => [] ];
+                $result = [ "capacity" => 0, "multipleRows" => false, "spaces" => [] ];
 
                 if ($el == 0 || $width <= 0 || $length <= 0) {
                     return $result;
@@ -568,8 +575,12 @@
                 $tMax = max(array_column($q, 1));
                 $tolerance = self::EDGE_TOLERANCE;
 
-                for ($row = 0; ($row + 1) * $depth <= $tMax + $tolerance; $row++) {
-                    $t0 = $row * $depth;
+                // range [ lo, hi ] of the start s of a space whose row begins at depth t0, null when nothing fits
+                $range = function ($t0) use ($planes, $f, $depth, $tMax, $tolerance) {
+                    if ($t0 + $depth > $tMax + $tolerance) {
+                        return null;
+                    }
+
                     $lo = -INF;
                     $hi = INF;
 
@@ -588,25 +599,35 @@
                     }
 
                     if (!is_finite($lo) || !is_finite($hi) || $hi < $lo) {
-                        continue;
+                        return null;
                     }
 
-                    $count = (int)floor(($hi - $lo) / $pitch + 1e-9) + 1;
-                    $result["capacity"] += $count;
+                    return [ $lo, $hi ];
+                };
 
-                    if ($withSpaces) {
-                        for ($slot = 0; $slot < $count; $slot++) {
-                            $s0 = $lo + $slot * $pitch;
-                            $corners = [];
+                $result["multipleRows"] = $range($depth) !== null;
 
-                            foreach ($f as $v) {
-                                $s = $v[0] + $s0;
-                                $t = $v[1] + $t0;
-                                $corners[] = [ $p[0][0] + $s * $ex + $t * $nx, $p[0][1] + $s * $ey + $t * $ny ];
-                            }
+                $row = $range(0);
 
-                            $result["spaces"][] = [ "row" => $row, "slot" => $slot, "points" => $corners ];
+                if ($row === null) {
+                    return $result;
+                }
+
+                [ $lo, $hi ] = $row;
+
+                $count = (int)floor(($hi - $lo) / $pitch + 1e-9) + 1;
+                $result["capacity"] = $count;
+
+                if ($withSpaces) {
+                    for ($slot = 0; $slot < $count; $slot++) {
+                        $s0 = $lo + $slot * $pitch;
+                        $corners = [];
+
+                        foreach ($f as $v) {
+                            $corners[] = [ $p[0][0] + ($v[0] + $s0) * $ex + $v[1] * $nx, $p[0][1] + ($v[0] + $s0) * $ey + $v[1] * $ny ];
                         }
+
+                        $result["spaces"][] = [ "slot" => $slot, "points" => $corners ];
                     }
                 }
 
@@ -626,7 +647,7 @@
              *
              * input (API format):
              * {
-             *   enabled, frameWidth, frameHeight,
+             *   enabled, frameWidth, frameHeight, detectionImageSize?, confidenceThreshold?, processingInterval?,
              *   calibration: null | { points: [ { u, v, x, y } ], checks: [ { u1, v1, u2, v2, length } ] },
              *   areas: [ { parkingAreaId?, name, enabled, imagePoints: [ { u, v } x 4 ], baseEdge, spaceWidth, spaceLength, spaceAngle } ]
              * }
@@ -634,13 +655,18 @@
              * areas are canonicalized (clockwise order on screen), values are rounded as stored in the database,
              * only valid areas are returned, "index" is the position of an area in the input
              *
-             * problem severities: "error" - can't be saved, "notReady" - saved but not ready for processing, "warning" - informational
+             * problem severities: "error" - can't be saved, "notReady" - saved but not ready for processing, "warning" - informational,
+             * readiness doesn't depend on the enabled flag: a configuration is processed when it is both ready and enabled
+             *
+             * detectionImageSize and confidenceThreshold default to DEFAULT_*, processingInterval (seconds) is an optional
+             * override of the global interval and can't be less than options.minInterval (1 when not given)
              *
              * @param mixed $input
+             * @param array $options [ "minInterval" => int ]
              * @return array normalized configuration with homography, capacity, metric points, problems and ready flag
              */
 
-            public static function analyze($input): array {
+            public static function analyze($input, array $options = []): array {
                 $problems = [];
 
                 $problem = function ($code, $severity, $area = null) use (&$problems) {
@@ -655,6 +681,9 @@
 
                 $result = [
                     "enabled" => 1,
+                    "detectionImageSize" => self::DEFAULT_DETECTION_IMAGE_SIZE,
+                    "confidenceThreshold" => self::DEFAULT_CONFIDENCE_THRESHOLD,
+                    "processingInterval" => null,
                     "frameWidth" => 0,
                     "frameHeight" => 0,
                     "calibration" => null,
@@ -673,6 +702,37 @@
                         $result["enabled"] = (int)$input["enabled"];
                     } else {
                         $problem("invalidValue", "error");
+                    }
+                }
+
+                if (array_key_exists("detectionImageSize", $input)) {
+                    $v = $input["detectionImageSize"];
+
+                    if (!is_int($v) || $v < self::DETECTION_IMAGE_SIZE[0] || $v > self::DETECTION_IMAGE_SIZE[1]) {
+                        $problem("invalidDetectionImageSize", "error");
+                    } else {
+                        $result["detectionImageSize"] = $v;
+                    }
+                }
+
+                if (array_key_exists("confidenceThreshold", $input)) {
+                    $v = $input["confidenceThreshold"];
+
+                    if (!self::isNumber($v) || round($v, 2) < self::CONFIDENCE_THRESHOLD[0] || round($v, 2) > self::CONFIDENCE_THRESHOLD[1]) {
+                        $problem("invalidConfidenceThreshold", "error");
+                    } else {
+                        $result["confidenceThreshold"] = round((float)$v, 2);
+                    }
+                }
+
+                if (array_key_exists("processingInterval", $input) && $input["processingInterval"] !== null) {
+                    $v = $input["processingInterval"];
+                    $min = max(1, (int)@$options["minInterval"]);
+
+                    if (!is_int($v) || $v < $min || $v > self::MAX_PROCESSING_INTERVAL) {
+                        $problem("invalidProcessingInterval", "error");
+                    } else {
+                        $result["processingInterval"] = $v;
                     }
                 }
 
@@ -1019,10 +1079,15 @@
                             $problem("areaMetricInvalid", "notReady", $index);
                         } else {
                             $item["metricPoints"] = array_map(fn ($point) => [ "x" => $point[0], "y" => $point[1] ], $metric);
-                            $item["capacity"] = self::layout($metric, $baseEdge, $params["spaceWidth"], $params["spaceLength"], $params["spaceAngle"])["capacity"];
+                            $layout = self::layout($metric, $baseEdge, $params["spaceWidth"], $params["spaceLength"], $params["spaceAngle"]);
+                            $item["capacity"] = $layout["capacity"];
 
                             if ($item["capacity"] == 0) {
                                 $problem("areaNoSpaces", "warning", $index);
+                            }
+
+                            if ($layout["multipleRows"]) {
+                                $problem("areaMultipleRows", "warning", $index);
                             }
 
                             $cu = ($uv[0][0] + $uv[1][0] + $uv[2][0] + $uv[3][0]) / 4;
@@ -1068,11 +1133,6 @@
 
                     if ($result["homography"] && !$usable) {
                         $problems[] = [ "code" => "noUsableAreas", "severity" => "notReady" ];
-                        $notReady = true;
-                    }
-
-                    if (!$result["enabled"]) {
-                        $problems[] = [ "code" => "disabled", "severity" => "notReady" ];
                         $notReady = true;
                     }
                 }

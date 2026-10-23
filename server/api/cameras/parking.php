@@ -12,7 +12,8 @@
      *
      * @apiParam {Number} cameraId
      *
-     * @apiSuccess {Object} parking configuration with computed problems and readiness (204 when there is no configuration)
+     * @apiSuccess {Object} parking configuration with computed problems and readiness, null when there is no configuration
+     * @apiSuccess {Object} settings { interval, minInterval } global processing interval and the least allowed override, seconds
      * @apiError notFound parking backend is not configured
      */
 
@@ -29,6 +30,9 @@
      * @apiParam {Number} cameraId
      * @apiBody {Number} revision revision the configuration is based on (0 for a new configuration)
      * @apiBody {Number} enabled
+     * @apiBody {Number} [detectionImageSize=320] size the frame is resized to for vehicle detection, 160..1024
+     * @apiBody {Number} [confidenceThreshold=0.5] minimum detection confidence, 0..1
+     * @apiBody {Number} [processingInterval] processing interval override in seconds, null for the global one, at least minInterval
      * @apiBody {Number} frameWidth width of the frame used for markup, pixels
      * @apiBody {Number} frameHeight height of the frame used for markup, pixels
      * @apiBody {Object} calibration null or { points: [ { u, v, x, y } ], checks: [ { u1, v1, u2, v2, length } ] }
@@ -92,8 +96,10 @@
                     return self::failure($parking);
                 }
 
-                // 204 when the camera has no parking configuration
-                return api::SUCCESS("parking", $config === null ? false : $config);
+                return api::SUCCESS("__asis__", [
+                    "parking" => $config,
+                    "settings" => $parking->settings(),
+                ]);
             }
 
             public static function PUT($params) {
@@ -105,7 +111,7 @@
 
                 $config = [];
 
-                foreach ([ "revision", "enabled", "frameWidth", "frameHeight", "calibration", "areas" ] as $key) {
+                foreach ([ "revision", "enabled", "detectionImageSize", "confidenceThreshold", "processingInterval", "frameWidth", "frameHeight", "calibration", "areas" ] as $key) {
                     if (array_key_exists($key, $params)) {
                         $config[$key] = $params[$key];
                     }
