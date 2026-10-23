@@ -405,6 +405,7 @@
     "parkingAttempt_cameraUnavailable": "The camera is unavailable, last attempt: %s",
     "parkingAttempt_detectionFailed": "FALPRS vehicle detection failed, last attempt: %s",
     "parkingAttempt_stale": "The markup doesn't fit the camera frame (another aspect ratio), last attempt: %s. Mark the parking again",
+    "parkingAttempt_saveFailed": "The result could not be stored on the server, last attempt: %s",
     "parkingAttempt_notProcessed_disabled": "Not processed: parking processing is off",
     "parkingAttempt_notProcessed_notReady": "Not processed: the configuration is not ready for processing",
     "parkingFrameAspectChanged": "The markup was made on a %s frame, the current %s frame has another aspect ratio. Check and redo the markup.",

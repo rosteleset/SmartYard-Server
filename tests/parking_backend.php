@@ -97,7 +97,8 @@ class fakeFiles {
     }
 }
 $files = new fakeFiles();
-$GLOBALS['testBackends'] = ['parking' => $parking, 'files' => $files];
+// only its presence matters: the files backend writes to it
+$GLOBALS['testBackends'] = ['parking' => $parking, 'files' => $files, 'tmpfs' => new stdClass()];
 
 $fixtures = json_decode(file_get_contents(__DIR__ . '/parking_fixtures.json'), true)['cases'];
 $fixture = function ($name) use ($fixtures) {
@@ -377,11 +378,30 @@ $tests['a failure of the frame storage is an error, not an exception'] = functio
     $files->failing = true;
     try {
         check($parking->saveResult(3, $result($revision), 'JPEG') === false && $parking->lastFailure() === 'unknown', 'failed');
+        $status = $parking->getStatus(3);
+        check($status['status'] === 'saveFailed' && $status['reason'] === 'storage is down' && $status['revision'] === $revision, 'the failure is visible as the status ' . json_encode($status));
         check(internal('result', null, ['cameraId' => 3, 'frame' => base64_encode('JPEG')] + $result($revision))[0] === 500, 'internal API answers 500');
     } finally {
         $files->failing = false;
     }
     check($parking->getResult(3, true)['frame'] === base64_encode('JPEG2'), 'the previous result is kept');
+    check($parking->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && $parking->getStatus(3)['status'] === 'ok', 'ok again');
+    check($parking->saveStatus(3, 'saveFailed', 'x', $revision) === false, 'saveFailed is set by the server only');
+};
+
+$tests['frames go to tmpfs by default, to gridfs without the tmpfs backend'] = function () use ($db, $files, $result) {
+    $plain = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal']]], $db, null, 'admin');
+    $revision = $plain->getConfig(3)['revision'];
+    check($plain->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'tmpfs', 'tmpfs');
+    $tmpfs = $GLOBALS['testBackends']['tmpfs'];
+    unset($GLOBALS['testBackends']['tmpfs']);
+    try {
+        check($plain->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'gridfs', 'gridfs without tmpfs');
+    } finally {
+        $GLOBALS['testBackends']['tmpfs'] = $tmpfs;
+    }
+    $explicit = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal', 'storage' => 'tmpfs']]], $db, null, 'admin');
+    check($explicit->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'tmpfs', 'explicit tmpfs is kept');
 };
 
 $tests['an invalid result is rejected'] = function () use ($parking, $files, $result) {
