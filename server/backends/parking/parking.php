@@ -127,7 +127,8 @@
             abstract public function saveStatus($cameraId, $status, $reason, $revision);
 
             /**
-             * processing status of the latest attempt of a camera: notProcessed (reason disabled or notReady, time of the
+             * processing status of the latest attempt of a camera (ok, cameraUnavailable, detectionFailed, stale, or saveFailed when
+             * the server couldn't store a result), notProcessed (reason disabled or notReady, time of the
              * configuration change) when the configuration is not processed at all, otherwise the stored one
              *
              * @param int $cameraId

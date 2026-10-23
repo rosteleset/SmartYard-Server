@@ -456,6 +456,7 @@
                     ]);
                 } catch (\Throwable $error) {
                     error_log(print_r($error, true));
+                    $this->saveFailed($cameraId, $current[0]["parking_config_id"], $result["revision"], $error->getMessage());
 
                     return $this->fail("unknown", $error->getMessage());
                 }
@@ -519,6 +520,7 @@
                     }
 
                     error_log(print_r($error, true));
+                    $this->saveFailed($cameraId, $current[0]["parking_config_id"], $result["revision"], $error->getMessage());
 
                     return $this->fail("unknown", $error->getMessage());
                 }
@@ -687,10 +689,24 @@
                 return $config && (int)$config["revision"] === $revision && (int)$config["enabled"] === 1 && (int)$config["ready"] === 1;
             }
 
+            // tmpfs unless set otherwise, gridfs when the tmpfs backend isn't configured
             private function storage() {
                 $storage = @$this->config["backends"]["parking"]["storage"];
 
-                return in_array($storage, [ "tmpfs", "gridfs" ]) ? $storage : "tmpfs";
+                if (in_array($storage, [ "tmpfs", "gridfs" ], true)) {
+                    return $storage;
+                }
+
+                return loadBackend("tmpfs") ? "tmpfs" : "gridfs";
+            }
+
+            // a result that came but couldn't be stored is a failed attempt the administrator has to see
+            private function saveFailed($cameraId, $configId, $revision, $reason) {
+                try {
+                    $this->writeStatus($cameraId, $configId, $revision, "saveFailed", mb_substr((string)$reason, 0, 1024));
+                } catch (\Throwable $error) {
+                    error_log(print_r($error, true));
+                }
             }
 
             private function deleteFrame($uuid) {

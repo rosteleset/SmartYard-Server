@@ -16,7 +16,7 @@
      * { revision, processedAt, frameWidth, frameHeight, freeSpaces: [ { parkingAreaId, spaces: [ [ { x, y } x 4 ] ] } ], frame: base64 JPEG or null },
      * free spaces are in pixels of the processed frame
      * @apiSuccess {Object} status processing status of the latest attempt, null before the first one:
-     * { status: ok | cameraUnavailable | detectionFailed | stale | notProcessed, reason, time, revision },
+     * { status: ok | cameraUnavailable | detectionFailed | stale | saveFailed | notProcessed, reason, time, revision },
      * notProcessed (reason disabled or notReady) when the configuration is not processed at all
      * @apiError notFound parking backend is not configured
      */
