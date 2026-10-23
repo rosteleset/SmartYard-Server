@@ -170,7 +170,7 @@ namespace backends\issueAdapter {
                         . "Подготовить конверт с qr-кодом. Далее заявку отправить курьеру."
                 ],
             ];
-            return $this->createLantaIssue($lat, $lon, $content);
+            return $this->createTrackerIssue($lat, $lon, $content);
         }
 
         private function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason) {
@@ -195,7 +195,7 @@ namespace backends\issueAdapter {
                         . "Удаление адреса из приложения. Причина: $reason"
                 ],
             ];
-            return $this->createLantaIssue($lat, $lon, $content);
+            return $this->createTrackerIssue($lat, $lon, $content);
         }
 
         private function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services) {
@@ -220,7 +220,7 @@ namespace backends\issueAdapter {
                         . "Список подключаемых услуг: $services"
                 ],
             ];
-            return $this->createLantaIssue($lat, $lon, $content);
+            return $this->createTrackerIssue($lat, $lon, $content);
         }
 
         public function createIssueAvailableWithSharedServices($phone, $description, $name, $address, $lat, $lon, $services) {
@@ -246,7 +246,7 @@ namespace backends\issueAdapter {
                         . "Требуется подтверждение адреса и подключение выбранных услуг."
                 ],
             ];
-            return $this->createLantaIssue($lat, $lon, $content);
+            return $this->createTrackerIssue($lat, $lon, $content);
         }
 
         public function createIssueAvailableWithoutSharedServices($phone, $description, $name, $address, $lat, $lon, $services) {
@@ -272,7 +272,7 @@ namespace backends\issueAdapter {
                         . "Выполнить звонок клиенту и осуществить консультацию."
                 ],
             ];
-            return $this->createLantaIssue($lat, $lon, $content);
+            return $this->createTrackerIssue($lat, $lon, $content);
         }
 
         public function listConnectIssues($phone) {
@@ -462,7 +462,7 @@ namespace backends\issueAdapter {
          * @return mixed
          */
 
-        private function createLantaIssue($lat, $lon, array $content) {
+        private function createTrackerIssue($lat, $lon, array $content) {
             if (isset($lat) && isset($lon)) {
                 $cf_geo = [
                     "type" => "Point",
