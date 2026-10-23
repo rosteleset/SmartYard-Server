@@ -32,7 +32,7 @@
                     'mobile' => $id,
                     'secret' => $this->config["backends"]["isdn"]["common_secret"],
                 ];
-                $url = "https://isdn.lanta.me/isdn_api.php?" . http_build_query($params);
+                $url = "https://isdn.sesameware.com/isdn_api.php?" . http_build_query($params);
                 $context = stream_context_create(['http' => ['timeout' => 5, 'ignore_errors' => true]]);
                 $response = (string)@file_get_contents($url, false, $context);
 

@@ -33,7 +33,7 @@
                     $query = substr($query, 0, -1);
                 }
 
-                $result = trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["common_secret"] . "&" . $query));
+                $result = trim(file_get_contents("https://isdn.sesameware.com/isdn_api.php?action=push&secret=" . $this->config["backends"]["isdn"]["common_secret"] . "&" . $query));
 
                 if (strtolower(explode(":", $result)[0]) !== "ok") {
                     error_log("isdn push send error:\n query = $query\n result = $result\n");
