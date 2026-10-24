@@ -298,6 +298,6 @@
     });
     api('panel', {}, '?panel=' + encodeURIComponent(panel)).then(data => {
         metadata = data; $('entrance-title').textContent = data.title; $('entrance-subtitle').textContent = data.subtitle;
-        document.title = data.title + ' · Виртуальный домофон'; $('selection-mode').hidden = !data.listEnabled; inputChanged();
+        document.title = data.title + ' · Виртуальный домофон'; $('selection-mode').hidden = !data.listEnabled; inputChanged(); tab(data.listEnabled);
     }).catch(error => { $('entrance-subtitle').textContent = 'Проверьте ссылку или отсканируйте QR-код у входа.'; status(error.message, 'error'); });
 })();

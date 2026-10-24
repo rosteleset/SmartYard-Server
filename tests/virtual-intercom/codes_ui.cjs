@@ -39,6 +39,7 @@ const output = process.env.VI_BROWSER_OUTPUT || '/tmp/virtual-intercom-codes';
       await page.goto('https://virtual-intercom.test/v/fixturePanel');
       await page.getByRole('heading', { name: 'Главный вход' }).waitFor();
       assert.equal(await page.locator('#code-mode').count(), 0);
+      if (listEnabled) await page.locator('#keypad-tab').click();
       await page.locator('#apartment').fill('12');
       assert(await page.locator('#call').isEnabled());
       assert.equal(await page.locator('#call-label').textContent(), 'Позвонить');

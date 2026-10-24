@@ -63,6 +63,7 @@ window.JsSIP={debug:{disable(){}},WebSocketInterface:class {},UA:class extends E
       });
       await page.goto('https://virtual-intercom.test/v/fixturePanel');
       await page.locator('#entrance-title').getByText('ЦД2 · Главный вход').waitFor();
+      await page.locator('#keypad-tab').click();
       await page.locator('#apartment').fill('1');
       const start = async () => {
         const next = count + 1;
