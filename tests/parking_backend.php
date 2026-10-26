@@ -118,7 +118,7 @@ $tests = [];
 $tests['camera without configuration'] = function () use ($api, $code) {
     $answer = $api('GET', 1);
     check($code($answer) === 200 && $answer[200]['parking'] === null, 'GET should answer an empty configuration');
-    check($answer[200]['settings'] === ['interval' => 60, 'minInterval' => 10], 'default settings');
+    check($answer[200]['settings'] === ['interval' => 60, 'minInterval' => 10, 'processNow' => false], 'default settings');
 };
 
 $tests['first save creates configuration, areas and revision'] = function () use ($api, $code, $count, $fixture, $db) {
@@ -291,12 +291,12 @@ $tests['detection and interval parameters are validated, saved and kept in the r
 $tests['the least interval comes from the backend config'] = function () use ($db, $fixture) {
     $config = ['backends' => ['parking' => ['backend' => 'internal', 'interval' => 120, 'minInterval' => 30]]];
     $strict = new backends\parking\internal($config, $db, null, 'admin');
-    check($strict->settings() === ['interval' => 120, 'minInterval' => 30], 'settings');
+    check($strict->settings() === ['interval' => 120, 'minInterval' => 30, 'processNow' => false], 'settings');
     $current = $strict->getConfig(3);
     check($strict->saveConfig(3, ['revision' => $current['revision'], 'processingInterval' => 20] + $fixture('cars')) === false && $strict->lastFailure() === 'parkingInvalidConfig', '20 < 30');
     check($strict->saveConfig(3, ['revision' => $current['revision'], 'processingInterval' => 30] + $fixture('cars')) !== false, '30');
     $odd = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal', 'interval' => 5, 'minInterval' => 'x']]], $db, null, 'admin');
-    check($odd->settings() === ['interval' => 10, 'minInterval' => 10], 'invalid values fall back, interval is not below the minimum');
+    check($odd->settings() === ['interval' => 10, 'minInterval' => 10, 'processNow' => false], 'invalid values fall back, interval is not below the minimum');
 };
 
 $result = fn ($revision, $extra = []) => $extra + [
@@ -565,6 +565,55 @@ $tests['DELETE removes a configuration'] = function () use ($api, $code, $count)
     check($api('GET', 2)[200]['parking'] === null, 'GET after DELETE');
     check($count('select count(*) from parking_config_revisions where camera_id = 2') === 0, 'revisions');
     check($code($api('DELETE', 2)) === 200, 'repeated DELETE');
+};
+
+$tests['a camera is processed right now by the occupancy service'] = function () use ($parking, $db) {
+    $post = fn ($id) => api\cameras\parkingResult::POST(['_id' => (string)$id]);
+
+    check($parking->processNow(3) === false && $parking->lastFailure() === 'parkingServiceUnavailable', 'no service configured');
+    check(array_key_first($post(3)) === 400 && $post(3)[400]['error'] === 'parkingServiceUnavailable', 'API without a service');
+
+    // fake service: camera 3 is processed, camera 4 is not, anything else is broken
+    $router = tempnam(sys_get_temp_dir(), 'parking_service') . '.php';
+    file_put_contents($router, '<?php
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") { http_response_code(405); return; }
+        if ($_SERVER["REQUEST_URI"] === "/process/3") { header("Content-Type: application/json"); echo json_encode(["status" => "ok", "reason" => "9 free"]); return; }
+        if ($_SERVER["REQUEST_URI"] === "/process/4") { http_response_code(404); return; }
+        http_response_code(500);
+    ');
+    $socket = stream_socket_server('tcp://127.0.0.1:0');
+    $port = (int)substr(strrchr(stream_socket_get_name($socket, false), ':'), 1);
+    fclose($socket);
+    $server = proc_open([PHP_BINARY, '-S', "127.0.0.1:$port", $router], [1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']], $pipes);
+
+    try {
+        for ($i = 0; $i < 50 && !@fsockopen('127.0.0.1', $port); $i++) {
+            usleep(100000);
+        }
+
+        $service = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal', 'service' => "http://127.0.0.1:$port/"]]], $db, null, 'admin');
+        check($service->settings()['processNow'] === true, 'processNow setting');
+        check($service->processNow(3) === ['status' => 'ok', 'reason' => '9 free'], 'outcome of the cycle');
+        check($service->processNow(4) === null, 'not processed by the service');
+        check($service->processNow(5) === false && $service->lastFailure() === 'parkingServiceUnavailable', 'broken answer');
+
+        $saved = $GLOBALS['testBackends'];
+        $GLOBALS['testBackends']['parking'] = $service;
+        try {
+            check($post(3)[200] === ['processing' => ['status' => 'ok', 'reason' => '9 free']], 'API outcome');
+            check($post(4)[200] === ['processing' => null], 'API not processed');
+        } finally {
+            $GLOBALS['testBackends'] = $saved;
+        }
+    } finally {
+        proc_terminate($server);
+        proc_close($server);
+        unlink($router);
+    }
+
+    $down = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal', 'service' => "http://127.0.0.1:$port"]]], $db, null, 'admin');
+    check($down->processNow(3) === false && $down->lastFailure() === 'parkingServiceUnavailable', 'service down');
+    check(api\cameras\parkingResult::index()['POST'] === '#same(addresses,house,GET)', 'rights');
 };
 
 $tests['parking backend is not configured'] = function () use ($api, $code) {

@@ -22,6 +22,25 @@
      */
 
     /**
+     * @api {post} /api/cameras/parkingResult/:cameraId process the camera right now
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName processParking
+     * @apiGroup cameras
+     *
+     * @apiHeader {String} Authorization authentication token
+     *
+     * @apiParam {Number} cameraId
+     *
+     * @apiSuccess {Object} processing outcome of the processing cycle { status, reason }, status: ok, cameraUnavailable,
+     * detectionFailed, stale, skipped, discarded, noRevision or failed; null when the occupancy service doesn't process the camera
+     * (its configuration is disabled or not ready); the result and the status are then read with GET
+     * @apiError notFound parking backend is not configured
+     * @apiError parkingServiceUnavailable the occupancy service is not configured ("service" of the parking backend) or doesn't answer
+     */
+
+    /**
      * cameras api
      */
 
@@ -52,6 +71,22 @@
                 return api::SUCCESS("__asis__", [ "result" => $result, "status" => $status ]);
             }
 
+            public static function POST($params) {
+                $parking = loadBackend("parking");
+
+                if (!$parking) {
+                    return api::ERROR("notFound");
+                }
+
+                $outcome = $parking->processNow($params["_id"]);
+
+                if ($outcome === false) {
+                    return api::ERROR($parking->lastFailure() == "parkingServiceUnavailable" ? "parkingServiceUnavailable" : "");
+                }
+
+                return api::SUCCESS("__asis__", [ "processing" => $outcome ]);
+            }
+
             public static function index() {
                 if (!loadBackend("parking")) {
                     return false;
@@ -59,6 +94,7 @@
 
                 return [
                     "GET" => "#same(addresses,house,GET)",
+                    "POST" => "#same(addresses,house,GET)",
                 ];
             }
         }

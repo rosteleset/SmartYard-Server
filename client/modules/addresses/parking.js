@@ -79,12 +79,17 @@
             // "markup" or "result": the latest occupancy result of the camera
             view: "markup",
             resultAvailable: AVAIL("cameras", "parkingResult", "GET"),
+            // the occupancy service can be asked to process the camera right now (with the processNow setting of the server)
+            processAvailable: AVAIL("cameras", "parkingResult", "POST"),
             result: null,
             status: null,
             resultLoaded: false,
             resultLoading: false,
             resultError: false,
             resultTimer: null,
+            // a processing request is running, outcome - { status, reason } of the latest one
+            processing: false,
+            outcome: null,
         };
 
         parking.states[prefix] = state;
@@ -255,11 +260,41 @@
         state.resultTimer = null;
     },
 
-    // load the latest result now and then once per processing interval while the result view is open
-    loadResult: function (state) {
+    canProcess: function (state) {
+        return !!(state.processAvailable && modules.addresses.parking.settings(state).processNow);
+    },
+
+    // ask the occupancy service to process the camera right now, then load the new result
+    processResult: function (state) {
         let parking = modules.addresses.parking;
 
         parking.stopResult(state);
+
+        state.processing = true;
+        state.outcome = null;
+        parking.renderPanel(state);
+
+        POST("cameras", "parkingResult", state.cameraId).
+        done(r => {
+            state.outcome = (r && r.processing) ? r.processing : null;
+        }).
+        fail(FAIL).
+        always(() => {
+            state.processing = false;
+            parking.loadResult(state, true);
+        });
+    },
+
+    // load the latest result now and then once per processing interval while the result view is open,
+    // the outcome of the latest processing request is kept only right after it
+    loadResult: function (state, keepOutcome) {
+        let parking = modules.addresses.parking;
+
+        parking.stopResult(state);
+
+        if (!keepOutcome) {
+            state.outcome = null;
+        }
 
         if (state.view != "result" || parking.states[state.prefix] !== state) {
             return;
@@ -635,7 +670,11 @@
                 break;
 
             case "refreshResult":
-                parking.loadResult(state);
+                if (parking.canProcess(state)) {
+                    parking.processResult(state);
+                } else {
+                    parking.loadResult(state);
+                }
                 break;
 
             case "create":
@@ -1281,8 +1320,26 @@
             }
         }
 
+        // outcomes the status above doesn't show: the attempt wasn't recorded
+        let outcome = state.outcome;
+
+        if (outcome && [ "skipped", "discarded", "noRevision", "failed" ].includes(outcome.status)) {
+            h += `<div class="alert alert-warning p-2 mb-1 small">${i18n("addresses.parkingProcess_" + outcome.status)}`;
+            if (outcome.reason) {
+                h += `<div class="text-muted">${escapeHTML(outcome.reason)}</div>`;
+            }
+            h += `</div>`;
+        }
+
         h += `<div class="small text-muted mb-2">${i18n("addresses.parkingResultRefreshHint", parking.resultInterval(state))}</div>`;
-        h += textButton("refreshResult", "fas fa-sync-alt", i18n("addresses.parkingResultRefresh"), "btn-info", state.resultLoading);
+
+        if (state.processing) {
+            h += textButton("refreshResult", "fas fa-circle-notch fa-spin", i18n("addresses.parkingResultProcessing"), "btn-info", true);
+        } else if (parking.canProcess(state)) {
+            h += textButton("refreshResult", "fas fa-sync-alt", i18n("addresses.parkingResultProcess"), "btn-info", state.resultLoading);
+        } else {
+            h += textButton("refreshResult", "fas fa-sync-alt", i18n("addresses.parkingResultRefresh"), "btn-info", state.resultLoading);
+        }
 
         return h;
     },

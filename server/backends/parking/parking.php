@@ -19,10 +19,14 @@
             const DEFAULT_INTERVAL = 60;
             const DEFAULT_MIN_INTERVAL = 10;
 
+            // how long the server waits for the occupancy service to process a camera on request, seconds
+            const SERVICE_TIMEOUT = 60;
+
             /**
              * processing settings of the occupancy service from the backend config
              *
-             * @return array [ "interval" => int, "minInterval" => int ] seconds: global processing interval and the least allowed override
+             * @return array [ "interval" => int, "minInterval" => int, "processNow" => bool ] seconds: global processing interval and the least
+             * allowed override; processNow - the occupancy service can be asked to process a camera right now (processNow())
              */
 
             public function settings() {
@@ -34,7 +38,20 @@
                 return [
                     "interval" => max($interval, $min),
                     "minInterval" => $min,
+                    "processNow" => $this->serviceUrl() !== false,
                 ];
+            }
+
+            /**
+             * URL of the occupancy service from the backend config ("service"), without a trailing slash
+             *
+             * @return string|false false when it is not set
+             */
+
+            protected function serviceUrl() {
+                $url = @$this->config["backends"]["parking"]["service"];
+
+                return (is_string($url) && trim($url) !== "") ? rtrim(trim($url), "/") : false;
             }
 
             /**
@@ -138,7 +155,20 @@
             abstract public function getStatus($cameraId);
 
             /**
-             * reason of the last failed operation: notFound, parkingRevisionConflict, parkingInvalidConfig, parkingInvalidResult, parkingInvalidStatus or unknown
+             * ask the occupancy service to process a camera right now and wait for the outcome; the result and the status are
+             * stored by the service as usual
+             *
+             * @param int $cameraId
+             * @return array|null|false [ "status", "reason" ] outcome of the cycle: ok, cameraUnavailable, detectionFailed, stale,
+             * skipped, discarded, noRevision or failed; null when the service doesn't process the camera; false on error
+             * (lastFailure() parkingServiceUnavailable when the service is not configured or doesn't answer)
+             */
+
+            abstract public function processNow($cameraId);
+
+            /**
+             * reason of the last failed operation: notFound, parkingRevisionConflict, parkingInvalidConfig, parkingInvalidResult, parkingInvalidStatus,
+             * parkingServiceUnavailable or unknown
              *
              * @return string|false
              */
