@@ -196,6 +196,58 @@ test('a non-zero space angle keeps the orientation of the layout', () => {
     }
 });
 
+test('a space blocked at the base edge moves deeper when the area has room for it', () => {
+    // a strip along the whole base edge reaching 1 m into the area
+    const strip = (s, y0, depth) => {
+        const x = s.areas[0].metricPoints.map(p => p.x);
+        return vehicle(s, [[Math.min(...x) - 1, y0 - 1], [Math.max(...x) + 1, y0 - 1], [Math.max(...x) + 1, y0 + depth], [Math.min(...x) - 1, y0 + depth]]);
+    };
+    const flat = snapshot('cars');
+    assert.equal(run(flat, [strip(flat, 0, 0.3)])[0].spaces.length, 0, 'no room in an area of the space length');
+    const deep = snapshot('deep area');
+    const detections = [strip(deep, 0, 1)];
+    const result = run(deep, detections);
+    assert.equal(result[0].spaces.length, deep.areas[0].capacity);
+    for (const points of result[0].spaces) {
+        assert.ok(Math.min(...metric(deep, points).map(p => p[1])) >= 1 - 1e-6, 'moved off the strip');
+    }
+    checkInvariants(deep, detections, result);
+});
+
+test('an angled space moves deeper along the sides it shares with its neighbours', () => {
+    for (const name of ['angled 25x6, 2.5x5, 45deg', 'angled 25x6, 2.5x5, -45deg']) {
+        const s = snapshot(name);
+        const area = s.areas[0];
+        const poly = area.metricPoints.map(p => [p.x, p.y]);
+        // a strip along the whole base edge reaching 0.3 m into the area
+        const a = poly[area.baseEdge], b = poly[(area.baseEdge + 1) % 4];
+        const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const e = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+        const c = [poly.reduce((sum, p) => sum + p[0], 0) / 4, poly.reduce((sum, p) => sum + p[1], 0) / 4];
+        const n = (c[0] - a[0]) * -e[1] + (c[1] - a[1]) * e[0] > 0 ? [-e[1], e[0]] : [e[1], -e[0]];
+        const at = (u, t) => [a[0] + u * e[0] + t * n[0], a[1] + u * e[1] + t * n[1]];
+        const depth = p => (p[0] - a[0]) * n[0] + (p[1] - a[1]) * n[1];
+        const detections = [vehicle(s, [at(-1, -1), at(len + 1, -1), at(len + 1, 0.3), at(-1, 0.3)])];
+        const result = run(s, detections);
+        assert.equal(result[0].spaces.length, area.capacity, name);
+        const spaces = result[0].spaces.map(points => metric(s, points));
+        for (const space of spaces) {
+            assert.ok(Math.min(...space.map(depth)) >= 0.3 - 1e-6, `${name}: moved off the strip`);
+        }
+        // one block: every pair of neighbours still shares a long side line
+        const longSides = space => [0, 1, 2, 3].map(k => [space[k], space[(k + 1) % 4]]).
+            filter(([p, q]) => Math.abs(Math.hypot(q[0] - p[0], q[1] - p[1]) - area.spaceLength) < 1e-6);
+        const onLine = ([p, q], r) => Math.abs((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])) < 1e-6 * area.spaceLength;
+        const order = spaces.map(space => (space[0][0] - a[0]) * e[0] + (space[0][1] - a[1]) * e[1]);
+        const sorted = spaces.map((space, i) => [order[i], space]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
+        for (let i = 1; i < sorted.length; i++) {
+            const shared = longSides(sorted[i - 1]).some(side => longSides(sorted[i]).some(([p, q]) => onLine(side, p) && onLine(side, q)));
+            assert.ok(shared, `${name}: neighbours ${i - 1} and ${i} share a long side line`);
+        }
+        checkInvariants(s, detections, result);
+    }
+});
+
 test('another resolution of the same aspect ratio gives the same free spaces in its pixels', () => {
     const s = snapshot('cars');
     const detections = [car(s, 10, 12)];

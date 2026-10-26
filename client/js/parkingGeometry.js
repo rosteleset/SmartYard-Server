@@ -18,6 +18,7 @@ var parkingGeometry = (function () {
         MAX_AREA_SQUARE: 100000,
 
         EDGE_TOLERANCE: 0.05,
+        ROW_SHIFT_STEP: 0.05,
         OVERLAP_TOLERANCE_PX: 2,
         MIN_VERTEX_DISTANCE: 0.005,
         MIN_AREA_FRACTION: 0.0005,
@@ -386,8 +387,10 @@ var parkingGeometry = (function () {
     /*
         geometry of the single row of spaces of a convex metric quadrilateral (layout version 1), shared by
         layout() and freeSpaces(): local coordinates s along the base edge and t inwards, the footprint f of
-        a space whose corner is at the origin, the pitch between neighbouring spaces and range(t0) - the
+        a space whose corner is at the origin, the pitch between neighbouring spaces, range(t0) - the
         interval [ lo, hi ] of the start s of a space at depth t0 that keeps it inside the area (with tolerance)
+        shift - the deepest t0 at which a space may still fit and slide - ds / dt of a space moved deeper along
+        the sides it shares with its neighbours
     */
 
     function rowGeometry(points, baseEdge, width, length, angle) {
@@ -469,13 +472,13 @@ var parkingGeometry = (function () {
 
         let depth = Math.max(...f.map(v => v[1]));
 
-        let pitch = Infinity;
-        if (Math.abs(cos) > 1e-9) {
-            pitch = Math.min(pitch, width / Math.abs(cos));
-        }
-        if (Math.abs(sin) > 1e-9) {
-            pitch = Math.min(pitch, length / Math.abs(sin));
-        }
+        let pitchWidth = Math.abs(cos) > 1e-9 ? width / Math.abs(cos) : Infinity;
+        let pitchLength = Math.abs(sin) > 1e-9 ? length / Math.abs(sin) : Infinity;
+        let pitch = Math.min(pitchWidth, pitchLength);
+
+        // neighbouring spaces share their sides along the long axis (sin, cos) or along the width axis (cos, -sin):
+        // a space moved deeper slides along them, s changes by slide per metre of t
+        let slide = pitchWidth <= pitchLength ? sin / cos : -cos / sin;
 
         let tMax = Math.max(...q.map(v => v[1]));
         let tolerance = g.EDGE_TOLERANCE;
@@ -515,8 +518,10 @@ var parkingGeometry = (function () {
             depth,
             pitch,
             range,
+            shift: tMax + tolerance - depth,
+            slide,
             local: (x, y) => [ (x - p[0][0]) * ex + (y - p[0][1]) * ey, (x - p[0][0]) * nx + (y - p[0][1]) * ny ],
-            space: s0 => f.map(v => [ p[0][0] + (v[0] + s0) * ex + v[1] * nx, p[0][1] + (v[0] + s0) * ey + v[1] * ny ]),
+            space: (s0, t0 = 0) => f.map(v => [ p[0][0] + (v[0] + s0) * ex + (v[1] + t0) * nx, p[0][1] + (v[0] + s0) * ey + (v[1] + t0) * ny ]),
         };
     }
 
@@ -1111,6 +1116,34 @@ var parkingGeometry = (function () {
     }
 
     /*
+        closed intervals of the starts s0 in [ lo, hi ] at which the footprint f (shifted by (s0, 0)) intersects
+        none of the convex polygons (local row coordinates)
+    */
+
+    function freeStarts(f, polygons, lo, hi) {
+        let blocked = polygons.
+            map(v => blockedStarts(f, v)).
+            filter(b => b && b[1] > lo && b[0] < hi).
+            sort((x, y) => x[0] - y[0]);
+
+        let gaps = [];
+        let from = lo;
+
+        for (let [ a, b ] of blocked) {
+            if (a >= from) {
+                gaps.push([ from, Math.min(a, hi) ]);
+            }
+            from = Math.max(from, b);
+        }
+
+        if (from <= hi) {
+            gaps.push([ from, hi ]);
+        }
+
+        return gaps;
+    }
+
+    /*
         free spaces of a revision snapshot on one processed frame
 
         snapshot: revision snapshot (calibration.homography, confidenceThreshold, areas with metricPoints and space parameters),
@@ -1118,10 +1151,14 @@ var parkingGeometry = (function () {
         with corners in pixels of the processed frame, frame: { width, height } of that frame in pixels
 
         detections below the confidence threshold are ignored (any class counts), the corners of every other one are mapped
-        to the parking plane as if they lay on it (vehicle footprint); along the single row of every enabled area the starts
-        of a space that intersect no footprint form gaps, each gap holds the most spaces of the layout pitch that fit,
-        as one block centred in it; neighbouring blocks keep at least one pitch between starts, so spaces never overlap
-        and an area never has more free spaces than its capacity, an empty area has exactly its capacity
+        to the parking plane as if they lay on it (vehicle footprint); along the single row of every enabled area a start
+        of a space (within the starts of the layout row on the base edge) is free when the space, moved deeper along the
+        sides it shares with its neighbours to some depth t0 up to the deepest fitting one (sampled every ROW_SHIFT_STEP),
+        lies inside the area and intersects no footprint; the free starts form gaps, each gap holds the most spaces of
+        the layout pitch that fit, as one block centred in it; neighbouring blocks keep at least one pitch between starts;
+        every space takes its own depth, the nearest to the base edge at which it is free; neighbours stay on the
+        opposite sides of their shared side at any depths, so spaces never overlap and an area never has more free
+        spaces than its capacity, an empty area has exactly its capacity
 
         returns [ { parkingAreaId, spaces: [ [ { x, y } x 4 ] ] } ] for enabled areas, points in pixels of the frame
     */
@@ -1187,25 +1224,40 @@ var parkingGeometry = (function () {
 
             let [ lo, hi ] = row;
 
-            let blocked = footprints.
-                map(fp => blockedStarts(r.f, fp.map(([ x, y ]) => r.local(x, y)))).
-                filter(b => b && b[1] > lo && b[0] < hi).
-                sort((x, y) => x[0] - y[0]);
+            let local = footprints.map(fp => fp.map(([ x, y ]) => r.local(x, y)));
+            let shifted = (polygons, t0) => polygons.map(v => v.map(([ s, t ]) => [ s, t - t0 ]));
 
-            // gaps: closed intervals of allowed starts between the blocked open intervals
-            let gaps = [];
-            let from = lo;
+            // free starts at every sampled depth, nearest to the base edge first; a start s0 is the start on the base edge,
+            // at depth t0 the space begins at s0 + t0 * slide
+            let depths = [];
+            let steps = Math.max(0, Math.ceil(r.shift / g.ROW_SHIFT_STEP - 1e-9));
 
-            for (let [ a, b ] of blocked) {
-                if (a >= from) {
-                    gaps.push([ from, Math.min(a, hi) ]);
+            for (let j = 0; j <= steps; j++) {
+                let t0 = Math.max(0, Math.min(j * g.ROW_SHIFT_STEP, r.shift));
+                let range = r.range(t0);
+                let ds = t0 * r.slide;
+
+                if (range && Math.max(lo + ds, range[0]) <= Math.min(hi + ds, range[1])) {
+                    let gaps = freeStarts(r.f, shifted(local, t0), Math.max(lo + ds, range[0]), Math.min(hi + ds, range[1]));
+                    depths.push({ t0, gaps: gaps.map(([ a, b ]) => [ a - ds, b - ds ]) });
                 }
-                from = Math.max(from, b);
             }
 
-            if (from <= hi) {
-                gaps.push([ from, hi ]);
+            // gaps: starts free at any depth
+            let gaps = [];
+
+            for (let [ a, b ] of depths.flatMap(d => d.gaps).sort((x, y) => x[0] - y[0])) {
+                if (gaps.length && a <= gaps[gaps.length - 1][1] + 1e-9) {
+                    gaps[gaps.length - 1][1] = Math.max(gaps[gaps.length - 1][1], b);
+                } else {
+                    gaps.push([ a, b ]);
+                }
             }
+
+            let depthOf = s0 => {
+                let d = depths.find(({ gaps }) => gaps.some(([ a, b ]) => s0 >= a - 1e-9 && s0 <= b + 1e-9));
+                return d ? d.t0 : null;
+            };
 
             let last = -Infinity;
 
@@ -1220,7 +1272,12 @@ var parkingGeometry = (function () {
                 let start = g0 + Math.max(0, (g1 - g0) - (count - 1) * r.pitch) / 2;
 
                 for (let k = 0; k < count; k++) {
-                    item.spaces.push(pixels(r.space(start + k * r.pitch)));
+                    let s0 = start + k * r.pitch;
+                    let t0 = depthOf(s0);
+
+                    if (t0 !== null) {
+                        item.spaces.push(pixels(r.space(s0 + t0 * r.slide, t0)));
+                    }
                 }
 
                 last = start + (count - 1) * r.pitch;
