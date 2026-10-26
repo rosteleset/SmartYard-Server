@@ -146,7 +146,8 @@
         "wrongPassword": "Wrong password",
         "wrongCode": "Wrong code",
         "parkingInvalidConfig": "Invalid parking configuration: %s",
-        "parkingRevisionConflict": "The parking configuration was changed by another user"
+        "parkingRevisionConflict": "The parking configuration was changed by another user",
+        "parkingServiceUnavailable": "The parking occupancy service is unavailable"
     },
     "images": {
         "maintenance": "maintenance_en.jpg"

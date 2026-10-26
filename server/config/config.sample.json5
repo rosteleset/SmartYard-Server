@@ -193,6 +193,10 @@
             // storage of the processed frames of the latest occupancy results: tmpfs or gridfs.
             // Defaults to tmpfs when the tmpfs backend is configured, otherwise to gridfs.
             "storage": "tmpfs",
+
+            // URL of the parking occupancy service (its "listen" address), lets users process a camera right now
+            // from the "Result" view of the "Parking" tab. Not set by default: the result is only re-read.
+            "service": "http://127.0.0.1:5081",
         },
 
         "isdn": {

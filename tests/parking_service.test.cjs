@@ -415,3 +415,64 @@ test('the list is refreshed every camerasRefresh seconds', async () => {
     await s.service.stop();
     assert.deepEqual(s.timers(), []);
 });
+
+test('processNow runs a camera ahead of its time and the next cycle is scheduled from it', async () => {
+    const s = scheduler([{cameraId: 1, interval: 60}]);
+    await s.service.refresh();
+    await s.release();
+    await s.advance(10 * 1000);
+    assert.equal(s.cycles.length, 1);
+
+    const pending = s.service.processNow(1);
+    await s.flush();
+    assert.deepEqual(s.cycles.slice(1).map(c => [c.id, c.time]), [[1, 10000]], 'started at once');
+    await s.release();
+    assert.equal((await pending).status, 'noRevision', 'the outcome of the cycle');
+    assert.deepEqual(s.timers(), [70000], 'the next cycle 60 s after this one');
+});
+
+test('processNow awaits the running cycle instead of starting a second one', async () => {
+    const s = scheduler([{cameraId: 1, interval: 60}]);
+    await s.service.refresh();
+    await s.flush();
+    const pending = s.service.processNow(1);
+    await s.flush();
+    assert.equal(s.cycles.length, 1, 'no second cycle');
+    await s.release();
+    assert.equal((await pending).status, 'noRevision');
+    assert.equal(s.cycles.length, 1);
+});
+
+test('processNow looks for a camera not on the list with a refresh', async () => {
+    const s = scheduler([]);
+    await s.service.refresh();
+    assert.equal(await s.service.processNow(3), null, 'not to be processed');
+
+    s.state.list = [{cameraId: 3, interval: 60}];
+    const pending = s.service.processNow(3);
+    await s.flush();
+    assert.deepEqual(s.cycles.map(c => c.id), [3], 'picked up and started');
+    await s.release();
+    assert.equal((await pending).status, 'noRevision');
+    assert.equal(s.cycles.length, 1, 'one cycle');
+});
+
+test('POST /process/:cameraId processes the camera and answers its outcome', async t => {
+    const w = await world(t);
+    const service = createService({config: w.config, geometry, log() {}});
+    await service.start();
+    t.after(() => service.stop());
+    // the first cycle of the start
+    while (w.results.length < 1) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+    }
+
+    const response = await fetch(`${w.config.frameBaseUrl}/process/7`, {method: 'POST'});
+    assert.equal(response.status, 200);
+    const outcome = await response.json();
+    assert.equal(outcome.status, 'ok', outcome.reason);
+    assert.equal(w.results.length, 2, 'a new result');
+
+    assert.equal((await fetch(`${w.config.frameBaseUrl}/process/8`, {method: 'POST'})).status, 404, 'not to be processed');
+    assert.equal((await fetch(`${w.config.frameBaseUrl}/process/7`)).status, 404, 'POST only');
+});

@@ -147,7 +147,8 @@
         "wrongPassword": "Неверный пароль",
         "wrongCode": "Неверный код",
         "parkingInvalidConfig": "Некорректная конфигурация парковки: %s",
-        "parkingRevisionConflict": "Конфигурацию парковки изменил другой пользователь"
+        "parkingRevisionConflict": "Конфигурацию парковки изменил другой пользователь",
+        "parkingServiceUnavailable": "Сервис обработки парковки недоступен"
     },
     "images": {
         "maintenance": "maintenance_ru.jpg"

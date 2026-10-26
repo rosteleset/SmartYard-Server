@@ -666,6 +666,56 @@
                 ];
             }
 
+            /**
+             * @inheritDoc
+             */
+
+            public function processNow($cameraId) {
+                $this->failure = false;
+
+                if (!checkInt($cameraId)) {
+                    return $this->fail("unknown", "noId");
+                }
+
+                $url = $this->serviceUrl();
+
+                if ($url === false) {
+                    return $this->fail("parkingServiceUnavailable", "parkingServiceNotConfigured");
+                }
+
+                $curl = curl_init();
+
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => "$url/process/$cameraId",
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => "",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_CONNECTTIMEOUT => 5,
+                    CURLOPT_TIMEOUT => self::SERVICE_TIMEOUT,
+                ]);
+
+                $body = curl_exec($curl);
+                $code = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+                $error = curl_error($curl);
+
+                curl_close($curl);
+
+                if ($code == 404) {
+                    return null;
+                }
+
+                $outcome = ($code == 200 && is_string($body)) ? json_decode($body, true) : null;
+
+                if (!is_array($outcome) || !is_string(@$outcome["status"])) {
+                    return $this->fail("parkingServiceUnavailable", $error ?: "parkingServiceAnswered$code");
+                }
+
+                return [
+                    "status" => $outcome["status"],
+                    "reason" => is_string(@$outcome["reason"]) ? $outcome["reason"] : null,
+                ];
+            }
+
             private function writeStatus($cameraId, $configId, $revision, $status, $reason) {
                 $statement = $this->db->prepare("
                     insert into parking_statuses (camera_id, parking_config_id, revision, status, reason, attempted_at)

@@ -55,6 +55,7 @@ function harness(rights = {GET: true, PUT: true, DELETE: true}) {
         moduleLoaded: (name, module) => { context.modules.addresses[name.split('.')[1]] = module; },
         GET: (api, name, id) => request('GET', api, name, id),
         PUT: (api, name, id) => request('PUT', api, name, id),
+        POST: (api, name, id) => request('POST', api, name, id),
         DELETE: (api, name, id) => request('DELETE', api, name, id),
         $: chain,
         document: {getElementById: () => null},
@@ -285,8 +286,8 @@ function fakeTimers(context) {
     };
 }
 
-function loadedWithConfig(name, extra, settings = {interval: 60, minInterval: 10}) {
-    const h = harness();
+function loadedWithConfig(name, extra, settings = {interval: 60, minInterval: 10}, rights) {
+    const h = harness(rights);
     const timers = fakeTimers(h.context);
     h.parking.renderTab(name, 7);
     h.parking.activate(name);
@@ -476,4 +477,52 @@ test('a result the server could not store is shown as a failed attempt', () => {
     const html = panelHtml(state);
     assert.ok(html.includes('alert-danger') && html.includes('addresses.parkingAttempt_saveFailed 2026-10-23 16:00:00'), 'status');
     assert.ok(html.includes('File storage backend is not available: tmpfs'), 'reason');
+});
+
+test('with the occupancy service the button processes the camera right now, then loads the result', () => {
+    const rights = {GET: true, PUT: true, DELETE: true, POST: true};
+    const {state, parking, s, timers} = loadedWithConfig('pn1', {processingInterval: 15}, {interval: 60, minInterval: 10, processNow: true}, rights);
+    parking.action(s, 'viewResult');
+    resultRequests(state)[0].deferred.resolve({result: sample(3)});
+    assert.ok(panelHtml(state).includes('addresses.parkingResultProcess'), 'process button');
+
+    parking.action(s, 'refreshResult');
+    const post = resultRequests(state)[1];
+    assert.equal(post.method, 'POST');
+    assert.equal(post.id, 7);
+    assert.ok(panelHtml(state).includes('addresses.parkingResultProcessing'), 'processing');
+    assert.deepEqual(timers.pending(), [], 'no polling while processing');
+    post.deferred.resolve({processing: {status: 'ok', reason: '9 free'}});
+    assert.equal(resultRequests(state)[2].method, 'GET', 'then the result is loaded');
+    resultRequests(state)[2].deferred.resolve({result: sample(3), status: {status: 'ok', reason: '', time: '2026-10-23 12:08:00+03', revision: 3}});
+    assert.ok(!panelHtml(state).includes('addresses.parkingProcess_'), 'an ok outcome is shown by the status');
+    assert.deepEqual(timers.pending(), [15000]);
+
+    // an outcome the status doesn't show stays until the next load
+    parking.action(s, 'refreshResult');
+    resultRequests(state)[3].deferred.resolve({processing: {status: 'discarded', reason: 'revision 3 is not current any more'}});
+    resultRequests(state)[4].deferred.resolve({result: sample(3)});
+    assert.ok(panelHtml(state).includes('addresses.parkingProcess_discarded') && panelHtml(state).includes('revision 3 is not current any more'), 'discarded');
+    timers.fire();
+    resultRequests(state)[5].deferred.resolve({result: sample(3)});
+    assert.ok(!panelHtml(state).includes('addresses.parkingProcess_discarded'), 'gone on the next load');
+
+    // a failed request still loads the result
+    parking.action(s, 'refreshResult');
+    resultRequests(state)[6].deferred.reject({});
+    assert.equal(resultRequests(state)[7].method, 'GET');
+});
+
+test('without the occupancy service or the right to POST the button only re-reads the result', () => {
+    for (const [settings, rights] of [
+        [{interval: 60, minInterval: 10, processNow: false}, {GET: true, PUT: true, DELETE: true, POST: true}],
+        [{interval: 60, minInterval: 10, processNow: true}, {GET: true, PUT: true, DELETE: true}],
+    ]) {
+        const {state, parking, s} = loadedWithConfig('pn2', {}, settings, rights);
+        parking.action(s, 'viewResult');
+        resultRequests(state)[0].deferred.resolve({result: sample(3)});
+        assert.ok(panelHtml(state).includes('addresses.parkingResultRefresh ') || panelHtml(state).includes('addresses.parkingResultRefresh<'), 'refresh button');
+        parking.action(s, 'refreshResult');
+        assert.equal(resultRequests(state)[1].method, 'GET');
+    }
 });

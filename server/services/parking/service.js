@@ -1,5 +1,6 @@
 // parking occupancy service: periodically finds the free spaces of every Ready and Enabled parking configuration
-// on a fresh camera frame with FALPRS, all data comes from and goes to the server through api.internal
+// on a fresh camera frame with FALPRS, all data comes from and goes to the server through api.internal;
+// the server may ask to process a camera right now (POST /process/:cameraId)
 
 const http = require("node:http");
 const crypto = require("node:crypto");
@@ -37,7 +38,7 @@ function createService(options) {
 
     // frames served to FALPRS while their cycle runs: token -> JPEG
     const frames = new Map();
-    // scheduled cameras: cameraId -> { interval, timer, running, started, removed }
+    // scheduled cameras: cameraId -> { interval, timer, running, current, started, removed }, current - outcome of the running cycle
     const cameras = new Map();
 
     let server = null;
@@ -233,20 +234,23 @@ function createService(options) {
         entry.timer = setTimer(() => run(cameraId, entry), delay);
     }
 
-    // a camera is never processed by two cycles at once: the next one is scheduled when the current one ends
+    // a camera is never processed by two cycles at once: the next one is scheduled when the current one ends;
+    // returns the outcome of the cycle, null when there was none
     async function run(cameraId, entry) {
         entry.timer = null;
 
         if (entry.removed || stopped) {
-            return;
+            return null;
         }
 
         entry.running = true;
         entry.started = now();
+        entry.current = processCamera(cameraId);
 
-        let outcome = await processCamera(cameraId);
+        let outcome = await entry.current;
 
         entry.running = false;
+        entry.current = null;
 
         if (entry.removed && cameras.get(cameraId) === entry) {
             cameras.delete(cameraId);
@@ -263,6 +267,39 @@ function createService(options) {
         if (!entry.removed && !stopped) {
             schedule(cameraId, entry);
         }
+
+        return outcome;
+    }
+
+    /**
+     * process a camera right now instead of at its next time: the running cycle of the camera is awaited instead of
+     * starting a second one; a camera not on the list (its configuration has just been made ready) is looked for with a
+     * refresh of the list; the next cycle is scheduled from this one
+     *
+     * @return { status, reason } outcome as of processCamera(), null when the camera is not to be processed
+     */
+
+    async function processNow(cameraId) {
+        let entry = cameras.get(cameraId);
+
+        if (!entry || entry.removed) {
+            await refresh();
+            entry = cameras.get(cameraId);
+        }
+
+        if (!entry || entry.removed || stopped) {
+            return null;
+        }
+
+        if (entry.running) {
+            return entry.current;
+        }
+
+        if (entry.timer !== null) {
+            clearTimer(entry.timer);
+        }
+
+        return run(cameraId, entry);
     }
 
     // apply the list of cameras to process: start new ones, re-time changed ones, stop removed ones
@@ -286,7 +323,7 @@ function createService(options) {
             seen.add(cameraId);
 
             if (!entry) {
-                entry = { interval, timer: null, running: false, started: 0, removed: false };
+                entry = { interval, timer: null, running: false, current: null, started: 0, removed: false };
                 cameras.set(cameraId, entry);
                 run(cameraId, entry);
                 continue;
@@ -340,24 +377,42 @@ function createService(options) {
         }, refreshPeriod);
     }
 
-    function handleFrame(req, res) {
-        let m = /^\/frames\/([0-9a-f]{32})\.jpg$/.exec(req.url || "");
-        let frame = m ? frames.get(m[1]) : null;
+    // GET /frames/:token.jpg - a frame for FALPRS, POST /process/:cameraId - process a camera now and answer its outcome
+    async function handleRequest(req, res) {
+        let url = req.url || "";
+        let m = /^\/frames\/([0-9a-f]{32})\.jpg$/.exec(url);
+        let frame = m && req.method == "GET" ? frames.get(m[1]) : null;
 
-        if (req.method != "GET" || !frame) {
-            res.writeHead(404);
-            res.end();
+        if (frame) {
+            res.writeHead(200, { "Content-Type": "image/jpeg", "Content-Length": frame.length });
+            res.end(frame);
             return;
         }
 
-        res.writeHead(200, { "Content-Type": "image/jpeg", "Content-Length": frame.length });
-        res.end(frame);
+        m = /^\/process\/(\d+)$/.exec(url);
+
+        if (m && req.method == "POST") {
+            // the request body, if any, is not used
+            req.resume();
+
+            let outcome = await processNow(Number(m[1]));
+
+            if (outcome) {
+                let body = JSON.stringify({ status: outcome.status, reason: outcome.reason });
+                res.writeHead(200, { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body) });
+                res.end(body);
+                return;
+            }
+        }
+
+        res.writeHead(404);
+        res.end();
     }
 
     async function start() {
         stopped = false;
 
-        server = http.createServer(handleFrame);
+        server = http.createServer(handleRequest);
 
         await new Promise((resolve, reject) => {
             server.once("error", reject);
@@ -397,7 +452,7 @@ function createService(options) {
         }
     }
 
-    return { start, stop, refresh, processCamera, cameras, frames };
+    return { start, stop, refresh, processCamera, processNow, cameras, frames };
 }
 
 module.exports = { createService, isStale, STALE_TOLERANCE };
