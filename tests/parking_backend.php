@@ -51,7 +51,7 @@ register_shutdown_function(function () use ($db, $schema) {
 });
 
 $manifest = json_decode(file_get_contents(__DIR__ . '/../server/data/install.json'), true);
-check(in_array('v101_parking.sql', $manifest['101']), 'Migration not registered');
+check(in_array('v102_parking.sql', $manifest['102']), 'Migration not registered');
 $tables = json_decode(file_get_contents(__DIR__ . '/../server/data/tables.json'), true);
 foreach (['parking_configs', 'parking_areas', 'parking_config_revisions', 'parking_results', 'parking_statuses'] as $table) {
     check(in_array($table, $tables), "$table is not moved by schema.php");
@@ -59,7 +59,7 @@ foreach (['parking_configs', 'parking_areas', 'parking_config_revisions', 'parki
 
 $db->exec('CREATE TABLE cameras (camera_id serial PRIMARY KEY, model text)');
 $db->exec("INSERT INTO cameras (model) VALUES ('fake.json'), ('fake.json'), ('fake.json')");
-$migration = file_get_contents(__DIR__ . '/../server/data/pgsql/v101_parking.sql');
+$migration = file_get_contents(__DIR__ . '/../server/data/pgsql/v102_parking.sql');
 $db->exec($migration);
 $db->exec($migration);
 

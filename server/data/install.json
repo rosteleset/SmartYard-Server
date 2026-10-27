@@ -319,7 +319,9 @@
         "v100_lprs_valid_from.sql"
     ],
     "101": [
-        "v101_faces_groups_cleanup.sql",
-        "v101_parking.sql"
+        "v101_faces_groups_cleanup.sql"
+    ],
+    "102": [
+        "v102_parking.sql"
     ]
 }
