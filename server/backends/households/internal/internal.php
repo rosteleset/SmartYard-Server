@@ -4545,6 +4545,19 @@
             /**
              * @inheritDoc
              */
+            public function getFlatIdBySubscriberGroupId($subscriberGroupId): ?int
+            {
+                $query = "select flat_id from subscriber_groups where subscriber_group_id = :subscriber_group_id";
+                $r = $this->db->get($query, [
+                    "subscriber_group_id" => $subscriberGroupId,
+                ], [], ["singlify"]);
+
+                return $r && isset($r['flat_id']) ? (int)$r['flat_id'] : null;
+            }
+
+            /**
+             * @inheritDoc
+             */
             function getFlatPlateNumbers($flatId) {
                 if (!checkInt($flatId)) {
                     return false;

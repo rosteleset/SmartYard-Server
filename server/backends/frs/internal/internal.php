@@ -1026,6 +1026,31 @@
              * @inheritDoc
              */
 
+            public function faceIdBelongsToFlatIdFrs($face_id, $flat_id): bool
+            {
+                $query = "
+                    select
+                        true result
+                    where
+                      exists(
+                        select
+                          1
+                        from
+                            frs_links_faces lf
+                        where
+                            lf.face_id = :face_id
+                            and lf.flat_id = :flat_id
+                      )
+                ";
+                $r = $this->db->get($query, [":face_id" => $face_id, ":flat_id" => $flat_id], [], [self::PDO_SINGLIFY]);
+
+                return $r && $r['result'] === true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function listFacesFrs($flat_id, $subscriber_id, $is_owner = false): array {
                 $query1 = "
                     select distinct
@@ -1154,24 +1179,18 @@
 
             public function detachFaceFromGroupFrs(int $face_id, int $group_id): bool
             {
-                $r = false;
-                try {
-                    $query = "
-                        delete from
-                            link_face_subscriber_group
-                        where
-                            face_id = :face_id
-                            and subscriber_group_id = :group_id
-                    ";
-                    $r = $this->db->modify($query, [
-                        "face_id" => $face_id,
-                        "group_id" => $group_id,
-                    ]);
-                } catch (Exception $e) {
-                    error_log(print_r($e, true));
-                }
+                $query = "
+                    delete from
+                        link_face_subscriber_group
+                    where
+                        face_id = :face_id
+                        and subscriber_group_id = :group_id
+                ";
 
-                return $r;
+                return $this->db->modify($query, [
+                    "face_id" => $face_id,
+                    "group_id" => $group_id,
+                ]) !== false;
             }
 
             /**

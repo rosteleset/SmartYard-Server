@@ -249,6 +249,17 @@
 
             abstract public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): array;
 
+
+            /**
+             * Check if the face belongs to the flat
+             * @param int $face_id
+             * @param int $flat_id
+             *
+             * @return bool
+             */
+
+            abstract public function faceIdBelongsToFlatIdFrs($face_id, $flat_id): bool;
+
             /**
              * List all liked faces in the flat by subscriber or all faces in the flat for owner
              * @param int $flat_id

@@ -32,20 +32,34 @@ if (!$frs) {
     response(422);
 }
 
-$face_id = @(int)$postdata['faceId'];
-if (!$face_id) {
-    response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'faceId'));
-}
-if (!$frs->faceBelongsToSubscriberFrs($face_id, $subscriber_id)) {
-    response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'faceId'));
-}
-
 $group_id = @$postdata['groupId'];
 if (!$group_id) {
     response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'groupId'));
 }
 if (!$households->groupBelongsToSubscriber($group_id, $subscriber_id)) {
     response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'groupId'));
+}
+
+$face_id = @(int)$postdata['faceId'];
+if (!$face_id) {
+    response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'faceId'));
+}
+if (!$frs->faceBelongsToSubscriberFrs($face_id, $subscriber_id)) {
+    $flat_id = $households->getFlatIdBySubscriberGroupId($group_id);
+    if (!isset($flat_id))
+        response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'groupId'));
+    if (!$frs->faceIdBelongsToFlatIdFrs($face_id, $flat_id))
+        response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'faceId'));
+
+    $flat_owner = false;
+    foreach ($subscriber['flats'] as $flat) {
+        if ($flat['flatId'] == $flat_id) {
+            $flat_owner = ($flat['role'] == 0);
+            break;
+        }
+    }
+    if (!$flat_owner)
+        response(403, false, i18n("mobile.404"));
 }
 
 $r = $frs->attachFaceToGroupFrs($face_id, $group_id, $subscriber_id);

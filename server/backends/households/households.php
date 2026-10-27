@@ -973,6 +973,12 @@
             abstract public function groupBelongsToSubscriber($subscriberGroupId, $subscriberId): bool;
 
             /**
+             * @param $subscriberGroupId
+             * @return ?int
+             */
+            abstract public function getFlatIdBySubscriberGroupId($subscriberGroupId): ?int;
+
+            /**
              * @param $houseId
              * @return ?array
              */

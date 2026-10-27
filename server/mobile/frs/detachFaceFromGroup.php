@@ -36,9 +36,6 @@ $face_id = @(int)$postdata['faceId'];
 if (!$face_id) {
     response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'faceId'));
 }
-if (!$frs->faceBelongsToSubscriberFrs($face_id, $subscriber_id)) {
-    response(422, false, i18n("mobile.error"), i18n("mobile.invalidParameter", 'faceId'));
-}
 
 $group_id = @$postdata['groupId'];
 if (!$group_id) {
