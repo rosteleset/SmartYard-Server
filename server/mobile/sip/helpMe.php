@@ -25,7 +25,7 @@
     $hash = '123123';
 
     response(200, [
-        'server' => 'dm.lanta.me',
+        'server' => 'example.com',
         'port' => 54675,
         'transport' => 'tcp',
         'extension' => (string)$extension,

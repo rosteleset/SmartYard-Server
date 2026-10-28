@@ -451,7 +451,7 @@ function issueChanged(issue, action, old, new, workflowAction)
                     ..
                     "\n"
                     ..
-                    "https://tt.lanta.me//?#tt&issue=" .. issue["issueId"]
+                    "https://tt.example.com//?#tt&issue=" .. issue["issueId"]
                     ..
                     "\n"
                     ..
