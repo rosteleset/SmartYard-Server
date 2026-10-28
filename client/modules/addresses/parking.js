@@ -75,6 +75,7 @@
             saving: false,
             showSpaces: true,
             showGrid: false,
+            showSides: true,
             calA: "",
             calB: "",
             checkLength: "2.5",
@@ -535,6 +536,40 @@
 
     // calibration corners
 
+    // the line through two points clipped by the frame, [] when it misses the frame or the points coincide
+    sideLine: function (state, a, b) {
+        let f = modules.addresses.parking.frame(state);
+        let x = a.u * f.width, y = a.v * f.height;
+        let dx = (b.u - a.u) * f.width, dy = (b.v - a.v) * f.height;
+
+        if (Math.hypot(dx, dy) < 1e-6) {
+            return [];
+        }
+
+        // Liang-Barsky for an unbounded parameter
+        let t0 = -Infinity, t1 = Infinity;
+
+        for (let [ p, q ] of [ [ -dx, x ], [ dx, f.width - x ], [ -dy, y ], [ dy, f.height - y ] ]) {
+            if (p == 0) {
+                if (q < 0) {
+                    return [];
+                }
+            } else if (p < 0) {
+                t0 = Math.max(t0, q / p);
+            } else {
+                t1 = Math.min(t1, q / p);
+            }
+        }
+
+        if (t0 > t1) {
+            return [];
+        }
+
+        let at = t => ({ u: (x + t * dx) / f.width, v: (y + t * dy) / f.height });
+
+        return [ at(t0), at(t1) ];
+    },
+
     // a crosshair with an open center: the marked pixel stays visible, the number is aside
     cornerIcon: function (index, selected) {
         let color = selected ? "#ffc107" : "#e83e8c";
@@ -917,6 +952,12 @@
                 parking.renderMap(state);
                 parking.renderPanel(state);
                 break;
+
+            case "toggleSides":
+                state.showSides = !state.showSides;
+                parking.renderMap(state);
+                parking.renderPanel(state);
+                break;
         }
     },
 
@@ -1263,7 +1304,15 @@
         if (d.calibration) {
             let points = d.calibration.points;
 
-            L.polygon(points.map(ll), { color: "#e83e8c", weight: 2, dashArray: "4 4", fillOpacity: 0, interactive: false }).addTo(state.group);
+            // the sides go on through the whole frame: a side off a long painted line is seen better than a corner off by a pixel
+            let sides = (state.showSides && points.length == 4) ? points.map(() => L.polyline([], { color: "#e83e8c", weight: 1, opacity: 0.7, interactive: false }).addTo(state.group)) : [];
+            let outline = L.polygon([], { color: "#e83e8c", weight: 2, dashArray: "4 4", fillOpacity: 0, interactive: false }).addTo(state.group);
+            let outlined = current => {
+                outline.setLatLngs(current.map(ll));
+                sides.forEach((side, k) => side.setLatLngs(parking.sideLine(state, current[k], current[(k + 1) % 4]).map(ll)));
+            };
+
+            outlined(points);
 
             if (state.corner !== null && (!state.editable || !interactive || state.corner >= points.length)) {
                 state.corner = null;
@@ -1281,6 +1330,8 @@
                     marker.on("click", () => parking.selectCorner(state, i));
                     // not setIcon: a new icon element interrupts the drag
                     marker.on("dragstart", () => state.corner = i);
+                    // the outline follows the corner while it is dragged
+                    marker.on("drag", () => outlined(points.map((q, k) => k == i ? parking.fromLatLng(state, marker.getLatLng()) : q)));
                 }
 
                 marker.on("dragend", () => {
@@ -1591,6 +1642,7 @@
         h += button("refresh", "fas fa-sync-alt", i18n("addresses.areaRefresh"), "btn-info");
         h += button("toggleSpaces", "fas fa-th", i18n("addresses.parkingShowSpaces"), state.showSpaces ? "btn-secondary" : "btn-outline-secondary");
         h += button("toggleGrid", "fas fa-border-all", i18n("addresses.parkingShowGrid"), state.showGrid ? "btn-secondary" : "btn-outline-secondary");
+        h += button("toggleSides", "fas fa-arrows-alt-h", i18n("addresses.parkingShowSides"), state.showSides ? "btn-secondary" : "btn-outline-secondary");
         if (state.deletable && state.saved) {
             h += button("delete", "fas fa-trash-alt", i18n("addresses.parkingDelete"), "btn-danger");
         }
