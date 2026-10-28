@@ -325,9 +325,10 @@
              * @param string $prefix_name
              * @param int $subscriber_id
              * @param int $flat_id
+             * @param bool $is_owner
              * @return bool
              */
-            abstract public function clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id): bool;
+            abstract public function clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id, bool $is_owner = false): bool;
 
             /**
              * @return array

@@ -1253,7 +1253,7 @@
              * @inheritDoc
              */
 
-            public function clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id): bool
+            public function clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id, bool $is_owner = false): bool
             {
                 $frs_servers = $this->frsServers() ?? [];
                 if (is_array($frs_servers) && count($frs_servers) > 0) {
@@ -1262,19 +1262,25 @@
                     return false;
                 }
 
-                // select all subscriber faces
+                // select all subscriber faces (flat owner gets faces of all flat subscribers)
+                $params = [":flat_id" => $flat_id];
+                $subscriber_filter = "";
+                if (!$is_owner) {
+                    $subscriber_filter = "and lf.house_subscriber_id = :subscriber_id";
+                    $params[":subscriber_id"] = $subscriber_id;
+                }
                 $query = "
-                    select
+                    select distinct
                       lf.face_id
                     from
                       frs_links_faces lf
                     where
                       lf.flat_id = :flat_id
-                      and lf.house_subscriber_id = :subscriber_id
+                      $subscriber_filter
                     order by
                       1
                 ";
-                $r = $this->db->get($query, [":flat_id" => $flat_id, ":subscriber_id" => $subscriber_id], []);
+                $r = $this->db->get($query, $params, []);
                 $faces_all = [];
                 foreach ($r as $row) {
                     $faces_all[] = $row['face_id'];
@@ -1283,22 +1289,18 @@
                 if (count($faces_all) == 0)
                     return true;
 
-                // select subscriber faces with group
+                // select faces already in subscriber groups, including faces of other flat subscribers
                 $query = "
                     select
-                      lf.face_id,
+                      lfsg.face_id,
                       lfsg.subscriber_group_id
                     from
-                      frs_links_faces lf
+                      link_face_subscriber_group lfsg
                       inner join subscriber_groups sg
-                        on sg.house_subscriber_id = lf.house_subscriber_id
-                        and sg.flat_id = lf.flat_id
-                      inner join link_face_subscriber_group lfsg
-                        on lfsg.subscriber_group_id = sg.subscriber_group_id
-                        and lfsg.face_id = lf.face_id
+                        on sg.subscriber_group_id = lfsg.subscriber_group_id
                     where
-                      lf.flat_id = :flat_id
-                      and lf.house_subscriber_id = :subscriber_id
+                      sg.flat_id = :flat_id
+                      and sg.house_subscriber_id = :subscriber_id
                     order by
                       1
                 ";

@@ -43,7 +43,15 @@ if (!$frs) {
     response(422);
 }
 
-$r = $frs->clusterFacesBySimilarityFrs($prefix_name, $subscriber_id, $flat_id);
+$flat_owner = false;
+foreach ($subscriber['flats'] as $flat) {
+    if ($flat['flatId'] == $flat_id) {
+        $flat_owner = ($flat['role'] == 0);
+        break;
+    }
+}
+
+$r = $frs->clusterFacesBySimilarityFrs($prefix_name, $subscriber_id, $flat_id, $flat_owner);
 if ($r === true) {
     response(204);
 } else {
