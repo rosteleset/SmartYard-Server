@@ -90,8 +90,8 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
     public function configureEncoding(): void
     {
         $this->apiCall('/camera/audio', 'PUT', [
-            'aac_enable' => false,
-            'format' => 'PCMA',
+            'aac_enable' => true,
+            'format' => 'AAC',
         ]);
 
         $this->apiCall('/camera/codec', 'PUT', [
