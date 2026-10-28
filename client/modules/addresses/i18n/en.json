@@ -363,6 +363,7 @@
     "parkingTotalCapacity": "Total spaces: %s",
     "parkingShowSpaces": "Show spaces",
     "parkingShowGrid": "Show the grid on the parking plane",
+    "parkingShowSides": "Extend the sides of the calibration rectangle through the frame",
     "parkingCalibration": "Calibration",
     "parkingCalibrationHint": "Mark 4 corners of a rectangle of known size on the parking surface: 1 → 2 is side A, 2 → 3 is side B.",
     "parkingCalibrationA": "Side A, m",

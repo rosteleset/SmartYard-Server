@@ -363,6 +363,7 @@
     "parkingTotalCapacity": "Всего мест: %s",
     "parkingShowSpaces": "Показать места",
     "parkingShowGrid": "Показать сетку на плоскости парковки",
+    "parkingShowSides": "Продлить стороны прямоугольника калибровки через весь кадр",
     "parkingCalibration": "Калибровка",
     "parkingCalibrationHint": "Отметьте 4 угла прямоугольника известного размера на поверхности парковки: 1 → 2 — сторона A, 2 → 3 — сторона B.",
     "parkingCalibrationA": "Сторона A, м",
