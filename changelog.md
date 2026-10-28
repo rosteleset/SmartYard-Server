@@ -16,6 +16,7 @@
 ! extended the abstract FRS and households backend contracts for flat-owner face management
 - fixed face clustering for flat owners to include faces of all flat subscribers
 + enabled AAC audio during initial configuration of legacy Sokol intercoms
+- fixed cameras disappearing from the mobile camera tree after their groups are deleted
 ```
 
 ## v1.3.0

@@ -3804,18 +3804,36 @@
              */
 
             function deletePathNode($nodeId) {
-                $c = $this->db->modify("delete from houses_paths where house_path_id = :house_path_id", [
+                // Move subtree cameras to the surviving parent and delete the groups atomically.
+                return $this->db->modify("
+                    with recursive selected_path as (
+                        select house_path_id, house_path_parent
+                        from houses_paths where house_path_id = :house_path_id
+                    ), deleted_paths as (
+                        select house_path_id from selected_path
+                        union
+                        select p.house_path_id
+                        from houses_paths p
+                        join deleted_paths d on p.house_path_parent = d.house_path_id
+                    ), surviving_parent as (
+                        select p.house_path_id::text as path
+                        from houses_paths p
+                        join selected_path s on s.house_path_parent = p.house_path_id
+                        where p.house_path_id not in (select house_path_id from deleted_paths)
+                    ), reset_house_cameras as (
+                        update houses_cameras_houses
+                        set path = (select path from surviving_parent), path_order = null
+                        where path in (select house_path_id::text from deleted_paths)
+                    ), reset_flat_cameras as (
+                        update houses_cameras_flats
+                        set path = (select path from surviving_parent), path_order = null
+                        where path in (select house_path_id::text from deleted_paths)
+                    )
+                    delete from houses_paths
+                    where house_path_id in (select house_path_id from deleted_paths)
+                ", [
                     "house_path_id" => $nodeId,
                 ]);
-
-                $r = 0;
-
-                do {
-                    $r = $this->db->modify("delete from houses_paths where house_path_parent not in (select house_path_id from houses_paths)");
-                    $c += $r;
-                } while ($r);
-
-                return $c;
             }
 
             /**

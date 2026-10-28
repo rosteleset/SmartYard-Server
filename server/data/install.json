@@ -320,5 +320,8 @@
     ],
     "101": [
         "v101_faces_groups_cleanup.sql"
+    ],
+    "102": [
+        "v102_cctv_deleted_paths.sql"
     ]
 }
