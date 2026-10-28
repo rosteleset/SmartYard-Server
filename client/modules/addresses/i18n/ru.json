@@ -368,6 +368,7 @@
     "parkingCalibrationA": "Сторона A, м",
     "parkingCalibrationB": "Сторона B, м",
     "parkingCalibrationSizeRequired": "Укажите размеры сторон A и B в метрах",
+    "parkingCalibrationKeys": "Точная подгонка углов: щёлкните угол, стрелки сдвигают его на пиксел кадра (с Shift — на 10), Tab — следующий угол, Esc — отпустить.",
     "parkingCalibrate": "Отметить углы",
     "parkingCalibrationFromArea": "По выбранной площадке",
     "parkingRemoveCalibration": "Удалить калибровку",
