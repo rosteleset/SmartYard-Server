@@ -1,3 +1,36 @@
+# devel
+
+## 2026-10-28
+
+### Face clustering backend contract
+
+The `frs::clusterFacesBySimilarityFrs()` method now accepts an optional fourth `$is_owner` argument.
+Custom backends that override this method must update their signature:
+
+```php
+clusterFacesBySimilarityFrs(string $prefix_name, int $subscriber_id, int $flat_id, bool $is_owner = false): bool
+```
+
+Backends that inherit the implementation from `frs/internal` require no changes.
+
+## 2026-10-27
+
+### Face management backend contracts
+
+Custom backends that directly extend the abstract `frs` backend must implement:
+
+```php
+faceIdBelongsToFlatIdFrs($face_id, $flat_id): bool
+```
+
+Custom backends that directly extend the abstract `households` backend must implement:
+
+```php
+getFlatIdBySubscriberGroupId($subscriberGroupId): ?int
+```
+
+Backends that inherit the implementations from `frs/internal` and `households/internal` require no changes.
+
 # v1.3.0
 
 ## 2026-10-13

@@ -10,7 +10,12 @@
 ## devel
 
 ```diff
-
+- fixed virtual intercom defaulting to the keypad when the apartment list is enabled
+- fixed flat owners being unable to group and ungroup faces of other subscribers of the same flat
+- fixed cross-subscriber face-group link cleanup when faces are unlinked from a flat
+! extended the abstract FRS and households backend contracts for flat-owner face management
+- fixed face clustering for flat owners to include faces of all flat subscribers
++ enabled AAC audio during initial configuration of legacy Sokol intercoms
 ```
 
 ## v1.3.0
