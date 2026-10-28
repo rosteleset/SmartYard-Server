@@ -91,6 +91,12 @@ class fakeFiles {
         }
         return $this->contentsToStream($this->files[$uuid]['contents']);
     }
+    public function getFileInfo($uuid) {
+        if (!isset($this->files[$uuid])) {
+            throw new RuntimeException('no file');
+        }
+        return ['length' => strlen($this->files[$uuid]['contents'])];
+    }
     public function deleteFile($uuid) {
         unset($this->files[$uuid]);
         return true;
@@ -614,6 +620,128 @@ $tests['a camera is processed right now by the occupancy service'] = function ()
     $down = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal', 'service' => "http://127.0.0.1:$port"]]], $db, null, 'admin');
     check($down->processNow(3) === false && $down->lastFailure() === 'parkingServiceUnavailable', 'service down');
     check(api\cameras\parkingResult::index()['POST'] === '#same(addresses,house,GET)', 'rights');
+};
+
+$tests['parking cameras for the mobile app'] = function () use ($parking, $files, $api, $code, $fixture, $db) {
+    $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
+    check($parking->parkingCameras([$id]) === [], 'no configuration');
+    $answer = $api('PUT', $id, ['revision' => 0] + $fixture('several areas'));
+    check($code($answer) === 200, 'PUT failed: ' . json_encode($answer));
+    $saved = $answer[200]['parking'];
+    check($parking->parkingCameras([$id]) === [], 'no result yet');
+
+    $areaIds = array_column($saved['areas'], 'parkingAreaId');
+    $space = [['x' => 1, 'y' => 2], ['x' => 3, 'y' => 2], ['x' => 3, 'y' => 4], ['x' => 1, 'y' => 4]];
+    $freeSpaces = [['parkingAreaId' => $areaIds[0], 'spaces' => [$space, $space]], ['parkingAreaId' => $areaIds[2], 'spaces' => [$space]]];
+    $result = ['revision' => 1, 'frameWidth' => 1920, 'frameHeight' => 1080, 'freeSpaces' => $freeSpaces];
+    check($parking->saveResult($id, $result, 'JPEG') === 'accepted', 'result');
+    $processedAt = $db->query("select processed_at from parking_results where camera_id = $id")->fetchColumn();
+    $summary = $parking->parkingCameras([$id]);
+    check($summary === [$id => ['capacity' => 23, 'free' => 3, 'processedAt' => date('Y-m-d H:i:s', strtotime($processedAt))]], 'summary ' . json_encode($summary));
+    check(preg_match('/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/', $summary[$id]['processedAt']) === 1, 'time format');
+
+    $uuid = $db->query("select frame_uuid from parking_results where camera_id = $id")->fetchColumn();
+    $frame = $files->files[$uuid];
+    unset($files->files[$uuid]);
+    check($parking->parkingCameras([$id]) === [], 'frame is gone');
+    $files->files[$uuid] = $frame;
+
+    // the third area is disabled in revision 2, the result is still of revision 1
+    $areas = $saved['areas'];
+    $areas[2]['enabled'] = 0;
+    $body = ['revision' => 1, 'enabled' => 1, 'frameWidth' => $saved['frameWidth'], 'frameHeight' => $saved['frameHeight'], 'calibration' => $saved['calibration'], 'areas' => $areas];
+    check($code($api('PUT', $id, $body)) === 200, 'disable an area');
+    check($parking->parkingCameras([$id])[$id]['capacity'] === 23, 'totals of the revision of the result');
+    check($parking->saveResult($id, ['revision' => 2, 'freeSpaces' => [$freeSpaces[0]]] + $result, 'JPEG') === 'accepted', 'result of revision 2');
+    check($parking->parkingCameras([$id])[$id] === ['capacity' => 17, 'free' => 2] + $parking->parkingCameras([$id])[$id], 'a disabled area is not counted');
+
+    check($parking->parkingCameras([$id, 'x', -1, $id + 1000, $id]) === $parking->parkingCameras([$id]), 'only parking cameras among the asked ones');
+    check($parking->parkingCameras([]) === [], 'nothing asked');
+
+    check($code($api('PUT', $id, ['revision' => 2, 'enabled' => 0] + $body)) === 200, 'disable');
+    check($parking->parkingCameras([$id]) === [], 'disabled configuration');
+    check($code($api('PUT', $id, ['revision' => 3] + $fixture('no calibration'))) === 200, 'not ready');
+    check($parking->parkingCameras([$id]) === [], 'not ready configuration');
+};
+
+$tests['parking camera detail for the mobile app'] = function () use ($parking, $files, $api, $code, $fixture, $db) {
+    $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
+    check($parking->parkingCamera($id) === null, 'no configuration');
+    $saved = $api('PUT', $id, ['revision' => 0] + $fixture('several areas'))[200]['parking'];
+    check($parking->parkingCamera($id) === null, 'no result yet');
+
+    $areaIds = array_column($saved['areas'], 'parkingAreaId');
+    $space = fn ($x) => [['x' => $x, 'y' => 2], ['x' => $x + 3, 'y' => 2], ['x' => $x + 3, 'y' => 4], ['x' => $x, 'y' => 4]];
+    // a frame of another resolution than the reference frame, an area listed twice, free spaces of an unknown area
+    $freeSpaces = [
+        ['parkingAreaId' => $areaIds[2], 'spaces' => [$space(1)]],
+        ['parkingAreaId' => $areaIds[0], 'spaces' => [$space(2), $space(3)]],
+        ['parkingAreaId' => $areaIds[2], 'spaces' => [$space(4)]],
+        ['parkingAreaId' => max($areaIds) + 1000, 'spaces' => [$space(5)]],
+    ];
+    $result = ['revision' => 1, 'frameWidth' => 1280, 'frameHeight' => 720, 'freeSpaces' => $freeSpaces];
+    check($parking->saveResult($id, $result, 'JPEG') === 'accepted', 'result');
+    $uuid = $db->query("select frame_uuid from parking_results where camera_id = $id")->fetchColumn();
+
+    $detail = $parking->parkingCamera($id);
+    check(array_intersect_key($detail, array_flip(['capacity', 'frameWidth', 'frameHeight', 'frameId'])) === ['capacity' => 23, 'frameWidth' => 1280, 'frameHeight' => 720, 'frameId' => $uuid], 'header ' . json_encode($detail));
+    check(array_diff_key($detail, array_flip(['frameWidth', 'frameHeight', 'frameId', 'areas'])) === $parking->parkingCameras([$id])[$id], 'summary as in the list');
+    check(array_column($detail['areas'], 'name') === ['A', 'B', 'C'] && array_column($detail['areas'], 'capacity') === [10, 7, 6], 'areas in the revision order');
+    foreach ($saved['areas'] as $i => $area) {
+        $points = array_map(fn ($p) => ['x' => $p['u'] * 1280, 'y' => $p['v'] * 720], $area['imagePoints']);
+        check($detail['areas'][$i]['points'] == $points, "pixel outline $i");
+    }
+    check($detail['areas'][0]['freeSpaces'] === [$space(2), $space(3)] && $detail['areas'][1]['freeSpaces'] === [], 'free spaces by area');
+    check($detail['areas'][2]['freeSpaces'] === [$space(1), $space(4)], 'free spaces of an area listed twice');
+    check(count($detail['areas']) === 3, 'unknown area is left out');
+
+    // the third area is disabled in revision 2, the result is still of revision 1
+    $areas = $saved['areas'];
+    $areas[2]['enabled'] = 0;
+    $body = ['revision' => 1, 'enabled' => 1, 'frameWidth' => $saved['frameWidth'], 'frameHeight' => $saved['frameHeight'], 'calibration' => $saved['calibration'], 'areas' => $areas];
+    check($code($api('PUT', $id, $body)) === 200, 'disable an area');
+    check(count($parking->parkingCamera($id)['areas']) === 3, 'areas of the revision of the result');
+    check($parking->saveResult($id, ['revision' => 2, 'freeSpaces' => [$freeSpaces[1]]] + $result, 'JPEG') === 'accepted', 'result of revision 2');
+    $detail = $parking->parkingCamera($id);
+    check(array_column($detail['areas'], 'name') === ['A', 'B'] && $detail['capacity'] === 17, 'a disabled area is left out');
+
+    $uuid = $detail['frameId'];
+    $frame = $files->files[$uuid];
+    unset($files->files[$uuid]);
+    check($parking->parkingCamera($id) === null, 'frame is gone');
+    $files->files[$uuid] = $frame;
+
+    check($code($api('PUT', $id, ['revision' => 2, 'enabled' => 0] + $body)) === 200, 'disable');
+    check($parking->parkingCamera($id) === null, 'disabled configuration');
+    check($parking->parkingCamera('x') === false, 'invalid id');
+};
+
+$tests['the camera of a frame for the mobile app'] = function () use ($parking, $files, $api, $code, $fixture, $db) {
+    $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
+    $saved = $api('PUT', $id, ['revision' => 0] + $fixture('several areas'))[200]['parking'];
+    $result = ['revision' => 1, 'frameWidth' => 1920, 'frameHeight' => 1080, 'freeSpaces' => []];
+    check($parking->saveResult($id, $result, 'JPEG1') === 'accepted', 'first result');
+    $first = $parking->parkingCamera($id)['frameId'];
+    check($parking->parkingFrameCamera($first) === $id, 'current frame');
+
+    check($parking->saveResult($id, $result, 'JPEG2') === 'accepted', 'second result');
+    $second = $parking->parkingCamera($id)['frameId'];
+    check($second !== $first && $parking->parkingFrameCamera($first) === null, 'a replaced frame');
+    check($parking->parkingFrameCamera($second) === $id, 'the new frame');
+
+    check($parking->parkingFrameCamera('ffffffffffffffffffffffff') === null, 'unknown id');
+    check($parking->parkingFrameCamera("' or 1 = 1 --") === null && $parking->parkingFrameCamera(null) === null && $parking->parkingFrameCamera('') === null, 'malformed id');
+
+    $frame = $files->files[$second];
+    unset($files->files[$second]);
+    check($parking->parkingFrameCamera($second) === null, 'frame is gone');
+    $files->files[$second] = $frame;
+
+    $body = ['revision' => 1, 'enabled' => 0, 'frameWidth' => $saved['frameWidth'], 'frameHeight' => $saved['frameHeight'], 'calibration' => $saved['calibration'], 'areas' => $saved['areas']];
+    check($code($api('PUT', $id, $body)) === 200, 'disable');
+    check($parking->parkingFrameCamera($second) === null, 'disabled configuration');
+    check($code($api('PUT', $id, ['revision' => 2] + $fixture('no calibration'))) === 200, 'not ready');
+    check($parking->parkingFrameCamera($second) === null, 'not ready configuration');
 };
 
 $tests['parking backend is not configured'] = function () use ($api, $code) {
