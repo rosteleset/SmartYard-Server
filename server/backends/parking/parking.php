@@ -132,6 +132,38 @@
             abstract public function getResult($cameraId, $withFrame = false);
 
             /**
+             * parking cameras among the given cameras for the mobile app: the configuration is processed (enabled and the current
+             * revision is ready) and the latest occupancy result still has its frame; totals are taken from the revision of the result
+             *
+             * @param int[] $cameraIds
+             * @return array|false [ cameraId => [ "capacity" => int, "free" => int, "processedAt" => "Y-m-d H:i:s" ] ], cameras
+             * that are not parking cameras are left out
+             */
+
+            abstract public function parkingCameras($cameraIds);
+
+            /**
+             * a parking camera (see parkingCameras()) with what the mobile app needs to draw its latest occupancy result, all in
+             * pixels of the processed frame
+             *
+             * @param int $cameraId
+             * @return array|null|false parkingCameras() summary + [ "frameWidth", "frameHeight", "frameId" (files id of the frame),
+             * "areas" => [ [ "name", "capacity", "points" => [ { x, y } x 4 ], "freeSpaces" => [ [ { x, y } x 4 ] ] ] ] ]
+             * with the enabled areas of the revision of the result in its order, null when the camera is not a parking camera
+             */
+
+            abstract public function parkingCamera($cameraId);
+
+            /**
+             * parking camera (see parkingCameras()) whose latest occupancy result has the given frame
+             *
+             * @param string $frameId files id of the frame (parkingCamera() "frameId")
+             * @return int|null|false camera id, null when the frame is not the frame of the latest result of a parking camera
+             */
+
+            abstract public function parkingFrameCamera($frameId);
+
+            /**
              * record a failed processing attempt of a camera; a successful one is recorded by saveResult()
              *
              * @param int $cameraId

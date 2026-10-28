@@ -585,6 +585,180 @@
              * @inheritDoc
              */
 
+            public function parkingCameras($cameraIds) {
+                $this->failure = false;
+
+                if (!is_array($cameraIds)) {
+                    return $this->fail("unknown", "noId");
+                }
+
+                $results = $this->parkingResults($cameraIds, false);
+
+                if ($results === false) {
+                    return false;
+                }
+
+                $cameras = [];
+
+                foreach ($results as $r) {
+                    $cameras[(int)$r["camera_id"]] = $this->parkingSummary($r);
+                }
+
+                return $cameras;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function parkingCamera($cameraId) {
+                $this->failure = false;
+
+                if (!checkInt($cameraId)) {
+                    return $this->fail("unknown", "noId");
+                }
+
+                $results = $this->parkingResults([ $cameraId ], true);
+
+                if ($results === false) {
+                    return false;
+                }
+
+                if (!count($results)) {
+                    return null;
+                }
+
+                $r = $results[0];
+                $width = (int)$r["frame_width"];
+                $height = (int)$r["frame_height"];
+
+                $freeSpaces = [];
+
+                foreach (json_decode($r["free_spaces"], true) as $item) {
+                    $freeSpaces[$item["parkingAreaId"]] = array_merge($freeSpaces[$item["parkingAreaId"]] ?? [], $item["spaces"]);
+                }
+
+                $areas = [];
+
+                // free spaces of an area missing from the revision are left out
+                foreach (json_decode($r["areas"], true) as $area) {
+                    if (!$area["enabled"]) {
+                        continue;
+                    }
+
+                    $areas[] = [
+                        "name" => $area["name"],
+                        "capacity" => (int)$area["capacity"],
+                        "points" => array_map(fn ($p) => [ "x" => $p["u"] * $width, "y" => $p["v"] * $height ], $area["imagePoints"]),
+                        "freeSpaces" => $freeSpaces[$area["parkingAreaId"]] ?? [],
+                    ];
+                }
+
+                return $this->parkingSummary($r) + [
+                    "frameWidth" => $width,
+                    "frameHeight" => $height,
+                    "frameId" => $r["frame_uuid"],
+                    "areas" => $areas,
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function parkingFrameCamera($frameId) {
+                $this->failure = false;
+
+                if (!is_string($frameId) || !preg_match('/^[0-9A-Za-z-]{1,64}$/', $frameId)) {
+                    return null;
+                }
+
+                $cameras = $this->db->get("select camera_id from parking_results where frame_uuid = :frame_uuid", [ "frame_uuid" => $frameId ]);
+
+                if ($cameras === false) {
+                    return $this->fail("unknown", getLastError());
+                }
+
+                if (!count($cameras)) {
+                    return null;
+                }
+
+                $results = $this->parkingResults([ $cameras[0]["camera_id"] ], false);
+
+                if ($results === false) {
+                    return false;
+                }
+
+                // the result may have been replaced since the first query
+                if (!count($results) || $results[0]["frame_uuid"] !== $frameId) {
+                    return null;
+                }
+
+                return (int)$results[0]["camera_id"];
+            }
+
+            /**
+             * latest results of the parking cameras among the given cameras, see parkingCameras()
+             *
+             * @param array $cameraIds
+             * @param bool $detail add the frame size, the free spaces and the areas of the revision of the result
+             * @return array|false rows ordered by camera
+             */
+
+            private function parkingResults($cameraIds, $detail) {
+                $ids = array_values(array_unique(array_map("intval", array_filter($cameraIds, fn ($id) => checkInt($id)))));
+
+                if (!count($ids)) {
+                    return [];
+                }
+
+                $columns = $detail ? ", pr.frame_width, pr.frame_height, pr.free_spaces, rr.snapshot->'areas' areas" : "";
+
+                // totals come from the revision of the result, which may be older than the current one
+                $results = $this->db->get("
+                    select
+                        pr.camera_id,
+                        pr.processed_at,
+                        pr.frame_uuid,
+                        (select coalesce(sum((a->>'capacity')::integer), 0) from jsonb_array_elements(rr.snapshot->'areas') a where (a->>'enabled')::boolean) capacity,
+                        (select coalesce(sum(jsonb_array_length(f->'spaces')), 0) from jsonb_array_elements(pr.free_spaces) f) free
+                        $columns
+                    from parking_results pr
+                    join parking_configs c on c.parking_config_id = pr.parking_config_id and c.camera_id = pr.camera_id
+                    join parking_config_revisions cr on cr.parking_config_id = c.parking_config_id and cr.revision = c.revision
+                    join parking_config_revisions rr on rr.parking_config_id = pr.parking_config_id and rr.revision = pr.revision
+                    where c.enabled = 1 and cr.ready = 1 and pr.camera_id in (" . implode(",", $ids) . ")
+                    order by pr.camera_id
+                ");
+
+                if ($results === false) {
+                    return $this->fail("unknown", getLastError());
+                }
+
+                $files = loadBackend("files");
+
+                // a parking camera must be able to show its frame (it is gone e.g. from tmpfs after a reboot)
+                return array_values(array_filter($results, function ($r) use ($files) {
+                    try {
+                        return $files && $files->getFileInfo($r["frame_uuid"]);
+                    } catch (\Throwable $error) {
+                        return false;
+                    }
+                }));
+            }
+
+            private function parkingSummary($r) {
+                return [
+                    "capacity" => (int)$r["capacity"],
+                    "free" => (int)$r["free"],
+                    "processedAt" => date("Y-m-d H:i:s", strtotime($r["processed_at"])),
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function saveStatus($cameraId, $status, $reason, $revision) {
                 $this->failure = false;
 
