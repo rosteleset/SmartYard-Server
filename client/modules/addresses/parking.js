@@ -66,6 +66,8 @@
             overlay: null,
             group: null,
             active: null,
+            // index of the calibration corner moved by the keyboard
+            corner: null,
             mode: null,
             pending: [],
             fitted: false,
@@ -531,6 +533,115 @@
         return { u: clamp(ll.lng / f.width), v: clamp(-ll.lat / f.height) };
     },
 
+    // calibration corners
+
+    // a crosshair with an open center: the marked pixel stays visible, the number is aside
+    cornerIcon: function (index, selected) {
+        let color = selected ? "#ffc107" : "#e83e8c";
+        let arms = "M16 0V12M16 20V32M0 16H12M20 16H32";
+        let svg = `<svg width="32" height="32" viewBox="0 0 32 32" style="display: block; overflow: visible;">` +
+            `<path d="${arms}" stroke="#000" stroke-width="3" stroke-opacity="0.6"/>` +
+            `<path d="${arms}" stroke="${color}" stroke-width="1"/>` +
+            (selected ? `<circle cx="16" cy="16" r="9" fill="none" stroke="${color}" stroke-width="1"/>` : "") +
+            `</svg>`;
+        let label = `<div style="position: absolute; left: 22px; top: -2px; min-width: 14px; padding: 0 3px; border-radius: 7px; background: ${color}; color: ${selected ? "#000" : "#fff"}; font-size: 10px; line-height: 14px; text-align: center;">${index + 1}</div>`;
+
+        return L.divIcon({
+            className: "",
+            html: svg + label,
+            iconSize: [ 32, 32 ],
+            iconAnchor: [ 16, 16 ],
+        });
+    },
+
+    // the frame pixels are seen as they are when zoomed in, a smoothed frame hides the edges
+    pixelated: function (state) {
+        let el = state.overlay && state.overlay.getElement && state.overlay.getElement();
+
+        if (el && state.map) {
+            el.style.imageRendering = state.map.getZoom() >= 1 ? "pixelated" : "";
+        }
+    },
+
+    // the keyboard goes to the map container (Leaflet focuses it on mousedown, dragging a marker doesn't)
+    focusMap: function (state) {
+        if (state.map) {
+            state.map.getContainer().focus({ preventScroll: true });
+        }
+    },
+
+    selectCorner: function (state, index, center) {
+        let parking = modules.addresses.parking;
+        let points = state.draft && state.draft.calibration ? state.draft.calibration.points : null;
+
+        state.corner = (points && index !== null && points[index]) ? index : null;
+        parking.renderMap(state);
+        parking.focusMap(state);
+
+        if (center && state.corner !== null) {
+            state.map.panTo(parking.toLatLng(state, points[state.corner]));
+        }
+    },
+
+    // arrows move the selected corner by a pixel of the frame (10 with Shift), Tab selects the next corner, Esc releases it
+    cornerKey: function (state, e) {
+        let parking = modules.addresses.parking;
+        let points = state.draft && state.draft.calibration ? state.draft.calibration.points : null;
+
+        if (!points || !points.length || !state.editable || state.mode || state.view == "result" || e.altKey || e.ctrlKey || e.metaKey) {
+            return;
+        }
+
+        let stop = () => {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        };
+
+        // without a selected corner Tab moves the focus through the form as usual
+        if (state.corner === null) {
+            return;
+        }
+
+        if (e.key == "Tab") {
+            stop();
+            let n = points.length;
+            parking.selectCorner(state, (state.corner + (e.shiftKey ? n - 1 : 1)) % n, true);
+            return;
+        }
+
+        if (e.key == "Escape") {
+            // the modal dialog is not closed while a corner is selected
+            stop();
+            parking.selectCorner(state, null);
+            return;
+        }
+
+        let delta = { ArrowLeft: [ -1, 0 ], ArrowRight: [ 1, 0 ], ArrowUp: [ 0, -1 ], ArrowDown: [ 0, 1 ] }[e.key];
+
+        if (!delta) {
+            return;
+        }
+
+        stop();
+
+        let f = parking.frame(state);
+        let p = points[state.corner];
+        let step = e.shiftKey ? 10 : 1;
+        // the corner is moved to the center of a pixel: the same keys give the same position
+        let move = (x, d, size) => (Math.min(size - 1, Math.max(0, Math.floor(x) + d * step)) + 0.5) / size;
+
+        p.u = move(p.u * f.width, delta[0], f.width);
+        p.v = move(p.v * f.height, delta[1], f.height);
+        parking.changed(state, true);
+
+        // the corner stays in sight
+        let ll = L.latLng(parking.toLatLng(state, p));
+
+        if (!state.map.getBounds().pad(-0.1).contains(ll)) {
+            state.map.panTo(ll);
+        }
+    },
+
     // the same canonical order as on the server: clockwise on screen, base edge and angle keep their meaning
     canonical: function (state, area) {
         let f = modules.addresses.parking.frame(state);
@@ -888,6 +999,10 @@
         let parking = modules.addresses.parking;
         let d = state.draft;
 
+        if (!state.mode && state.corner !== null && state.view != "result") {
+            parking.selectCorner(state, null);
+        }
+
         if (!state.mode || !d || state.view == "result") {
             return;
         }
@@ -990,7 +1105,8 @@
                     skipMiddleMarkers: true,
                 },
                 minZoom: -6,
-                maxZoom: 4,
+                // up to 64x: calibration corners are placed to a pixel of the frame
+                maxZoom: 6,
                 zoomSnap: 0.25,
                 attributionControl: false,
             });
@@ -1007,6 +1123,10 @@
             state.map.on("editable:vertex:dragend", e => parking.polygonEdited(state, e.layer));
             state.map.on("editable:dragend", e => parking.polygonEdited(state, e.layer));
             state.map.on("click", e => parking.mapClick(state, e));
+            state.map.on("zoomend", () => parking.pixelated(state));
+
+            // capture phase: the keyboard handler of Leaflet on the same element pans the map with the arrows
+            state.map.getContainer().addEventListener("keydown", e => parking.cornerKey(state, e), true);
 
             state.group = L.layerGroup().addTo(state.map);
             reset = true;
@@ -1029,6 +1149,7 @@
             state.overlay.addTo(state.map);
             state.map.setMaxBounds(L.latLngBounds(bounds).pad(0.5));
             parking.fit(state);
+            parking.pixelated(state);
         }
 
         state.group.eachLayer(layer => {
@@ -1144,21 +1265,30 @@
 
             L.polygon(points.map(ll), { color: "#e83e8c", weight: 2, dashArray: "4 4", fillOpacity: 0, interactive: false }).addTo(state.group);
 
+            if (state.corner !== null && (!state.editable || !interactive || state.corner >= points.length)) {
+                state.corner = null;
+            }
+
             points.forEach((p, i) => {
                 let marker = L.marker(ll(p), {
                     interactive,
                     draggable: state.editable && interactive,
-                    icon: L.divIcon({
-                        className: "",
-                        html: `<div style="width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; background: #e83e8c; color: #fff; font-size: 12px; line-height: 20px; text-align: center;">${i + 1}</div>`,
-                    }),
+                    icon: parking.cornerIcon(i, state.corner === i),
+                    zIndexOffset: state.corner === i ? 1000 : 0,
                 }).addTo(state.group);
+
+                if (state.editable && interactive) {
+                    marker.on("click", () => parking.selectCorner(state, i));
+                    // not setIcon: a new icon element interrupts the drag
+                    marker.on("dragstart", () => state.corner = i);
+                }
 
                 marker.on("dragend", () => {
                     let uv = parking.fromLatLng(state, marker.getLatLng());
                     points[i].u = uv.u;
                     points[i].v = uv.v;
                     parking.changed(state);
+                    parking.focusMap(state);
                 });
             });
 
@@ -1212,6 +1342,7 @@
         state.overlay = (r && r.frame) ? L.imageOverlay("data:image/jpg;base64," + r.frame, bounds) : L.rectangle(bounds, { color: "#343a40", weight: 1, fillOpacity: 0.6, interactive: false });
         state.overlay.addTo(state.map);
         state.map.setMaxBounds(L.latLngBounds(bounds).pad(0.5));
+        parking.pixelated(state);
 
         if (el && el.offsetWidth > 0) {
             state.map.invalidateSize();
@@ -1560,6 +1691,10 @@
         if (!d.calibration) {
             h += `<div class="text-muted small mb-1">${i18n("addresses.parkingNotCalibrated")}</div>`;
         } else {
+            if (state.editable) {
+                h += `<div class="small text-muted mt-1">${i18n("addresses.parkingCalibrationKeys")}</div>`;
+            }
+
             h += `<div class="font-weight-bold mt-2 mb-1 small">${i18n("addresses.parkingChecks")}</div>`;
             h += `<div class="small text-muted mb-1">${i18n("addresses.parkingChecksHint")}</div>`;
 

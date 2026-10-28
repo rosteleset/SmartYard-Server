@@ -368,6 +368,7 @@
     "parkingCalibrationA": "Side A, m",
     "parkingCalibrationB": "Side B, m",
     "parkingCalibrationSizeRequired": "Enter sides A and B in metres",
+    "parkingCalibrationKeys": "Precise corners: click a corner, arrows move it by a pixel of the frame (Shift — by 10), Tab — next corner, Esc — release.",
     "parkingCalibrate": "Mark corners",
     "parkingCalibrationFromArea": "From the selected area",
     "parkingRemoveCalibration": "Remove calibration",
