@@ -7,7 +7,7 @@ External provider registry (SMS, etc.) with JSON blob + CRUD.
 ## Code
 
 - **Base class**: `server/backends/providers/providers.php`.
-- **Variants**: `lanta`.
+- **Variants**: `internal`.
 
 ## Configuration
 

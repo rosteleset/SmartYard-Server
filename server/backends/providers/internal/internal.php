@@ -12,7 +12,7 @@
          * Provider registry and token synchronization
          */
 
-        class lanta extends providers {
+        class internal extends providers {
 
             function putSecrets($section, $secrets) {
                 $curl = curl_init();

@@ -7,7 +7,7 @@
 ## Код
 
 - **Базовый класс**: `server/backends/providers/providers.php`.
-- **Варианты**: `lanta`.
+- **Варианты**: `internal`.
 
 ## Конфигурация
 
