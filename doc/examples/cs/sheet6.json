@@ -39,7 +39,7 @@
                 {
                     "workflow": {
                         "$in": [
-                            "lanta"
+                            "issues"
                         ]
                     }
                 }
