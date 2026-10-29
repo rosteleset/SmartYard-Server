@@ -7,7 +7,7 @@
 ## Код
 
 - **Базовый класс**: `server/backends/issueAdapter/issueAdapter.php`.
-- **Варианты**: `teledom`, `lanta`.
+- **Варианты**: `teledom`.
 
 ## Конфигурация
 

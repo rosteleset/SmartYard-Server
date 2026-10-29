@@ -7,7 +7,7 @@ External ticketing/issue tracker adapter.
 ## Code
 
 - **Base class**: `server/backends/issueAdapter/issueAdapter.php`.
-- **Variants**: `teledom`, `lanta`.
+- **Variants**: `teledom`.
 
 ## Configuration
 
