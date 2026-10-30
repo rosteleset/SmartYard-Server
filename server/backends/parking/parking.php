@@ -22,6 +22,26 @@
             // how long the server waits for the occupancy service to process a camera on request, seconds
             const SERVICE_TIMEOUT = 60;
 
+            // image types of camera frames the parking works with: those FALPRS and browsers both decode
+            const FRAME_TYPES = [ IMAGETYPE_JPEG => "jpg", IMAGETYPE_PNG => "png", IMAGETYPE_BMP => "bmp", IMAGETYPE_WEBP => "webp" ];
+
+            /**
+             * type of a camera frame by its content
+             *
+             * @param mixed $frame image
+             * @return array|null [ "mime" => string, "extension" => string ], null when it is not a JPEG, PNG, BMP or WebP image
+             */
+
+            public static function frameType($frame): ?array {
+                $info = (is_string($frame) && $frame !== "") ? @getimagesizefromstring($frame) : false;
+
+                if (!$info || !isset(self::FRAME_TYPES[$info[2]])) {
+                    return null;
+                }
+
+                return [ "mime" => image_type_to_mime_type($info[2]), "extension" => self::FRAME_TYPES[$info[2]] ];
+            }
+
             /**
              * processing settings of the occupancy service from the backend config
              *
@@ -114,8 +134,9 @@
              * a result computed with a revision that is not current is discarded
              *
              * @param int $cameraId
-             * @param array $result [ "revision" => int, "frameWidth" => int, "frameHeight" => int, "freeSpaces" => [ { parkingAreaId, spaces: [ [ { x, y } x 4 ] ] } ] ]
-             * @param string $frame JPEG of the processed frame
+             * @param array $result [ "revision" => int, "frameWidth" => int, "frameHeight" => int, "freeSpaces" => [ { parkingAreaId, spaces: [ [ { x, y } x 4.. ] ] } ] ], a free space is its four
+             * corners or its outline on the frame when there is a lens distortion
+             * @param string $frame image of the processed frame: JPEG, PNG, BMP or WebP (frameType())
              * @return string|false "accepted", "discarded" or false on error (see lastFailure())
              */
 
@@ -148,8 +169,9 @@
              *
              * @param int $cameraId
              * @return array|null|false parkingCameras() summary + [ "frameWidth", "frameHeight", "frameId" (files id of the frame),
-             * "areas" => [ [ "name", "capacity", "points" => [ { x, y } x 4 ], "freeSpaces" => [ [ { x, y } x 4 ] ] ] ] ]
-             * with the enabled areas of the revision of the result in its order, null when the camera is not a parking camera
+             * "areas" => [ [ "name", "capacity", "points" => [ { x, y } x 4.. ], "freeSpaces" => [ [ { x, y } x 4.. ] ] ] ] ]
+             * with the enabled areas of the revision of the result in its order, null when the camera is not a parking camera;
+             * outlines are the four corners or, when there is a lens distortion, the curves the edges make on the frame
              */
 
             abstract public function parkingCamera($cameraId);

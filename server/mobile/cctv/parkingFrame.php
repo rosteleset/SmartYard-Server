@@ -12,7 +12,7 @@
      *
      * @apiParam {String} frameId идентификатор кадра
      *
-     * @apiSuccess {File} - JPEG обработанного кадра
+     * @apiSuccess {File} - обработанный кадр в формате камеры: JPEG, PNG, BMP или WebP, тип - в Content-Type
      *
      * @apiErrorExample {json} Ошибка
      * 404 кадр больше не доступен
@@ -48,8 +48,11 @@
         response(404);
     }
 
+    $frame = stream_get_contents($stream);
+    $type = $parking->frameType($frame);
+
     // the content of a frame never changes, a replaced frame is never served again
-    header("Content-Type: image/jpeg");
+    header("Content-Type: " . ($type ? $type["mime"] : "application/octet-stream"));
     header("Cache-Control: private, max-age=86400");
-    fpassthru($stream);
+    echo $frame;
     exit;

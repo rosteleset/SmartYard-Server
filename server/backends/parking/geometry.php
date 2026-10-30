@@ -10,7 +10,9 @@
          * parking geometry: homography, markup validation and layout of parking spaces
          *
          * frame coordinates are normalized (u, v in 0..1, origin top-left, v down),
-         * plane coordinates are metres. the same algorithms are implemented in client/js/parkingGeometry.js
+         * plane coordinates are metres. the calibration maps a frame point to the plane in two steps:
+         * the lens distortion is removed (lens()), then the homography is applied to the undistorted normalized point.
+         * the same algorithms are implemented in client/js/parkingGeometry.js
          */
 
         class geometry {
@@ -32,6 +34,15 @@
             const CHECK_WARNING = 0.10;
             const CHECK_FAILURE = 0.25;
             const MAX_METRES_PER_PIXEL = 0.2;
+
+            const MAX_DISTORTION = 0.9;
+            const DISTORTION_STEP = 0.01;
+            const MAX_STRAIGHT_LINES = 16;
+            const MAX_LINE_POINTS = 32;
+            const MAX_RESIDUAL_CURVATURE_FRACTION = 0.003;
+            const MIN_LINE_REACH = 0.5;
+            const OVERLAP_TOLERANCE_M = 0.05;
+            const CURVE_SEGMENTS = 16;
 
             const SPACE_WIDTH = [ 1.5, 6 ];
             const SPACE_LENGTH = [ 2, 25 ];
@@ -178,6 +189,300 @@
                 }
 
                 return [ $X / $W, $Y / $W, $W ];
+            }
+
+            /**
+             * lens distortion of a frame: one coefficient k of the radial division model around the frame centre,
+             * the radius r is normalized by the half-diagonal of the frame, so k depends only on the aspect ratio:
+             * undistorted = distorted / (1 + k r^2), barrel distortion has k < 0, k = 0 is no distortion
+             */
+
+            public static function lens($k, int $width, int $height): array {
+                return [ "k" => self::isNumber($k) ? (float)$k : 0.0, "width" => $width, "height" => $height ];
+            }
+
+            private static function lensScale(array $lens): array {
+                $r = hypot($lens["width"], $lens["height"]) / 2;
+                return [ $lens["width"] / $r, $lens["height"] / $r ];
+            }
+
+            /**
+             * remove the distortion from a normalized frame point
+             *
+             * @return array [ u, v ], both null when the point has no undistorted image
+             */
+
+            public static function undistort(?array $lens, float $u, float $v): array {
+                if (!$lens || !$lens["k"]) {
+                    return [ $u, $v ];
+                }
+
+                [ $sx, $sy ] = self::lensScale($lens);
+                $dx = ($u - 0.5) * $sx;
+                $dy = ($v - 0.5) * $sy;
+                $f = 1 + $lens["k"] * ($dx * $dx + $dy * $dy);
+
+                if ($f <= 0) {
+                    return [ null, null ];
+                }
+
+                return [ 0.5 + $dx / $f / $sx, 0.5 + $dy / $f / $sy ];
+            }
+
+            /**
+             * apply the distortion to an undistorted normalized point
+             *
+             * @return array [ u, v ], both null when the point has no image on the frame
+             */
+
+            public static function distort(?array $lens, float $u, float $v): array {
+                if (!$lens || !$lens["k"]) {
+                    return [ $u, $v ];
+                }
+
+                [ $sx, $sy ] = self::lensScale($lens);
+                $dx = ($u - 0.5) * $sx;
+                $dy = ($v - 0.5) * $sy;
+                $ru = hypot($dx, $dy);
+
+                if ($ru == 0) {
+                    return [ $u, $v ];
+                }
+
+                // root of k ru r^2 - r + ru = 0 that is continuous with r = ru at k = 0
+                $disc = 1 - 4 * $lens["k"] * $ru * $ru;
+
+                if ($disc < 0) {
+                    return [ null, null ];
+                }
+
+                $m = 2 / (1 + sqrt($disc));
+
+                return [ 0.5 + $dx * $m / $sx, 0.5 + $dy * $m / $sy ];
+            }
+
+            /**
+             * map a normalized frame point to the plane
+             *
+             * @return array [ x, y, w ], x and y are null when the point has no image
+             */
+
+            public static function toPlane(array $h, ?array $lens, float $u, float $v): array {
+                [ $uu, $vv ] = self::undistort($lens, $u, $v);
+
+                if ($uu === null) {
+                    return [ null, null, 0 ];
+                }
+
+                return self::apply($h, $uu, $vv);
+            }
+
+            /**
+             * map a plane point to a normalized frame point with the inverse homography
+             *
+             * @return array [ u, v ], both null when the point has no image
+             */
+
+            public static function toFrame(array $hi, ?array $lens, float $x, float $y): array {
+                [ $u, $v ] = self::apply($hi, $x, $y);
+
+                if ($u === null) {
+                    return [ null, null ];
+                }
+
+                return self::distort($lens, $u, $v);
+            }
+
+            /**
+             * outline of a polygon given by its vertices on the frame (normalized) as it lies on the frame:
+             * its edges are straight on the plane, so in undistorted coordinates too; CURVE_SEGMENTS points
+             * per edge when there is a distortion, the vertices themselves otherwise
+             *
+             * @param array $points [ [ u, v ], ... ]
+             * @return array [ [ u, v ], ... ]
+             */
+
+            public static function frameCurve(?array $lens, array $points): array {
+                if (!$lens || !$lens["k"]) {
+                    return $points;
+                }
+
+                $vertices = [];
+
+                foreach ($points as [ $u, $v ]) {
+                    $p = self::undistort($lens, $u, $v);
+
+                    if ($p[0] === null) {
+                        return $points;
+                    }
+
+                    $vertices[] = $p;
+                }
+
+                $result = [];
+                $n = count($vertices);
+
+                for ($i = 0; $i < $n; $i++) {
+                    $a = $vertices[$i];
+                    $b = $vertices[($i + 1) % $n];
+
+                    for ($j = 0; $j < self::CURVE_SEGMENTS; $j++) {
+                        $t = $j / self::CURVE_SEGMENTS;
+                        $p = self::distort($lens, $a[0] + ($b[0] - $a[0]) * $t, $a[1] + ($b[1] - $a[1]) * $t);
+
+                        if ($p[0] !== null) {
+                            $result[] = $p;
+                        }
+                    }
+                }
+
+                return $result;
+            }
+
+            /**
+             * moments of a point set: centroid, second moments, the smallest principal moment and the sum of both
+             */
+
+            private static function lineMoments(array $points): array {
+                $n = count($points);
+                $cx = 0;
+                $cy = 0;
+
+                foreach ($points as $p) {
+                    $cx += $p[0] / $n;
+                    $cy += $p[1] / $n;
+                }
+
+                $sxx = 0;
+                $syy = 0;
+                $sxy = 0;
+
+                foreach ($points as $p) {
+                    $sxx += ($p[0] - $cx) ** 2;
+                    $syy += ($p[1] - $cy) ** 2;
+                    $sxy += ($p[0] - $cx) * ($p[1] - $cy);
+                }
+
+                $d = sqrt(($sxx - $syy) ** 2 + 4 * $sxy * $sxy);
+
+                return [ "cx" => $cx, "cy" => $cy, "sxx" => $sxx, "syy" => $syy, "sxy" => $sxy, "min" => ($sxx + $syy - $d) / 2, "sum" => $sxx + $syy ];
+            }
+
+            /**
+             * fit the lens distortion of a frame to straight lines
+             *
+             * k minimizes the sum over the lines of the share of the smallest principal moment of the undistorted points,
+             * scanned over [ -MAX_DISTORTION, MAX_DISTORTION ] with DISTORTION_STEP and refined by golden section search
+             *
+             * @param array $lines [ [ [ u, v ], ... ], ... ] normalized points
+             * @return array [ k, residual, reach, invalid ]: residual - the mean distance of the undistorted points to their
+             * lines in pixels, reach - the largest distance of a point from the centre in half-diagonals,
+             * invalid - the best k lies at the end of the range
+             */
+
+            public static function fitDistortion(array $lines, int $width, int $height): array {
+                $pixels = function ($k, $line) use ($width, $height) {
+                    $lens = self::lens($k, $width, $height);
+                    return array_map(function ($p) use ($lens, $width, $height) {
+                        [ $u, $v ] = self::undistort($lens, $p[0], $p[1]);
+                        return [ $u * $width, $v * $height ];
+                    }, $line);
+                };
+
+                $cost = function ($k) use ($lines, $pixels) {
+                    $s = 0;
+
+                    foreach ($lines as $line) {
+                        $m = self::lineMoments($pixels($k, $line));
+                        $s += $m["sum"] > 0 ? $m["min"] / $m["sum"] : 0;
+                    }
+
+                    return $s;
+                };
+
+                $steps = (int)round(self::MAX_DISTORTION / self::DISTORTION_STEP);
+                $best = 0;
+                $bestCost = INF;
+
+                // from the centre of the range outwards: of equal costs the smallest distortion wins
+                for ($j = 0; $j <= 2 * $steps; $j++) {
+                    $i = $j % 2 ? intdiv($j + 1, 2) : -intdiv($j, 2);
+                    $c = $cost($i * self::DISTORTION_STEP);
+
+                    if ($c < $bestCost) {
+                        $best = $i;
+                        $bestCost = $c;
+                    }
+                }
+
+                $invalid = abs($best) == $steps;
+                $a = max(-$steps, $best - 1) * self::DISTORTION_STEP;
+                $b = min($steps, $best + 1) * self::DISTORTION_STEP;
+                $ratio = (sqrt(5) - 1) / 2;
+                $x1 = $b - $ratio * ($b - $a);
+                $x2 = $a + $ratio * ($b - $a);
+                $c1 = $cost($x1);
+                $c2 = $cost($x2);
+
+                for ($i = 0; $i < 60; $i++) {
+                    if ($c1 <= $c2) {
+                        $b = $x2;
+                        $x2 = $x1;
+                        $c2 = $c1;
+                        $x1 = $b - $ratio * ($b - $a);
+                        $c1 = $cost($x1);
+                    } else {
+                        $a = $x1;
+                        $x1 = $x2;
+                        $c1 = $c2;
+                        $x2 = $a + $ratio * ($b - $a);
+                        $c2 = $cost($x2);
+                    }
+                }
+
+                $k = round(($a + $b) / 2, 6);
+
+                if (!($cost($k) < $bestCost)) {
+                    $k = round($best * self::DISTORTION_STEP, 6);
+                }
+
+                $k += 0;
+
+                // residual distances in pixels at the fitted k
+                $total = 0;
+                $count = 0;
+
+                foreach ($lines as $line) {
+                    $points = $pixels($k, $line);
+                    $m = self::lineMoments($points);
+                    $max = $m["sum"] - $m["min"];
+                    // normal of the line: eigenvector of the smallest moment
+                    $nx = $m["sxy"];
+                    $ny = $m["min"] - $m["sxx"];
+
+                    if (hypot($nx, $ny) < 1e-12 * ($m["sum"] ?: 1)) {
+                        $nx = $m["min"] - $m["syy"];
+                        $ny = $m["sxy"];
+                    }
+
+                    $nl = hypot($nx, $ny);
+
+                    foreach ($points as $p) {
+                        $total += $nl > 0 && $max > 0 ? abs(($p[0] - $m["cx"]) * $nx + ($p[1] - $m["cy"]) * $ny) / $nl : 0;
+                        $count++;
+                    }
+                }
+
+                [ $sx, $sy ] = self::lensScale(self::lens(0, $width, $height));
+                $reach = 0;
+
+                foreach ($lines as $line) {
+                    foreach ($line as [ $u, $v ]) {
+                        $reach = max($reach, hypot(($u - 0.5) * $sx, ($v - 0.5) * $sy));
+                    }
+                }
+
+                return [ "k" => (float)$k, "residual" => $count ? round($total / $count, 6) : 0.0, "reach" => $reach, "invalid" => $invalid ];
             }
 
             /**
@@ -648,9 +953,13 @@
              * input (API format):
              * {
              *   enabled, frameWidth, frameHeight, detectionImageSize?, confidenceThreshold?, processingInterval?,
+             *   straightLines?: [ [ { u, v } x 3..MAX_LINE_POINTS ] ],
              *   calibration: null | { points: [ { u, v, x, y } ], checks: [ { u1, v1, u2, v2, length } ] },
              *   areas: [ { parkingAreaId?, name, enabled, imagePoints: [ { u, v } x 4 ], baseEdge, spaceWidth, spaceLength, spaceAngle } ]
              * }
+             *
+             * the lens distortion (lensDistortion) is fitted to the straight lines, 0 without them; the homography maps
+             * undistorted normalized frame coordinates to metres; once calibrated, areas are checked on the plane
              *
              * areas are canonicalized (clockwise order on screen), values are rounded as stored in the database,
              * only valid areas are returned, "index" is the position of an area in the input
@@ -686,6 +995,9 @@
                     "processingInterval" => null,
                     "frameWidth" => 0,
                     "frameHeight" => 0,
+                    "straightLines" => [],
+                    "lensDistortion" => 0.0,
+                    "residualCurvature" => null,
                     "calibration" => null,
                     "homography" => null,
                     "calibrationError" => null,
@@ -757,6 +1069,77 @@
                     return self::isNumber($u) && self::isNumber($v) && $u >= 0 && $u <= 1 && $v >= 0 && $v <= 1;
                 };
 
+                // lens distortion
+
+                $lines = array_key_exists("straightLines", $input) ? $input["straightLines"] : [];
+                $lens = self::lens(0, $fw, $fh);
+
+                if (!is_array($lines) || !array_is_list($lines) || count($lines) > self::MAX_STRAIGHT_LINES) {
+                    $problem("invalidCalibration", "error");
+                } else {
+                    $valid = true;
+                    $sl = [];
+
+                    foreach ($lines as $line) {
+                        if (!is_array($line) || !array_is_list($line) || count($line) < 3 || count($line) > self::MAX_LINE_POINTS) {
+                            $valid = false;
+                            break;
+                        }
+
+                        $points = [];
+
+                        foreach ($line as $point) {
+                            if (!is_array($point) || !$isUV(@$point["u"], @$point["v"])) {
+                                $valid = false;
+                                break 2;
+                            }
+
+                            $points[] = [ "u" => (float)$point["u"], "v" => (float)$point["v"] ];
+                        }
+
+                        for ($i = 1; $i < count($points); $i++) {
+                            $a = $pixel($points[$i - 1]["u"], $points[$i - 1]["v"]);
+                            $b = $pixel($points[$i]["u"], $points[$i]["v"]);
+
+                            if (hypot($a[0] - $b[0], $a[1] - $b[1]) < self::MIN_VERTEX_DISTANCE * $diagonal) {
+                                $valid = false;
+                            }
+                        }
+
+                        $sl[] = $points;
+                    }
+
+                    if (!$valid) {
+                        $problem("invalidCalibration", "error");
+                    } else if ($sl) {
+                        $fit = self::fitDistortion(array_map(fn ($line) => array_map(fn ($point) => [ $point["u"], $point["v"] ], $line), $sl), $fw, $fh);
+
+                        $result["straightLines"] = $sl;
+
+                        if ($fit["invalid"]) {
+                            $problem("calibrationDistortionInvalid", "error");
+                        } else {
+                            $result["lensDistortion"] = $fit["k"];
+                            $result["residualCurvature"] = $fit["residual"];
+                            $lens = self::lens($fit["k"], $fw, $fh);
+
+                            if ($fit["residual"] > self::MAX_RESIDUAL_CURVATURE_FRACTION * $diagonal) {
+                                $problem("calibrationLinesCurved", "warning");
+                            }
+
+                            if ($fit["reach"] <= self::MIN_LINE_REACH) {
+                                $problem("calibrationLinesWeak", "warning");
+                            }
+                        }
+                    }
+                }
+
+                // undistorted pixel of a frame point
+                $flat = function ($u, $v) use ($lens, $pixel) {
+                    [ $uu, $vv ] = self::undistort($lens, $u, $v);
+                    return $pixel($uu, $vv);
+                };
+
                 // calibration
 
                 $h = null;
@@ -801,7 +1184,7 @@
                             $dst = [];
 
                             foreach ($cp as $point) {
-                                $src[] = $pixel($point["u"], $point["v"]);
+                                $src[] = $flat($point["u"], $point["v"]);
                                 $dst[] = [ $point["x"], $point["y"] ];
                             }
 
@@ -827,7 +1210,7 @@
                             }
 
                             if (!$degenerate) {
-                                $uv = array_map(fn ($point) => [ $point["u"], $point["v"] ], $cp);
+                                $uv = array_map(fn ($point) => self::undistort($lens, $point["u"], $point["v"]), $cp);
                                 $h = self::homography($uv, $dst);
 
                                 if ($h) {
@@ -858,7 +1241,13 @@
                                     $sum = 0;
 
                                     foreach ($cp as $point) {
-                                        [ $u, $v ] = self::apply($hi, $point["x"], $point["y"]);
+                                        [ $u, $v ] = self::toFrame($hi, $lens, $point["x"], $point["y"]);
+
+                                        if ($u === null) {
+                                            $sum = INF;
+                                            break;
+                                        }
+
                                         $e = $pixel($u, $v);
                                         $o = $pixel($point["u"], $point["v"]);
                                         $sum += ($e[0] - $o[0]) ** 2 + ($e[1] - $o[1]) ** 2;
@@ -872,8 +1261,8 @@
                                 $error = null;
 
                                 foreach ($cc as $check) {
-                                    $a = self::apply($h, $check["u1"], $check["v1"]);
-                                    $b = self::apply($h, $check["u2"], $check["v2"]);
+                                    $a = self::toPlane($h, $lens, $check["u1"], $check["v1"]);
+                                    $b = self::toPlane($h, $lens, $check["u2"], $check["v2"]);
 
                                     if ($a[2] <= 0 || $b[2] <= 0 || $a[0] === null || $b[0] === null) {
                                         $error = INF;
@@ -1017,12 +1406,32 @@
                         continue;
                     }
 
-                    if (self::selfIntersects($px)) {
+                    // once calibrated, the area is checked on the plane, where its edges are straight; on the frame they may be curved
+                    $metric = null;
+
+                    if ($h) {
+                        $metric = [];
+
+                        foreach ($uv as $point) {
+                            [ $x, $y, $w ] = self::toPlane($h, $lens, $point[0], $point[1]);
+
+                            if ($w <= 0 || $x === null) {
+                                $metric = false;
+                                break;
+                            }
+
+                            $metric[] = [ $x, $y ];
+                        }
+                    }
+
+                    $shape = $metric ? [ "plane" => true, "points" => $metric ] : [ "plane" => false, "points" => $px ];
+
+                    if (self::selfIntersects($shape["points"])) {
                         $problem("areaSelfIntersecting", "error", $index);
                         continue;
                     }
 
-                    if (!self::isConvex($px)) {
+                    if (!self::isConvex($shape["points"])) {
                         $problem("areaNotConvex", "error", $index);
                         continue;
                     }
@@ -1033,13 +1442,13 @@
                     }
 
                     foreach ($polygons as $other => $polygon) {
-                        if (self::convexOverlap($px, $polygon, self::OVERLAP_TOLERANCE_PX)) {
+                        if ($polygon["plane"] == $shape["plane"] && self::convexOverlap($shape["points"], $polygon["points"], $shape["plane"] ? self::OVERLAP_TOLERANCE_M : self::OVERLAP_TOLERANCE_PX)) {
                             $problem("areasOverlap", "error", $index);
                             break;
                         }
                     }
 
-                    $polygons[$index] = $px;
+                    $polygons[$index] = $shape;
 
                     if ($params["spaceLength"] < $params["spaceWidth"]) {
                         $problem("spaceLengthLessThanWidth", "warning", $index);
@@ -1060,22 +1469,9 @@
                     ];
 
                     if ($h) {
-                        $metric = [];
-
-                        foreach ($uv as $point) {
-                            [ $x, $y, $w ] = self::apply($h, $point[0], $point[1]);
-
-                            if ($w <= 0 || $x === null) {
-                                $metric = false;
-                                break;
-                            }
-
-                            $metric[] = [ $x, $y ];
-                        }
-
                         if ($metric === false) {
                             $problem("areaBeyondHorizon", "notReady", $index);
-                        } else if (self::selfIntersects($metric) || !self::isConvex($metric) || abs(self::signedArea($metric)) > self::MAX_AREA_SQUARE) {
+                        } else if (abs(self::signedArea($metric)) > self::MAX_AREA_SQUARE) {
                             $problem("areaMetricInvalid", "notReady", $index);
                         } else {
                             $item["metricPoints"] = array_map(fn ($point) => [ "x" => $point[0], "y" => $point[1] ], $metric);
@@ -1092,9 +1488,9 @@
 
                             $cu = ($uv[0][0] + $uv[1][0] + $uv[2][0] + $uv[3][0]) / 4;
                             $cv = ($uv[0][1] + $uv[1][1] + $uv[2][1] + $uv[3][1]) / 4;
-                            $c = self::apply($h, $cu, $cv);
-                            $du = self::apply($h, $cu + 1 / $fw, $cv);
-                            $dv = self::apply($h, $cu, $cv + 1 / $fh);
+                            $c = self::toPlane($h, $lens, $cu, $cv);
+                            $du = self::toPlane($h, $lens, $cu + 1 / $fw, $cv);
+                            $dv = self::toPlane($h, $lens, $cu, $cv + 1 / $fh);
 
                             if ($du[0] !== null && $dv[0] !== null && max(hypot($du[0] - $c[0], $du[1] - $c[1]), hypot($dv[0] - $c[0], $dv[1] - $c[1])) > self::MAX_METRES_PER_PIXEL) {
                                 $problem("areaLowResolution", "warning", $index);

@@ -4,7 +4,7 @@
 
 const http = require("node:http");
 const crypto = require("node:crypto");
-const { jpegSize } = require("./jpeg.js");
+const { imageInfo } = require("./image.js");
 
 // a configuration is stale when the aspect ratio of the camera frame differs from its reference frame by more than this
 const STALE_TOLERANCE = 0.02;
@@ -36,7 +36,7 @@ function createService(options) {
     const falprsTimeout = (config.falprs.timeout || 10) * 1000;
     const refreshPeriod = (config.camerasRefresh || 300) * 1000;
 
-    // frames served to FALPRS while their cycle runs: token -> JPEG
+    // frames served to FALPRS while their cycle runs: token -> { data, mime } (JPEG, PNG, BMP or WebP)
     const frames = new Map();
     // scheduled cameras: cameraId -> { interval, timer, running, current, started, removed }, current - outcome of the running cycle
     const cameras = new Map();
@@ -164,13 +164,13 @@ function createService(options) {
                 }
 
                 frame = Buffer.from(await response.arrayBuffer());
-                size = jpegSize(frame);
+                size = imageInfo(frame);
             } catch (e) {
                 return { status: "cameraUnavailable", reason: e.message };
             }
 
             if (!size) {
-                return { status: "cameraUnavailable", reason: "the camera frame is not a JPEG" };
+                return { status: "cameraUnavailable", reason: "the camera frame is not a JPEG, PNG, BMP or WebP image" };
             }
 
             // FALPRS is not even asked: the markup doesn't fit this frame
@@ -179,12 +179,12 @@ function createService(options) {
             }
 
             token = crypto.randomBytes(16).toString("hex");
-            frames.set(token, frame);
+            frames.set(token, { data: frame, mime: size.mime });
 
             let detections;
 
             try {
-                detections = await detect(`${frameBaseUrl}/frames/${token}.jpg`, revision);
+                detections = await detect(`${frameBaseUrl}/frames/${token}.${size.extension}`, revision);
             } catch (e) {
                 return { status: "detectionFailed", reason: e.message };
             }
@@ -192,7 +192,7 @@ function createService(options) {
             frames.delete(token);
             token = null;
 
-            let freeSpaces = JSON.parse(JSON.stringify(geometry.freeSpaces(revision, detections, size)));
+            let freeSpaces = JSON.parse(JSON.stringify(geometry.freeSpaces(revision, detections, { width: size.width, height: size.height })));
 
             let response = await fetch(`${internal}/parking/result`, {
                 method: "POST",
@@ -377,15 +377,15 @@ function createService(options) {
         }, refreshPeriod);
     }
 
-    // GET /frames/:token.jpg - a frame for FALPRS, POST /process/:cameraId - process a camera now and answer its outcome
+    // GET /frames/:token.:extension - a frame for FALPRS, POST /process/:cameraId - process a camera now and answer its outcome
     async function handleRequest(req, res) {
         let url = req.url || "";
-        let m = /^\/frames\/([0-9a-f]{32})\.jpg$/.exec(url);
+        let m = /^\/frames\/([0-9a-f]{32})\.(jpg|png|bmp|webp)$/.exec(url);
         let frame = m && req.method == "GET" ? frames.get(m[1]) : null;
 
         if (frame) {
-            res.writeHead(200, { "Content-Type": "image/jpeg", "Content-Length": frame.length });
-            res.end(frame);
+            res.writeHead(200, { "Content-Type": frame.mime, "Content-Length": frame.data.length });
+            res.end(frame.data);
             return;
         }
 

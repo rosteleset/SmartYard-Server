@@ -15,6 +15,7 @@
 + added the parking occupancy service (server/services/parking): free parking spaces found on camera frames with FALPRS vehicle detection, shown on the "Result" view of the "Parking" tab
 ! parking areas hold one row of spaces, detection size, confidence threshold and processing interval are set per camera, new "parking" backend options "interval", "minInterval" and "storage"
 + a camera can be processed right now from the "Result" view of the "Parking" tab, new "parking" backend option "service"
++ parking calibration takes the lens distortion of wide-angle cameras into account: it is fitted to straight lines drawn on the frame
 ```
 
 ## v1.3.0

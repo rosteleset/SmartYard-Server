@@ -2,6 +2,8 @@
     parking geometry: homography, markup validation and layout of parking spaces
 
     frame coordinates are normalized (u, v in 0..1, origin top-left, v down), plane coordinates are metres.
+    the calibration maps a frame point to the plane in two steps: the lens distortion is removed (lens()),
+    then the homography is applied to the undistorted normalized point (toPlane(), toFrame() for the way back).
     this is a port of server/backends/parking/geometry.php, both must produce the same results
     (shared fixtures: tests/parking_fixtures.json); freeSpaces() exists only here, it is used by the
     parking occupancy service (tests/parking_free_spaces.test.cjs)
@@ -26,6 +28,15 @@ var parkingGeometry = (function () {
         CHECK_WARNING: 0.10,
         CHECK_FAILURE: 0.25,
         MAX_METRES_PER_PIXEL: 0.2,
+
+        MAX_DISTORTION: 0.9,
+        DISTORTION_STEP: 0.01,
+        MAX_STRAIGHT_LINES: 16,
+        MAX_LINE_POINTS: 32,
+        MAX_RESIDUAL_CURVATURE_FRACTION: 0.003,
+        MIN_LINE_REACH: 0.5,
+        OVERLAP_TOLERANCE_M: 0.05,
+        CURVE_SEGMENTS: 16,
 
         SPACE_WIDTH: [ 1.5, 6 ],
         SPACE_LENGTH: [ 2, 25 ],
@@ -150,6 +161,352 @@ var parkingGeometry = (function () {
         }
 
         return [ X / W, Y / W, W ];
+    };
+
+    /*
+        lens distortion: one coefficient k of the radial division model around the frame centre, the radius r is
+        normalized by the half-diagonal of the frame, so k depends only on the aspect ratio of the frame:
+        undistorted = distorted / (1 + k r^2), barrel distortion has k < 0, k = 0 is no distortion;
+        lens(k, width, height) describes it for a frame, null k or width means no distortion
+    */
+
+    g.lens = function (k, width, height) {
+        return { k: isNumber(k) ? k : 0, width, height };
+    };
+
+    function lensScale(lens) {
+        let r = Math.hypot(lens.width, lens.height) / 2;
+        return [ lens.width / r, lens.height / r ];
+    }
+
+    // remove the distortion from a normalized frame point, [ null, null ] when it has no undistorted image
+
+    g.undistort = function (lens, u, v) {
+        if (!lens || !lens.k) {
+            return [ u, v ];
+        }
+
+        let [ sx, sy ] = lensScale(lens);
+        let dx = (u - 0.5) * sx;
+        let dy = (v - 0.5) * sy;
+        let f = 1 + lens.k * (dx * dx + dy * dy);
+
+        if (f <= 0) {
+            return [ null, null ];
+        }
+
+        return [ 0.5 + dx / f / sx, 0.5 + dy / f / sy ];
+    };
+
+    // apply the distortion to an undistorted normalized point, [ null, null ] when it has no image on the frame
+
+    g.distort = function (lens, u, v) {
+        if (!lens || !lens.k) {
+            return [ u, v ];
+        }
+
+        let [ sx, sy ] = lensScale(lens);
+        let dx = (u - 0.5) * sx;
+        let dy = (v - 0.5) * sy;
+        let ru = Math.hypot(dx, dy);
+
+        if (ru == 0) {
+            return [ u, v ];
+        }
+
+        // root of k ru r^2 - r + ru = 0 that is continuous with r = ru at k = 0
+        let disc = 1 - 4 * lens.k * ru * ru;
+
+        if (disc < 0) {
+            return [ null, null ];
+        }
+
+        let m = 2 / (1 + Math.sqrt(disc));
+
+        return [ 0.5 + dx * m / sx, 0.5 + dy * m / sy ];
+    };
+
+    // map a normalized frame point to the plane: [ x, y, w ], x and y are null when the point has no image
+
+    g.toPlane = function (h, lens, u, v) {
+        let [ uu, vv ] = g.undistort(lens, u, v);
+
+        if (uu === null) {
+            return [ null, null, 0 ];
+        }
+
+        return g.apply(h, uu, vv);
+    };
+
+    // map a plane point to a normalized frame point with the inverse homography hi, [ null, null ] when it has no image
+
+    g.toFrame = function (hi, lens, x, y) {
+        let [ u, v ] = g.apply(hi, x, y);
+
+        if (u === null) {
+            return [ null, null ];
+        }
+
+        return g.distort(lens, u, v);
+    };
+
+    /*
+        closed polygon whose edges are straight in undistorted coordinates (so on the plane too) drawn on the frame:
+        undistorted normalized vertices in, distorted normalized points out, CURVE_SEGMENTS points per edge when
+        there is a distortion, the vertices themselves otherwise; points without an image are left out
+    */
+
+    function curve(lens, vertices) {
+        if (!lens || !lens.k) {
+            return vertices.map(([ u, v ]) => g.distort(lens, u, v));
+        }
+
+        let result = [];
+        let n = vertices.length;
+
+        for (let i = 0; i < n; i++) {
+            let a = vertices[i];
+            let b = vertices[(i + 1) % n];
+
+            for (let j = 0; j < g.CURVE_SEGMENTS; j++) {
+                let t = j / g.CURVE_SEGMENTS;
+                let p = g.distort(lens, a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t);
+
+                if (p[0] !== null) {
+                    result.push(p);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // outline of a polygon given by its vertices on the frame (normalized), as it lies on the frame
+
+    g.frameCurve = function (lens, points) {
+        let vertices = points.map(([ u, v ]) => g.undistort(lens, u, v));
+
+        return vertices.some(p => p[0] === null) ? points.map(p => p.slice()) : curve(lens, vertices);
+    };
+
+    // outline of a polygon given by its vertices on the plane (metres), as it lies on the frame (normalized)
+
+    g.planeCurve = function (hi, lens, points) {
+        let vertices = points.map(([ x, y ]) => g.apply(hi, x, y));
+
+        return vertices.some(p => p[0] === null) ? [] : curve(lens, vertices);
+    };
+
+    // open polyline of the segment between two frame points (normalized) that is straight on the plane, as it lies on the frame
+
+    g.frameSegment = function (lens, a, b) {
+        if (!lens || !lens.k) {
+            return [ a.slice(), b.slice() ];
+        }
+
+        let ua = g.undistort(lens, a[0], a[1]);
+        let ub = g.undistort(lens, b[0], b[1]);
+
+        if (ua[0] === null || ub[0] === null) {
+            return [ a.slice(), b.slice() ];
+        }
+
+        return curve(lens, [ ua, ub ]).slice(0, g.CURVE_SEGMENTS).concat([ b.slice() ]);
+    };
+
+    // open polyline of a segment on the plane (metres), as it lies on the frame (normalized), [] when an end is beyond the horizon
+
+    g.planeSegment = function (hi, lens, a, b) {
+        let ua = g.apply(hi, a[0], a[1]);
+        let ub = g.apply(hi, b[0], b[1]);
+
+        if (ua[0] === null || ub[0] === null || !(ua[2] > 0) || !(ub[2] > 0)) {
+            return [];
+        }
+
+        let end = g.distort(lens, ub[0], ub[1]);
+
+        if (!lens || !lens.k) {
+            return [ ua.slice(0, 2), end ];
+        }
+
+        return end[0] === null ? [] : curve(lens, [ ua, ub ]).slice(0, g.CURVE_SEGMENTS).concat([ end ]);
+    };
+
+    /*
+        straight line samples of the undistorted line through two frame points (normalized), from the point a
+        towards and beyond the point b, as long as they stay on the frame (with a margin of one step)
+    */
+
+    g.lineRay = function (lens, a, b, steps) {
+        let [ au, av ] = g.undistort(lens, a[0], a[1]);
+        let [ bu, bv ] = g.undistort(lens, b[0], b[1]);
+        let result = [];
+
+        if (au === null || bu === null) {
+            return result;
+        }
+
+        let du = bu - au;
+        let dv = bv - av;
+        let len = Math.hypot(du, dv);
+
+        if (len == 0) {
+            return result;
+        }
+
+        let step = 1 / (steps || 64);
+
+        du = du / len * step;
+        dv = dv / len * step;
+
+        for (let i = 0; i <= 4 / step; i++) {
+            let p = g.distort(lens, au + du * i, av + dv * i);
+
+            if (p[0] === null) {
+                break;
+            }
+
+            result.push(p);
+
+            if (p[0] < -step || p[0] > 1 + step || p[1] < -step || p[1] > 1 + step) {
+                break;
+            }
+        }
+
+        return result;
+    };
+
+    /*
+        fit the lens distortion of a frame to straight lines (each a list of normalized points):
+        k minimizes the sum over the lines of the share of the smallest principal moment of the undistorted points,
+        scanned over [ -MAX_DISTORTION, MAX_DISTORTION ] with DISTORTION_STEP and refined by golden section search;
+        returns { k, residual, reach, invalid }: residual - the mean distance of the undistorted points to their
+        lines in pixels, reach - the largest distance of a point from the centre in half-diagonals, invalid - the
+        best k lies at the end of the range
+    */
+
+    function lineMoments(points) {
+        let n = points.length;
+        let cx = 0, cy = 0;
+
+        for (let p of points) {
+            cx += p[0] / n;
+            cy += p[1] / n;
+        }
+
+        let sxx = 0, syy = 0, sxy = 0;
+
+        for (let p of points) {
+            sxx += (p[0] - cx) ** 2;
+            syy += (p[1] - cy) ** 2;
+            sxy += (p[0] - cx) * (p[1] - cy);
+        }
+
+        let d = Math.sqrt((sxx - syy) ** 2 + 4 * sxy * sxy);
+
+        return { cx, cy, sxx, syy, sxy, min: (sxx + syy - d) / 2, sum: sxx + syy };
+    }
+
+    g.fitDistortion = function (lines, width, height) {
+        let pixels = (k, line) => line.map(([ u, v ]) => {
+            let [ uu, vv ] = g.undistort(g.lens(k, width, height), u, v);
+            return [ uu * width, vv * height ];
+        });
+
+        let cost = k => {
+            let s = 0;
+
+            for (let line of lines) {
+                let m = lineMoments(pixels(k, line));
+                s += m.sum > 0 ? m.min / m.sum : 0;
+            }
+
+            return s;
+        };
+
+        let steps = Math.round(g.MAX_DISTORTION / g.DISTORTION_STEP);
+        let best = 0;
+        let bestCost = Infinity;
+
+        // from the centre of the range outwards: of equal costs the smallest distortion wins
+        for (let j = 0; j <= 2 * steps; j++) {
+            let i = j % 2 ? (j + 1) / 2 : -j / 2;
+            let c = cost(i * g.DISTORTION_STEP);
+
+            if (c < bestCost) {
+                best = i;
+                bestCost = c;
+            }
+        }
+
+        let invalid = Math.abs(best) == steps;
+        let a = Math.max(-steps, best - 1) * g.DISTORTION_STEP;
+        let b = Math.min(steps, best + 1) * g.DISTORTION_STEP;
+        let ratio = (Math.sqrt(5) - 1) / 2;
+        let x1 = b - ratio * (b - a);
+        let x2 = a + ratio * (b - a);
+        let c1 = cost(x1);
+        let c2 = cost(x2);
+
+        for (let i = 0; i < 60; i++) {
+            if (c1 <= c2) {
+                b = x2;
+                x2 = x1;
+                c2 = c1;
+                x1 = b - ratio * (b - a);
+                c1 = cost(x1);
+            } else {
+                a = x1;
+                x1 = x2;
+                c1 = c2;
+                x2 = a + ratio * (b - a);
+                c2 = cost(x2);
+            }
+        }
+
+        let k = round((a + b) / 2, 6);
+
+        if (!(cost(k) < bestCost)) {
+            k = round(best * g.DISTORTION_STEP, 6);
+        }
+
+        k += 0;
+
+        // residual distances in pixels at the fitted k
+        let total = 0;
+        let count = 0;
+
+        for (let line of lines) {
+            let points = pixels(k, line);
+            let m = lineMoments(points);
+            let max = m.sum - m.min;
+            // normal of the line: eigenvector of the smallest moment
+            let nx = m.sxy, ny = m.min - m.sxx;
+
+            if (Math.hypot(nx, ny) < 1e-12 * (m.sum || 1)) {
+                nx = m.min - m.syy;
+                ny = m.sxy;
+            }
+
+            let nl = Math.hypot(nx, ny);
+
+            for (let p of points) {
+                total += nl > 0 && max > 0 ? Math.abs((p[0] - m.cx) * nx + (p[1] - m.cy) * ny) / nl : 0;
+                count++;
+            }
+        }
+
+        let [ sx, sy ] = lensScale(g.lens(0, width, height));
+        let reach = 0;
+
+        for (let line of lines) {
+            for (let [ u, v ] of line) {
+                reach = Math.max(reach, Math.hypot((u - 0.5) * sx, (v - 0.5) * sy));
+            }
+        }
+
+        return { k, residual: count ? round(total / count, 6) : 0, reach, invalid };
     };
 
     function normalization(points) {
@@ -603,6 +960,9 @@ var parkingGeometry = (function () {
             processingInterval: null,
             frameWidth: 0,
             frameHeight: 0,
+            straightLines: [],
+            lensDistortion: 0,
+            residualCurvature: null,
             calibration: null,
             homography: null,
             calibrationError: null,
@@ -669,6 +1029,66 @@ var parkingGeometry = (function () {
         let pixel = (u, v) => [ u * fw, v * fh ];
         let isUV = (u, v) => isNumber(u) && isNumber(v) && u >= 0 && u <= 1 && v >= 0 && v <= 1;
 
+        // lens distortion
+
+        let lines = has(input, "straightLines") ? input.straightLines : [];
+        let lens = g.lens(0, fw, fh);
+
+        if (!Array.isArray(lines) || lines.length > g.MAX_STRAIGHT_LINES) {
+            problem("invalidCalibration", "error");
+        } else {
+            let valid = true;
+            let sl = [];
+
+            for (let line of lines) {
+                if (!Array.isArray(line) || line.length < 3 || line.length > g.MAX_LINE_POINTS || !line.every(point => isUV(get(point, "u"), get(point, "v")))) {
+                    valid = false;
+                    break;
+                }
+
+                for (let i = 1; i < line.length; i++) {
+                    let a = pixel(line[i - 1].u, line[i - 1].v);
+                    let b = pixel(line[i].u, line[i].v);
+
+                    if (Math.hypot(a[0] - b[0], a[1] - b[1]) < g.MIN_VERTEX_DISTANCE * diagonal) {
+                        valid = false;
+                    }
+                }
+
+                sl.push(line.map(point => ({ u: point.u, v: point.v })));
+            }
+
+            if (!valid) {
+                problem("invalidCalibration", "error");
+            } else if (sl.length) {
+                let fit = g.fitDistortion(sl.map(line => line.map(point => [ point.u, point.v ])), fw, fh);
+
+                result.straightLines = sl;
+
+                if (fit.invalid) {
+                    problem("calibrationDistortionInvalid", "error");
+                } else {
+                    result.lensDistortion = fit.k;
+                    result.residualCurvature = fit.residual;
+                    lens = g.lens(fit.k, fw, fh);
+
+                    if (fit.residual > g.MAX_RESIDUAL_CURVATURE_FRACTION * diagonal) {
+                        problem("calibrationLinesCurved", "warning");
+                    }
+
+                    if (fit.reach <= g.MIN_LINE_REACH) {
+                        problem("calibrationLinesWeak", "warning");
+                    }
+                }
+            }
+        }
+
+        // undistorted pixel of a frame point
+        let flat = (u, v) => {
+            let [ uu, vv ] = g.undistort(lens, u, v);
+            return pixel(uu, vv);
+        };
+
         // calibration
 
         let h = null;
@@ -710,7 +1130,7 @@ var parkingGeometry = (function () {
                 if (!valid) {
                     problem("invalidCalibration", "error");
                 } else {
-                    let src = cp.map(point => pixel(point.u, point.v));
+                    let src = cp.map(point => flat(point.u, point.v));
                     let dst = cp.map(point => [ point.x, point.y ]);
                     let n = src.length;
                     let degenerate = false;
@@ -734,7 +1154,7 @@ var parkingGeometry = (function () {
                     }
 
                     if (!degenerate) {
-                        let uv = cp.map(point => [ point.u, point.v ]);
+                        let uv = cp.map(point => g.undistort(lens, point.u, point.v));
                         h = g.homography(uv, dst);
 
                         if (h) {
@@ -765,7 +1185,13 @@ var parkingGeometry = (function () {
                             let sum = 0;
 
                             for (let point of cp) {
-                                let [ u, v ] = g.apply(hi, point.x, point.y);
+                                let [ u, v ] = g.toFrame(hi, lens, point.x, point.y);
+
+                                if (u === null) {
+                                    sum = Infinity;
+                                    break;
+                                }
+
                                 let e = pixel(u, v);
                                 let o = pixel(point.u, point.v);
                                 sum += (e[0] - o[0]) ** 2 + (e[1] - o[1]) ** 2;
@@ -779,8 +1205,8 @@ var parkingGeometry = (function () {
                         let error = null;
 
                         for (let check of cc) {
-                            let a = g.apply(h, check.u1, check.v1);
-                            let b = g.apply(h, check.u2, check.v2);
+                            let a = g.toPlane(h, lens, check.u1, check.v1);
+                            let b = g.toPlane(h, lens, check.u2, check.v2);
 
                             if (a[2] <= 0 || b[2] <= 0 || a[0] === null || b[0] === null) {
                                 error = Infinity;
@@ -922,12 +1348,32 @@ var parkingGeometry = (function () {
                 return;
             }
 
-            if (g.selfIntersects(px)) {
+            // once calibrated, the area is checked on the plane, where its edges are straight; on the frame they may be curved
+            let metric = null;
+
+            if (h) {
+                metric = [];
+
+                for (let point of uv) {
+                    let [ x, y, w ] = g.toPlane(h, lens, point[0], point[1]);
+
+                    if (w <= 0 || x === null) {
+                        metric = false;
+                        break;
+                    }
+
+                    metric.push([ x, y ]);
+                }
+            }
+
+            let shape = metric ? { plane: true, points: metric } : { plane: false, points: px };
+
+            if (g.selfIntersects(shape.points)) {
                 problem("areaSelfIntersecting", "error", index);
                 return;
             }
 
-            if (!g.isConvex(px)) {
+            if (!g.isConvex(shape.points)) {
                 problem("areaNotConvex", "error", index);
                 return;
             }
@@ -938,13 +1384,13 @@ var parkingGeometry = (function () {
             }
 
             for (let other in polygons) {
-                if (g.convexOverlap(px, polygons[other], g.OVERLAP_TOLERANCE_PX)) {
+                if (polygons[other].plane == shape.plane && g.convexOverlap(shape.points, polygons[other].points, shape.plane ? g.OVERLAP_TOLERANCE_M : g.OVERLAP_TOLERANCE_PX)) {
                     problem("areasOverlap", "error", index);
                     break;
                 }
             }
 
-            polygons[index] = px;
+            polygons[index] = shape;
 
             if (params.spaceLength < params.spaceWidth) {
                 problem("spaceLengthLessThanWidth", "warning", index);
@@ -965,22 +1411,9 @@ var parkingGeometry = (function () {
             };
 
             if (h) {
-                let metric = [];
-
-                for (let point of uv) {
-                    let [ x, y, w ] = g.apply(h, point[0], point[1]);
-
-                    if (w <= 0 || x === null) {
-                        metric = false;
-                        break;
-                    }
-
-                    metric.push([ x, y ]);
-                }
-
                 if (metric === false) {
                     problem("areaBeyondHorizon", "notReady", index);
-                } else if (g.selfIntersects(metric) || !g.isConvex(metric) || Math.abs(g.signedArea(metric)) > g.MAX_AREA_SQUARE) {
+                } else if (Math.abs(g.signedArea(metric)) > g.MAX_AREA_SQUARE) {
                     problem("areaMetricInvalid", "notReady", index);
                 } else {
                     item.metricPoints = metric.map(point => ({ x: point[0], y: point[1] }));
@@ -997,9 +1430,9 @@ var parkingGeometry = (function () {
 
                     let cu = (uv[0][0] + uv[1][0] + uv[2][0] + uv[3][0]) / 4;
                     let cv = (uv[0][1] + uv[1][1] + uv[2][1] + uv[3][1]) / 4;
-                    let c = g.apply(h, cu, cv);
-                    let du = g.apply(h, cu + 1 / fw, cv);
-                    let dv = g.apply(h, cu, cv + 1 / fh);
+                    let c = g.toPlane(h, lens, cu, cv);
+                    let du = g.toPlane(h, lens, cu + 1 / fw, cv);
+                    let dv = g.toPlane(h, lens, cu, cv + 1 / fh);
 
                     if (du[0] !== null && dv[0] !== null && Math.max(Math.hypot(du[0] - c[0], du[1] - c[1]), Math.hypot(dv[0] - c[0], dv[1] - c[1])) > g.MAX_METRES_PER_PIXEL) {
                         problem("areaLowResolution", "warning", index);
@@ -1044,10 +1477,11 @@ var parkingGeometry = (function () {
     }
 
     /*
-        metric footprints of the spaces of an analyzed area projected back to normalized frame coordinates
+        metric footprints of the spaces of an analyzed area projected back to normalized frame coordinates,
+        as they lie on the frame (more than four points when there is a lens distortion)
     */
 
-    g.spaces = function (area, h) {
+    g.spaces = function (area, h, lens) {
         let hi = h ? g.invert(h) : null;
 
         if (!hi || !area.metricPoints) {
@@ -1058,10 +1492,7 @@ var parkingGeometry = (function () {
 
         return g.layout(metric, area.baseEdge, area.spaceWidth, area.spaceLength, area.spaceAngle, true).spaces.map(space => ({
             slot: space.slot,
-            points: space.points.map(p => {
-                let [ u, v ] = g.apply(hi, p[0], p[1]);
-                return { u, v };
-            }),
+            points: g.planeCurve(hi, lens, space.points).map(([ u, v ]) => ({ u, v })),
         }));
     };
 
@@ -1146,12 +1577,12 @@ var parkingGeometry = (function () {
     /*
         free spaces of a revision snapshot on one processed frame
 
-        snapshot: revision snapshot (calibration.homography, confidenceThreshold, areas with metricPoints and space parameters),
+        snapshot: revision snapshot (calibration.homography, lensDistortion, frame, confidenceThreshold, areas with metricPoints and space parameters),
         detections: FALPRS detectVehiclesObb objects { classId, className, confidence, box, angle, corners: [ x1, y1, ..., x4, y4 ] }
         with corners in pixels of the processed frame, frame: { width, height } of that frame in pixels
 
         detections below the confidence threshold are ignored (any class counts), the corners of every other one are mapped
-        to the parking plane as if they lay on it (vehicle footprint); along the single row of every enabled area a start
+        to the parking plane through the lens distortion and the homography as if they lay on it (vehicle footprint); along the single row of every enabled area a start
         of a space (within the starts of the layout row on the base edge) is free when the space, moved deeper along the
         sides it shares with its neighbours to some depth t0 up to the deepest fitting one (sampled every ROW_SHIFT_STEP),
         lies inside the area and intersects no footprint; the free starts form gaps, each gap holds the most spaces of
@@ -1160,7 +1591,8 @@ var parkingGeometry = (function () {
         opposite sides of their shared side at any depths, so spaces never overlap and an area never has more free
         spaces than its capacity, an empty area has exactly its capacity
 
-        returns [ { parkingAreaId, spaces: [ [ { x, y } x 4 ] ] } ] for enabled areas, points in pixels of the frame
+        returns [ { parkingAreaId, spaces: [ [ { x, y } ] ] } ] for enabled areas, points in pixels of the frame: the four corners
+        of a space, or its outline as it lies on the frame (CURVE_SEGMENTS points per side) when there is a lens distortion
     */
 
     g.freeSpaces = function (snapshot, detections, frame) {
@@ -1170,6 +1602,10 @@ var parkingGeometry = (function () {
         if (!inverse || !frame || !(frame.width > 0) || !(frame.height > 0)) {
             return [];
         }
+
+        // the distortion is relative to the reference frame, a frame of the same aspect ratio has the same one
+        let reference = snapshot.frame || frame;
+        let lens = g.lens(snapshot.lensDistortion, reference.width, reference.height);
 
         let threshold = isNumber(snapshot.confidenceThreshold) ? snapshot.confidenceThreshold : g.DEFAULT_CONFIDENCE_THRESHOLD;
 
@@ -1184,7 +1620,7 @@ var parkingGeometry = (function () {
             let footprint = [];
 
             for (let i = 0; i < 4; i++) {
-                let [ x, y, w ] = g.apply(h, d.corners[2 * i] / frame.width, d.corners[2 * i + 1] / frame.height);
+                let [ x, y, w ] = g.toPlane(h, lens, d.corners[2 * i] / frame.width, d.corners[2 * i + 1] / frame.height);
 
                 // a corner beyond the horizon of the calibration is not on the parking plane, nor is the vehicle
                 if (x === null || w <= 0) {
@@ -1200,10 +1636,7 @@ var parkingGeometry = (function () {
             }
         }
 
-        let pixels = points => points.map(([ x, y ]) => {
-            let [ u, v ] = g.apply(inverse, x, y);
-            return { x: u * frame.width, y: v * frame.height };
-        });
+        let pixels = points => g.planeCurve(inverse, lens, points).map(([ u, v ]) => ({ x: u * frame.width, y: v * frame.height }));
 
         let result = [];
 

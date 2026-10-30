@@ -13,7 +13,7 @@
      * @apiParam {Number} cameraId
      *
      * @apiSuccess {Object} result null when there is no result yet, otherwise
-     * { revision, processedAt, frameWidth, frameHeight, freeSpaces: [ { parkingAreaId, spaces: [ [ { x, y } x 4 ] ] } ], frame: base64 JPEG or null },
+     * { revision, processedAt, frameWidth, frameHeight, freeSpaces: [ { parkingAreaId, spaces: [ [ { x, y } x 4.. ] ] } ], frame: base64 image or null, frameType: its MIME type or null },
      * free spaces are in pixels of the processed frame
      * @apiSuccess {Object} status processing status of the latest attempt, null before the first one:
      * { status: ok | cameraUnavailable | detectionFailed | stale | saveFailed | notProcessed, reason, time, revision },

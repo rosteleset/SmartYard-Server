@@ -22,6 +22,8 @@ function check($condition, $message) {
         throw new RuntimeException($message);
     }
 }
+// the smallest JPEG the frame type is recognized by (SOI, SOF0 of 1920 x 1080, EOI), tagged to tell frames apart
+function frame($tag) { return "\xFF\xD8\xFF\xC0\x00\x11\x08\x04\x38\x07\x80\x03\x01\x22\x00\x02\x11\x01\x03\x11\x01\xFF\xD9" . $tag; }
 function setLastError($error) { $GLOBALS['lastError'] = $error; }
 function getLastError() { return $GLOBALS['lastError'] ?? ''; }
 function i18n($value) { return $value; }
@@ -343,39 +345,39 @@ $tests['current revision is the snapshot of the saved configuration'] = function
 $tests['occupancy result of the current revision replaces the previous one and its frame'] = function () use ($parking, $files, $result, $count) {
     $revision = $parking->getConfig(3)['revision'];
     check($parking->getResult(3) === null, 'no result yet');
-    check($parking->saveResult(3, $result($revision), 'JPEG1') === 'accepted', 'first');
+    check($parking->saveResult(3, $result($revision), frame('JPEG1')) === 'accepted', 'first');
     check(count($files->files) === 1, 'frame stored');
     $stored = array_values($files->files)[0];
     check($stored['metadata']['storage'] === 'tmpfs' && $stored['metadata']['expire'] > time() && $stored['metadata']['parkingCameraId'] === 3, 'storage metadata');
     $read = $parking->getResult(3, true);
-    check($read['revision'] === $revision && $read['frameWidth'] === 1920 && $read['frame'] === base64_encode('JPEG1'), 'read back');
+    check($read['revision'] === $revision && $read['frameWidth'] === 1920 && $read['frame'] === base64_encode(frame('JPEG1')), 'read back');
     // jsonb doesn't keep the order of keys
     check($read['freeSpaces'] == $result($revision)['freeSpaces'] && $read['processedAt'], 'free spaces');
     check(!array_key_exists('frame', $parking->getResult(3)), 'no frame unless asked');
 
-    check($parking->saveResult(3, $result($revision, ['freeSpaces' => []]), 'JPEG2') === 'accepted', 'second');
-    check(count($files->files) === 1 && array_values($files->files)[0]['contents'] === 'JPEG2', 'previous frame removed');
+    check($parking->saveResult(3, $result($revision, ['freeSpaces' => []]), frame('JPEG2')) === 'accepted', 'second');
+    check(count($files->files) === 1 && array_values($files->files)[0]['contents'] === frame('JPEG2'), 'previous frame removed');
     check($parking->getResult(3, true)['freeSpaces'] === [] && $count('select count(*) from parking_results') === 1, 'replaced');
 };
 
 $tests['a result of an outdated revision is discarded'] = function () use ($parking, $files, $result) {
     $revision = $parking->getConfig(3)['revision'];
-    check($parking->saveResult(3, $result($revision - 1), 'OLD') === 'discarded', 'outdated');
-    check($parking->saveResult(3, $result($revision + 1), 'NEW') === 'discarded', 'future');
-    check($parking->saveResult(2 + 1000, $result(1), 'X') === 'discarded', 'no configuration');
-    check(count($files->files) === 1 && array_values($files->files)[0]['contents'] === 'JPEG2', 'nothing stored');
+    check($parking->saveResult(3, $result($revision - 1), frame('OLD')) === 'discarded', 'outdated');
+    check($parking->saveResult(3, $result($revision + 1), frame('NEW')) === 'discarded', 'future');
+    check($parking->saveResult(2 + 1000, $result(1), frame('X')) === 'discarded', 'no configuration');
+    check(count($files->files) === 1 && array_values($files->files)[0]['contents'] === frame('JPEG2'), 'nothing stored');
     check($parking->getResult(3)['revision'] === $revision, 'previous result kept');
 };
 
 $tests['a result for a disabled or not ready current revision is discarded'] = function () use ($parking, $files, $result, $api, $code, $fixture) {
     $revision = $parking->getConfig(3)['revision'];
     check($code($api('PUT', 3, ['revision' => $revision, 'enabled' => 0] + $fixture('cars'))) === 200, 'disable');
-    check($parking->saveResult(3, $result($revision + 1), 'OFF') === 'discarded', 'disabled');
+    check($parking->saveResult(3, $result($revision + 1), frame('OFF')) === 'discarded', 'disabled');
     check($code($api('PUT', 3, ['revision' => $revision + 1] + $fixture('no calibration'))) === 200, 'not ready');
-    check($parking->saveResult(3, $result($revision + 2), 'NOT READY') === 'discarded', 'not ready');
-    check(count($files->files) === 1 && array_values($files->files)[0]['contents'] === 'JPEG2', 'nothing stored');
+    check($parking->saveResult(3, $result($revision + 2), frame('NOT READY')) === 'discarded', 'not ready');
+    check(count($files->files) === 1 && array_values($files->files)[0]['contents'] === frame('JPEG2'), 'nothing stored');
     check($code($api('PUT', 3, ['revision' => $revision + 2] + $fixture('cars'))) === 200, 'ready again');
-    check($parking->saveResult(3, $result($revision + 3), 'JPEG2') === 'accepted', 'accepted again');
+    check($parking->saveResult(3, $result($revision + 3), frame('JPEG2')) === 'accepted', 'accepted again');
     check(count($files->files) === 1, 'one frame');
 };
 
@@ -383,31 +385,31 @@ $tests['a failure of the frame storage is an error, not an exception'] = functio
     $revision = $parking->getConfig(3)['revision'];
     $files->failing = true;
     try {
-        check($parking->saveResult(3, $result($revision), 'JPEG') === false && $parking->lastFailure() === 'unknown', 'failed');
+        check($parking->saveResult(3, $result($revision), frame('JPEG')) === false && $parking->lastFailure() === 'unknown', 'failed');
         $status = $parking->getStatus(3);
         check($status['status'] === 'saveFailed' && $status['reason'] === 'storage is down' && $status['revision'] === $revision, 'the failure is visible as the status ' . json_encode($status));
-        check(internal('result', null, ['cameraId' => 3, 'frame' => base64_encode('JPEG')] + $result($revision))[0] === 500, 'internal API answers 500');
+        check(internal('result', null, ['cameraId' => 3, 'frame' => base64_encode(frame('JPEG'))] + $result($revision))[0] === 500, 'internal API answers 500');
     } finally {
         $files->failing = false;
     }
-    check($parking->getResult(3, true)['frame'] === base64_encode('JPEG2'), 'the previous result is kept');
-    check($parking->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && $parking->getStatus(3)['status'] === 'ok', 'ok again');
+    check($parking->getResult(3, true)['frame'] === base64_encode(frame('JPEG2')), 'the previous result is kept');
+    check($parking->saveResult(3, $result($revision), frame('JPEG2')) === 'accepted' && $parking->getStatus(3)['status'] === 'ok', 'ok again');
     check($parking->saveStatus(3, 'saveFailed', 'x', $revision) === false, 'saveFailed is set by the server only');
 };
 
 $tests['frames go to tmpfs by default, to gridfs without the tmpfs backend'] = function () use ($db, $files, $result) {
     $plain = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal']]], $db, null, 'admin');
     $revision = $plain->getConfig(3)['revision'];
-    check($plain->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'tmpfs', 'tmpfs');
+    check($plain->saveResult(3, $result($revision), frame('JPEG2')) === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'tmpfs', 'tmpfs');
     $tmpfs = $GLOBALS['testBackends']['tmpfs'];
     unset($GLOBALS['testBackends']['tmpfs']);
     try {
-        check($plain->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'gridfs', 'gridfs without tmpfs');
+        check($plain->saveResult(3, $result($revision), frame('JPEG2')) === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'gridfs', 'gridfs without tmpfs');
     } finally {
         $GLOBALS['testBackends']['tmpfs'] = $tmpfs;
     }
     $explicit = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal', 'storage' => 'tmpfs']]], $db, null, 'admin');
-    check($explicit->saveResult(3, $result($revision), 'JPEG2') === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'tmpfs', 'explicit tmpfs is kept');
+    check($explicit->saveResult(3, $result($revision), frame('JPEG2')) === 'accepted' && array_values($files->files)[0]['metadata']['storage'] === 'tmpfs', 'explicit tmpfs is kept');
 };
 
 $tests['an invalid result is rejected'] = function () use ($parking, $files, $result) {
@@ -421,15 +423,36 @@ $tests['an invalid result is rejected'] = function () use ($parking, $files, $re
         $result($revision, ['freeSpaces' => [['parkingAreaId' => 1, 'spaces' => [[$point, $point, $point]]]]]),
         $result($revision, ['freeSpaces' => [['parkingAreaId' => 1, 'spaces' => [[$point, $point, $point, ['x' => 'a', 'y' => 1]]]]]]),
     ] as $i => $bad) {
-        check($parking->saveResult(3, $bad, 'JPEG') === false && $parking->lastFailure() === 'parkingInvalidResult', "invalid $i");
+        check($parking->saveResult(3, $bad, frame('JPEG')) === false && $parking->lastFailure() === 'parkingInvalidResult', "invalid $i");
     }
     check($parking->saveResult(3, $result($revision), '') === false, 'empty frame');
+    check($parking->saveResult(3, $result($revision), '<html>') === false && $parking->lastFailure() === 'parkingInvalidResult', 'not an image');
     check(count($files->files) === 1, 'nothing stored');
+};
+
+$tests['camera frames of other image types than JPEG'] = function () use ($parking, $files, $result, $db) {
+    $png = "\x89PNG\r\n\x1a\n" . pack('N', 13) . 'IHDR' . pack('NN', 1920, 1080) . "\x08\x02\x00\x00\x00" . pack('N', 0);
+    $bmp = 'BM' . pack('VvvV', 54, 0, 0, 54) . pack('VllvvVVllVV', 40, 1920, -1080, 1, 24, 0, 0, 0, 0, 0, 0);
+    $webp = 'RIFF' . pack('V', 22) . 'WEBP' . 'VP8X' . pack('V', 10) . "\x00\x00\x00\x00" . substr(pack('V', 1919), 0, 3) . substr(pack('V', 1079), 0, 3);
+    check($parking->frameType(frame('x')) === ['mime' => 'image/jpeg', 'extension' => 'jpg'], 'jpeg');
+    check($parking->frameType($png) === ['mime' => 'image/png', 'extension' => 'png'], 'png');
+    check($parking->frameType($bmp) === ['mime' => 'image/bmp', 'extension' => 'bmp'], 'bmp');
+    check($parking->frameType($webp) === ['mime' => 'image/webp', 'extension' => 'webp'], 'webp');
+    check($parking->frameType('GIF89a' . pack('vv', 1920, 1080) . "\x00\x00\x00") === null, 'gif is not used');
+    check($parking->frameType('<html>') === null && $parking->frameType('') === null && $parking->frameType(null) === null, 'not an image');
+
+    $revision = (int)$db->query('select revision from parking_configs where camera_id = 3')->fetchColumn();
+    check($parking->saveResult(3, $result($revision), $png) === 'accepted', 'a PNG frame is stored');
+    $file = array_values($files->files)[0];
+    check($file['name'] === 'parking_3.png' && $file['metadata']['contentType'] === 'image/png', 'with its type ' . json_encode([$file['name'], $file['metadata']['contentType']]));
+    $read = $parking->getResult(3, true);
+    check($read['frame'] === base64_encode($png) && $read['frameType'] === 'image/png', 'read back with its type');
+    check($parking->saveResult(3, $result($revision), frame('JPEG2')) === 'accepted' && $parking->getResult(3, true)['frameType'] === 'image/jpeg', 'jpeg again');
 };
 
 $tests['the result API returns the latest result with its frame'] = function () use ($parking, $files) {
     $answer = api\cameras\parkingResult::GET(['_id' => '3']);
-    check($answer[200]['result']['frame'] === base64_encode('JPEG2'), 'frame');
+    check($answer[200]['result']['frame'] === base64_encode(frame('JPEG2')), 'frame');
     check(api\cameras\parkingResult::GET(['_id' => '2'])[200]['result'] === null, 'no result');
     $kept = $files->files;
     $files->files = [];
@@ -441,7 +464,7 @@ $tests['the result API returns the latest result with its frame'] = function () 
 $tests['the storage of frames comes from the backend config'] = function () use ($db, $files, $result) {
     $gridfs = new backends\parking\internal(['backends' => ['parking' => ['backend' => 'internal', 'storage' => 'gridfs']]], $db, null, 'admin');
     $revision = $gridfs->getConfig(3)['revision'];
-    check($gridfs->saveResult(3, $result($revision), 'JPEG3') === 'accepted', 'saved');
+    check($gridfs->saveResult(3, $result($revision), frame('JPEG3')) === 'accepted', 'saved');
     check(array_values($files->files)[0]['metadata']['storage'] === 'gridfs', 'gridfs');
 };
 
@@ -465,8 +488,8 @@ $tests['processing status: ok with an accepted result, failures keep the result'
     check($parking->saveStatus(3, 'stale', str_repeat('x', 2000), $revision) && mb_strlen($parking->getStatus(3)['reason']) === 1024, 'long reason is cut');
     check($parking->saveStatus(1003, 'stale', 'x', 1) === true && $parking->getStatus(1003) === null, 'no configuration');
 
-    check($parking->saveResult(3, $result($revision), 'JPEG6') === 'accepted' && $parking->getStatus(3)['status'] === 'ok', 'ok again');
-    check($parking->saveResult(3, $result($revision - 1), 'OLD') === 'discarded' && $parking->getStatus(3)['status'] === 'ok', 'a discarded result changes nothing');
+    check($parking->saveResult(3, $result($revision), frame('JPEG6')) === 'accepted' && $parking->getStatus(3)['status'] === 'ok', 'ok again');
+    check($parking->saveResult(3, $result($revision - 1), frame('OLD')) === 'discarded' && $parking->getStatus(3)['status'] === 'ok', 'a discarded result changes nothing');
 
     // not processed at all: derived from the configuration, over the stored status
     check($code($api('PUT', 3, ['revision' => $revision, 'enabled' => 0] + $fixture('cars'))) === 200, 'disable');
@@ -476,7 +499,7 @@ $tests['processing status: ok with an accepted result, failures keep the result'
     check($parking->getStatus(3)['reason'] === 'notReady', 'not ready');
     check($code($api('PUT', 3, ['revision' => $revision + 2] + $fixture('cars'))) === 200, 'ready again');
     check($parking->getStatus(3)['status'] === 'ok', 'the stored status is back');
-    check($parking->saveResult(3, $result($revision + 3), 'JPEG2') === 'accepted', 'result for the current revision');
+    check($parking->saveResult(3, $result($revision + 3), frame('JPEG2')) === 'accepted', 'result for the current revision');
 };
 
 $tests['processing status before the first attempt and through the APIs'] = function () use ($parking, $api, $code, $fixture) {
@@ -497,9 +520,9 @@ $tests['internal API for the occupancy service'] = function () use ($parking, $f
     [$status, $revision] = internal('revision', '3');
     check($status === 200 && $revision['revision'] === $parking->getConfig(3)['revision'] && isset($revision['areas']), 'revision');
     check(internal('revision', 'x')[0] === 400 && internal('revision', '0')[0] === 400 && internal('revision', '1003')[0] === 404, 'revision errors');
-    $body = ['cameraId' => 3, 'frame' => base64_encode('JPEG5')] + $result($revision['revision']);
+    $body = ['cameraId' => 3, 'frame' => base64_encode(frame('JPEG5'))] + $result($revision['revision']);
     check(internal('result', null, $body)[0] === 200, 'accepted');
-    check(array_values($files->files)[0]['contents'] === 'JPEG5', 'stored');
+    check(array_values($files->files)[0]['contents'] === frame('JPEG5'), 'stored');
     check(internal('result', null, ['revision' => $revision['revision'] - 1] + $body)[0] === 204, 'discarded');
     check(internal('result', null, ['frame' => '***'] + $body)[0] === 400, 'frame is not base64');
     check(internal('result', null, ['freeSpaces' => 1] + $body)[0] === 400, 'invalid result');
@@ -518,7 +541,7 @@ $tests['deleting a configuration removes its result and frame'] = function () us
     check($count('select count(*) from parking_results where camera_id = 3') === 0 && count($files->files) === 0, 'removed');
     check($count('select count(*) from parking_statuses where camera_id = 3') === 0, 'status removed');
     check($code($api('PUT', 3, ['revision' => 0] + $fixture('cars'))) === 200, 'configured again');
-    check($parking->saveResult(3, $result(1), 'JPEG4') === 'accepted', 'result for the new configuration');
+    check($parking->saveResult(3, $result(1), frame('JPEG4')) === 'accepted', 'result for the new configuration');
 };
 
 $tests['database constraints'] = function () use ($db) {
@@ -634,7 +657,7 @@ $tests['parking cameras for the mobile app'] = function () use ($parking, $files
     $space = [['x' => 1, 'y' => 2], ['x' => 3, 'y' => 2], ['x' => 3, 'y' => 4], ['x' => 1, 'y' => 4]];
     $freeSpaces = [['parkingAreaId' => $areaIds[0], 'spaces' => [$space, $space]], ['parkingAreaId' => $areaIds[2], 'spaces' => [$space]]];
     $result = ['revision' => 1, 'frameWidth' => 1920, 'frameHeight' => 1080, 'freeSpaces' => $freeSpaces];
-    check($parking->saveResult($id, $result, 'JPEG') === 'accepted', 'result');
+    check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'result');
     $processedAt = $db->query("select processed_at from parking_results where camera_id = $id")->fetchColumn();
     $summary = $parking->parkingCameras([$id]);
     check($summary === [$id => ['capacity' => 23, 'free' => 3, 'processedAt' => date('Y-m-d H:i:s', strtotime($processedAt))]], 'summary ' . json_encode($summary));
@@ -652,7 +675,7 @@ $tests['parking cameras for the mobile app'] = function () use ($parking, $files
     $body = ['revision' => 1, 'enabled' => 1, 'frameWidth' => $saved['frameWidth'], 'frameHeight' => $saved['frameHeight'], 'calibration' => $saved['calibration'], 'areas' => $areas];
     check($code($api('PUT', $id, $body)) === 200, 'disable an area');
     check($parking->parkingCameras([$id])[$id]['capacity'] === 23, 'totals of the revision of the result');
-    check($parking->saveResult($id, ['revision' => 2, 'freeSpaces' => [$freeSpaces[0]]] + $result, 'JPEG') === 'accepted', 'result of revision 2');
+    check($parking->saveResult($id, ['revision' => 2, 'freeSpaces' => [$freeSpaces[0]]] + $result, frame('JPEG')) === 'accepted', 'result of revision 2');
     check($parking->parkingCameras([$id])[$id] === ['capacity' => 17, 'free' => 2] + $parking->parkingCameras([$id])[$id], 'a disabled area is not counted');
 
     check($parking->parkingCameras([$id, 'x', -1, $id + 1000, $id]) === $parking->parkingCameras([$id]), 'only parking cameras among the asked ones');
@@ -680,7 +703,7 @@ $tests['parking camera detail for the mobile app'] = function () use ($parking, 
         ['parkingAreaId' => max($areaIds) + 1000, 'spaces' => [$space(5)]],
     ];
     $result = ['revision' => 1, 'frameWidth' => 1280, 'frameHeight' => 720, 'freeSpaces' => $freeSpaces];
-    check($parking->saveResult($id, $result, 'JPEG') === 'accepted', 'result');
+    check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'result');
     $uuid = $db->query("select frame_uuid from parking_results where camera_id = $id")->fetchColumn();
 
     $detail = $parking->parkingCamera($id);
@@ -701,7 +724,7 @@ $tests['parking camera detail for the mobile app'] = function () use ($parking, 
     $body = ['revision' => 1, 'enabled' => 1, 'frameWidth' => $saved['frameWidth'], 'frameHeight' => $saved['frameHeight'], 'calibration' => $saved['calibration'], 'areas' => $areas];
     check($code($api('PUT', $id, $body)) === 200, 'disable an area');
     check(count($parking->parkingCamera($id)['areas']) === 3, 'areas of the revision of the result');
-    check($parking->saveResult($id, ['revision' => 2, 'freeSpaces' => [$freeSpaces[1]]] + $result, 'JPEG') === 'accepted', 'result of revision 2');
+    check($parking->saveResult($id, ['revision' => 2, 'freeSpaces' => [$freeSpaces[1]]] + $result, frame('JPEG')) === 'accepted', 'result of revision 2');
     $detail = $parking->parkingCamera($id);
     check(array_column($detail['areas'], 'name') === ['A', 'B'] && $detail['capacity'] === 17, 'a disabled area is left out');
 
@@ -720,11 +743,11 @@ $tests['the camera of a frame for the mobile app'] = function () use ($parking, 
     $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
     $saved = $api('PUT', $id, ['revision' => 0] + $fixture('several areas'))[200]['parking'];
     $result = ['revision' => 1, 'frameWidth' => 1920, 'frameHeight' => 1080, 'freeSpaces' => []];
-    check($parking->saveResult($id, $result, 'JPEG1') === 'accepted', 'first result');
+    check($parking->saveResult($id, $result, frame('JPEG1')) === 'accepted', 'first result');
     $first = $parking->parkingCamera($id)['frameId'];
     check($parking->parkingFrameCamera($first) === $id, 'current frame');
 
-    check($parking->saveResult($id, $result, 'JPEG2') === 'accepted', 'second result');
+    check($parking->saveResult($id, $result, frame('JPEG2')) === 'accepted', 'second result');
     $second = $parking->parkingCamera($id)['frameId'];
     check($second !== $first && $parking->parkingFrameCamera($first) === null, 'a replaced frame');
     check($parking->parkingFrameCamera($second) === $id, 'the new frame');
@@ -742,6 +765,63 @@ $tests['the camera of a frame for the mobile app'] = function () use ($parking, 
     check($parking->parkingFrameCamera($second) === null, 'disabled configuration');
     check($code($api('PUT', $id, ['revision' => 2] + $fixture('no calibration'))) === 200, 'not ready');
     check($parking->parkingFrameCamera($second) === null, 'not ready configuration');
+};
+
+$tests['straight lines and the lens distortion are stored with the revision'] = function () use ($api, $code, $fixture, $db) {
+    $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
+    $input = $fixture('distorted camera with straight lines');
+
+    // the distortion sent by the client is ignored: it is fitted by the server
+    $answer = $api('PUT', $id, ['revision' => 0, 'lensDistortion' => 0.5, 'residualCurvature' => 1] + $input);
+    check($code($answer) === 200, 'PUT failed: ' . json_encode($answer));
+    $saved = $answer[200]['parking'];
+    check($saved['lensDistortion'] === -0.25 && $saved['residualCurvature'] === 0.0 && $saved['ready'] === true, 'fitted ' . json_encode([$saved['lensDistortion'], $saved['residualCurvature']]));
+    check(count($saved['straightLines']) === count($input['straightLines']) && $saved['straightLines'][0][0]['u'] == $input['straightLines'][0][0]['u'], 'lines');
+    check($saved['calibrationError'] == 0, 'control segment through the distortion');
+
+    $snapshot = json_decode($db->query("select snapshot from parking_config_revisions r join parking_configs c using (parking_config_id) where c.camera_id = $id and r.revision = 1")->fetchColumn(), true);
+    check($snapshot['lensDistortion'] === -0.25 && $snapshot['residualCurvature'] == 0 && count($snapshot['straightLines']) === 4, 'snapshot ' . json_encode(array_intersect_key($snapshot, array_flip(['lensDistortion', 'residualCurvature']))));
+    check($snapshot['frame'] === ['width' => 1920, 'height' => 1080], 'reference frame');
+
+    // straight lines without a calibration: the distortion is fitted, the configuration is not calibrated
+    $answer = $api('PUT', $id, ['revision' => 1] + $fixture('straight lines without calibration'));
+    check($code($answer) === 200, 'lines only: ' . json_encode($answer));
+    check($answer[200]['parking']['lensDistortion'] === -0.25 && $answer[200]['parking']['calibration'] === null && $answer[200]['parking']['ready'] === false, 'lines only');
+
+    // without lines the distortion is 0
+    $answer = $api('PUT', $id, ['revision' => 2] + $fixture('distorted camera without straight lines'));
+    check($answer[200]['parking']['lensDistortion'] === 0.0 && $answer[200]['parking']['residualCurvature'] === null && $answer[200]['parking']['straightLines'] === [], 'no lines');
+
+    // a distortion out of the range of the lens can't be saved
+    $answer = $api('PUT', $id, ['revision' => 3] + $fixture('straight lines bent beyond the lens range'));
+    check($code($answer) === 400, 'out of range ' . json_encode($answer));
+    check($db->query("select revision from parking_configs where camera_id = $id")->fetchColumn() == 3, 'nothing saved');
+};
+
+$tests['mobile outlines follow the lens distortion of the revision of the result'] = function () use ($parking, $api, $fixture, $db) {
+    $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
+    $saved = $api('PUT', $id, ['revision' => 0] + $fixture('distorted camera with straight lines'))[200]['parking'];
+    $areaId = $saved['areas'][0]['parkingAreaId'];
+    $space = array_map(fn ($i) => ['x' => $i, 'y' => $i], range(0, 63));
+    $result = ['revision' => 1, 'frameWidth' => 1280, 'frameHeight' => 720, 'freeSpaces' => [['parkingAreaId' => $areaId, 'spaces' => [$space]]]];
+    check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'a free space of more than 4 points is accepted');
+    check($parking->saveResult($id, ['freeSpaces' => [['parkingAreaId' => $areaId, 'spaces' => [array_slice($space, 0, 3)]]]] + $result, frame('JPEG')) === false, 'three points are not');
+
+    $detail = $parking->parkingCamera($id);
+    $outline = $detail['areas'][0]['points'];
+    check(count($outline) === 4 * backends\parking\geometry::CURVE_SEGMENTS, 'densified outline');
+    foreach ($saved['areas'][0]['imagePoints'] as $i => $p) {
+        $c = $outline[$i * backends\parking\geometry::CURVE_SEGMENTS];
+        check(abs($c['x'] - $p['u'] * 1280) < 1e-6 && abs($c['y'] - $p['v'] * 720) < 1e-6, "vertex $i");
+    }
+    check($detail['areas'][0]['freeSpaces'] === [$space], 'free spaces as they are');
+
+    // a camera without the distortion keeps four points
+    $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
+    $saved = $api('PUT', $id, ['revision' => 0] + $fixture('distorted camera without straight lines'))[200]['parking'];
+    $result['freeSpaces'] = [['parkingAreaId' => $saved['areas'][0]['parkingAreaId'], 'spaces' => []]];
+    check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'result');
+    check(count($parking->parkingCamera($id)['areas'][0]['points']) === 4, 'four points');
 };
 
 $tests['parking backend is not configured'] = function () use ($api, $code) {
