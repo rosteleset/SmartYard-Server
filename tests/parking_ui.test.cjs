@@ -386,10 +386,10 @@ test('a failed result request is shown and retried on the next interval', () => 
 // minimal Leaflet: layers remember what they were created with
 function fakeLeaflet(context) {
     const layer = (type, points, options) => {
-        const l = {type, points, options, addTo(target) { (target.layers || (target.layers = [])).push(l); return l; }, bindTooltip() { return l; }, on() { return l; }, remove() {}, enableEdit() {}, editEnabled: () => false, disableEdit() {}};
+        const l = {type, points, options, addTo(target) { (target.layers || (target.layers = [])).push(l); return l; }, bindTooltip() { return l; }, on() { return l; }, setLatLngs(p) { l.points = p; return l; }, getLatLngs: () => [l.points], remove() {}, enableEdit() {}, editEnabled: () => false, disableEdit() {}};
         return l;
     };
-    const map = {layers: [], addControl() {}, on() {}, setMaxBounds() {}, invalidateSize() {}, fitBounds() {}, remove() {}};
+    const map = {layers: [], addControl() {}, on() {}, setMaxBounds() {}, invalidateSize() {}, fitBounds() {}, remove() {}, getContainer: () => ({addEventListener() {}, focus() {}, classList: {toggle() {}}})};
     context.L = {
         CRS: {Simple: {}},
         map: () => map,
@@ -424,9 +424,9 @@ test('the result map shows the processed frame, the current areas and the free s
     const s = h.parking.states.m1;
     assert.ok(s.group.layers.length > 0, 'markup is drawn');
     h.parking.action(s, 'viewResult');
-    resultRequests(h.state)[0].deferred.resolve({result: Object.assign(sample(3), {frameWidth: 1280, frameHeight: 720})});
+    resultRequests(h.state)[0].deferred.resolve({result: Object.assign(sample(3), {frameWidth: 1280, frameHeight: 720, frameType: 'image/png'})});
     assert.equal(s.overlay.type, 'image');
-    assert.equal(s.overlay.points, 'data:image/jpg;base64,BBBB');
+    assert.equal(s.overlay.points, 'data:image/png;base64,BBBB', 'the frame in its own format');
     const polygons = s.group.layers.filter(l => l.type === 'polygon');
     assert.equal(polygons.length, 1 + 2, 'one area and two free spaces');
     // areas are drawn in the result frame, free spaces in its pixels
@@ -525,4 +525,73 @@ test('without the occupancy service or the right to POST the button only re-read
         parking.action(s, 'refreshResult');
         assert.equal(resultRequests(state)[1].method, 'GET');
     }
+});
+
+test('a straight line is drawn point by point and finished with at least 3 points', () => {
+    const {state, parking} = harness();
+    parking.renderTab('l1', 7);
+    parking.activate('l1');
+    state.requests[0].deferred.resolve(undefined);
+    state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = parking.states.l1;
+    parking.action(s, 'create');
+    parking.action(s, 'addLine');
+    assert.equal(s.mode, 'line');
+    const click = (u, v) => parking.mapClick(s, {latlng: {lat: -v * 1080, lng: u * 1920}});
+    click(0.1, 0.9);
+    click(0.5, 0.95);
+    parking.action(s, 'finishLine');
+    assert.equal(s.mode, 'line', 'two points are not a line');
+    assert.equal(s.draft.straightLines.length, 0);
+    click(0.9, 0.9);
+    parking.action(s, 'finishLine');
+    assert.equal(s.mode, null);
+    assert.equal(s.draft.straightLines.length, 1);
+    assert.equal(s.draft.straightLines[0].length, 3);
+    assert.equal(parking.payload(s).straightLines.length, 1, 'lines are sent');
+    assert.equal(s.analysis.straightLines.length, 1, 'and analyzed');
+    parking.action(s, 'deleteLine', 0);
+    assert.equal(s.draft.straightLines.length, 0);
+});
+
+test('Enter finishes a straight line, Esc leaves the mode', () => {
+    const {state, parking} = harness();
+    parking.renderTab('l2', 7);
+    parking.activate('l2');
+    state.requests[0].deferred.resolve(undefined);
+    state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = parking.states.l2;
+    parking.action(s, 'create');
+    const key = k => parking.cornerKey(s, {key: k, preventDefault() {}, stopImmediatePropagation() {}});
+    parking.action(s, 'addLine');
+    for (const [u, v] of [[0.1, 0.1], [0.5, 0.05], [0.9, 0.1]]) {
+        parking.mapClick(s, {latlng: {lat: -v * 1080, lng: u * 1920}});
+    }
+    key('Enter');
+    assert.equal(s.draft.straightLines.length, 1);
+    parking.action(s, 'addLine');
+    parking.mapClick(s, {latlng: {lat: -500, lng: 500}});
+    key('Escape');
+    assert.equal(s.mode, null);
+    assert.equal(s.draft.straightLines.length, 1, 'the unfinished line is dropped');
+});
+
+test('a distorted camera draws its outlines as curves, the area stays editable by its four vertices', () => {
+    const h = harness();
+    fakeLeaflet(h.context);
+    fakeTimers(h.context);
+    h.parking.renderTab('l3', 7);
+    h.parking.activate('l3');
+    const config = Object.assign(JSON.parse(JSON.stringify(fixtures.find(c => c.name == 'distorted camera with straight lines').config)), {revision: 1});
+    h.state.requests[0].deferred.resolve({parking: config, settings: {interval: 60, minInterval: 10}});
+    h.state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = h.parking.states.l3;
+    assert.equal(s.analysis.lensDistortion, -0.25);
+    const n = h.context.parkingGeometry.CURVE_SEGMENTS;
+    const polygons = s.group.layers.filter(l => l.type === 'polygon');
+    assert.ok(polygons.some(l => l.points.length === 4 * n && l.options.interactive === false), 'curved area outline');
+    assert.ok(polygons.some(l => l.points.length === 4 && l.options.opacity === 0), 'invisible polygon of the vertices');
+    assert.ok(polygons.filter(l => l.points.length === 4 * n).length >= 1 + 10, 'spaces are curves too');
+    const html = h.state.html['#l3parkingPanel'] || Object.values(h.state.html).join('');
+    assert.ok(html.includes('addresses.parkingLensDistortion -0.25'), 'the coefficient is shown');
 });

@@ -22,8 +22,8 @@
      * @apiSuccess {Object[]} areas площадки парковки
      * @apiSuccess {String} areas.name название площадки
      * @apiSuccess {Number} areas.capacity количество мест на площадке
-     * @apiSuccess {Object[]} areas.points контур площадки, 4 точки { x, y }
-     * @apiSuccess {Object[][]} areas.freeSpaces свободные места площадки, каждое - 4 точки { x, y }
+     * @apiSuccess {Object[]} areas.points контур площадки, не меньше 4 точек { x, y }: углы площадки, а при дисторсии объектива - кривая, по которой её стороны идут на кадре
+     * @apiSuccess {Object[][]} areas.freeSpaces свободные места площадки, каждое - контур из не меньше чем 4 точек { x, y }, как и у площадки
      *
      * @apiErrorExample {json} Ошибка
      * 404 камера не найдена или не является парковочной

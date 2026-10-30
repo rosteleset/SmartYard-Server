@@ -22,6 +22,9 @@ begin
         calibration_model character varying(32) default 'homography' not null,
         calibration_points jsonb,
         calibration_checks jsonb default '[]'::jsonb not null,
+        straight_lines jsonb default '[]'::jsonb not null,
+        lens_distortion double precision default 0 not null,
+        residual_curvature real,
         homography double precision[],
         calibration_error real,
         revision integer default 0 not null,
@@ -59,6 +62,12 @@ begin
 
         constraint parking_configs_calibration_checks_check
             check (jsonb_typeof(calibration_checks) = 'array'),
+
+        constraint parking_configs_straight_lines_check
+            check (jsonb_typeof(straight_lines) = 'array'),
+
+        constraint parking_configs_lens_distortion_check
+            check (lens_distortion > -1 and lens_distortion < 1),
 
         constraint parking_configs_homography_check
             check (homography is null or (array_ndims(homography) = 1 and array_length(homography, 1) = 9)),
@@ -103,8 +112,17 @@ begin
     comment on column parking_configs.calibration_checks
         is 'Control segments: array of {u1, v1, u2, v2, length}, length in metres';
 
+    comment on column parking_configs.straight_lines
+        is 'Straight lines for the lens distortion: array of polylines [ { u, v } x 3..32 ] in normalized frame coordinates';
+
+    comment on column parking_configs.lens_distortion
+        is 'Lens distortion coefficient k of the radial division model around the frame centre, radius normalized by the half-diagonal, 0 for no distortion, computed by the server from the straight lines';
+
+    comment on column parking_configs.residual_curvature
+        is 'Mean distance in pixels of the straight line points from straight after the distortion is removed, null without straight lines';
+
     comment on column parking_configs.homography
-        is 'Row-major 3x3 homography from normalized frame coordinates to metres, unit Frobenius norm, w > 0 inside the calibrated area, computed by the server';
+        is 'Row-major 3x3 homography from undistorted normalized frame coordinates to metres, unit Frobenius norm, w > 0 inside the calibrated area, computed by the server';
 
     comment on column parking_configs.calibration_error
         is 'Maximum relative error of control segments or reprojection RMS';

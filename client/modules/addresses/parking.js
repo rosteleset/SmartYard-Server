@@ -398,6 +398,7 @@
             processingInterval: config.processingInterval,
             frameWidth: config.frameWidth,
             frameHeight: config.frameHeight,
+            straightLines: JSON.parse(JSON.stringify(config.straightLines || [])),
             calibration: config.calibration ? {
                 points: JSON.parse(JSON.stringify(config.calibration.points)),
                 checks: JSON.parse(JSON.stringify(config.calibration.checks || [])),
@@ -445,6 +446,7 @@
             processingInterval: d.processingInterval,
             frameWidth: d.frameWidth,
             frameHeight: d.frameHeight,
+            straightLines: d.straightLines,
             calibration: d.calibration,
             areas: d.areas,
         }));
@@ -534,10 +536,45 @@
         return { u: clamp(ll.lng / f.width), v: clamp(-ll.lat / f.height) };
     },
 
+    // lens distortion of the analyzed draft, null before the analysis
+    lens: function (state) {
+        let a = state.analysis;
+
+        return a && a.frameWidth ? parkingGeometry.lens(a.lensDistortion, a.frameWidth, a.frameHeight) : null;
+    },
+
+    // outline on the frame of a polygon or a polyline whose sides are straight on the plane, points { u, v }
+    curve: function (state, points, closed) {
+        let lens = modules.addresses.parking.lens(state);
+        let uv = points.map(p => [ p.u, p.v ]);
+        let result;
+
+        if (closed) {
+            result = parkingGeometry.frameCurve(lens, uv);
+        } else {
+            result = [ uv[0] ];
+            for (let i = 1; i < uv.length; i++) {
+                result = result.concat(parkingGeometry.frameSegment(lens, uv[i - 1], uv[i]).slice(1));
+            }
+        }
+
+        return result.map(([ u, v ]) => ({ u, v }));
+    },
+
     // calibration corners
 
-    // the line through two points clipped by the frame, [] when it misses the frame or the points coincide
+    // the line through two points clipped by the frame, [] when it misses the frame or the points coincide;
+    // with a lens distortion it is the curve the straight line makes on the frame
     sideLine: function (state, a, b) {
+        let lens = modules.addresses.parking.lens(state);
+
+        if (lens && lens.k) {
+            let ab = parkingGeometry.lineRay(lens, [ a.u, a.v ], [ b.u, b.v ]);
+            let ba = parkingGeometry.lineRay(lens, [ b.u, b.v ], [ a.u, a.v ]);
+
+            return ba.reverse().concat(ab.slice(1)).map(([ u, v ]) => ({ u, v }));
+        }
+
         let f = modules.addresses.parking.frame(state);
         let x = a.u * f.width, y = a.v * f.height;
         let dx = (b.u - a.u) * f.width, dy = (b.v - a.v) * f.height;
@@ -623,6 +660,13 @@
         let parking = modules.addresses.parking;
         let points = state.draft && state.draft.calibration ? state.draft.calibration.points : null;
 
+        if (state.mode && state.view != "result" && (e.key == "Enter" || e.key == "Escape")) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            parking.action(state, e.key == "Enter" && state.mode == "line" ? "finishLine" : "cancelMode");
+            return;
+        }
+
         if (!points || !points.length || !state.editable || state.mode || state.view == "result" || e.altKey || e.ctrlKey || e.metaKey) {
             return;
         }
@@ -703,8 +747,9 @@
             let l;
 
             if (h) {
-                let pa = parkingGeometry.apply(h, a.u, a.v);
-                let pb = parkingGeometry.apply(h, b.u, b.v);
+                let lens = modules.addresses.parking.lens(state);
+                let pa = parkingGeometry.toPlane(h, lens, a.u, a.v);
+                let pb = parkingGeometry.toPlane(h, lens, b.u, b.v);
                 l = (pa[2] > 0 && pb[2] > 0) ? Math.hypot(pa[0] - pb[0], pa[1] - pb[1]) : -1;
             } else {
                 l = Math.hypot((a.u - b.u) * f.width, (a.v - b.v) * f.height);
@@ -833,6 +878,7 @@
                         processingInterval: null,
                         frameWidth: state.imageSize.width,
                         frameHeight: state.imageSize.height,
+                        straightLines: [],
                         calibration: null,
                         areas: [],
                     };
@@ -918,6 +964,24 @@
 
             case "cancelMode":
                 parking.setMode(state, null);
+                break;
+
+            case "addLine":
+                parking.setMode(state, "line");
+                break;
+
+            case "finishLine":
+                if (state.mode == "line" && state.pending.length >= 3) {
+                    d.straightLines.push(state.pending);
+                    state.mode = null;
+                    state.pending = [];
+                    parking.changed(state);
+                }
+                break;
+
+            case "deleteLine":
+                d.straightLines.splice(index, 1);
+                parking.changed(state);
                 break;
 
             case "selectArea":
@@ -1055,6 +1119,11 @@
         }
 
         state.pending.push(parking.fromLatLng(state, e.latlng));
+
+        if (state.mode == "line" && state.pending.length == parkingGeometry.MAX_LINE_POINTS) {
+            parking.action(state, "finishLine");
+            return;
+        }
 
         if (state.mode == "area" && state.pending.length == 4) {
             let area = {
@@ -1208,6 +1277,7 @@
 
         let a = state.analysis;
         let h = a ? a.homography : null;
+        let lens = parking.lens(state);
         let ll = p => parking.toLatLng(state, p);
         let interactive = !state.mode;
 
@@ -1233,10 +1303,9 @@
                 let y0 = Math.min(...ys) - 1, y1 = Math.max(...ys) + 1;
                 let step = Math.max(x1 - x0, y1 - y0) > 80 ? 5 : 1;
                 let line = (p, q) => {
-                    let pa = parkingGeometry.apply(hi, p[0], p[1]);
-                    let pb = parkingGeometry.apply(hi, q[0], q[1]);
-                    if (pa[2] > 0 && pb[2] > 0) {
-                        L.polyline([ ll({ u: pa[0], v: pa[1] }), ll({ u: pb[0], v: pb[1] }) ], { color: "#ffc107", weight: 1, opacity: 0.6, interactive: false }).addTo(state.group);
+                    let points = parkingGeometry.planeSegment(hi, lens, p, q);
+                    if (points.length) {
+                        L.polyline(points.map(([ u, v ]) => ll({ u, v })), { color: "#ffc107", weight: 1, opacity: 0.6, interactive: false }).addTo(state.group);
                     }
                 };
 
@@ -1255,22 +1324,33 @@
             let active = state.active === i;
             let analysis = parking.areaAnalysis(state, i);
             let points = area.imagePoints.map(ll);
+            let curved = !!(lens && lens.k);
 
             if (state.showSpaces && analysis && h) {
-                for (let space of parkingGeometry.spaces(analysis, h)) {
+                for (let space of parkingGeometry.spaces(analysis, h, lens)) {
                     L.polygon(space.points.map(ll), { color: "#ffffff", weight: 1, opacity: 0.8, fillOpacity: 0, interactive: false }).addTo(state.group);
                 }
             }
 
-            let polygon = L.polygon(points, {
+            let style = {
                 color,
                 weight: active ? 3 : 2,
                 fillOpacity: active ? 0.25 : 0.1,
                 dashArray: area.enabled ? null : "6 6",
-                interactive,
-            }).addTo(state.group);
+            };
+
+            // with a lens distortion the sides are curves: they are drawn apart from the polygon of the four vertices,
+            // which stays invisible for clicks and editing
+            let outline = curved ? L.polygon(parking.curve(state, area.imagePoints, true).map(ll), Object.assign({ interactive: false }, style)).addTo(state.group) : null;
+            let polygon = L.polygon(points, curved ? { opacity: 0, fillOpacity: 0, interactive } : Object.assign({ interactive }, style)).addTo(state.group);
 
             polygon._parkingIndex = i;
+
+            if (outline) {
+                polygon.on("editable:vertex:drag", () => {
+                    outline.setLatLngs(parking.curve(state, polygon.getLatLngs()[0].slice(0, 4).map(p => parking.fromLatLng(state, p)), true).map(ll));
+                });
+            }
 
             let label = escapeHTML(area.name || ("#" + (i + 1)));
 
@@ -1292,7 +1372,7 @@
             let b = area.baseEdge;
 
             if (b >= 0 && b <= 3) {
-                L.polyline([ points[b], points[(b + 1) % 4] ], { color: "#fd7e14", weight: 6, opacity: 0.9, interactive: false }).addTo(state.group);
+                L.polyline(parking.curve(state, [ area.imagePoints[b], area.imagePoints[(b + 1) % 4] ]).map(ll), { color: "#fd7e14", weight: 6, opacity: 0.9, interactive: false }).addTo(state.group);
             }
 
             if (active && state.editable && interactive) {
@@ -1308,7 +1388,7 @@
             let sides = (state.showSides && points.length == 4) ? points.map(() => L.polyline([], { color: "#e83e8c", weight: 1, opacity: 0.7, interactive: false }).addTo(state.group)) : [];
             let outline = L.polygon([], { color: "#e83e8c", weight: 2, dashArray: "4 4", fillOpacity: 0, interactive: false }).addTo(state.group);
             let outlined = current => {
-                outline.setLatLngs(current.map(ll));
+                outline.setLatLngs((current.length == 4 ? parking.curve(state, current, true) : current).map(ll));
                 sides.forEach((side, k) => side.setLatLngs(parking.sideLine(state, current[k], current[(k + 1) % 4]).map(ll)));
             };
 
@@ -1346,7 +1426,7 @@
             d.calibration.checks.forEach((c, i) => {
                 let ends = [ { u: c.u1, v: c.v1 }, { u: c.u2, v: c.v2 } ];
                 let measured = parking.checkLength(state, c);
-                let line = L.polyline(ends.map(ll), { color: "#17a2b8", weight: 3, interactive: false }).addTo(state.group);
+                let line = L.polyline(parking.curve(state, ends).map(ll), { color: "#17a2b8", weight: 3, interactive: false }).addTo(state.group);
 
                 line.bindTooltip(measured !== null ? (measured.toFixed(2) + " / " + c.length + " " + i18n("addresses.parkingMetres")) : String(c.length), { permanent: true, interactive: false });
 
@@ -1368,9 +1448,23 @@
             });
         }
 
+        // straight lines: as drawn, and the straight line they become without the distortion
+        (d.straightLines || []).forEach((line, i) => {
+            L.polyline(line.map(ll), { color: "#20c997", weight: 2, interactive: false }).addTo(state.group).
+                bindTooltip(i18n("addresses.parkingLine", i + 1), { direction: "top", interactive: false });
+
+            for (let p of line) {
+                L.circleMarker(ll(p), { radius: 3, color: "#20c997", fillOpacity: 1, interactive: false }).addTo(state.group);
+            }
+
+            if (lens && lens.k) {
+                L.polyline(parking.sideLine(state, line[0], line[line.length - 1]).map(ll), { color: "#20c997", weight: 1, opacity: 0.7, dashArray: "4 4", interactive: false }).addTo(state.group);
+            }
+        });
+
         // points placed in the current mode
         for (let p of state.pending) {
-            L.circleMarker(ll(p), { radius: 5, color: state.mode == "calibration" ? "#e83e8c" : "#ffc107", fillOpacity: 1, interactive: false }).addTo(state.group);
+            L.circleMarker(ll(p), { radius: 5, color: { calibration: "#e83e8c", line: "#20c997" }[state.mode] || "#ffc107", fillOpacity: 1, interactive: false }).addTo(state.group);
         }
 
         if (state.pending.length > 1) {
@@ -1390,7 +1484,7 @@
             state.overlay.remove();
         }
 
-        state.overlay = (r && r.frame) ? L.imageOverlay("data:image/jpg;base64," + r.frame, bounds) : L.rectangle(bounds, { color: "#343a40", weight: 1, fillOpacity: 0.6, interactive: false });
+        state.overlay = (r && r.frame) ? L.imageOverlay(`data:${r.frameType || "image/jpeg"};base64,` + r.frame, bounds) : L.rectangle(bounds, { color: "#343a40", weight: 1, fillOpacity: 0.6, interactive: false });
         state.overlay.addTo(state.map);
         state.map.setMaxBounds(L.latLngBounds(bounds).pad(0.5));
         parking.pixelated(state);
@@ -1408,8 +1502,12 @@
         state.group.clearLayers();
 
         if (state.saved) {
+            let lens = parkingGeometry.lens(state.saved.lensDistortion, state.saved.frameWidth, state.saved.frameHeight);
+
             state.saved.areas.forEach((area, i) => {
-                let polygon = L.polygon(area.imagePoints.map(p => [ -p.v * f.height, p.u * f.width ]), {
+                // straight on the plane, curved on the frame when there is a lens distortion
+                let outline = parkingGeometry.frameCurve(lens, area.imagePoints.map(p => [ p.u, p.v ]));
+                let polygon = L.polygon(outline.map(([ u, v ]) => [ -v * f.height, u * f.width ]), {
                     color: parking.colors[i % parking.colors.length],
                     weight: 2,
                     fillOpacity: 0.05,
@@ -1435,8 +1533,9 @@
             return null;
         }
 
-        let a = parkingGeometry.apply(h, c.u1, c.v1);
-        let b = parkingGeometry.apply(h, c.u2, c.v2);
+        let lens = modules.addresses.parking.lens(state);
+        let a = parkingGeometry.toPlane(h, lens, c.u1, c.v1);
+        let b = parkingGeometry.toPlane(h, lens, c.u2, c.v2);
 
         if (!(a[2] > 0) || !(b[2] > 0)) {
             return null;
@@ -1627,9 +1726,13 @@
         // mode banner
 
         if (state.mode) {
-            let left = { area: 4, calibration: 4, check: 2 }[state.mode] - state.pending.length;
-            let key = { area: "parkingModeArea", calibration: "parkingModeCalibration", check: "parkingModeCheck" }[state.mode];
-            h += `<div class="alert alert-info p-2 mb-2">${i18n("addresses." + key, left)}<div class="mt-1">${textButton("cancelMode", "fas fa-times", i18n("cancel"), "btn-light")}</div></div>`;
+            let left = Math.max(0, { area: 4, calibration: 4, check: 2, line: 3 }[state.mode] - state.pending.length);
+            let key = { area: "parkingModeArea", calibration: "parkingModeCalibration", check: "parkingModeCheck", line: "parkingModeLine" }[state.mode];
+            h += `<div class="alert alert-info p-2 mb-2">${i18n("addresses." + key, left)}<div class="mt-1">`;
+            if (state.mode == "line") {
+                h += textButton("finishLine", "fas fa-check", i18n("addresses.parkingFinishLine"), "btn-success", state.pending.length < 3);
+            }
+            h += `${textButton("cancelMode", "fas fa-times", i18n("cancel"), "btn-light")}</div></div>`;
         }
 
         // toolbar
@@ -1712,6 +1815,36 @@
                 h += `</div>`;
             }
             h += `</div>`;
+        }
+
+        // lens distortion
+
+        h += `<div class="font-weight-bold mt-3 mb-1">${i18n("addresses.parkingLens")}</div>`;
+        h += `<div class="small text-muted mb-1">${i18n("addresses.parkingLensHint")}</div>`;
+
+        let lines = d.straightLines || [];
+
+        if (lines.length) {
+            lines.forEach((line, i) => {
+                h += `<div class="form-row align-items-center mb-1">`;
+                h += `<div class="col-10 small"><i class="fas fa-fw fa-minus mr-1" style="color: #20c997;"></i>${i18n("addresses.parkingLine", i + 1)}, ${i18n("addresses.parkingLinePoints", line.length)}</div>`;
+                h += `<div class="col-2">${state.editable ? button("deleteLine", "fas fa-times", i18n("addresses.parkingDeleteLine"), "btn-light", !!state.mode, i) : ""}</div>`;
+                h += `</div>`;
+            });
+
+            if (a.straightLines.length) {
+                h += `<div class="small mb-1">${i18n("addresses.parkingLensDistortion", a.lensDistortion)}`;
+                if (a.residualCurvature !== null) {
+                    h += `, ${i18n("addresses.parkingResidualCurvature", a.residualCurvature.toFixed(1))}`;
+                }
+                h += `</div>`;
+            }
+        } else {
+            h += `<div class="text-muted small mb-1">${i18n("addresses.parkingNoLines")}</div>`;
+        }
+
+        if (state.editable) {
+            h += textButton("addLine", "fas fa-grip-lines", i18n("addresses.parkingAddLine"), "btn-light", !!state.mode || lines.length >= parkingGeometry.MAX_STRAIGHT_LINES);
         }
 
         // calibration

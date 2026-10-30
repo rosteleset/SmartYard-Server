@@ -1,7 +1,7 @@
 <?php
 
 // occupancy result of a processed frame from the parking occupancy service:
-// { cameraId, revision, frameWidth, frameHeight, freeSpaces: [ { parkingAreaId, spaces: [ [ { x, y } x 4 ] ] } ], frame: base64 JPEG }
+// { cameraId, revision, frameWidth, frameHeight, freeSpaces: [ { parkingAreaId, spaces: [ [ { x, y } x 4.. ] ] } ], frame: base64 image (JPEG, PNG, BMP or WebP) }
 // 200 - stored, 204 - discarded (computed with an outdated revision), 400 - invalid result
 
 $parking = loadBackend("parking");

@@ -23,17 +23,21 @@ function snapshot(name, change) {
     assert.ok(a.ready, `${name} is ready`);
     return {
         confidenceThreshold: a.confidenceThreshold,
+        frame: {width: a.frameWidth, height: a.frameHeight},
+        lensDistortion: a.lensDistortion,
         calibration: {homography: a.homography},
         areas: a.areas.map((area, i) => Object.assign({}, area, {parkingAreaId: i + 1, enabled: !!area.enabled})),
     };
 }
+
+const lens = s => g.lens(s.lensDistortion, s.frame.width, s.frame.height);
 
 // a FALPRS detection of a vehicle standing on the plane: rectangle given by its metric corners
 function vehicle(s, corners, extra) {
     const hi = g.invert(s.calibration.homography);
     const flat = [];
     for (const [x, y] of corners) {
-        const [u, v] = g.apply(hi, x, y);
+        const [u, v] = g.toFrame(hi, lens(s), x, y);
         flat.push(u * FRAME.width, v * FRAME.height);
     }
     return Object.assign({classId: 2, className: 'car', confidence: 0.9, box: [0, 0, 0, 0], angle: 0, corners: flat}, extra);
@@ -42,8 +46,9 @@ function vehicle(s, corners, extra) {
 // axis-aligned vehicle on the 25 x 5 row of the "cars" fixture: s along the base edge, t inwards
 const car = (s, s0, s1, t0 = 0.3, t1 = 4.7, extra) => vehicle(s, [[s0, t0], [s1, t0], [s1, t1], [s0, t1]], extra);
 
-const metric = (s, points) => points.map(p => {
-    const [x, y] = g.apply(s.calibration.homography, p.x / FRAME.width, p.y / FRAME.height);
+// corners of a free space on the plane; with a lens distortion it is its outline on the frame, CURVE_SEGMENTS points per side
+const metric = (s, points) => points.filter((p, i) => points.length == 4 || i % g.CURVE_SEGMENTS == 0).map(p => {
+    const [x, y] = g.toPlane(s.calibration.homography, lens(s), p.x / FRAME.width, p.y / FRAME.height);
     return [x, y];
 });
 
@@ -77,7 +82,7 @@ function checkInvariants(s, detections, result) {
                 if (d.confidence < s.confidenceThreshold) {
                     continue;
                 }
-                const footprint = [0, 1, 2, 3].map(k => g.apply(s.calibration.homography, d.corners[2 * k] / FRAME.width, d.corners[2 * k + 1] / FRAME.height).slice(0, 2));
+                const footprint = [0, 1, 2, 3].map(k => g.toPlane(s.calibration.homography, lens(s), d.corners[2 * k] / FRAME.width, d.corners[2 * k + 1] / FRAME.height).slice(0, 2));
                 assert.ok(!g.convexOverlap(space, footprint, 1e-6), 'no intersection with a footprint');
             }
         });
@@ -264,7 +269,7 @@ test('invariants hold for random vehicles', () => {
     let seed = 7;
     const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     let reduced = 0, moved = 0;
-    for (const name of ['cars', 'angled 25x6, 2.5x5, 45deg', 'parallel', 'several areas']) {
+    for (const name of ['cars', 'angled 25x6, 2.5x5, 45deg', 'parallel', 'several areas', 'distorted camera with straight lines']) {
         const s = snapshot(name);
         for (let trial = 0; trial < 200; trial++) {
             const detections = [];
@@ -295,4 +300,39 @@ test('nothing without a calibration or a frame size, detections beyond the horiz
     const sky = {classId: 2, className: 'car', confidence: 0.9, box: [0, 0, 0, 0], angle: 0, corners: [800, 0, 1100, 0, 1100, 20, 800, 20]};
     assert.equal(run(s, [sky])[0].spaces.length, 10);
     assert.equal(run(s, [{confidence: 0.9, corners: [1, 2, 3]}])[0].spaces.length, 10, 'malformed detection');
+});
+
+test('a distorted camera: an empty area yields its capacity, spaces are curves on the frame', () => {
+    const s = snapshot('distorted camera with straight lines');
+    assert.equal(s.lensDistortion, -0.25);
+    const result = run(s, []);
+    assert.equal(result[0].spaces.length, 10);
+    for (const points of result[0].spaces) {
+        assert.equal(points.length, 4 * g.CURVE_SEGMENTS);
+    }
+    const x = starts(s, result[0].spaces);
+    x.forEach((v, k) => assert.ok(Math.abs(v - 2.5 * k) < 1e-6, `space ${k} at ${v}`));
+    checkInvariants(s, [], result);
+    // every point of the outline lies on the plane on a straight side of the space
+    for (const points of result[0].spaces) {
+        const corners = metric(s, points);
+        points.forEach((p, i) => {
+            const a = corners[Math.floor(i / g.CURVE_SEGMENTS)], b = corners[(Math.floor(i / g.CURVE_SEGMENTS) + 1) % 4];
+            const [x, y] = g.toPlane(s.calibration.homography, lens(s), p.x / FRAME.width, p.y / FRAME.height);
+            const distance = ((b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0])) / Math.hypot(b[0] - a[0], b[1] - a[1]);
+            assert.ok(Math.abs(distance) < 1e-6, `point ${i} is ${distance} m off the side`);
+        });
+    }
+});
+
+test('a distorted camera: vehicles take places where they stand on the plane', () => {
+    const s = snapshot('distorted camera with straight lines');
+    // vehicles at both ends of the row, where the distortion is the strongest
+    const result = run(s, [car(s, 0.2, 2.3), car(s, 22.7, 24.8)]);
+    assert.equal(result[0].spaces.length, 8);
+    const x = starts(s, result[0].spaces);
+    assert.ok(x[0] >= 2.3 - 1e-6 && x[x.length - 1] + 2.5 <= 22.7 + 1e-6, `${x}`);
+    // the same vehicles seen without the distortion would be placed elsewhere
+    const naive = run(Object.assign({}, s, {lensDistortion: 0}), [car(s, 0.2, 2.3), car(s, 22.7, 24.8)]);
+    assert.notDeepEqual(naive, result);
 });

@@ -8,10 +8,47 @@ const {test} = require('node:test');
 
 const geometry = require('../server/services/parking/geometry.js');
 const {createService, isStale} = require('../server/services/parking/service.js');
-const {jpegSize} = require('../server/services/parking/jpeg.js');
+const {imageInfo} = require('../server/services/parking/image.js');
 
 const fixtures = JSON.parse(fs.readFileSync(path.join(__dirname, 'parking_fixtures.json'), 'utf8')).cases;
 const plain = value => JSON.parse(JSON.stringify(value));
+
+// headers of other formats the service reads the size from
+const png = (width, height) => {
+    const b = Buffer.alloc(33);
+    Buffer.from('\x89PNG\r\n\x1a\n', 'latin1').copy(b, 0);
+    b.writeUInt32BE(13, 8);
+    b.write('IHDR', 12, 'latin1');
+    b.writeUInt32BE(width, 16);
+    b.writeUInt32BE(height, 20);
+    return b;
+};
+const bmp = (width, height) => {
+    const b = Buffer.alloc(54);
+    b.write('BM', 0, 'latin1');
+    b.writeUInt32LE(40, 14);
+    b.writeInt32LE(width, 18);
+    b.writeInt32LE(-height, 22);
+    return b;
+};
+const webp = (chunk, width, height) => {
+    const b = Buffer.alloc(30);
+    b.write('RIFF', 0, 'latin1');
+    b.write('WEBP', 8, 'latin1');
+    b.write(chunk, 12, 'latin1');
+    if (chunk === 'VP8 ') {
+        b[23] = 0x9d; b[24] = 0x01; b[25] = 0x2a;
+        b.writeUInt16LE(width, 26);
+        b.writeUInt16LE(height, 28);
+    } else if (chunk === 'VP8L') {
+        b[20] = 0x2f;
+        b.writeUInt32LE((width - 1) | ((height - 1) << 14), 21);
+    } else {
+        b.writeUIntLE(width - 1, 24, 3);
+        b.writeUIntLE(height - 1, 27, 3);
+    }
+    return b;
+};
 
 // the smallest JPEG header the service reads the size from: SOI, APP0, SOF0
 function jpeg(width, height, tag = 0) {
@@ -29,6 +66,7 @@ function revision(number, change) {
         snapshotVersion: 1, layoutVersion: 1, cameraId: 7, enabled: true,
         detectionImageSize: a.detectionImageSize, confidenceThreshold: a.confidenceThreshold, processingInterval: null,
         frame: {width: 1920, height: 1080},
+        straightLines: a.straightLines, lensDistortion: a.lensDistortion, residualCurvature: a.residualCurvature,
         calibration: {model: 'homography', homography: a.homography},
         areas: a.areas.map((area, i) => Object.assign({}, area, {parkingAreaId: 11 + i, enabled: !!area.enabled})),
         revision: number, ready: true,
@@ -84,6 +122,7 @@ async function world(t) {
         statusStatus: 200,
         falprsRequests: [],
         falprsFrames: [],
+        falprsTypes: [],
         detections: [],
         falprsStatus: 200,
     };
@@ -116,6 +155,7 @@ async function world(t) {
         w.falprsRequests.push({url: req.url, body, authorization: req.headers.authorization});
         // FALPRS fetches the image itself
         const image = await fetch(body.screenshotUrl);
+        w.falprsTypes.push(image.headers.get('content-type'));
         w.falprsFrames.push(image.status === 200 ? Buffer.from(await image.arrayBuffer()) : image.status);
         if (w.falprsStatus !== 200) {
             return send(res, w.falprsStatus, {code: String(w.falprsStatus), message: 'Failed to fetch image from parameter screenshotUrl'});
@@ -137,11 +177,21 @@ async function world(t) {
     return w;
 }
 
-test('the JPEG size is read from the header', () => {
-    assert.deepEqual(jpegSize(jpeg(1920, 1080)), {width: 1920, height: 1080});
-    assert.deepEqual(jpegSize(jpeg(704, 576)), {width: 704, height: 576});
-    assert.equal(jpegSize(Buffer.from('not a jpeg')), null);
-    assert.equal(jpegSize(Buffer.from([0xff, 0xd8, 0xff])), null);
+test('the type and size of a frame are read from its header', () => {
+    const size = buffer => {
+        const i = imageInfo(buffer);
+        return i && [i.mime, i.extension, i.width, i.height];
+    };
+    assert.deepEqual(size(jpeg(1920, 1080)), ['image/jpeg', 'jpg', 1920, 1080]);
+    assert.deepEqual(size(jpeg(704, 576)), ['image/jpeg', 'jpg', 704, 576]);
+    assert.deepEqual(size(png(1280, 720)), ['image/png', 'png', 1280, 720]);
+    assert.deepEqual(size(bmp(640, 480)), ['image/bmp', 'bmp', 640, 480]);
+    for (const chunk of ['VP8 ', 'VP8L', 'VP8X']) {
+        assert.deepEqual(size(webp(chunk, 2560, 1440)), ['image/webp', 'webp', 2560, 1440], chunk);
+    }
+    assert.equal(imageInfo(Buffer.from('not an image')), null);
+    assert.equal(imageInfo(Buffer.from([0xff, 0xd8, 0xff])), null);
+    assert.equal(imageInfo(png(0, 720)), null);
 });
 
 test('one cycle: FALPRS detects on the same frame, the result goes to the server', async t => {
@@ -214,7 +264,7 @@ test('failures of a cycle are reported, not thrown', async t => {
     assert.equal((await service.processCamera(7)).status, 'cameraUnavailable');
     w.camshotStatus = 200;
     w.frames[7] = Buffer.from('<html>');
-    assert.equal((await service.processCamera(7)).status, 'cameraUnavailable', 'not a JPEG');
+    assert.equal((await service.processCamera(7)).status, 'cameraUnavailable', 'not an image');
     w.frames[7] = jpeg(1920, 1080);
     w.falprsStatus = 400;
     const failed = await service.processCamera(7);
@@ -475,4 +525,19 @@ test('POST /process/:cameraId processes the camera and answers its outcome', asy
 
     assert.equal((await fetch(`${w.config.frameBaseUrl}/process/8`, {method: 'POST'})).status, 404, 'not to be processed');
     assert.equal((await fetch(`${w.config.frameBaseUrl}/process/7`)).status, 404, 'POST only');
+});
+
+test('a PNG frame is served to FALPRS as a PNG', async t => {
+    const w = await world(t);
+    w.cameras = [];
+    w.frames[7] = png(1920, 1080);
+    const service = createService({config: w.config, geometry, log() {}});
+    await service.start();
+    const outcome = await service.processCamera(7);
+    await service.stop();
+    assert.equal(outcome.status, 'ok', outcome.reason);
+    assert.match(w.falprsRequests[0].body.screenshotUrl, /\.png$/);
+    assert.ok(w.falprsFrames[0].equals(w.frames[7]), 'FALPRS got the PNG as is');
+    assert.equal(w.falprsTypes[0], 'image/png');
+    assert.ok(Buffer.from(w.results[0].frame, 'base64').equals(w.frames[7]), 'and so does the server');
 });

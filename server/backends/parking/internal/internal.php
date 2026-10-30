@@ -86,6 +86,7 @@
                     "processingInterval" => $c["processing_interval"] !== null ? (int)$c["processing_interval"] : null,
                     "frameWidth" => (int)$c["frame_width"],
                     "frameHeight" => (int)$c["frame_height"],
+                    "straightLines" => json_decode($c["straight_lines"], true),
                     "calibration" => $points !== null ? [
                         "model" => $c["calibration_model"],
                         "points" => $points,
@@ -122,6 +123,8 @@
 
                 $config["homography"] = $c["homography"] !== null ? array_map("floatval", explode(",", trim($c["homography"], "{}"))) : null;
                 $config["calibrationError"] = $c["calibration_error"] !== null ? (float)$c["calibration_error"] : null;
+                $config["lensDistortion"] = (float)$c["lens_distortion"];
+                $config["residualCurvature"] = $c["residual_curvature"] !== null ? (float)$c["residual_curvature"] : null;
                 $config["layoutVersion"] = geometry::LAYOUT_VERSION;
                 $config["revision"] = (int)$c["revision"];
                 $config["updatedAt"] = $c["updated_at"];
@@ -196,6 +199,9 @@
                         "frame_height" => $analysis["frameHeight"],
                         "calibration_points" => $calibration ? json_encode($calibration["points"]) : null,
                         "calibration_checks" => json_encode($calibration ? $calibration["checks"] : []),
+                        "straight_lines" => json_encode($analysis["straightLines"]),
+                        "lens_distortion" => $analysis["lensDistortion"],
+                        "residual_curvature" => $analysis["residualCurvature"],
                         "homography" => $homography,
                         "calibration_error" => $analysis["calibrationError"],
                         "revision" => $revision,
@@ -204,10 +210,10 @@
 
                     if ($current) {
                         $configId = (int)$current["parking_config_id"];
-                        $statement = $this->db->prepare("update parking_configs set enabled = :enabled, detection_image_size = :detection_image_size, confidence_threshold = :confidence_threshold, processing_interval = :processing_interval, frame_width = :frame_width, frame_height = :frame_height, calibration_points = :calibration_points, calibration_checks = :calibration_checks, homography = :homography, calibration_error = :calibration_error, revision = :revision, updated_at = now(), updated_by = :updated_by where parking_config_id = :parking_config_id");
+                        $statement = $this->db->prepare("update parking_configs set enabled = :enabled, detection_image_size = :detection_image_size, confidence_threshold = :confidence_threshold, processing_interval = :processing_interval, frame_width = :frame_width, frame_height = :frame_height, calibration_points = :calibration_points, calibration_checks = :calibration_checks, straight_lines = :straight_lines, lens_distortion = :lens_distortion, residual_curvature = :residual_curvature, homography = :homography, calibration_error = :calibration_error, revision = :revision, updated_at = now(), updated_by = :updated_by where parking_config_id = :parking_config_id");
                         $statement->execute($values + [ "parking_config_id" => $configId ]);
                     } else {
-                        $statement = $this->db->prepare("insert into parking_configs (camera_id, enabled, detection_image_size, confidence_threshold, processing_interval, frame_width, frame_height, calibration_points, calibration_checks, homography, calibration_error, revision, updated_by) values (:camera_id, :enabled, :detection_image_size, :confidence_threshold, :processing_interval, :frame_width, :frame_height, :calibration_points, :calibration_checks, :homography, :calibration_error, :revision, :updated_by) returning parking_config_id");
+                        $statement = $this->db->prepare("insert into parking_configs (camera_id, enabled, detection_image_size, confidence_threshold, processing_interval, frame_width, frame_height, calibration_points, calibration_checks, straight_lines, lens_distortion, residual_curvature, homography, calibration_error, revision, updated_by) values (:camera_id, :enabled, :detection_image_size, :confidence_threshold, :processing_interval, :frame_width, :frame_height, :calibration_points, :calibration_checks, :straight_lines, :lens_distortion, :residual_curvature, :homography, :calibration_error, :revision, :updated_by) returning parking_config_id");
                         $statement->execute($values + [ "camera_id" => $cameraId ]);
                         $configId = (int)$statement->fetchColumn();
                     }
@@ -268,6 +274,10 @@
                         "confidenceThreshold" => $analysis["confidenceThreshold"],
                         "processingInterval" => $analysis["processingInterval"],
                         "frame" => [ "width" => $analysis["frameWidth"], "height" => $analysis["frameHeight"] ],
+                        // the lens distortion is kept apart from the calibration: it is fitted to the straight lines even without one
+                        "straightLines" => $analysis["straightLines"],
+                        "lensDistortion" => $analysis["lensDistortion"],
+                        "residualCurvature" => $analysis["residualCurvature"],
                         "calibration" => $calibration ? [
                             "model" => $calibration["model"],
                             "homography" => $analysis["homography"],
@@ -424,7 +434,9 @@
                     return $this->fail("unknown", "noId");
                 }
 
-                if (!self::validResult($result) || !is_string($frame) || $frame === "") {
+                $type = self::frameType($frame);
+
+                if (!self::validResult($result) || !$type) {
                     return $this->fail("parkingInvalidResult", "parkingInvalidResult");
                 }
 
@@ -447,8 +459,8 @@
                 }
 
                 try {
-                    $uuid = $files->addFile("parking_" . $cameraId . ".jpg", $files->contentsToStream($frame), [
-                        "contentType" => "image/jpeg",
+                    $uuid = $files->addFile("parking_" . $cameraId . "." . $type["extension"], $files->contentsToStream($frame), [
+                        "contentType" => $type["mime"],
                         "storage" => $this->storage(),
                         "parkingCameraId" => (int)$cameraId,
                         // a frame lost between upload and commit is removed by the files backend
@@ -565,13 +577,16 @@
 
                 if ($withFrame) {
                     $result["frame"] = null;
+                    $result["frameType"] = null;
 
                     try {
                         $files = loadBackend("files");
                         $stream = $files ? $files->getFileStream($r["frame_uuid"]) : false;
 
                         if ($stream) {
-                            $result["frame"] = base64_encode(stream_get_contents($stream));
+                            $frame = stream_get_contents($stream);
+                            $result["frame"] = base64_encode($frame);
+                            $result["frameType"] = self::frameType($frame)["mime"] ?? null;
                         }
                     } catch (\Throwable $error) {
                         // the frame is gone (e.g. tmpfs after a reboot): the next cycle brings a new one
@@ -638,6 +653,10 @@
                     $freeSpaces[$item["parkingAreaId"]] = array_merge($freeSpaces[$item["parkingAreaId"]] ?? [], $item["spaces"]);
                 }
 
+                // the distortion is relative to the reference frame, the result frame has the same aspect ratio
+                $reference = json_decode($r["reference_frame"], true);
+                $lens = geometry::lens(json_decode($r["lens_distortion"] ?? "0", true), (int)$reference["width"], (int)$reference["height"]);
+
                 $areas = [];
 
                 // free spaces of an area missing from the revision are left out
@@ -649,7 +668,8 @@
                     $areas[] = [
                         "name" => $area["name"],
                         "capacity" => (int)$area["capacity"],
-                        "points" => array_map(fn ($p) => [ "x" => $p["u"] * $width, "y" => $p["v"] * $height ], $area["imagePoints"]),
+                        // straight on the plane, curved on the frame when there is a lens distortion
+                        "points" => array_map(fn ($p) => [ "x" => $p[0] * $width, "y" => $p[1] * $height ], geometry::frameCurve($lens, array_map(fn ($p) => [ $p["u"], $p["v"] ], $area["imagePoints"]))),
                         "freeSpaces" => $freeSpaces[$area["parkingAreaId"]] ?? [],
                     ];
                 }
@@ -712,7 +732,7 @@
                     return [];
                 }
 
-                $columns = $detail ? ", pr.frame_width, pr.frame_height, pr.free_spaces, rr.snapshot->'areas' areas" : "";
+                $columns = $detail ? ", pr.frame_width, pr.frame_height, pr.free_spaces, rr.snapshot->'areas' areas, rr.snapshot->'frame' reference_frame, rr.snapshot->'lensDistortion' lens_distortion" : "";
 
                 // totals come from the revision of the result, which may be older than the current one
                 $results = $this->db->get("
@@ -970,7 +990,8 @@
                     }
 
                     foreach ($area["spaces"] as $space) {
-                        if (!is_array($space) || !array_is_list($space) || count($space) != 4) {
+                        // four corners, or the outline as it lies on the frame when there is a lens distortion
+                        if (!is_array($space) || !array_is_list($space) || count($space) < 4 || count($space) > 4 * geometry::CURVE_SEGMENTS) {
                             return false;
                         }
 

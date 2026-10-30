@@ -42,7 +42,9 @@ foreach ($fixtures['cases'] as $case) {
         }
 
         foreach ($expect['parameters'] ?? [] as $key => $value) {
-            check($result[$key] === $value, "$key " . json_encode($result[$key]));
+            // JSON doesn't tell 0 from 0.0
+            $same = is_float($result[$key]) && is_int($value) ? $result[$key] == $value : $result[$key] === $value;
+            check($same, "$key " . json_encode($result[$key]));
         }
 
         if (array_key_exists('baseEdge', $expect)) {
@@ -133,6 +135,29 @@ $tests = [
         $area = [ [ 0, 0 ], [ 25, 0 ], [ 25, 5 ], [ 0, 5 ] ];
         $rotated = [ $area[1], $area[2], $area[3], $area[0] ];
         check(geometry::layout($area, 0, 2.5, 5, 0)['capacity'] === geometry::layout($rotated, 3, 2.5, 5, 0)['capacity'], 'rotation');
+    },
+    'lens distortion: undistort and distort are inverse over the frame' => function () {
+        foreach ([ -0.9, -0.25, 0, 0.3, 0.9 ] as $k) {
+            $lens = geometry::lens($k, 1920, 1080);
+            for ($u = 0; $u <= 1; $u += 0.125) {
+                for ($v = 0; $v <= 1; $v += 0.125) {
+                    [ $uu, $vv ] = geometry::undistort($lens, $u, $v);
+                    [ $u2, $v2 ] = geometry::distort($lens, $uu, $vv);
+                    check(abs($u2 - $u) < 1e-9 && abs($v2 - $v) < 1e-9, "round trip $k $u $v");
+                }
+            }
+        }
+    },
+    'lens distortion: frame curve keeps the vertices' => function () {
+        $lens = geometry::lens(-0.25, 1920, 1080);
+        $points = [ [ 0.1, 0.9 ], [ 0.9, 0.9 ], [ 0.8, 0.6 ], [ 0.2, 0.6 ] ];
+        $curve = geometry::frameCurve($lens, $points);
+        check(count($curve) == 4 * geometry::CURVE_SEGMENTS, 'densified');
+        foreach ($points as $i => $p) {
+            $c = $curve[$i * geometry::CURVE_SEGMENTS];
+            check(abs($c[0] - $p[0]) < 1e-9 && abs($c[1] - $p[1]) < 1e-9, "vertex $i");
+        }
+        check(geometry::frameCurve(geometry::lens(0, 1920, 1080), $points) === $points, 'no distortion');
     },
     'invalid input' => function () {
         check(geometry::analyze(null)['valid'] === false, 'null');

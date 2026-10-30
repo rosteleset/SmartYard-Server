@@ -1,6 +1,6 @@
 <?php
 
-// current frame of a camera for the parking occupancy service, JPEG
+// current frame of a camera for the parking occupancy service: JPEG, PNG, BMP or WebP with its type
 
 $camera_id = $param ?? null;
 
@@ -9,8 +9,9 @@ if (!checkInt($camera_id) || $camera_id <= 0) {
 }
 
 $cameras = loadBackend("cameras");
+$parking = loadBackend("parking");
 
-if (!$cameras) {
+if (!$cameras || !$parking) {
     response(500);
 }
 
@@ -26,7 +27,14 @@ if ($snapshot === null) {
     response(503);
 }
 
-header("Content-Type: image/jpeg");
+$type = $parking->frameType($snapshot);
+
+// the camera answered with something that is not a frame the parking can work with
+if (!$type) {
+    response(502);
+}
+
+header("Content-Type: " . $type["mime"]);
 echo $snapshot;
 
 exit;

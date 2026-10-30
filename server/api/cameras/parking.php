@@ -35,7 +35,12 @@
      * @apiBody {Number} [processingInterval] processing interval override in seconds, null for the global one, at least minInterval
      * @apiBody {Number} frameWidth width of the frame used for markup, pixels
      * @apiBody {Number} frameHeight height of the frame used for markup, pixels
-     * @apiBody {Object} calibration null or { points: [ { u, v, x, y } ], checks: [ { u1, v1, u2, v2, length } ] }
+     * @apiBody {Object[][]} [straightLines] straight lines for the lens distortion: polylines [ { u, v } x 3..32 ], at most 16
+     * @apiBody {Object} calibration null or { points: [ { u, v, x, y } ], checks: [ { u1, v1, u2, v2, length } ] },
+     * the points and checks are on the raw (distorted) frame
+     *
+     * the lens distortion (lensDistortion) and the residual curvature (residualCurvature) are computed by the server
+     * from straightLines and returned with the configuration
      * @apiBody {Object[]} areas [ { parkingAreaId, name, enabled, imagePoints: [ { u, v } x 4 ], baseEdge, spaceWidth, spaceLength, spaceAngle } ]
      *
      * @apiSuccess {Object} parking saved configuration
@@ -111,7 +116,7 @@
 
                 $config = [];
 
-                foreach ([ "revision", "enabled", "detectionImageSize", "confidenceThreshold", "processingInterval", "frameWidth", "frameHeight", "calibration", "areas" ] as $key) {
+                foreach ([ "revision", "enabled", "detectionImageSize", "confidenceThreshold", "processingInterval", "frameWidth", "frameHeight", "straightLines", "calibration", "areas" ] as $key) {
                     if (array_key_exists($key, $params)) {
                         $config[$key] = $params[$key];
                     }
