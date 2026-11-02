@@ -6,5 +6,10 @@
     "eventServer": "racs1101",
     "outputs": 2,
     "useSmartConfigurator": true,
-    "cmses": []
+    "cmses": [],
+    "monitoring": {
+        "zabbix": {
+            "template": "Controller_RUBETEK"
+        }
+    }
 }

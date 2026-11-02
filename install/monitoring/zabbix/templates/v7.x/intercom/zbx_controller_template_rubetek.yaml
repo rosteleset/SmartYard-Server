@@ -1,0 +1,52 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: e858e071fe054cdabec002d7d99891e9
+      name: Templates/Intercoms
+  templates:
+    - uuid: b82c5e1af9a44f519148428f43731975
+      template: Controller_RUBETEK
+      name: 'Controller | RUBETEK by TCP'
+      description: 'RUBETEK controller monitoring'
+      vendor:
+        name: SmartYard
+        version: 2026-11
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      items:
+        - uuid: 3359ba99d2974e18b87afd545047dcc4
+          name: 'RUBETEK Controller: TCP port status'
+          type: SIMPLE
+          key: 'net.tcp.service[tcp,,80]'
+          delay: 1m
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'Service availability'
+          tags:
+            - tag: component
+              value: network
+          triggers:
+            - uuid: a214b21903914265a87b566a9235623d
+              expression: 'max(/Controller_RUBETEK/net.tcp.service[tcp,,80],#3)=0'
+              name: 'TCP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'TCP Check unavailable but ICMP available'
+              dependencies:
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                  expression: 'max(/Controller_RUBETEK/icmpping,#3)=0'
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: rubetek
+      valuemaps:
+        - uuid: 216ba17405f5431d8f12c508c9e45efd
+          name: 'Service availability'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up

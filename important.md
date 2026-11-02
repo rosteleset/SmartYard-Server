@@ -30,6 +30,16 @@ To enable MQTT event processing for RACS-1101 on an existing installation:
 
 4. Run device autoconfiguration for each RACS-1101 to apply the MQTT connection settings.
 
+### Rubetek RACS-1101 monitoring
+
+To enable ICMP and API TCP port monitoring, add `Controller_RUBETEK` to
+`backends.monitoring.zbx_data_collection.intercom_template_names` in `/opt/rbt/server/config/config.json`,
+then import the templates for your Zabbix version:
+
+```bash
+php /opt/rbt/server/cli.php --init-monitoring-config
+```
+
 ## 2026-10-28
 
 ### Face clustering backend contract

@@ -17,7 +17,7 @@
 - fixed face clustering for flat owners to include faces of all flat subscribers
 + enabled AAC audio during initial configuration of legacy Sokol intercoms
 - fixed cameras disappearing from the mobile camera tree after their groups are deleted
-+ added MQTT event processing and event server autoconfiguration for Rubetek RACS-1101
++ added MQTT event processing and Zabbix monitoring for Rubetek RACS-1101
 ```
 
 ## v1.3.0
