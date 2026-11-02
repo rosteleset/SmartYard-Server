@@ -52,6 +52,12 @@
     "ufanet_mini": {
       "port": 45461
     },
+    "racs1101": {
+      "host": "0.0.0.0",
+      "port": 45462,
+      "username": "racs1101",
+      "password": "MAX_16_CHARS"
+    },
     "brovotech": {
       "port": 46450
     },

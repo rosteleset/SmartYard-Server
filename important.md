@@ -1,5 +1,35 @@
 # devel
 
+## 2026-11-02
+
+### Rubetek RACS-1101 events
+
+To enable MQTT event processing for RACS-1101 on an existing installation:
+
+1. Install the updated event service dependencies:
+
+   ```bash
+   cd /opt/rbt/server/services/event && npm install
+   ```
+
+2. Add `hw.racs1101` to `/opt/rbt/server/services/event/config.json` and `syslog_servers.racs1101`
+   to `/opt/rbt/server/config/config.json`, using the examples in
+   [event/config.sample.json](server/services/event/config.sample.json) and
+   [config.sample.json5](server/config/config.sample.json5).
+   Use matching MQTT credentials in both files. Use a password of at most 16 characters containing
+   only Latin letters, digits, `_` and `-`. Replace `127.0.0.1` with the server address reachable from
+   controllers. Allow TCP port `45462` only from the device network or VPN.
+
+3. Install and start the service:
+
+   ```bash
+   ln -sf /opt/rbt/install/systemd/event/event_racs1101.service /etc/systemd/system/event_racs1101.service
+   systemctl daemon-reload
+   systemctl enable --now event_racs1101.service
+   ```
+
+4. Run device autoconfiguration for each RACS-1101 to apply the MQTT connection settings.
+
 ## 2026-10-28
 
 ### Face clustering backend contract

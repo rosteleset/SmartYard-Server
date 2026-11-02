@@ -492,6 +492,9 @@
         "ufanet_mini": [
             "syslog.udp:127.0.0.1:45461",
         ],
+        "racs1101": [
+            "mqtt://racs1101:MAX_16_CHARS@127.0.0.1:45462",
+        ],
         "brovotech": [
             "syslog.udp:127.0.0.1:46450",
         ],

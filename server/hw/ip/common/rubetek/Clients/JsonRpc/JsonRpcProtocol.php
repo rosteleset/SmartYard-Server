@@ -23,7 +23,7 @@ final class JsonRpcProtocol
         }
 
         try {
-            return json_encode($request, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            return json_encode($request, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         } catch (JsonException $e) {
             throw new RuntimeException("Failed to encode JSON-RPC request $method", 0, $e);
         }

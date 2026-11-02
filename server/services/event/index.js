@@ -35,6 +35,7 @@ import {
     SERVICE_BROVOTECH,
     SERVICE_IFLOW,
     SERVICE_DAHUA,
+    SERVICE_RACS1101,
 } from "./constants.js";
 
 const { hw } = config;
@@ -131,6 +132,15 @@ switch (serviceParam) {
     case SERVICE_DAHUA:
         const dahuaService = new DahuaService(serviceConfig);
         dahuaService.start();
+        break;
+
+    case SERVICE_RACS1101:
+        import('./services/Racs1101Service.js')
+            .then(({ Racs1101Service }) => new Racs1101Service(SERVICE_RACS1101, serviceConfig).start())
+            .catch(error => {
+                console.error(error);
+                process.exitCode = 1;
+            });
         break;
 
     default:

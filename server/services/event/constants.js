@@ -26,3 +26,4 @@ export const SERVICE_BROVOTECH = "brovotech";
 export const SERVICE_IFLOW = "iflow";
 export const SERVICE_BASIP = "basip";
 export const SERVICE_DAHUA = "dahua";
+export const SERVICE_RACS1101 = "racs1101";

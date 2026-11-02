@@ -27,7 +27,7 @@ class racs1101 extends domophone implements FreePassInterface
     private const READER_MODE_NORMAL = 4;
     private const READER_MODE_INVERSE = 6;
 
-    private const TIME_SYNC_TOLERANCE = 30;
+    private const TIME_SYNC_TOLERANCE = 5;
     private const VIRTUAL_NTP_CONFIG = [
         'server' => '',
         'port' => 0,
@@ -43,6 +43,51 @@ class racs1101 extends domophone implements FreePassInterface
     private static function normalizeRfid(string $code): string
     {
         return strtoupper(ltrim($code, '0')) ?: '0';
+    }
+
+    private static function parseMqttUrl(string $url): array
+    {
+        $parts = parse_url($url);
+        $scheme = strtolower($parts['scheme'] ?? '');
+        if (!is_array($parts) || !in_array($scheme, ['mqtt', 'mqtts'], true)
+            || empty($parts['host']) || empty($parts['user']) || !isset($parts['pass'], $parts['port'])
+            || $parts['pass'] === '' || !in_array($parts['path'] ?? '', ['', '/'], true)
+            || isset($parts['query']) || isset($parts['fragment'])) {
+            throw new RuntimeException('RACS-1101 requires an MQTT URL with host, port, username and password');
+        }
+
+        $tls = $scheme === 'mqtts';
+        $port = $parts['port'];
+        if ($port < 1 || $port > 65535) {
+            throw new RuntimeException('Invalid RACS-1101 MQTT port');
+        }
+
+        $password = rawurldecode($parts['pass']);
+        if (strlen($password) > 16) {
+            throw new RuntimeException('RACS-1101 MQTT password must not exceed 16 bytes');
+        }
+
+        return [
+            'host' => strtolower($parts['host']),
+            'port' => $port,
+            'tls' => (int)$tls,
+            'user' => rawurldecode($parts['user']),
+            'pass' => $password,
+        ];
+    }
+
+    private static function formatMqttUrl(array $mqtt): string
+    {
+        if (($mqtt['host'] ?? '') === '') {
+            return '';
+        }
+
+        $scheme = empty($mqtt['tls']) ? 'mqtt' : 'mqtts';
+        $user = rawurlencode($mqtt['user'] ?? '');
+        $password = rawurlencode($mqtt['pass'] ?? '');
+        $host = strtolower($mqtt['host']);
+        $port = $mqtt['port'] ?? ($scheme === 'mqtts' ? 8883 : 1883);
+        return "$scheme://$user:$password@$host:$port";
     }
 
     public function addRfid(string $code, int $apartment = 0): void
@@ -83,7 +128,22 @@ class racs1101 extends domophone implements FreePassInterface
 
     public function configureEventServer(string $url): void
     {
-        // TODO: Implement configureEventServer() method.
+        $parsedUrl = self::parseMqttUrl($url);
+
+        $network = $this->apiCall('get_config', [
+            'var_list' => ['net.mqtt', 'net.eth', 'temp_net.eth'],
+        ])['var_list'];
+
+        $mqtt = array_replace($network['net.mqtt'], $parsedUrl);
+        if ($mqtt == $network['net.mqtt']) {
+            return;
+        }
+
+        if ($network['net.eth'] != $network['temp_net.eth']) {
+            throw new RuntimeException('RACS-1101 has pending Ethernet changes; refusing to apply them with MQTT');
+        }
+
+        $this->applyMqttConfig($mqtt, $network['net.eth']);
     }
 
     public function configureMatrix(array $matrix): void
@@ -354,8 +414,8 @@ class racs1101 extends domophone implements FreePassInterface
 
     protected function getEventServer(): string
     {
-        // TODO: Implement getEventServer() method.
-        return '';
+        $mqtt = $this->apiCall('get_config', ['var_list' => ['net.mqtt']])['var_list']['net.mqtt'];
+        return self::formatMqttUrl($mqtt);
     }
 
     protected function getMatrix(): array
@@ -452,6 +512,59 @@ class racs1101 extends domophone implements FreePassInterface
             $method,
             $this->getJsonRpcClient()->call($method, $params),
         );
+    }
+
+    private function applyMqttConfig(array $mqtt, array $ethernet): void
+    {
+        $this->apiCall('set_config', ['var_list' => ['temp_net' => ['mqtt' => $mqtt]]]);
+        $staged = $this->apiCall('get_config', ['var_list' => ['temp_net.mqtt']])['var_list']['temp_net.mqtt'];
+
+        if ($staged != $mqtt) {
+            throw new RuntimeException('RACS-1101 did not store the requested MQTT settings');
+        }
+
+        try {
+            $this->apiCall('try_net_config');
+        } catch (RuntimeException $e) {
+            if ($this->getWebSocket()->isConnected()) {
+                throw $e;
+            }
+        }
+
+        $this->getWebSocket()->disconnect();
+
+        // Testing network settings closes WebSocket; confirm them before the automatic rollback.
+        $deadline = microtime(true) + 45;
+        $lastError = null;
+
+        do {
+            sleep(1);
+
+            try {
+                $this->apiCall('apply_net_config');
+            } catch (RuntimeException $e) {
+                $lastError = $e;
+                $this->getWebSocket()->disconnect();
+            }
+
+            try {
+                $current = $this->apiCall('get_config', ['var_list' => ['net.mqtt', 'net.eth']])['var_list'];
+            } catch (RuntimeException $e) {
+                $lastError = $e;
+                $this->getWebSocket()->disconnect();
+                continue;
+            }
+
+            if ($current['net.eth'] != $ethernet) {
+                throw new RuntimeException('RACS-1101 Ethernet settings changed while applying MQTT');
+            }
+
+            if ($current['net.mqtt'] == $mqtt) {
+                return;
+            }
+        } while (microtime(true) < $deadline);
+
+        throw new RuntimeException('Failed to confirm RACS-1101 MQTT configuration', 0, $lastError);
     }
 
     /**

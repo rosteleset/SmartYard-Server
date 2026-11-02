@@ -1,0 +1,19 @@
+[Unit]
+Description=Event service for Rubetek RACS-1101 MQTT messages
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+SyslogIdentifier=event_racs1101
+Type=simple
+WorkingDirectory=/opt/rbt/server/services/event/
+ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js racs1101
+RestartSec=10
+Restart=always
+User=rbt
+Group=rbt
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
