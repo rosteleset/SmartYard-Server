@@ -114,6 +114,12 @@
                         "dozen" => "dozen",
                     ]);
 
+                    // Compute door code availability without changing the stored code
+                    $hasOpenCode = (int)$flat["openCode"] > 0;
+                    $isBlocked = $flat["manualBlock"] > 0 || $flat["adminBlock"] > 0 || $flat["autoBlock"] > 0;
+                    $allowOpenCodeWhenBlocked = $this->bconfig["allow_open_code_when_blocked"] ?? true;
+                    $flat["openCodeActive"] = $hasOpenCode && (!$isBlocked || $allowOpenCodeWhenBlocked);
+
                     $flat["entrances"] = [];
 
                     foreach ($entrances as $e) {

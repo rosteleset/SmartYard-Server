@@ -199,7 +199,7 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
 
                     $this->builder->addApartment(
                         $apartment,
-                        $flat['openCode'] ?: 0,
+                        ($flat['openCodeActive'] ?? true) ? (int)$flat['openCode'] : 0,
                         $this->entranceIsShared ? [$apartment] : [sprintf('1%09d', $flat['flatId'])],
                         !$this->entranceIsShared && $flat['cmsEnabled'],
                         $apartmentLevels,
