@@ -1578,7 +1578,7 @@ var parkingGeometry = (function () {
         free spaces of a revision snapshot on one processed frame
 
         snapshot: revision snapshot (calibration.homography, lensDistortion, frame, confidenceThreshold, areas with metricPoints and space parameters),
-        detections: FALPRS detectVehiclesObb objects { classId, className, confidence, box, angle, corners: [ x1, y1, ..., x4, y4 ] }
+        detections: FALPRS detectVehicleFootprints objects { classId, className, confidence, corners: [ x1, y1, ..., x4, y4 ], cuboid: [ x1, y1, ..., x8, y8 ] }
         with corners in pixels of the processed frame, frame: { width, height } of that frame in pixels
 
         detections below the confidence threshold are ignored (any class counts), the corners of every other one are mapped

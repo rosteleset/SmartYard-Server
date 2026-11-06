@@ -49,7 +49,7 @@
             const SPACE_ANGLE = [ -90, 90 ];
 
             const DETECTION_IMAGE_SIZE = [ 160, 1024 ];
-            const DEFAULT_DETECTION_IMAGE_SIZE = 320;
+            const DEFAULT_DETECTION_IMAGE_SIZE = 640;
             const CONFIDENCE_THRESHOLD = [ 0, 1 ];
             const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
             const MAX_PROCESSING_INTERVAL = 86400;

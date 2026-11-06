@@ -76,7 +76,7 @@ function createService(options) {
             headers["Authorization"] = `Bearer ${config.falprs.authToken}`;
         }
 
-        let response = await fetch(falprs + "detectVehiclesObb", {
+        let response = await fetch(falprs + "detectVehicleFootprints", {
             method: "POST",
             headers,
             body: JSON.stringify({
