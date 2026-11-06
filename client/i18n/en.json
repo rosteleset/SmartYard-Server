@@ -25,6 +25,7 @@
     "logoutAll": "Logout all sessions",
     "forgotMessage": "The password restoration link is sent to the specified mailing address",
     "filter": "Filter",
+    "filterCount": "%s of %s",
     "pager": "Showing %D entries from %D",
     "yes": "Yes",
     "no": "No",

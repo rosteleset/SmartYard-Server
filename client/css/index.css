@@ -1166,3 +1166,8 @@ body.dark-mode .rfid-preview-duplicate > td {
   background-color: rgba(255, 193, 7, 0.16) !important;
   color: #ffe69c !important;
 }
+
+.table-search-input.table-filter-active {
+  border-color: #17a2b8 !important;
+  background-color: rgba(23, 162, 184, .12) !important;
+}

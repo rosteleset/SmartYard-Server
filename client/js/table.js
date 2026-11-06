@@ -73,8 +73,9 @@ function cardTable(params) {
             filterInput = "filter-" + md5(guid());
             h += '<td>';
             h += `<div class="card-tools d-none d-md-block">`;
-            h += `<form id="${filterInput}-form" autocomplete="off" onsubmit="return false;" action="">`;
+            h += `<form id="${filterInput}-form" class="d-flex align-items-center" autocomplete="off" onsubmit="return false;" action="">`;
             h += `<input autocomplete="false" name="${filterInput}-hidden" type="text" style="display:none;">`;
+            h += `<span id="${filterInput}-count" class="text-info text-nowrap text-sm mr-2" style="display: none;" role="status" aria-live="polite"></span>`;
             h += `<div class="input-group input-group-sm" style="flex-wrap: nowrap!important;">`;
             h += `<input id="${filterInput}" type="text" class="form-control table-search-input" style="width: 200px!important;" placeholder="${i18n("filter")}">`;
             h += `<div class="input-group-append">`;
@@ -531,7 +532,13 @@ function cardTable(params) {
             rows = allRows;
         }
 
-        if (text) {
+        const active = typeof text === "string" && text.trim() !== "";
+        if (filterInput) {
+            $("#" + filterInput).toggleClass("table-filter-active", active);
+            $(`#${filterInput}-count`).toggle(active).text(active ? i18n("filterCount", rows.length, allRows.length) : "");
+        }
+
+        if (active) {
             $(`#${filterInput}-search-button`).children().first().removeClass("fa-filter").addClass("fa-x");
         } else {
             $(`#${filterInput}-search-button`).children().first().addClass("fa-filter").removeClass("fa-x");
