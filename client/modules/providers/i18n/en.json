@@ -9,7 +9,7 @@
     "tokenCommon": "Common Token",
     "tokenSms": "Token for sending SMS",
     "deleteProvider": "Delete provider?",
-    "confirmDeleteProvider": "Delete provider \"#%S\"?",
+    "confirmDeleteProvider": "Delete provider \"#%s\"?",
     "providerWasAdded": "Provider added",
     "providerWasChanged": "Provider changed",
     "providerWasDeleted": "Provider deleted",

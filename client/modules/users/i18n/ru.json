@@ -32,7 +32,7 @@
     "ip": "Адрес",
     "started": "Старт",
     "updated": "Обновление",
-    "dropSession": "Сбросить сессиию",
+    "dropSession": "Сбросить сессию",
     "sessions": "Сессии",
     "confirmDropSession": "Сбросить сессию?",
     "sessionType": "Тип сессии",

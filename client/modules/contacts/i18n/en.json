@@ -1,5 +1,5 @@
 {
-    "contact": "Conact",
+    "contact": "Contact",
     "contacts": "Contacts",
     "methods": {
         "companies": {
@@ -9,7 +9,7 @@
                 "GET": "View"
             },
             "company": {
-                "_title": "Conact",
+                "_title": "Contact",
                 "PUT": "Edit",
                 "POST": "Create",
                 "DELETE": "Delete"
