@@ -215,7 +215,7 @@
     "cmsU": "U",
     "domophones": "Intercoms",
     "addDomophone": "Add intercom",
-    "domophoneId": "Domophone",
+    "domophoneId": "#",
     "domophoneIdList": "#",
     "enabled": "Enabled",
     "model": "Model",

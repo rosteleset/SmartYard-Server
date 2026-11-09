@@ -1,6 +1,6 @@
 {
     "dvr": {
-        "videoReady": "Video is ready to be uploaded",
+        "videoReady": "Video is ready to download",
         "threeDays": "%s/cctv/download/%s\nAttention! Files on the server will be available for 3 days"
     },
 

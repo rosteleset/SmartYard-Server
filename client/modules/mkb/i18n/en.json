@@ -35,7 +35,7 @@
     "cardsAll": "All cards",
     "progress": "Progress",
     "archived": "Archived",
-    "showCounts": "Showing cards from %s to %s from %s",
+    "showCounts": "Showing cards %s to %s of %s",
     "searchResults": "Search results",
     "moveTo": "Move to",
     "desks": "Desks",

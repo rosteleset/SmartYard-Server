@@ -52,7 +52,7 @@
     "notificationSent": "Notification was sent",
     "avatar": "Avatar",
     "avatarLoad": "Load avatar",
-    "avatarClear": "Clear avatar",
+    "avatarClear": "Discard changes",
     "avatarApply": "Crop",
     "avatarDelete": "Delete avatar",
     "showPassword": "Show / hide password",

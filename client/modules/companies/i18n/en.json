@@ -14,8 +14,8 @@
     "modifyCompany": "Modify company",
     "deleteCompany": "Delete company",
     "confirmCompanyDelete": "Delete company \"#%s\"?",
-    "type1": "Typ1",
-    "type2": "Typ2",
+    "type1": "Management company",
+    "type2": "Homeowners association",
     "methods": {
         "companies": {
             "_title": "Companies",
