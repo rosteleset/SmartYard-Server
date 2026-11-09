@@ -221,7 +221,7 @@
                 $myRoles = $this->myRoles();
 
                 if ((int)$myRoles[$acr] < 80) {
-                    setLastError("insufficentRights");
+                    setLastError("insufficientRights");
                     return false;
                 }
 

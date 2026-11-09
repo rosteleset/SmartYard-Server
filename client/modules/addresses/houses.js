@@ -4429,7 +4429,7 @@
                                     if (flat) {
                                         a(flat);
                                     } else {
-                                        message(i18n("addresses.flatsWasAdded", flatsAdded));
+                                        message(i18n("addresses.flatsWereAdded", flatsAdded));
                                         modules.addresses.houses.renderHouse(params.houseId);
                                     }
                                 });

@@ -1180,7 +1180,7 @@
         }
 
         cardForm({
-            title: i18n("tt.projectForkflows"),
+            title: i18n("tt.projectWorkflows"),
             footer: true,
             borderless: true,
             noHover: true,

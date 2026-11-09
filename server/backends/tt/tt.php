@@ -1657,7 +1657,7 @@
                 $myRoles = $this->myRoles();
 
                 if ((int)$myRoles[$acr] < 50) {
-                    setLastError("insufficentRights");
+                    setLastError("insufficientRights");
                     return false;
                 }
 
@@ -1688,7 +1688,7 @@
                 $myRoles = $this->myRoles();
 
                 if ((int)$myRoles[$acr] < 30) {
-                    setLastError("insufficentRights");
+                    setLastError("insufficientRights");
                     return false;
                 }
 
@@ -1797,7 +1797,7 @@
                 $me = $this->myRoles();
 
                 if ((int)$me[$project] < 40) {
-                    setLastError("insufficentRights");
+                    setLastError("insufficientRights");
                     return false;
                 }
 
@@ -1881,7 +1881,7 @@
                 $me = $this->myRoles();
 
                 if ((int)$me[$project] < 40) {
-                    setLastError("insufficentRights");
+                    setLastError("insufficientRights");
                     return false;
                 }
 

@@ -43,7 +43,7 @@
     "version": "Version",
     "users": "Users",
     "groups": "Groups",
-    "projectForkflows": "Project Workflows",
+    "projectWorkflows": "Project Workflows",
     "projectRoleId": "#",
     "roles": "Roles",
     "resolutionId": "#",

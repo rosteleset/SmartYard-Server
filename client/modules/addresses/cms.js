@@ -108,7 +108,7 @@
                                 cms: cmses,
                             }).
                             done(() => {
-                                message(i18n("addresses.changesWasSaved"));
+                                message(i18n("addresses.changesWereSaved"));
                                 modules.addresses.cms.renderEntranceCMS(houseId, entranceId);
                             }).
                             fail(FAIL).

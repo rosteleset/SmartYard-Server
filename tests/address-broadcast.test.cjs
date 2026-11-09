@@ -194,7 +194,7 @@ test('empty audiences and failed previews cannot start a broadcast', () => {
             assert.deepEqual(state.failures, ['preview error']);
         } else {
             state.queries[0].request.resolve({audience: {count: 0}});
-            assert.deepEqual(state.warnings, ['addresses.noSubscribersFond']);
+            assert.deepEqual(state.warnings, ['addresses.noSubscribersFound']);
         }
         assert.equal(state.forms.length, 0);
         assert.equal(state.posts.length, 0);

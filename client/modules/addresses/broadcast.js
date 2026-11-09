@@ -30,7 +30,7 @@
         done(result => {
             let count = result.audience.count;
             if (!count) {
-                warning(i18n("addresses.noSubscribersFond"));
+                warning(i18n("addresses.noSubscribersFound"));
                 return;
             }
 
