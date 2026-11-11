@@ -66,8 +66,11 @@
             overlay: null,
             group: null,
             active: null,
-            // index of the calibration corner moved by the keyboard
-            corner: null,
+            // the selected calibration node, moved by the keyboard: { kind, object, index },
+            // kind "corner" (a calibration corner), "point" (a point of the straight line object) or "end" (an end of the control segment object)
+            node: null,
+            // index of the selected straight line, its points can be moved
+            line: null,
             mode: null,
             pending: [],
             fitted: false,
@@ -100,9 +103,10 @@
         let h = "";
         // no gutters: the borderless form has no padding to absorb the negative margins of a row
         h += `<div class="row no-gutters">`;
-        h += `<div class="col-lg-8 mb-2"><div id="${prefix}parkingMap" style="height: 560px; background: #6c757d;"></div></div>`;
+        // the height is fitted to the dialog by resize()
+        h += `<div class="col-lg-8 parking-map-col mb-2"><div id="${prefix}parkingMap" style="height: 560px; background: #6c757d;"></div></div>`;
         // the form cell sets white-space: nowrap, the panel text must wrap
-        h += `<div class="col-lg-4 pl-lg-2 pr-3" id="${prefix}parkingPanel" style="max-height: 560px; overflow-y: auto; overflow-x: hidden; white-space: normal;"></div>`;
+        h += `<div class="col-lg-4 parking-panel-col pl-lg-2 pr-3" id="${prefix}parkingPanel" style="max-height: 560px; overflow-y: auto; overflow-x: hidden; white-space: normal;"></div>`;
         h += `</div>`;
 
         let container = $(`#${prefix}parkingArea`).html(h);
@@ -118,7 +122,48 @@
             parking.fieldChanged(state, el.attr("data-parking-field"), el.attr("type") == "checkbox" ? el.prop("checked") : el.val(), el.attr("data-index"));
         });
 
+        $(window).off(`resize.parking${prefix}`).on(`resize.parking${prefix}`, () => {
+            if (parking.states[prefix] === state) {
+                parking.resize(state);
+            }
+        });
+
         parking.renderPanel(state);
+    },
+
+    /**
+     * the dialog takes 80% of the window height on the parking tab: the map and the panel get what is left of it
+     * after the header, the tabs and the footer of the form, at least MIN_MAP_HEIGHT
+     */
+
+    MIN_MAP_HEIGHT: 400,
+
+    resize: function (state) {
+        let map = document.getElementById(state.prefix + "parkingMap");
+        let panel = document.getElementById(state.prefix + "parkingPanel");
+        let content = document.getElementById("modalBody");
+
+        // only while the tab is visible
+        if (!map || !panel || !content || !map.offsetWidth) {
+            return;
+        }
+
+        // on narrow screens the panel is below the map
+        let stacked = panel.offsetTop >= map.offsetTop + map.offsetHeight;
+        let rest = content.offsetHeight - map.offsetHeight - (stacked ? panel.offsetHeight : 0);
+
+        if (!isFinite(rest)) {
+            return;
+        }
+
+        let height = Math.max(modules.addresses.parking.MIN_MAP_HEIGHT, Math.floor(window.innerHeight * 0.8 - rest));
+
+        map.style.height = height + "px";
+        panel.style.maxHeight = height + "px";
+
+        if (state.map) {
+            state.map.invalidateSize();
+        }
     },
 
     /**
@@ -151,6 +196,8 @@
             return;
         }
 
+        parking.resize(state);
+
         if (!state.loaded && !state.loading) {
             parking.load(state);
         } else if (state.view == "result") {
@@ -182,6 +229,8 @@
         if (state) {
             modules.addresses.parking.stopResult(state);
         }
+
+        $(window).off(`resize.parking${prefix}`);
 
         if (state && state.map) {
             try {
@@ -424,6 +473,8 @@
         state.dirty = false;
         state.mode = null;
         state.pending = [];
+        state.node = null;
+        state.line = null;
 
         if (state.active !== null && (!state.draft || state.active >= state.draft.areas.length)) {
             state.active = null;
@@ -607,20 +658,20 @@
         return [ at(t0), at(t1) ];
     },
 
-    // a crosshair with an open center: the marked pixel stays visible, the number is aside
-    cornerIcon: function (index, selected) {
-        let color = selected ? "#ffc107" : "#e83e8c";
+    // a crosshair with an open center: the marked pixel stays visible, the label is aside
+    nodeIcon: function (label, selected, color) {
+        color = selected ? "#ffc107" : color;
         let arms = "M16 0V12M16 20V32M0 16H12M20 16H32";
         let svg = `<svg width="32" height="32" viewBox="0 0 32 32" style="display: block; overflow: visible;">` +
             `<path d="${arms}" stroke="#000" stroke-width="3" stroke-opacity="0.6"/>` +
             `<path d="${arms}" stroke="${color}" stroke-width="1"/>` +
             (selected ? `<circle cx="16" cy="16" r="9" fill="none" stroke="${color}" stroke-width="1"/>` : "") +
             `</svg>`;
-        let label = `<div style="position: absolute; left: 22px; top: -2px; min-width: 14px; padding: 0 3px; border-radius: 7px; background: ${color}; color: ${selected ? "#000" : "#fff"}; font-size: 10px; line-height: 14px; text-align: center;">${index + 1}</div>`;
+        let tag = label === null ? "" : `<div style="position: absolute; left: 22px; top: -2px; min-width: 14px; padding: 0 3px; border-radius: 7px; background: ${color}; color: ${selected ? "#000" : "#fff"}; font-size: 10px; line-height: 14px; text-align: center;">${label}</div>`;
 
         return L.divIcon({
             className: "",
-            html: svg + label,
+            html: svg + tag,
             iconSize: [ 32, 32 ],
             iconAnchor: [ 16, 16 ],
         });
@@ -642,23 +693,145 @@
         }
     },
 
-    selectCorner: function (state, index, center) {
-        let parking = modules.addresses.parking;
-        let points = state.draft && state.draft.calibration ? state.draft.calibration.points : null;
+    // calibration nodes
 
-        state.corner = (points && index !== null && points[index]) ? index : null;
-        parking.renderMap(state);
-        parking.focusMap(state);
+    // the center of the frame pixel under a point: calibration nodes always lie there
+    snap: function (state, p) {
+        let f = modules.addresses.parking.frame(state);
+        let center = (x, size) => (Math.min(size - 1, Math.max(0, Math.floor(x * size))) + 0.5) / size;
 
-        if (center && state.corner !== null) {
-            state.map.panTo(parking.toLatLng(state, points[state.corner]));
+        return { u: center(p.u, f.width), v: center(p.v, f.height) };
+    },
+
+    // the nodes of the object of a node as { u, v }, null if there is no such object
+    nodePoints: function (state, node) {
+        let d = state.draft;
+
+        if (!d || !node) {
+            return null;
+        }
+
+        switch (node.kind) {
+            case "corner":
+                return d.calibration ? d.calibration.points : null;
+
+            case "point":
+                return d.straightLines[node.object] || null;
+
+            case "end": {
+                let c = d.calibration ? d.calibration.checks[node.object] : null;
+                return c ? [ { u: c.u1, v: c.v1 }, { u: c.u2, v: c.v2 } ] : null;
+            }
+        }
+
+        return null;
+    },
+
+    nodePoint: function (state, node) {
+        let points = modules.addresses.parking.nodePoints(state, node);
+
+        return (points && points[node.index]) || null;
+    },
+
+    moveNode: function (state, node, p) {
+        if (node.kind == "end") {
+            let c = state.draft.calibration.checks[node.object];
+            c["u" + (node.index + 1)] = p.u;
+            c["v" + (node.index + 1)] = p.v;
+        } else {
+            let q = modules.addresses.parking.nodePoint(state, node);
+            q.u = p.u;
+            q.v = p.v;
         }
     },
 
-    // arrows move the selected corner by a pixel of the frame (10 with Shift), Tab selects the next corner, Esc releases it
-    cornerKey: function (state, e) {
+    sameNode: function (a, b) {
+        return !!(a && b && a.kind == b.kind && a.object == b.object && a.index == b.index);
+    },
+
+    // nothing is selected while a mode is active, in the result view or without the right to edit;
+    // a selected node and line must still exist
+    checkSelection: function (state) {
         let parking = modules.addresses.parking;
-        let points = state.draft && state.draft.calibration ? state.draft.calibration.points : null;
+        let selectable = !!(state.draft && state.editable && !state.mode && state.view != "result");
+
+        if (!selectable || (state.line !== null && !state.draft.straightLines[state.line])) {
+            state.line = null;
+        }
+
+        if (!selectable || (state.node && !parking.nodePoint(state, state.node)) || (state.node && state.node.kind == "point" && state.node.object !== state.line)) {
+            state.node = null;
+        }
+    },
+
+    // a point of a straight line selects its line, any other node releases the selected line
+    selectNode: function (state, node, center) {
+        let parking = modules.addresses.parking;
+
+        if (node && node.kind == "point") {
+            state.line = node.object;
+        } else if (node) {
+            state.line = null;
+        }
+
+        state.node = node;
+        parking.checkSelection(state);
+        parking.renderMap(state);
+        parking.renderPanel(state);
+        parking.focusMap(state);
+
+        if (center && state.node) {
+            state.map.panTo(parking.toLatLng(state, parking.nodePoint(state, state.node)));
+        }
+    },
+
+    selectLine: function (state, index) {
+        let parking = modules.addresses.parking;
+
+        state.line = index;
+        state.node = null;
+        parking.checkSelection(state);
+        parking.renderMap(state);
+        parking.renderPanel(state);
+        parking.focusMap(state);
+    },
+
+    // a draggable node: dragged or clicked it becomes the selected one, it lands on a pixel center when dropped
+    nodeMarker: function (state, node, p, color, label, dragged) {
+        let parking = modules.addresses.parking;
+        let selected = parking.sameNode(state.node, node);
+        let marker = L.marker(parking.toLatLng(state, p), {
+            draggable: true,
+            icon: parking.nodeIcon(label, selected, color),
+            zIndexOffset: selected ? 1000 : 0,
+        }).addTo(state.group);
+
+        marker.on("click", () => parking.selectNode(state, node));
+        // not setIcon: a new icon element interrupts the drag
+        marker.on("dragstart", () => {
+            state.node = node;
+            if (node.kind != "point") {
+                state.line = null;
+            }
+        });
+
+        if (dragged) {
+            marker.on("drag", () => dragged(parking.fromLatLng(state, marker.getLatLng())));
+        }
+
+        marker.on("dragend", () => {
+            parking.moveNode(state, node, parking.snap(state, parking.fromLatLng(state, marker.getLatLng())));
+            parking.changed(state);
+            parking.focusMap(state);
+        });
+
+        return marker;
+    },
+
+    // the keys of the map: Enter and Esc in a mode; for the selected node arrows move it by a pixel of the frame (10 with Shift),
+    // Tab selects the next node of its object, Delete deletes a point of a straight line, Esc releases the node, then the line
+    mapKey: function (state, e) {
+        let parking = modules.addresses.parking;
 
         if (state.mode && state.view != "result" && (e.key == "Enter" || e.key == "Escape")) {
             e.preventDefault();
@@ -667,7 +840,9 @@
             return;
         }
 
-        if (!points || !points.length || !state.editable || state.mode || state.view == "result" || e.altKey || e.ctrlKey || e.metaKey) {
+        parking.checkSelection(state);
+
+        if (!state.editable || state.mode || state.view == "result" || e.altKey || e.ctrlKey || e.metaKey) {
             return;
         }
 
@@ -676,22 +851,35 @@
             e.stopImmediatePropagation();
         };
 
-        // without a selected corner Tab moves the focus through the form as usual
-        if (state.corner === null) {
+        if (e.key == "Escape") {
+            // the modal dialog is not closed while something is selected
+            if (state.node) {
+                stop();
+                parking.selectNode(state, null);
+            } else if (state.line !== null) {
+                stop();
+                parking.selectLine(state, null);
+            }
+            return;
+        }
+
+        // without a selected node Tab moves the focus through the form as usual
+        if (!state.node) {
+            return;
+        }
+
+        if (e.key == "Delete") {
+            if (state.node.kind == "point") {
+                stop();
+                parking.action(state, "deletePoint");
+            }
             return;
         }
 
         if (e.key == "Tab") {
             stop();
-            let n = points.length;
-            parking.selectCorner(state, (state.corner + (e.shiftKey ? n - 1 : 1)) % n, true);
-            return;
-        }
-
-        if (e.key == "Escape") {
-            // the modal dialog is not closed while a corner is selected
-            stop();
-            parking.selectCorner(state, null);
+            let n = parking.nodePoints(state, state.node).length;
+            parking.selectNode(state, Object.assign({}, state.node, { index: (state.node.index + (e.shiftKey ? n - 1 : 1)) % n }), true);
             return;
         }
 
@@ -704,17 +892,17 @@
         stop();
 
         let f = parking.frame(state);
-        let p = points[state.corner];
+        let p = parking.nodePoint(state, state.node);
         let step = e.shiftKey ? 10 : 1;
-        // the corner is moved to the center of a pixel: the same keys give the same position
+        // the node is moved to the center of a pixel: the same keys give the same position
         let move = (x, d, size) => (Math.min(size - 1, Math.max(0, Math.floor(x) + d * step)) + 0.5) / size;
+        let moved = { u: move(p.u * f.width, delta[0], f.width), v: move(p.v * f.height, delta[1], f.height) };
 
-        p.u = move(p.u * f.width, delta[0], f.width);
-        p.v = move(p.v * f.height, delta[1], f.height);
+        parking.moveNode(state, state.node, moved);
         parking.changed(state, true);
 
-        // the corner stays in sight
-        let ll = L.latLng(parking.toLatLng(state, p));
+        // the node stays in sight
+        let ll = L.latLng(parking.toLatLng(state, moved));
 
         if (!state.map.getBounds().pad(-0.1).contains(ll)) {
             state.map.panTo(ll);
@@ -931,7 +1119,7 @@
 
             case "calibrationFromArea":
                 if (state.active !== null && d.areas[state.active]) {
-                    let points = parking.rectanglePoints(state, d.areas[state.active].imagePoints);
+                    let points = parking.rectanglePoints(state, d.areas[state.active].imagePoints.map(p => parking.snap(state, p)));
 
                     if (!points) {
                         warning(i18n("addresses.parkingCalibrationSizeRequired"));
@@ -958,6 +1146,10 @@
             case "deleteCheck":
                 if (d.calibration) {
                     d.calibration.checks.splice(index, 1);
+                    // the indexes of the segments after it change
+                    if (state.node && state.node.kind == "end") {
+                        state.node = null;
+                    }
                     parking.changed(state);
                 }
                 break;
@@ -981,7 +1173,28 @@
 
             case "deleteLine":
                 d.straightLines.splice(index, 1);
+                // the indexes of the lines after it change
+                state.line = null;
+                state.node = null;
                 parking.changed(state);
+                break;
+
+            case "selectLine":
+                parking.selectLine(state, state.line === index ? null : index);
+                break;
+
+            // a straight line keeps at least 3 points
+            case "deletePoint":
+                if (state.node && state.node.kind == "point") {
+                    let line = d.straightLines[state.node.object];
+
+                    if (line && line.length > 3) {
+                        line.splice(state.node.index, 1);
+                        state.node = null;
+                        parking.changed(state);
+                        parking.focusMap(state);
+                    }
+                }
                 break;
 
             case "selectArea":
@@ -1094,6 +1307,8 @@
 
         if (mode) {
             state.active = null;
+            state.node = null;
+            state.line = null;
         }
 
         parking.renderMap(state);
@@ -1104,8 +1319,10 @@
         let parking = modules.addresses.parking;
         let d = state.draft;
 
-        if (!state.mode && state.corner !== null && state.view != "result") {
-            parking.selectCorner(state, null);
+        // a click on an empty place releases the selected node and line
+        if (!state.mode && (state.node || state.line !== null) && state.view != "result") {
+            state.node = null;
+            parking.selectLine(state, null);
         }
 
         if (!state.mode || !d || state.view == "result") {
@@ -1118,7 +1335,10 @@
             return;
         }
 
-        state.pending.push(parking.fromLatLng(state, e.latlng));
+        let p = parking.fromLatLng(state, e.latlng);
+
+        // calibration nodes lie at pixel centers, area vertices don't need it
+        state.pending.push(state.mode == "area" ? p : parking.snap(state, p));
 
         if (state.mode == "line" && state.pending.length == parkingGeometry.MAX_LINE_POINTS) {
             parking.action(state, "finishLine");
@@ -1231,12 +1451,11 @@
             // vertices are never deleted or added: an area always has four of them
             state.map.on("editable:vertex:click", e => e.cancel());
             state.map.on("editable:vertex:dragend", e => parking.polygonEdited(state, e.layer));
-            state.map.on("editable:dragend", e => parking.polygonEdited(state, e.layer));
             state.map.on("click", e => parking.mapClick(state, e));
             state.map.on("zoomend", () => parking.pixelated(state));
 
             // capture phase: the keyboard handler of Leaflet on the same element pans the map with the arrows
-            state.map.getContainer().addEventListener("keydown", e => parking.cornerKey(state, e), true);
+            state.map.getContainer().addEventListener("keydown", e => parking.mapKey(state, e), true);
 
             state.group = L.layerGroup().addTo(state.map);
             reset = true;
@@ -1274,6 +1493,8 @@
         if (!d) {
             return;
         }
+
+        parking.checkSelection(state);
 
         let a = state.analysis;
         let h = a ? a.homography : null;
@@ -1377,8 +1598,15 @@
 
             if (active && state.editable && interactive) {
                 polygon.enableEdit(state.map);
+                // an area is changed by its vertices only: a drag inside it pans the frame
+                if (polygon.dragging) {
+                    polygon.dragging.disable();
+                }
             }
         });
+
+        // calibration nodes can be selected and moved
+        let editable = state.editable && interactive;
 
         // calibration rectangle and control segments
         if (d.calibration) {
@@ -1394,33 +1622,13 @@
 
             outlined(points);
 
-            if (state.corner !== null && (!state.editable || !interactive || state.corner >= points.length)) {
-                state.corner = null;
-            }
-
             points.forEach((p, i) => {
-                let marker = L.marker(ll(p), {
-                    interactive,
-                    draggable: state.editable && interactive,
-                    icon: parking.cornerIcon(i, state.corner === i),
-                    zIndexOffset: state.corner === i ? 1000 : 0,
-                }).addTo(state.group);
-
-                if (state.editable && interactive) {
-                    marker.on("click", () => parking.selectCorner(state, i));
-                    // not setIcon: a new icon element interrupts the drag
-                    marker.on("dragstart", () => state.corner = i);
+                if (editable) {
                     // the outline follows the corner while it is dragged
-                    marker.on("drag", () => outlined(points.map((q, k) => k == i ? parking.fromLatLng(state, marker.getLatLng()) : q)));
+                    parking.nodeMarker(state, { kind: "corner", object: 0, index: i }, p, "#e83e8c", i + 1, uv => outlined(points.map((q, k) => k == i ? uv : q)));
+                } else {
+                    L.marker(ll(p), { interactive: false, icon: parking.nodeIcon(i + 1, false, "#e83e8c") }).addTo(state.group);
                 }
-
-                marker.on("dragend", () => {
-                    let uv = parking.fromLatLng(state, marker.getLatLng());
-                    points[i].u = uv.u;
-                    points[i].v = uv.v;
-                    parking.changed(state);
-                    parking.focusMap(state);
-                });
             });
 
             d.calibration.checks.forEach((c, i) => {
@@ -1431,31 +1639,39 @@
                 line.bindTooltip(measured !== null ? (measured.toFixed(2) + " / " + c.length + " " + i18n("addresses.parkingMetres")) : String(c.length), { permanent: true, interactive: false });
 
                 ends.forEach((p, k) => {
-                    let marker = L.circleMarker(ll(p), { radius: 6, color: "#17a2b8", fillOpacity: 1, interactive: false }).addTo(state.group);
-
-                    if (state.editable && interactive) {
-                        // circle markers can't be dragged, a transparent marker takes it over
-                        let handle = L.marker(ll(p), { draggable: true, opacity: 0 }).addTo(state.group);
-                        handle.on("drag", () => marker.setLatLng(handle.getLatLng()));
-                        handle.on("dragend", () => {
-                            let uv = parking.fromLatLng(state, handle.getLatLng());
-                            c["u" + (k + 1)] = uv.u;
-                            c["v" + (k + 1)] = uv.v;
-                            parking.changed(state);
-                        });
+                    if (editable) {
+                        parking.nodeMarker(state, { kind: "end", object: i, index: k }, p, "#17a2b8", null, uv => line.setLatLngs(parking.curve(state, ends.map((q, j) => j == k ? uv : q)).map(ll)));
+                    } else {
+                        L.marker(ll(p), { interactive: false, icon: parking.nodeIcon(null, false, "#17a2b8") }).addTo(state.group);
                     }
                 });
             });
         }
 
-        // straight lines: as drawn, and the straight line they become without the distortion
+        // straight lines: as drawn, and the straight line they become without the distortion;
+        // the points of the selected line can be moved
         (d.straightLines || []).forEach((line, i) => {
-            L.polyline(line.map(ll), { color: "#20c997", weight: 2, interactive: false }).addTo(state.group).
+            let selected = state.line === i;
+            let drawn = L.polyline(line.map(ll), { color: selected ? "#ffc107" : "#20c997", weight: selected ? 3 : 2, interactive: false }).addTo(state.group).
                 bindTooltip(i18n("addresses.parkingLine", i + 1), { direction: "top", interactive: false });
 
-            for (let p of line) {
-                L.circleMarker(ll(p), { radius: 3, color: "#20c997", fillOpacity: 1, interactive: false }).addTo(state.group);
+            if (editable) {
+                // a wide invisible line is easier to hit than the drawn one
+                L.polyline(line.map(ll), { weight: 14, opacity: 0, interactive: true }).addTo(state.group).on("click", e => {
+                    L.DomEvent.stop(e);
+                    if (state.line !== i) {
+                        parking.selectLine(state, i);
+                    }
+                });
             }
+
+            line.forEach((p, k) => {
+                if (selected && editable) {
+                    parking.nodeMarker(state, { kind: "point", object: i, index: k }, p, "#20c997", k + 1, uv => drawn.setLatLngs(line.map((q, j) => ll(j == k ? uv : q))));
+                } else {
+                    L.circleMarker(ll(p), { radius: 3, color: "#20c997", fillOpacity: 1, interactive: false }).addTo(state.group);
+                }
+            });
 
             if (lens && lens.k) {
                 L.polyline(parking.sideLine(state, line[0], line[line.length - 1]).map(ll), { color: "#20c997", weight: 1, opacity: 0.7, dashArray: "4 4", interactive: false }).addTo(state.group);
@@ -1627,6 +1843,8 @@
 
     renderPanel: function (state) {
         let parking = modules.addresses.parking;
+
+        parking.checkSelection(state);
         let panel = $(`#${state.prefix}parkingPanel`);
         let d = state.draft;
         let a = state.analysis;
@@ -1826,10 +2044,19 @@
 
         if (lines.length) {
             lines.forEach((line, i) => {
+                let selected = state.line === i;
+                let title = `${i18n("addresses.parkingLine", i + 1)}, ${i18n("addresses.parkingLinePoints", line.length)}`;
                 h += `<div class="form-row align-items-center mb-1">`;
-                h += `<div class="col-10 small"><i class="fas fa-fw fa-minus mr-1" style="color: #20c997;"></i>${i18n("addresses.parkingLine", i + 1)}, ${i18n("addresses.parkingLinePoints", line.length)}</div>`;
+                h += `<div class="col-10 small${selected ? " font-weight-bold" : ""}"><i class="fas fa-fw fa-minus mr-1" style="color: ${selected ? "#ffc107" : "#20c997"};"></i>`;
+                h += (state.editable && !state.mode) ? `<a href="#" data-parking-action="selectLine" data-index="${i}" title="${i18n("addresses.parkingSelectLine")}">${title}</a>` : title;
+                h += `</div>`;
                 h += `<div class="col-2">${state.editable ? button("deleteLine", "fas fa-times", i18n("addresses.parkingDeleteLine"), "btn-light", !!state.mode, i) : ""}</div>`;
                 h += `</div>`;
+                if (selected) {
+                    let point = state.node && state.node.kind == "point" ? state.node.index : null;
+                    h += `<div class="small text-muted mb-1">${i18n("addresses.parkingLineKeys")}</div>`;
+                    h += textButton("deletePoint", "fas fa-eraser", point === null ? i18n("addresses.parkingDeletePoint") : i18n("addresses.parkingDeletePointN", point + 1), "btn-light", point === null || line.length <= 3);
+                }
             });
 
             if (a.straightLines.length) {

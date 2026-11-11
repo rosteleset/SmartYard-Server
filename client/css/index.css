@@ -199,9 +199,22 @@ select {
   background-color: gray;
 }
 
-/* wider than modal-xl, used by the parking tab of the camera form */
+/* wider than modal-xl, used by the parking tab of the camera form: 80% of the window, the height is fitted by the tab */
 .modal-dialog.modal-xxl {
-  max-width: min(1800px, calc(100vw - 2rem));
+  max-width: 80vw;
+}
+
+/* the parking map gets more room on wide screens */
+@media (min-width: 1400px) {
+  .parking-map-col {
+    flex: 0 0 75%;
+    max-width: 75%;
+  }
+
+  .parking-panel-col {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
 }
 
 .note-statusbar {

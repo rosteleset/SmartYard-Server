@@ -60,6 +60,7 @@ function harness(rights = {GET: true, PUT: true, DELETE: true}) {
         $: chain,
         document: {getElementById: () => null},
         Image,
+        window: {innerHeight: 1000},
         setTimeout,
         clearTimeout,
     };
@@ -386,10 +387,29 @@ test('a failed result request is shown and retried on the next interval', () => 
 // minimal Leaflet: layers remember what they were created with
 function fakeLeaflet(context) {
     const layer = (type, points, options) => {
-        const l = {type, points, options, addTo(target) { (target.layers || (target.layers = [])).push(l); return l; }, bindTooltip() { return l; }, on() { return l; }, setLatLngs(p) { l.points = p; return l; }, getLatLngs: () => [l.points], remove() {}, enableEdit() {}, editEnabled: () => false, disableEdit() {}};
+        const l = {
+            type, points, options, handlers: {},
+            addTo(target) { (target.layers || (target.layers = [])).push(l); return l; },
+            bindTooltip() { return l; },
+            on(event, handler) { l.handlers[event] = handler; return l; },
+            fire(event, e = {}) { l.handlers[event](e); },
+            setLatLngs(p) { l.points = p; return l; },
+            getLatLngs: () => [l.points],
+            getLatLng: () => ({lat: l.points[0], lng: l.points[1]}),
+            remove() {},
+            enableEdit() { l.edited = true; },
+            editEnabled: () => false,
+            disableEdit() {},
+            dragging: {enable() { l.draggable = true; }, disable() { l.draggable = false; }},
+        };
         return l;
     };
-    const map = {layers: [], addControl() {}, on() {}, setMaxBounds() {}, invalidateSize() {}, fitBounds() {}, remove() {}, getContainer: () => ({addEventListener() {}, focus() {}, classList: {toggle() {}}})};
+    const map = {
+        layers: [], handlers: {},
+        addControl() {}, on(event, handler) { map.handlers[event] = handler; }, setMaxBounds() {}, invalidateSize() {}, fitBounds() {}, remove() {}, panTo() {},
+        getBounds: () => ({pad: () => ({contains: () => true})}),
+        getContainer: () => ({addEventListener() {}, focus() {}, classList: {toggle() {}}}),
+    };
     context.L = {
         CRS: {Simple: {}},
         map: () => map,
@@ -404,7 +424,8 @@ function fakeLeaflet(context) {
         imageOverlay: (url, b) => layer('image', url, b),
         marker: (p, o) => layer('marker', p, o),
         circleMarker: (p, o) => layer('circle', p, o),
-        divIcon: () => ({}),
+        divIcon: options => options,
+        latLng: p => ({lat: p[0], lng: p[1]}),
         latLngBounds: () => ({pad: () => ({})}),
         DomEvent: {stop() {}},
     };
@@ -562,7 +583,7 @@ test('Enter finishes a straight line, Esc leaves the mode', () => {
     state.requests[1].deferred.resolve({shot: 'AAAA'});
     const s = parking.states.l2;
     parking.action(s, 'create');
-    const key = k => parking.cornerKey(s, {key: k, preventDefault() {}, stopImmediatePropagation() {}});
+    const key = k => parking.mapKey(s, {key: k, preventDefault() {}, stopImmediatePropagation() {}});
     parking.action(s, 'addLine');
     for (const [u, v] of [[0.1, 0.1], [0.5, 0.05], [0.9, 0.1]]) {
         parking.mapClick(s, {latlng: {lat: -v * 1080, lng: u * 1920}});
@@ -594,4 +615,187 @@ test('a distorted camera draws its outlines as curves, the area stays editable b
     assert.ok(polygons.filter(l => l.points.length === 4 * n).length >= 1 + 10, 'spaces are curves too');
     const html = h.state.html['#l3parkingPanel'] || Object.values(h.state.html).join('');
     assert.ok(html.includes('addresses.parkingLensDistortion -0.25'), 'the coefficient is shown');
+});
+
+// the markup of a fixture drawn with the minimal Leaflet
+function drawn(name, fixture) {
+    const h = harness();
+    const map = fakeLeaflet(h.context);
+    fakeTimers(h.context);
+    h.parking.renderTab(name, 7);
+    h.parking.activate(name);
+    const config = Object.assign(JSON.parse(JSON.stringify(fixtures.find(c => c.name.startsWith(fixture)).config)), {revision: 1});
+    h.state.requests[0].deferred.resolve({parking: config, settings: {interval: 60, minInterval: 10}});
+    h.state.requests[1].deferred.resolve({shot: 'AAAA'});
+    const s = h.parking.states[name];
+    const key = (k, shiftKey = false) => {
+        const e = {key: k, shiftKey, stopped: false, preventDefault() {}, stopImmediatePropagation() { e.stopped = true; }};
+        h.parking.mapKey(s, e);
+        return e.stopped;
+    };
+    // draggable calibration nodes in the order they are drawn: corners, control segment ends, points of the selected line
+    const nodes = () => s.group.layers.filter(l => l.type === 'marker' && l.handlers.dragend);
+    return Object.assign(h, {map, s, key, nodes});
+}
+
+const centered = (x, size) => Math.abs(x * size - (Math.floor(x * size) + 0.5)) < 1e-9;
+
+test('calibration nodes placed by a click land on pixel centers, area vertices do not', () => {
+    const {parking, s} = drawn('n1', 'cars');
+    const click = (u, v) => parking.mapClick(s, {latlng: {lat: -v * 1080, lng: u * 1920}});
+    parking.action(s, 'addLine');
+    click(0.10017, 0.30049);
+    click(0.50033, 0.31071);
+    click(0.90011, 0.30013);
+    parking.action(s, 'finishLine');
+    for (const p of s.draft.straightLines[0]) {
+        assert.ok(centered(p.u, 1920) && centered(p.v, 1080), 'line point');
+    }
+    parking.action(s, 'addCheck');
+    click(0.30017, 0.80049);
+    click(0.40033, 0.80071);
+    const c = s.draft.calibration.checks[1];
+    assert.ok([c.u1, c.u2].every(u => centered(u, 1920)) && [c.v1, c.v2].every(v => centered(v, 1080)), 'segment ends');
+    parking.action(s, 'calibrate');
+    for (const [u, v] of [[0.14017, 0.95049], [0.89033, 0.95071], [0.79011, 0.70013], [0.26023, 0.70041]]) {
+        click(u, v);
+    }
+    assert.ok(s.draft.calibration.points.every(p => centered(p.u, 1920) && centered(p.v, 1080)), 'corners');
+    parking.action(s, 'addArea');
+    for (const [u, v] of [[0.10017, 0.20049], [0.30033, 0.20071], [0.30011, 0.10013], [0.10023, 0.10041]]) {
+        click(u, v);
+    }
+    assert.ok(s.draft.areas[1].imagePoints.some(p => !centered(p.u, 1920)), 'area vertices as clicked');
+});
+
+test('a dragged corner lands on a pixel center, the arrows and Tab move the selected one', () => {
+    const {parking, s, key, nodes} = drawn('n2', 'cars');
+    const corner = nodes()[0];
+    corner.points = [-500.3, 300.7];
+    corner.fire('dragstart');
+    corner.fire('dragend');
+    const p = s.draft.calibration.points[0];
+    assert.equal(p.u, 300.5 / 1920);
+    assert.equal(p.v, 500.5 / 1080);
+    assert.deepEqual(JSON.parse(JSON.stringify(s.node)), {kind: 'corner', object: 0, index: 0});
+    assert.ok(key('ArrowRight', true));
+    assert.equal(p.u, 310.5 / 1920);
+    assert.ok(key('Tab'));
+    assert.equal(s.node.index, 1);
+    assert.ok(key('Escape'));
+    assert.equal(s.node, null);
+    assert.equal(key('Escape'), false, 'nothing selected: Esc closes the dialog');
+});
+
+test('control segment ends are crosshairs selected and moved by the arrows, Tab goes to the other end', () => {
+    const {parking, s, key, nodes} = drawn('n3', 'cars');
+    const ends = nodes().slice(4, 6);
+    assert.equal(ends.length, 2, 'both ends are draggable');
+    assert.ok(ends[0].options.icon.html.includes('<svg'), 'crosshair');
+    ends[1].fire('click');
+    assert.deepEqual(JSON.parse(JSON.stringify(s.node)), {kind: 'end', object: 0, index: 1});
+    const c = s.draft.calibration.checks[0];
+    const x = Math.floor(c.u2 * 1920);
+    assert.ok(key('ArrowLeft'));
+    assert.equal(c.u2, (x - 1 + 0.5) / 1920);
+    assert.ok(key('Tab'));
+    assert.equal(s.node.index, 0);
+    assert.ok(key('ArrowDown'));
+    assert.ok(centered(c.v1, 1080));
+    assert.ok(s.dirty);
+});
+
+test('the selected straight line: its points are moved and deleted down to 3, Esc releases the point, then the line', () => {
+    const {state, parking, s, key, nodes, map} = drawn('n4', 'distorted camera with straight lines');
+    const line = s.draft.straightLines[0];
+    const points = line.length;
+    assert.equal(nodes().length, 4 + 2, 'no line points before a line is selected');
+    parking.action(s, 'selectLine', 0);
+    assert.equal(s.line, 0);
+    assert.equal(nodes().length, 4 + 2 + points, 'the points of the selected line');
+    assert.ok(panelHtml(state).includes('data-parking-action="deletePoint" disabled'), 'nothing to delete without a selected point');
+
+    const k = s.analysis.lensDistortion;
+    const point = nodes()[6 + 1];
+    point.points = [-1040.2, 440.9];
+    point.fire('dragstart');
+    point.fire('dragend');
+    assert.equal(line[1].u, 440.5 / 1920);
+    assert.equal(line[1].v, 1040.5 / 1080);
+    assert.notEqual(s.analysis.lensDistortion, k, 'the distortion is fitted again');
+    assert.deepEqual(JSON.parse(JSON.stringify(s.node)), {kind: 'point', object: 0, index: 1});
+
+    assert.ok(key('ArrowUp'));
+    assert.equal(line[1].v, 1039.5 / 1080);
+    assert.ok(key('Delete'));
+    assert.equal(line.length, points - 1);
+    assert.equal(s.node, null);
+    assert.equal(s.line, 0, 'the line stays selected');
+
+    while (line.length > 3) {
+        nodes()[6].fire('click');
+        parking.action(s, 'deletePoint');
+    }
+    nodes()[6].fire('click');
+    assert.ok(panelHtml(state).includes('data-parking-action="deletePoint" disabled'), 'a line keeps 3 points');
+    key('Delete');
+    assert.equal(line.length, 3);
+
+    assert.ok(key('Escape'));
+    assert.equal(s.node, null);
+    assert.equal(s.line, 0);
+    assert.ok(key('Escape'));
+    assert.equal(s.line, null);
+
+    // a click on a line selects it, a click on an empty place releases it
+    const hit = s.group.layers.filter(l => l.type === 'polyline' && l.options.opacity === 0 && l.handlers.click);
+    hit[1].fire('click');
+    assert.equal(s.line, 1);
+    map.handlers.click({latlng: {lat: -10, lng: 10}});
+    assert.equal(s.line, null);
+});
+
+test('nothing is selected while a mode is active', () => {
+    const {parking, s} = drawn('n5', 'distorted camera with straight lines');
+    parking.action(s, 'selectLine', 0);
+    parking.selectNode(s, {kind: 'point', object: 0, index: 0});
+    parking.action(s, 'addCheck');
+    assert.equal(s.line, null);
+    assert.equal(s.node, null);
+});
+
+test('an area is changed by its vertices only, it is not dragged as a whole', () => {
+    const {parking, s, map} = drawn('n6', 'cars');
+    parking.action(s, 'selectArea', 0);
+    const edited = s.group.layers.filter(l => l.type === 'polygon' && l.edited);
+    assert.equal(edited.length, 1, 'the vertices of the active area are editable');
+    assert.equal(edited[0].draggable, false, 'the polygon is not draggable');
+    assert.ok(map.handlers['editable:vertex:dragend']);
+    assert.equal(map.handlers['editable:dragend'], undefined);
+});
+
+test('the map and the panel fill 80% of the window height left after the form, at least 400 px', () => {
+    const {context, parking} = harness();
+    parking.renderTab('w1', 7);
+    const map = {offsetWidth: 900, offsetTop: 100, offsetHeight: 560, style: {}};
+    const panel = {offsetWidth: 300, offsetTop: 100, offsetHeight: 560, style: {}};
+    const content = {offsetHeight: 560 + 150};
+    context.document = {getElementById: id => ({w1parkingMap: map, w1parkingPanel: panel, modalBody: content})[id] || null};
+    context.window.innerHeight = 1000;
+    parking.resize(parking.states.w1);
+    assert.equal(map.style.height, '650px');
+    assert.equal(panel.style.maxHeight, '650px');
+    context.window.innerHeight = 600;
+    map.offsetHeight = 650;
+    content.offsetHeight = 650 + 150;
+    parking.resize(parking.states.w1);
+    assert.equal(map.style.height, '400px', 'never lower than 400 px');
+    // the panel below the map on a narrow screen
+    context.window.innerHeight = 1000;
+    map.offsetHeight = 400;
+    panel.offsetTop = 500;
+    panel.offsetHeight = 300;
+    content.offsetHeight = 400 + 300 + 150;
+    parking.resize(parking.states.w1);
+    assert.equal(map.style.height, '650px');
 });
