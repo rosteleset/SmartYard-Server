@@ -30,7 +30,7 @@
      * @apiParam {Number} cameraId
      * @apiBody {Number} revision revision the configuration is based on (0 for a new configuration)
      * @apiBody {Number} enabled
-     * @apiBody {Number} [detectionImageSize=320] size the frame is resized to for vehicle detection, 160..1024
+     * @apiBody {Number} [detectionImageSize=640] size the frame is resized to for vehicle detection, 160..1024
      * @apiBody {Number} [confidenceThreshold=0.5] minimum detection confidence, 0..1
      * @apiBody {Number} [processingInterval] processing interval override in seconds, null for the global one, at least minInterval
      * @apiBody {Number} frameWidth width of the frame used for markup, pixels

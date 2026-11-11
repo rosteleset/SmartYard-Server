@@ -4145,7 +4145,7 @@
    }
   },
   {
-   "name": "detection parameters default to 320 and 0.5",
+   "name": "detection parameters default to 640 and 0.5",
    "config": {
     "enabled": 1,
     "frameWidth": 1920,
@@ -4221,7 +4221,7 @@
     "ready": true,
     "problems": [],
     "parameters": {
-     "detectionImageSize": 320,
+     "detectionImageSize": 640,
      "confidenceThreshold": 0.5,
      "processingInterval": null
     }
@@ -4721,7 +4721,7 @@
     "ready": true,
     "problems": [],
     "parameters": {
-     "detectionImageSize": 320,
+     "detectionImageSize": 640,
      "confidenceThreshold": 0.5,
      "processingInterval": 1
     }
@@ -4808,7 +4808,7 @@
     "ready": true,
     "problems": [],
     "parameters": {
-     "detectionImageSize": 320,
+     "detectionImageSize": 640,
      "confidenceThreshold": 0.5,
      "processingInterval": null
     }

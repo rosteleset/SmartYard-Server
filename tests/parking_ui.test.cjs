@@ -237,7 +237,7 @@ test('detection and interval parameters: defaults, server settings, validation a
     state.requests[1].deferred.resolve({shot: 'AAAA'});
     const s = parking.states.p10;
     parking.action(s, 'create');
-    assert.equal(s.draft.detectionImageSize, 320);
+    assert.equal(s.draft.detectionImageSize, 640);
     assert.equal(s.draft.confidenceThreshold, 0.5);
     assert.equal(s.draft.processingInterval, null);
     const html = Object.values(state.html).join('\n');

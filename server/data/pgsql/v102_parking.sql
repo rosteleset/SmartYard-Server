@@ -14,7 +14,7 @@ begin
         parking_config_id serial primary key,
         camera_id integer not null,
         enabled integer default 1 not null,
-        detection_image_size integer default 320 not null,
+        detection_image_size integer default 640 not null,
         confidence_threshold numeric(3, 2) default 0.5 not null,
         processing_interval integer,
         frame_width integer not null,

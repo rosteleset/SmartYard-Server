@@ -81,7 +81,7 @@ function car(snapshot, s0, s1, confidence = 0.9) {
         const [u, v] = geometry.apply(hi, x, y);
         corners.push(Math.round(u * 1920), Math.round(v * 1080));
     }
-    return {classId: 0, className: 'car', confidence, box: [0, 0, 0, 0], angle: 0, corners};
+    return {classId: 0, className: 'car', confidence, corners, cuboid: [...corners, ...corners]};
 }
 
 function listen(handler) {
@@ -210,7 +210,7 @@ test('one cycle: FALPRS detects on the same frame, the result goes to the server
     assert.equal(outcome.status, 'ok', outcome.reason);
     assert.equal(w.falprsRequests.length, 1);
     const request = w.falprsRequests[0];
-    assert.equal(request.url, '/lprs/api/detectVehiclesObb');
+    assert.equal(request.url, '/lprs/api/detectVehicleFootprints');
     assert.equal(request.authorization, 'Bearer secret');
     assert.equal(request.body.imageSize, 416, 'detection image size of the revision');
     assert.equal(request.body.confidenceThreshold, 0.4);

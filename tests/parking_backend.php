@@ -143,8 +143,8 @@ $tests['first save creates configuration, areas and revision'] = function () use
     check(array_column($snapshot['areas'], 'parkingAreaId') === array_column($saved['areas'], 'parkingAreaId'), 'snapshot ids');
     check(count($snapshot['areas'][0]['metricPoints']) === 4 && count($snapshot['calibration']['homography']) === 9, 'snapshot geometry');
     check($count('select ready from parking_config_revisions where revision = 1') === 1, 'revision ready');
-    check($saved['detectionImageSize'] === 320 && $saved['confidenceThreshold'] === 0.5 && $saved['processingInterval'] === null, 'defaults');
-    check($snapshot['detectionImageSize'] === 320 && $snapshot['confidenceThreshold'] === 0.5 && array_key_exists('processingInterval', $snapshot) && $snapshot['processingInterval'] === null, 'snapshot defaults');
+    check($saved['detectionImageSize'] === 640 && $saved['confidenceThreshold'] === 0.5 && $saved['processingInterval'] === null, 'defaults');
+    check($snapshot['detectionImageSize'] === 640 && $snapshot['confidenceThreshold'] === 0.5 && array_key_exists('processingInterval', $snapshot) && $snapshot['processingInterval'] === null, 'snapshot defaults');
 };
 
 $tests['saved configuration is read back unchanged'] = function () use ($api, $fixture) {
@@ -337,7 +337,7 @@ $tests['current revision is the snapshot of the saved configuration'] = function
     $config = $parking->getConfig(3);
     $revision = $parking->currentRevision(3);
     check($revision['revision'] === $config['revision'] && $revision['ready'] === true, 'revision');
-    check($revision['detectionImageSize'] === 320 && $revision['confidenceThreshold'] === 0.5, 'parameters');
+    check($revision['detectionImageSize'] === 640 && $revision['confidenceThreshold'] === 0.5, 'parameters');
     check(count($revision['calibration']['homography']) === 9 && $revision['areas'][0]['parkingAreaId'] === $config['areas'][0]['parkingAreaId'], 'geometry');
     check($parking->currentRevision(2 + 1000) === null, 'no configuration');
 };
