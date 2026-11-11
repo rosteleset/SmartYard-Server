@@ -1,0 +1,1 @@
+ALTER TABLE houses_domophones ADD COLUMN IF NOT EXISTS ble_enabled INTEGER NOT NULL DEFAULT 0;

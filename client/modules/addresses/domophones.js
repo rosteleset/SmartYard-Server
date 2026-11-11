@@ -180,6 +180,13 @@
                     tab: i18n("addresses.secondary"),
                 },
                 {
+                    id: "bleEnabled",
+                    type: "yesno",
+                    title: i18n("addresses.bleEnabled"),
+                    value: "0",
+                    tab: i18n("addresses.secondary"),
+                },
+                {
                     id: "video",
                     type: "select",
                     title: i18n("addresses.video"),
@@ -413,6 +420,13 @@
                         type: "yesno",
                         title: i18n("addresses.nat"),
                         value: domophone.nat,
+                        tab: i18n("addresses.secondary"),
+                    },
+                    {
+                        id: "bleEnabled",
+                        type: "yesno",
+                        title: i18n("addresses.bleEnabled"),
+                        value: domophone.bleEnabled,
                         tab: i18n("addresses.secondary"),
                     },
                     {
