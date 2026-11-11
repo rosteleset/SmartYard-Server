@@ -322,7 +322,9 @@
         "v101_faces_groups_cleanup.sql"
     ],
     "102": [
-        "v102_cctv_deleted_paths.sql",
-        "v102_parking.sql"
+        "v102_cctv_deleted_paths.sql"
+    ],
+    "103": [
+        "v103_parking.sql"
     ]
 }
