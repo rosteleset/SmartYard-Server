@@ -218,6 +218,7 @@
     "domophoneId": "#",
     "domophoneIdList": "#",
     "enabled": "Включен",
+    "bleEnabled": "Включить BLE",
     "model": "Модель",
     "url": "URL",
     "credentials": "Авторизация",

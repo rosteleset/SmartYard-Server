@@ -1064,7 +1064,8 @@ CREATE TABLE public.houses_domophones (
     ext character varying,
     monitoring integer DEFAULT 1,
     sos character varying,
-    concierge character varying
+    concierge character varying,
+    ble_enabled integer DEFAULT 0 NOT NULL
 );
 
 

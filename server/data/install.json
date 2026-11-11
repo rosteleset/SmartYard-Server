@@ -326,5 +326,8 @@
     ],
     "103": [
         "v103_parking.sql"
+    ],
+    "104": [
+        "v104_domophones_ble.sql"
     ]
 }
