@@ -1212,6 +1212,7 @@
                     "display" => "display",
                     "video" => "video",
                     "monitoring" => "monitoring",
+                    "ble_enabled" => "bleEnabled",
                     "ext" => "ext",
                     "concierge" => "concierge",
                     "sos" => "sos",
@@ -1336,7 +1337,7 @@
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos, $tree = '') {
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $bleEnabled, $ext, $concierge, $sos, $tree = '') {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
@@ -1388,7 +1389,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext, concierge, sos, tree) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext, :concierge, :sos, :tree)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ble_enabled, ext, concierge, sos, tree) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ble_enabled, :ext, :concierge, :sos, :tree)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1401,6 +1402,7 @@
                     "display" => $display ?: null,
                     "video" => $video,
                     "monitoring" => $monitoring,
+                    "ble_enabled" => (int)$bleEnabled,
                     "ext" => json_encode($ext),
                     "concierge" => $concierge ?: null,
                     "sos" => $sos ?: null,
@@ -1424,7 +1426,7 @@
              * @inheritDoc
              */
 
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos, $tree = '') {
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $bleEnabled, $ext, $concierge, $sos, $tree = '') {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1492,7 +1494,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ext = :ext, concierge = :concierge, sos = :sos, tree = :tree where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ble_enabled = :ble_enabled, ext = :ext, concierge = :concierge, sos = :sos, tree = :tree where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1507,6 +1509,7 @@
                     "display" => $display ?: null,
                     "video" => $video,
                     "monitoring" => $monitoring,
+                    "ble_enabled" => (int)$bleEnabled,
                     "ext" => json_encode($ext),
                     "concierge" => $concierge ?: null,
                     "sos" => $sos ?: null,
@@ -1614,6 +1617,7 @@
                     "display" => "display",
                     "video" => "video",
                     "monitoring" => "monitoring",
+                    "ble_enabled" => "bleEnabled",
                     "ext" => "ext",
                     "concierge" => "concierge",
                     "sos" => "sos",

@@ -68,7 +68,7 @@ try {
     check($expected->getCode() === '23503', 'Unexpected migration error');
 }
 check($db->query("select company_id from addresses_houses where address_house_id = 15")->fetchColumn() == 999, 'Failed migration lost the old reference');
-check($db->query("select to_regclass('addresses_houses_companies')")->fetchColumn() === null, 'Failed migration was not atomic');
+check($db->query("select to_regclass('$schema.addresses_houses_companies')")->fetchColumn() === null, 'Failed migration was not atomic');
 $db->exec('DELETE FROM addresses_houses WHERE address_house_id = 15');
 $db->exec($migration);
 check($db->query('select count(*) from addresses_houses_companies')->fetchColumn() == 4, 'Migration lost or duplicated links');
@@ -82,7 +82,8 @@ CREATE TABLE houses_domophones (
     house_domophone_id integer PRIMARY KEY, enabled integer, model text, server text, url text,
     credentials text, dtmf text, first_time integer, nat integer, locks_are_open integer,
     comments text, name text, ip text, sub_id text, display text, video text,
-    monitoring integer, ext text, concierge integer, sos integer, tree text
+    monitoring integer, ext text, concierge integer, sos integer, tree text,
+    ble_enabled integer NOT NULL DEFAULT 0
 );
 INSERT INTO houses_domophones (house_domophone_id, enabled) VALUES (101, 1), (102, 1);
 CREATE TABLE houses_entrances (house_entrance_id integer, house_domophone_id integer);
