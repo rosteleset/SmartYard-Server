@@ -58,6 +58,18 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
     }
 
     /**
+     * Add the BLE status to the intercom configuration.
+     *
+     * @param bool $enabled True to enable BLE, false to disable.
+     * @return self
+     */
+    public function addBleEnabled(bool $enabled): self
+    {
+        $this->config['bleEnabled'] = $enabled;
+        return $this;
+    }
+
+    /**
      * Add global CMS levels to the domophone configuration.
      *
      * @param array $levels An array of CMS levels.

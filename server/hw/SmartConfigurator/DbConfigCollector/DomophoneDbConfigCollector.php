@@ -10,6 +10,7 @@ use backends\{
 };
 use hw\hw;
 use hw\Interface\{
+    BleInterface,
     CmsLevelsInterface,
     DisplayTextInterface,
     FreePassInterface,
@@ -88,6 +89,10 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
 
     public function collectConfig(): array
     {
+        if ($this->device instanceof BleInterface) {
+            $this->addBleEnabled();
+        }
+
         if ($this->device instanceof DisplayTextInterface) {
             $this->addDisplayText();
         }
@@ -221,6 +226,16 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
         if ($this->device instanceof HousePrefixInterface) {
             $this->builder->addHousePrefixes($housePrefixes);
         }
+    }
+
+    /**
+     * Add the BLE status to the intercom configuration.
+     *
+     * @return void
+     */
+    private function addBleEnabled(): void
+    {
+        $this->builder->addBleEnabled($this->domophoneData['bleEnabled']);
     }
 
     /**

@@ -39,6 +39,7 @@ class SmartConfigurator
         }
 
         $sectionMethodMapping = [
+            'bleEnabled' => 'setBleEnabled',
             'cmsLevels' => 'setCmsLevels',
             'cmsModel' => 'setCmsModel',
             'displayText' => 'setDisplayText',
