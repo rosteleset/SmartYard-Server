@@ -3,6 +3,7 @@
 namespace hw\ip\domophone;
 
 use hw\Interface\{
+    BleInterface,
     CmsLevelsInterface,
     DisplayTextInterface,
     FreePassInterface,
@@ -35,6 +36,10 @@ abstract class domophone extends ip
             ->addCmsModel($this->getCmsModel())
             ->addNtp(...$this->getNtpConfig())
         ;
+
+        if ($this instanceof BleInterface) {
+            $builder->addBleEnabled($this->isBleEnabled());
+        }
 
         if ($this instanceof CmsLevelsInterface) {
             $builder->addCmsLevels($this->getCmsLevels());
