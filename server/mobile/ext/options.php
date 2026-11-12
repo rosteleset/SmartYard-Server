@@ -36,6 +36,7 @@
      * @apiSuccess {String="t","f"} [stories="f"] Stories flag
      * @apiSuccess {String="t","f"} [faceGroups="f"] Face groups flag
      * @apiSuccess {String="t","f"} [faceClustering="f"] Face clustering flag
+     * @apiSuccess {String="t","f"} [ble="f"] BLE flag
      * @apiSuccess {String="1","2","none"} [issuesVersion=1] Version of the built-in task tracker system
      * @apiSuccess {String="1","2"} [lprsVersion=1] LPRS mobile API version
      * @apiSuccess {Object[]} [supportedPlateNumberFormats] Array of LPRS-supported plate number formats
@@ -146,6 +147,16 @@
 
     // LPRS mobile API Version
     $response["lprsVersion"] = $config["mobile"]["lprs_api_version"] ?? "1";
+
+    // BLE
+    $response["ble"] = "f";
+    $households = loadBackend("households");
+    foreach ($households->getDomophones("subscriber", $subscriber["subscriberId"]) as $intercom) {
+        if ($intercom["bleEnabled"]) {
+            $response["ble"] = "t";
+            break;
+        }
+    }
 
     mobileCustomize('ext.options.response', $response, [
         'subscriber' => $subscriber,
