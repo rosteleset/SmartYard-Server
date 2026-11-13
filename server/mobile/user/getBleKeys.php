@@ -36,7 +36,7 @@ try {
         response(500);
     }
 
-    $keys = $ble->getKeys($subscriber["subscriberId"]);
+    $keys = $ble->getMobileKeys($subscriber["subscriberId"]);
 } catch (Throwable $e) {
     error_log("BLE backend: " . $e->getMessage());
     response(500);

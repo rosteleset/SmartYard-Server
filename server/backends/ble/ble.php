@@ -11,6 +11,18 @@ use Exception;
 abstract class ble extends backend
 {
     /**
+     * Returns the subscriber's BLE keys for mobile applications.
+     *
+     * @param int $subscriberId Subscriber ID.
+     * @return list<array{key: string}> BLE keys, or an empty list if none are assigned.
+     * @throws Exception If the keys cannot be read.
+     */
+    public function getMobileKeys(int $subscriberId): array
+    {
+        return $this->getKeys($subscriberId);
+    }
+
+    /**
      * Deletes the subscriber's BLE key. Missing keys are ignored.
      *
      * @param int $subscriberId Subscriber ID.
