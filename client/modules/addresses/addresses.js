@@ -12,6 +12,7 @@
         "cameras",
         "parking",
         "subscribers",
+        "subscriberBle",
         "subscriberInbox",
         "broadcast",
         "subscriberDevices",
