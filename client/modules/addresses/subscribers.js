@@ -590,6 +590,14 @@
                                         location.href = "?#addresses.subscriberDevices&subscriberId=" + subscriberId + "&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId;
                                     },
                                 },
+                                {
+                                    icon: "fab fa-bluetooth-b",
+                                    title: i18n("addresses.ble"),
+                                    hidden: !AVAIL("subscribers", "bleKeys", "GET"),
+                                    click: subscriberId => {
+                                        modules.addresses.subscriberBle.open(subscriberId, subscribers[subscriberId]);
+                                    },
+                                },
                             ],
                         },
                     });
