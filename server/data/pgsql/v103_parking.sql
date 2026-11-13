@@ -275,7 +275,7 @@ begin
         is 'Processed frame in the files backend (storage of the parking backend config)';
 
     comment on column parking_results.free_spaces
-        is 'Free spaces: array of {parkingAreaId, spaces: [[{x, y} x 4]]}, pixels of the processed frame';
+        is 'Free spaces: array of {parkingAreaId, polygons: [[{x, y} x 4..]]}, pixels of the processed frame';
 
     create table if not exists parking_statuses
     (

@@ -1749,7 +1749,7 @@
         }
 
         for (let item of (r ? r.freeSpaces : [])) {
-            for (let space of item.spaces) {
+            for (let space of item.polygons) {
                 L.polygon(space.map(p => [ -p.y, p.x ]), { color: "#28a745", weight: 2, fillColor: "#28a745", fillOpacity: 0.35, interactive: false }).addTo(state.group);
             }
         }
@@ -1796,7 +1796,7 @@
         } else if (!r) {
             h += `<div class="alert alert-secondary p-2 mb-2">${i18n("addresses.parkingNoResult")}</div>`;
         } else {
-            let free = r.freeSpaces.reduce((s, item) => s + item.spaces.length, 0);
+            let free = r.freeSpaces.reduce((s, item) => s + item.polygons.length, 0);
 
             h += `<div class="mb-1"><span class="badge badge-success mr-2">${i18n("addresses.parkingFreeSpaces", free)}</span></div>`;
             h += `<div class="small mb-1">${i18n("addresses.parkingResultTime", escapeHTML(String(r.processedAt).substring(0, 19)))}</div>`;

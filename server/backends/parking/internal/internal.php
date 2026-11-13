@@ -650,7 +650,7 @@
                 $freeSpaces = [];
 
                 foreach (json_decode($r["free_spaces"], true) as $item) {
-                    $freeSpaces[$item["parkingAreaId"]] = array_merge($freeSpaces[$item["parkingAreaId"]] ?? [], $item["spaces"]);
+                    $freeSpaces[$item["parkingAreaId"]] = array_merge($freeSpaces[$item["parkingAreaId"]] ?? [], $item["polygons"]);
                 }
 
                 // the distortion is relative to the reference frame, the result frame has the same aspect ratio
@@ -741,7 +741,7 @@
                         pr.processed_at,
                         pr.frame_uuid,
                         (select coalesce(sum((a->>'capacity')::integer), 0) from jsonb_array_elements(rr.snapshot->'areas') a where (a->>'enabled')::boolean) capacity,
-                        (select coalesce(sum(jsonb_array_length(f->'spaces')), 0) from jsonb_array_elements(pr.free_spaces) f) free
+                        (select coalesce(sum(jsonb_array_length(f->'polygons')), 0) from jsonb_array_elements(pr.free_spaces) f) free
                         $columns
                     from parking_results pr
                     join parking_configs c on c.parking_config_id = pr.parking_config_id and c.camera_id = pr.camera_id
@@ -971,7 +971,7 @@
                 }
 
                 foreach ([ "frameWidth", "frameHeight" ] as $key) {
-                    if (!is_int(@$result[$key]) || $result[$key] < 16 || $result[$key] > 16384) {
+                    if (!is_int(@$result[$key]) || $result[$key] < geometry::FRAME_SIZE[0] || $result[$key] > geometry::FRAME_SIZE[1]) {
                         return false;
                     }
                 }
@@ -985,11 +985,11 @@
                 $number = fn ($v) => (is_int($v) || is_float($v)) && is_finite($v);
 
                 foreach ($areas as $area) {
-                    if (!is_array($area) || !is_int(@$area["parkingAreaId"]) || !is_array(@$area["spaces"]) || !array_is_list($area["spaces"]) || count($area["spaces"]) > self::MAX_FREE_SPACES) {
+                    if (!is_array($area) || !is_int(@$area["parkingAreaId"]) || !is_array(@$area["polygons"]) || !array_is_list($area["polygons"]) || count($area["polygons"]) > self::MAX_FREE_SPACES) {
                         return false;
                     }
 
-                    foreach ($area["spaces"] as $space) {
+                    foreach ($area["polygons"] as $space) {
                         // four corners, or the outline as it lies on the frame when there is a lens distortion
                         if (!is_array($space) || !array_is_list($space) || count($space) < 4 || count($space) > 4 * geometry::CURVE_SEGMENTS) {
                             return false;

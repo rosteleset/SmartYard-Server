@@ -302,7 +302,7 @@ const resultRequests = state => state.requests.filter(r => r.name === 'parkingRe
 const panelHtml = state => Object.values(state.html).join('\n');
 const sample = revision => ({
     revision, processedAt: '2026-10-23 12:03:00.123+03', frameWidth: 1920, frameHeight: 1080, frame: 'BBBB',
-    freeSpaces: [{parkingAreaId: 1, spaces: [[{x: 1, y: 1}, {x: 2, y: 1}, {x: 2, y: 2}, {x: 1, y: 2}], [{x: 3, y: 1}, {x: 4, y: 1}, {x: 4, y: 2}, {x: 3, y: 2}]]}],
+    freeSpaces: [{parkingAreaId: 1, polygons: [[{x: 1, y: 1}, {x: 2, y: 1}, {x: 2, y: 2}, {x: 1, y: 2}], [{x: 3, y: 1}, {x: 4, y: 1}, {x: 4, y: 2}, {x: 3, y: 2}]]}],
 });
 
 test('the Markup / Result switch is shown for a saved configuration only', () => {

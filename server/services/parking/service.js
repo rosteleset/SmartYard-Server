@@ -216,7 +216,7 @@ function createService(options) {
                 return { status: "failed", reason: `parking/result answered ${response.status}` };
             }
 
-            let free = freeSpaces.reduce((s, area) => s + area.spaces.length, 0);
+            let free = freeSpaces.reduce((s, area) => s + area.polygons.length, 0);
 
             return { status: "ok", reason: `${free} free, ${detections.length} detections, revision ${revision.revision}` };
         } catch (e) {
@@ -317,8 +317,14 @@ function createService(options) {
 
         for (let item of list) {
             let cameraId = item.cameraId;
-            let interval = Math.max(1, Number(item.interval) || 60);
+            let interval = item.interval;
             let entry = cameras.get(cameraId);
+
+            // the interval and its default come from the parking backend (ADR 0001), a camera without one is not processed
+            if (!Number.isInteger(interval) || interval < 1) {
+                log(`camera ${cameraId}: invalid interval ${JSON.stringify(interval)}, not processed`);
+                continue;
+            }
 
             seen.add(cameraId);
 

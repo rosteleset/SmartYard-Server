@@ -48,6 +48,9 @@
             const SPACE_LENGTH = [ 2, 25 ];
             const SPACE_ANGLE = [ -90, 90 ];
 
+            // width and height of a camera frame, px
+            const FRAME_SIZE = [ 16, 16384 ];
+
             const DETECTION_IMAGE_SIZE = [ 160, 1024 ];
             const DEFAULT_DETECTION_IMAGE_SIZE = 640;
             const CONFIDENCE_THRESHOLD = [ 0, 1 ];
@@ -780,7 +783,7 @@
              * @param float $length space length, metres
              * @param float $angle degrees
              * @param bool $withSpaces return space footprints
-             * @return array [ "capacity" => int, "multipleRows" => bool, "spaces" => [ [ "slot" => int, "points" => [ [ x, y ] x 4 ] ] ] ]
+             * @return array [ "capacity" => int, "multipleRows" => bool, "spaces" => [ [ "points" => [ [ x, y ] x 4 ] ] ] ]
              */
 
             public static function layout(array $points, int $baseEdge, float $width, float $length, float $angle, bool $withSpaces = false): array {
@@ -924,15 +927,15 @@
                 $result["capacity"] = $count;
 
                 if ($withSpaces) {
-                    for ($slot = 0; $slot < $count; $slot++) {
-                        $s0 = $lo + $slot * $pitch;
+                    for ($i = 0; $i < $count; $i++) {
+                        $s0 = $lo + $i * $pitch;
                         $corners = [];
 
                         foreach ($f as $v) {
                             $corners[] = [ $p[0][0] + ($v[0] + $s0) * $ex + $v[1] * $nx, $p[0][1] + ($v[0] + $s0) * $ey + $v[1] * $ny ];
                         }
 
-                        $result["spaces"][] = [ "slot" => $slot, "points" => $corners ];
+                        $result["spaces"][] = [ "points" => $corners ];
                     }
                 }
 
@@ -1051,7 +1054,7 @@
                 $fw = @$input["frameWidth"];
                 $fh = @$input["frameHeight"];
 
-                if (!is_int($fw) || !is_int($fh) || $fw < 16 || $fh < 16 || $fw > 16384 || $fh > 16384) {
+                if (!is_int($fw) || !is_int($fh) || $fw < self::FRAME_SIZE[0] || $fh < self::FRAME_SIZE[0] || $fw > self::FRAME_SIZE[1] || $fh > self::FRAME_SIZE[1]) {
                     $problem("invalidFrame", "error");
                     return self::finish($result, $problems);
                 }

@@ -230,8 +230,8 @@ test('one cycle: FALPRS detects on the same frame, the result goes to the server
     assert.deepEqual(result.freeSpaces, plain(geometry.freeSpaces(s3, w.detections, {width: 1920, height: 1080})));
     // the weak detection is ignored, the car on [10, 12] takes one place
     assert.equal(result.freeSpaces[0].parkingAreaId, 11);
-    assert.equal(result.freeSpaces[0].spaces.length, 9);
-    for (const p of result.freeSpaces[0].spaces[0]) {
+    assert.equal(result.freeSpaces[0].polygons.length, 9);
+    for (const p of result.freeSpaces[0].polygons[0]) {
         assert.ok(p.x >= 0 && p.x <= 1920 && p.y >= 0 && p.y <= 1080, 'pixels of the frame');
     }
 });
@@ -249,8 +249,8 @@ test('the free spaces are in pixels of the frame actually processed', async t =>
     const [result] = w.results;
     assert.equal(result.frameWidth, 1280);
     const full = plain(geometry.freeSpaces(w.revisions[7], [], {width: 1920, height: 1080}));
-    result.freeSpaces[0].spaces.forEach((space, i) => space.forEach((p, j) => {
-        assert.ok(Math.abs(p.x - full[0].spaces[i][j].x * 1280 / 1920) < 1e-6);
+    result.freeSpaces[0].polygons.forEach((space, i) => space.forEach((p, j) => {
+        assert.ok(Math.abs(p.x - full[0].polygons[i][j].x * 1280 / 1920) < 1e-6);
     }));
 });
 
@@ -428,6 +428,14 @@ test('the camera list refresh starts, re-times and stops cameras', async () => {
     await s.advance(60 * 1000);
     assert.ok(s.cycles.slice(3).every(c => c.id === 2), 'removed camera is not processed');
     assert.equal(s.service.cameras.has(1), false);
+    await s.release();
+
+    // a camera without a valid interval is not processed: the service has no default of its own
+    s.state.list = [{cameraId: 2, interval: 30}, {cameraId: 3}, {cameraId: 4, interval: '60'}, {cameraId: 5, interval: 0}];
+    await s.service.refresh();
+    await s.advance(60 * 1000);
+    assert.ok(s.cycles.slice(3).every(c => c.id === 2), 'cameras without a valid interval are not processed');
+    assert.deepEqual([...s.service.cameras.keys()], [2]);
     await s.release();
 
     // an empty list (api.internal answers without data) stops everything

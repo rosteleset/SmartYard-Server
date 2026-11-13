@@ -134,7 +134,7 @@
              * a result computed with a revision that is not current is discarded
              *
              * @param int $cameraId
-             * @param array $result [ "revision" => int, "frameWidth" => int, "frameHeight" => int, "freeSpaces" => [ { parkingAreaId, spaces: [ [ { x, y } x 4.. ] ] } ] ], a free space is its four
+             * @param array $result [ "revision" => int, "frameWidth" => int, "frameHeight" => int, "freeSpaces" => [ { parkingAreaId, polygons: [ [ { x, y } x 4.. ] ] } ] ], a free space is its four
              * corners or its outline on the frame when there is a lens distortion
              * @param string $frame image of the processed frame: JPEG, PNG, BMP or WebP (frameType())
              * @return string|false "accepted", "discarded" or false on error (see lastFailure())
@@ -146,7 +146,7 @@
              * latest occupancy result of a camera
              *
              * @param int $cameraId
-             * @param bool $withFrame include the frame (base64 JPEG, null when it is gone)
+             * @param bool $withFrame include the frame (base64, in the camera format: JPEG, PNG, BMP or WebP; null when it is gone)
              * @return array|null|false [ "revision", "processedAt", "frameWidth", "frameHeight", "freeSpaces", "frame"? ], null when there is none
              */
 

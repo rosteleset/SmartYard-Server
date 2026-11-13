@@ -15,7 +15,7 @@
      * @apiSuccess {String="Y-m-d H:i:s"} processedAt время последнего расчёта
      * @apiSuccess {Number} frameWidth ширина обработанного кадра
      * @apiSuccess {Number} frameHeight высота обработанного кадра
-     * @apiSuccess {String} frameUrl url обработанного кадра (JPEG), требует токен авторизации; ссылка относится только к этому расчёту
+     * @apiSuccess {String} frameUrl url обработанного кадра (JPEG, PNG, BMP или WebP, тип - в Content-Type), требует токен авторизации; ссылка относится только к этому расчёту
      * и после следующего расчёта отвечает 404 - тогда нужно снова запросить cctv/parking
      * @apiSuccess {Number} capacity общее количество мест
      * @apiSuccess {Number} free количество свободных мест

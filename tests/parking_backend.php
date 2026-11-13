@@ -311,7 +311,7 @@ $result = fn ($revision, $extra = []) => $extra + [
     'revision' => $revision,
     'frameWidth' => 1920,
     'frameHeight' => 1080,
-    'freeSpaces' => [['parkingAreaId' => 1, 'spaces' => [[['x' => 1, 'y' => 2], ['x' => 3, 'y' => 2], ['x' => 3, 'y' => 4.5], ['x' => 1, 'y' => 4]]]]],
+    'freeSpaces' => [['parkingAreaId' => 1, 'polygons' => [[['x' => 1, 'y' => 2], ['x' => 3, 'y' => 2], ['x' => 3, 'y' => 4.5], ['x' => 1, 'y' => 4]]]]],
 ];
 
 $tests['cameras to process are the ready and enabled ones with their effective interval'] = function () use ($parking, $api, $code, $fixture) {
@@ -419,9 +419,9 @@ $tests['an invalid result is rejected'] = function () use ($parking, $files, $re
         $result('1'),
         $result($revision, ['frameWidth' => 10]),
         $result($revision, ['freeSpaces' => 'x']),
-        $result($revision, ['freeSpaces' => [['parkingAreaId' => '1', 'spaces' => []]]]),
-        $result($revision, ['freeSpaces' => [['parkingAreaId' => 1, 'spaces' => [[$point, $point, $point]]]]]),
-        $result($revision, ['freeSpaces' => [['parkingAreaId' => 1, 'spaces' => [[$point, $point, $point, ['x' => 'a', 'y' => 1]]]]]]),
+        $result($revision, ['freeSpaces' => [['parkingAreaId' => '1', 'polygons' => []]]]),
+        $result($revision, ['freeSpaces' => [['parkingAreaId' => 1, 'polygons' => [[$point, $point, $point]]]]]),
+        $result($revision, ['freeSpaces' => [['parkingAreaId' => 1, 'polygons' => [[$point, $point, $point, ['x' => 'a', 'y' => 1]]]]]]),
     ] as $i => $bad) {
         check($parking->saveResult(3, $bad, frame('JPEG')) === false && $parking->lastFailure() === 'parkingInvalidResult', "invalid $i");
     }
@@ -655,7 +655,7 @@ $tests['parking cameras for the mobile app'] = function () use ($parking, $files
 
     $areaIds = array_column($saved['areas'], 'parkingAreaId');
     $space = [['x' => 1, 'y' => 2], ['x' => 3, 'y' => 2], ['x' => 3, 'y' => 4], ['x' => 1, 'y' => 4]];
-    $freeSpaces = [['parkingAreaId' => $areaIds[0], 'spaces' => [$space, $space]], ['parkingAreaId' => $areaIds[2], 'spaces' => [$space]]];
+    $freeSpaces = [['parkingAreaId' => $areaIds[0], 'polygons' => [$space, $space]], ['parkingAreaId' => $areaIds[2], 'polygons' => [$space]]];
     $result = ['revision' => 1, 'frameWidth' => 1920, 'frameHeight' => 1080, 'freeSpaces' => $freeSpaces];
     check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'result');
     $processedAt = $db->query("select processed_at from parking_results where camera_id = $id")->fetchColumn();
@@ -697,10 +697,10 @@ $tests['parking camera detail for the mobile app'] = function () use ($parking, 
     $space = fn ($x) => [['x' => $x, 'y' => 2], ['x' => $x + 3, 'y' => 2], ['x' => $x + 3, 'y' => 4], ['x' => $x, 'y' => 4]];
     // a frame of another resolution than the reference frame, an area listed twice, free spaces of an unknown area
     $freeSpaces = [
-        ['parkingAreaId' => $areaIds[2], 'spaces' => [$space(1)]],
-        ['parkingAreaId' => $areaIds[0], 'spaces' => [$space(2), $space(3)]],
-        ['parkingAreaId' => $areaIds[2], 'spaces' => [$space(4)]],
-        ['parkingAreaId' => max($areaIds) + 1000, 'spaces' => [$space(5)]],
+        ['parkingAreaId' => $areaIds[2], 'polygons' => [$space(1)]],
+        ['parkingAreaId' => $areaIds[0], 'polygons' => [$space(2), $space(3)]],
+        ['parkingAreaId' => $areaIds[2], 'polygons' => [$space(4)]],
+        ['parkingAreaId' => max($areaIds) + 1000, 'polygons' => [$space(5)]],
     ];
     $result = ['revision' => 1, 'frameWidth' => 1280, 'frameHeight' => 720, 'freeSpaces' => $freeSpaces];
     check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'result');
@@ -803,9 +803,9 @@ $tests['mobile outlines follow the lens distortion of the revision of the result
     $saved = $api('PUT', $id, ['revision' => 0] + $fixture('distorted camera with straight lines'))[200]['parking'];
     $areaId = $saved['areas'][0]['parkingAreaId'];
     $space = array_map(fn ($i) => ['x' => $i, 'y' => $i], range(0, 63));
-    $result = ['revision' => 1, 'frameWidth' => 1280, 'frameHeight' => 720, 'freeSpaces' => [['parkingAreaId' => $areaId, 'spaces' => [$space]]]];
+    $result = ['revision' => 1, 'frameWidth' => 1280, 'frameHeight' => 720, 'freeSpaces' => [['parkingAreaId' => $areaId, 'polygons' => [$space]]]];
     check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'a free space of more than 4 points is accepted');
-    check($parking->saveResult($id, ['freeSpaces' => [['parkingAreaId' => $areaId, 'spaces' => [array_slice($space, 0, 3)]]]] + $result, frame('JPEG')) === false, 'three points are not');
+    check($parking->saveResult($id, ['freeSpaces' => [['parkingAreaId' => $areaId, 'polygons' => [array_slice($space, 0, 3)]]]] + $result, frame('JPEG')) === false, 'three points are not');
 
     $detail = $parking->parkingCamera($id);
     $outline = $detail['areas'][0]['points'];
@@ -819,7 +819,7 @@ $tests['mobile outlines follow the lens distortion of the revision of the result
     // a camera without the distortion keeps four points
     $id = (int)$db->query("insert into cameras (model) values ('fake.json') returning camera_id")->fetchColumn();
     $saved = $api('PUT', $id, ['revision' => 0] + $fixture('distorted camera without straight lines'))[200]['parking'];
-    $result['freeSpaces'] = [['parkingAreaId' => $saved['areas'][0]['parkingAreaId'], 'spaces' => []]];
+    $result['freeSpaces'] = [['parkingAreaId' => $saved['areas'][0]['parkingAreaId'], 'polygons' => []]];
     check($parking->saveResult($id, $result, frame('JPEG')) === 'accepted', 'result');
     check(count($parking->parkingCamera($id)['areas'][0]['points']) === 4, 'four points');
 };

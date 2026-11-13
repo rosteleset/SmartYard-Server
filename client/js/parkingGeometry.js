@@ -42,6 +42,8 @@ var parkingGeometry = (function () {
         SPACE_LENGTH: [ 2, 25 ],
         SPACE_ANGLE: [ -90, 90 ],
 
+        // width and height of a camera frame, px
+        FRAME_SIZE: [ 16, 16384 ],
         DETECTION_IMAGE_SIZE: [ 160, 1024 ],
         DEFAULT_DETECTION_IMAGE_SIZE: 640,
         CONFIDENCE_THRESHOLD: [ 0, 1 ],
@@ -909,8 +911,8 @@ var parkingGeometry = (function () {
         result.capacity = count;
 
         if (withSpaces) {
-            for (let slot = 0; slot < count; slot++) {
-                result.spaces.push({ slot, points: r.space(lo + slot * r.pitch) });
+            for (let i = 0; i < count; i++) {
+                result.spaces.push({ points: r.space(lo + i * r.pitch) });
             }
         }
 
@@ -1016,7 +1018,7 @@ var parkingGeometry = (function () {
         let fw = input.frameWidth;
         let fh = input.frameHeight;
 
-        if (!Number.isInteger(fw) || !Number.isInteger(fh) || fw < 16 || fh < 16 || fw > 16384 || fh > 16384) {
+        if (!Number.isInteger(fw) || !Number.isInteger(fh) || fw < g.FRAME_SIZE[0] || fh < g.FRAME_SIZE[0] || fw > g.FRAME_SIZE[1] || fh > g.FRAME_SIZE[1]) {
             problem("invalidFrame", "error");
             return finish(result, problems);
         }
@@ -1491,7 +1493,6 @@ var parkingGeometry = (function () {
         let metric = area.metricPoints.map(p => [ p.x, p.y ]);
 
         return g.layout(metric, area.baseEdge, area.spaceWidth, area.spaceLength, area.spaceAngle, true).spaces.map(space => ({
-            slot: space.slot,
             points: g.planeCurve(hi, lens, space.points).map(([ u, v ]) => ({ u, v })),
         }));
     };
@@ -1591,7 +1592,7 @@ var parkingGeometry = (function () {
         opposite sides of their shared side at any depths, so spaces never overlap and an area never has more free
         spaces than its capacity, an empty area has exactly its capacity
 
-        returns [ { parkingAreaId, spaces: [ [ { x, y } ] ] } ] for enabled areas, points in pixels of the frame: the four corners
+        returns [ { parkingAreaId, polygons: [ [ { x, y } ] ] } ] for enabled areas, points in pixels of the frame: the four corners
         of a space, or its outline as it lies on the frame (CURVE_SEGMENTS points per side) when there is a lens distortion
     */
 
@@ -1645,7 +1646,7 @@ var parkingGeometry = (function () {
                 continue;
             }
 
-            let item = { parkingAreaId: area.parkingAreaId, spaces: [] };
+            let item = { parkingAreaId: area.parkingAreaId, polygons: [] };
             result.push(item);
 
             let r = rowGeometry(area.metricPoints.map(p => [ p.x, p.y ]), area.baseEdge, area.spaceWidth, area.spaceLength, area.spaceAngle);
@@ -1709,7 +1710,7 @@ var parkingGeometry = (function () {
                     let t0 = depthOf(s0);
 
                     if (t0 !== null) {
-                        item.spaces.push(pixels(r.space(s0 + t0 * r.slide, t0)));
+                        item.polygons.push(pixels(r.space(s0 + t0 * r.slide, t0)));
                     }
                 }
 
