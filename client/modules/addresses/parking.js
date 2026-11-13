@@ -82,6 +82,8 @@
             calA: "",
             calB: "",
             checkLength: "2.5",
+            // the setup guide is expanded: null - automatically, while there is no configuration or it is not calibrated
+            guideOpen: null,
             // "markup" or "result": the latest occupancy result of the camera
             view: "markup",
             resultAvailable: AVAIL("cameras", "parkingResult", "GET"),
@@ -1044,6 +1046,17 @@
                 parking.setView(state, "markup");
                 break;
 
+            case "toggleGuide":
+                state.guideOpen = !parking.guideShown(state);
+                parking.renderPanel(state);
+                break;
+
+            case "showGuideCalibration":
+                state.guideOpen = true;
+                parking.renderPanel(state);
+                parking.scrollPanelTo(state, `${state.prefix}parkingGuideCalibration`);
+                break;
+
             case "viewResult":
                 parking.setView(state, "result");
                 break;
@@ -1841,6 +1854,73 @@
         return h;
     },
 
+    guideShown: function (state) {
+        if (state.guideOpen !== null) {
+            return state.guideOpen;
+        }
+        return !state.draft || !state.draft.calibration;
+    },
+
+    scrollPanelTo: function (state, id) {
+        let panel = $(`#${state.prefix}parkingPanel`);
+        let target = $(`#${id}`);
+        if (panel.length && target.length) {
+            panel.scrollTop(panel.scrollTop() + target.position().top - 8);
+        }
+    },
+
+    /**
+     * the setup guide: the steps in the order the markup is built, the calibration is stressed
+     * because the capacity, the vehicle footprints and the free spaces are all reasoned about on the parking plane
+     */
+
+    guide: function (state) {
+        let parking = modules.addresses.parking;
+        let shown = parking.guideShown(state);
+        let step = (key, body, id) => `<li class="mb-2"${id ? ` id="${id}"` : ""}><div class="font-weight-bold">${i18n("addresses.parkingGuide" + key + "Title")}</div>${body || i18n("addresses.parkingGuide" + key)}</li>`;
+        let h = "";
+
+        h += `<div class="card mb-2">`;
+        h += `<div class="card-header p-1 pl-2 pointer" data-parking-action="toggleGuide"><i class="fas fa-fw fa-chevron-${shown ? "down" : "right"} mr-1"></i><i class="far fa-fw fa-question-circle mr-1"></i>${i18n("addresses.parkingGuide")}</div>`;
+
+        if (shown) {
+            let calibration = "";
+            calibration += `<div class="alert alert-warning p-2 mt-1 mb-1"><i class="fas fa-fw fa-exclamation-triangle mr-1"></i>${i18n("addresses.parkingGuideCalibrationWhy")}</div>`;
+            calibration += `<ul class="pl-3 mb-0">`;
+            for (let tip of [ "Rectangle", "Corners", "Measure", "Outside" ]) {
+                calibration += `<li>${i18n("addresses.parkingGuideCalibration" + tip)}</li>`;
+            }
+            calibration += `</ul>`;
+
+            h += `<div class="card-body p-2 small">`;
+            h += `<ol class="pl-3 mb-0">`;
+            h += step("Lens");
+            h += step("Calibration", calibration, `${state.prefix}parkingGuideCalibration`);
+            h += step("Checks", i18n("addresses.parkingGuideChecks", Math.round(parkingGeometry.CHECK_WARNING * 100), Math.round(parkingGeometry.CHECK_FAILURE * 100)));
+            let areas = i18n("addresses.parkingGuideAreas");
+            areas += `<ul class="pl-3 mb-0">`;
+            areas += `<li>${i18n("addresses.parkingGuideAreasOneRow")}</li>`;
+            areas += `<li>${i18n("addresses.parkingGuideAreasEdge")}</li>`;
+            areas += `<li>${i18n("addresses.parkingGuideAreasAngle")}<ul class="pl-3 mb-0">`;
+            for (let angle of [ "0", "30", "90" ]) {
+                areas += `<li>${i18n("addresses.parkingGuideAreasAngle" + angle)}</li>`;
+            }
+            areas += `</ul></li>`;
+            areas += `</ul>`;
+
+            h += step("Areas", areas);
+            h += step("Verify");
+            h += step("Save");
+            h += step("Result");
+            h += `</ol>`;
+            h += `</div>`;
+        }
+
+        h += `</div>`;
+
+        return h;
+    },
+
     renderPanel: function (state) {
         let parking = modules.addresses.parking;
 
@@ -1875,6 +1955,7 @@
 
         if (!d) {
             h += `<div class="alert alert-secondary p-2">${i18n("addresses.parkingNoConfig")}</div>`;
+            h += parking.guide(state);
             h += textButton("refresh", "fas fa-sync-alt", i18n("addresses.areaRefresh"), "btn-info");
             if (state.editable) {
                 h += textButton("create", "fas fa-plus-circle", i18n("addresses.parkingCreate"), "btn-success", !state.imageSize);
@@ -1894,6 +1975,8 @@
             panel.html(h + parking.resultPanel(state, textButton));
             return;
         }
+
+        h += parking.guide(state);
 
         // status
 
@@ -1986,54 +2069,7 @@
         h += `</div>`;
         h += `<div class="small text-muted mb-2">${i18n("addresses.parkingDetectionHint", parkingGeometry.DETECTION_IMAGE_SIZE[0], parkingGeometry.DETECTION_IMAGE_SIZE[1], settings.interval, settings.minInterval)}</div>`;
 
-        // areas
-
-        h += `<div class="font-weight-bold mt-2 mb-1">${i18n("addresses.parkingAreas")}</div>`;
-
-        if (d.areas.length) {
-            h += `<div class="list-group mb-2">`;
-            d.areas.forEach((area, i) => {
-                let analysis = parking.areaAnalysis(state, i);
-                let capacity = (analysis && analysis.capacity !== null) ? analysis.capacity : "—";
-                let color = parking.colors[i % parking.colors.length];
-                h += `<div class="list-group-item list-group-item-action p-1 pl-2 pointer${state.active === i ? " active" : ""}" data-parking-action="selectArea" data-index="${i}">`;
-                h += `<i class="fas fa-fw fa-square mr-1" style="color: ${color};"></i>${escapeHTML(area.name || ("#" + (i + 1)))}`;
-                h += `<span class="float-right">${i18n("addresses.parkingCapacity", capacity)}</span>`;
-                h += `</div>`;
-            });
-            h += `</div>`;
-        } else {
-            h += `<div class="text-muted small mb-2">${i18n("addresses.parkingNoAreas")}</div>`;
-        }
-
-        if (state.editable) {
-            h += textButton("addArea", "fas fa-draw-polygon", i18n("addresses.parkingAddArea"), "btn-success", !!state.mode);
-        }
-
         let area = state.active !== null ? d.areas[state.active] : null;
-
-        if (area) {
-            let i = state.active;
-            h += `<div class="card card-body p-2 mt-2 mb-2">`;
-            h += `<div class="form-group mb-1"><label class="mb-0 small">${i18n("addresses.parkingAreaName")}</label>${input("name", area.name, `maxlength="64"`)}</div>`;
-            h += `<div class="form-row">`;
-            h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingSpaceWidth")}</label>${input("spaceWidth", isFinite(area.spaceWidth) ? area.spaceWidth : "")}</div>`;
-            h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingSpaceLength")}</label>${input("spaceLength", isFinite(area.spaceLength) ? area.spaceLength : "")}</div>`;
-            h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingSpaceAngle")}</label>${input("spaceAngle", isFinite(area.spaceAngle) ? area.spaceAngle : "")}</div>`;
-            h += `</div>`;
-            h += `<div class="small text-muted mb-1">${i18n("addresses.parkingSpaceHint")}</div>`;
-            h += `<div class="custom-control custom-checkbox mb-1">`;
-            h += `<input type="checkbox" class="custom-control-input" id="${state.prefix}parkingAreaEnabled" data-parking-field="areaEnabled"${area.enabled ? " checked" : ""}${state.editable ? "" : " disabled"}>`;
-            h += `<label class="custom-control-label" for="${state.prefix}parkingAreaEnabled">${i18n("addresses.parkingAreaEnabled")}</label>`;
-            h += `</div>`;
-            if (state.editable) {
-                h += `<div>`;
-                h += textButton("rotateBase", "fas fa-redo", i18n("addresses.parkingRotateBase"), "btn-light");
-                h += textButton("deleteArea", "fas fa-trash-alt", i18n("addresses.parkingDeleteArea"), "btn-danger", false, i);
-                h += `</div>`;
-            }
-            h += `</div>`;
-        }
 
         // lens distortion
 
@@ -2101,7 +2137,8 @@
         }
 
         if (!d.calibration) {
-            h += `<div class="text-muted small mb-1">${i18n("addresses.parkingNotCalibrated")}</div>`;
+            h += `<div class="alert alert-warning p-2 mt-1 mb-1 small"><i class="fas fa-fw fa-exclamation-triangle mr-1"></i>${i18n("addresses.parkingNotCalibratedWarning")} `;
+            h += `<a href="#" data-parking-action="showGuideCalibration">${i18n("addresses.parkingGuideHowToCalibrate")}</a></div>`;
         } else {
             if (state.editable) {
                 h += `<div class="small text-muted mt-1">${i18n("addresses.parkingCalibrationKeys")}</div>`;
@@ -2109,6 +2146,10 @@
 
             h += `<div class="font-weight-bold mt-2 mb-1 small">${i18n("addresses.parkingChecks")}</div>`;
             h += `<div class="small text-muted mb-1">${i18n("addresses.parkingChecksHint")}</div>`;
+
+            if (!d.calibration.checks.length) {
+                h += `<div class="alert alert-warning p-2 mb-1 small"><i class="fas fa-fw fa-exclamation-triangle mr-1"></i>${i18n("addresses.parkingNoChecksWarning")}</div>`;
+            }
 
             d.calibration.checks.forEach((c, i) => {
                 let measured = parking.checkLength(state, c);
@@ -2127,6 +2168,54 @@
                 h += `<div class="col-8">${textButton("addCheck", "fas fa-ruler", i18n("addresses.parkingAddCheck"), "btn-light", !!state.mode)}</div>`;
                 h += `</div>`;
             }
+        }
+
+
+        // areas
+
+        h += `<div class="font-weight-bold mt-2 mb-1">${i18n("addresses.parkingAreas")}</div>`;
+
+        if (d.areas.length) {
+            h += `<div class="list-group mb-2">`;
+            d.areas.forEach((area, i) => {
+                let analysis = parking.areaAnalysis(state, i);
+                let capacity = (analysis && analysis.capacity !== null) ? analysis.capacity : "—";
+                let color = parking.colors[i % parking.colors.length];
+                h += `<div class="list-group-item list-group-item-action p-1 pl-2 pointer${state.active === i ? " active" : ""}" data-parking-action="selectArea" data-index="${i}">`;
+                h += `<i class="fas fa-fw fa-square mr-1" style="color: ${color};"></i>${escapeHTML(area.name || ("#" + (i + 1)))}`;
+                h += `<span class="float-right">${i18n("addresses.parkingCapacity", capacity)}</span>`;
+                h += `</div>`;
+            });
+            h += `</div>`;
+        } else {
+            h += `<div class="text-muted small mb-2">${i18n("addresses.parkingNoAreas")}</div>`;
+        }
+
+        if (state.editable) {
+            h += textButton("addArea", "fas fa-draw-polygon", i18n("addresses.parkingAddArea"), "btn-success", !!state.mode);
+        }
+
+        if (area) {
+            let i = state.active;
+            h += `<div class="card card-body p-2 mt-2 mb-2">`;
+            h += `<div class="form-group mb-1"><label class="mb-0 small">${i18n("addresses.parkingAreaName")}</label>${input("name", area.name, `maxlength="64"`)}</div>`;
+            h += `<div class="form-row">`;
+            h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingSpaceWidth")}</label>${input("spaceWidth", isFinite(area.spaceWidth) ? area.spaceWidth : "")}</div>`;
+            h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingSpaceLength")}</label>${input("spaceLength", isFinite(area.spaceLength) ? area.spaceLength : "")}</div>`;
+            h += `<div class="form-group col-4 mb-1"><label class="mb-0 small">${i18n("addresses.parkingSpaceAngle")}</label>${input("spaceAngle", isFinite(area.spaceAngle) ? area.spaceAngle : "")}</div>`;
+            h += `</div>`;
+            h += `<div class="small text-muted mb-1">${i18n("addresses.parkingSpaceHint")}</div>`;
+            h += `<div class="custom-control custom-checkbox mb-1">`;
+            h += `<input type="checkbox" class="custom-control-input" id="${state.prefix}parkingAreaEnabled" data-parking-field="areaEnabled"${area.enabled ? " checked" : ""}${state.editable ? "" : " disabled"}>`;
+            h += `<label class="custom-control-label" for="${state.prefix}parkingAreaEnabled">${i18n("addresses.parkingAreaEnabled")}</label>`;
+            h += `</div>`;
+            if (state.editable) {
+                h += `<div>`;
+                h += textButton("rotateBase", "fas fa-redo", i18n("addresses.parkingRotateBase"), "btn-light");
+                h += textButton("deleteArea", "fas fa-trash-alt", i18n("addresses.parkingDeleteArea"), "btn-danger", false, i);
+                h += `</div>`;
+            }
+            h += `</div>`;
         }
 
         panel.html(h);
