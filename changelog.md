@@ -19,12 +19,10 @@
 - fixed cameras disappearing from the mobile camera tree after their groups are deleted
 + added MQTT event processing and Zabbix monitoring for Rubetek RACS-1101
 + added a server configuration option to override door-code behavior for blocked flats
-+ added parking configuration of cameras: parking areas markup, calibration and computed capacity on the new "Parking" tab of the camera form
-! added the optional parking backend ("parking": {"backend": "internal"}), DB version 103
-+ added the parking occupancy service (server/services/parking): free parking spaces found on camera frames with FALPRS vehicle detection, shown on the "Result" view of the "Parking" tab
-! parking areas hold one row of spaces, detection size, confidence threshold and processing interval are set per camera, new "parking" backend options "interval", "minInterval" and "storage"
-+ a camera can be processed right now from the "Result" view of the "Parking" tab, new "parking" backend option "service"
-+ parking calibration takes the lens distortion of wide-angle cameras into account: it is fitted to straight lines drawn on the frame
+- fixed broadcast modal overflow caused by the hint
++ highlighted active table filters and added matching row counts
+- corrected translation typos, misspelled keys, format placeholders and misleading English text
++ added parking support with capacity calculation, free-space detection and mobile API
 + added explicit saving of Beward settings during autoconfiguration
 ```
 

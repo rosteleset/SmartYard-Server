@@ -1,5 +1,11 @@
 # devel
 
+## 2026-11-13
+
+### Parking occupancy service
+
+A new feature lets users check parking space availability. See the [setup guide](install/16.parking.md) to enable it.
+
 ## 2026-11-02
 
 ### Rubetek RACS-1101 events
