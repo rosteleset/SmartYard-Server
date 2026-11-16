@@ -78,11 +78,6 @@ abstract class beward extends domophone
      */
     protected ?bool $hasExternalRfidTable = null;
 
-    public function __destruct()
-    {
-        $this->forceSave();
-    }
-
     public function addRfid(string $code, int $apartment = 0): void
     {
         $this->loadExternalRfidTableExists();
@@ -440,6 +435,11 @@ abstract class beward extends domophone
             'dtmfout2' => $code2,
             'dtmfout3' => $code3,
         ]);
+    }
+
+    public function syncData(): void
+    {
+        $this->forceSave();
     }
 
     protected function getApartments(): array

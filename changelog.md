@@ -25,6 +25,7 @@
 ! parking areas hold one row of spaces, detection size, confidence threshold and processing interval are set per camera, new "parking" backend options "interval", "minInterval" and "storage"
 + a camera can be processed right now from the "Result" view of the "Parking" tab, new "parking" backend option "service"
 + parking calibration takes the lens distortion of wide-angle cameras into account: it is fitted to straight lines drawn on the frame
++ added explicit saving of Beward settings during autoconfiguration
 ```
 
 ## v1.3.0
