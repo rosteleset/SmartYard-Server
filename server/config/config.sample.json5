@@ -18,6 +18,8 @@
         "payments_url": "https://example.com/static/payments/template.html",
         "city_cams": false,
         "support_phone": "+7(1234)567890",
+        // Optional registration consent text with HTML link support. Empty or omitted: not sent.
+        "privacy_policy": "",
         "chat": true,
         "chat_url": "<!-- your chat url or remove it and use talkMe by default with options below--!>",
         "talk_me_id": "<!-- put your talkMe chat id here --!>",

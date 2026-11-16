@@ -24,6 +24,7 @@
 - corrected translation typos, misspelled keys, format placeholders and misleading English text
 + added parking support with capacity calculation, free-space detection and mobile API
 + added explicit saving of Beward settings during autoconfiguration
++ added configurable privacy policy text to mobile options
 ```
 
 ## v1.3.0

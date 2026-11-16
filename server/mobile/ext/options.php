@@ -20,6 +20,7 @@
      * @apiSuccess {String} chatOptions.domain domain чата meTalk
      * @apiSuccess {String} chatOptions.token token чата meTalk
      * @apiSuccess {String} [supportPhone] номер телефона техподдержки
+     * @apiSuccess {String} [privacyPolicy] Registration consent text with HTML link support. Omitted when empty.
      * @apiSuccess {String} [timeZone = "Europe/Moscow"] Time Zone identifier
      * @apiSuccess {String="turnOnOnly","turnOnAndOff"} [guestAccess = "turnOnOnly"] Тип гостевого доступа.
      * @apiSuccess {Number} [version] Версия API
@@ -64,6 +65,11 @@
 
     if (@$config["mobile"]["support_phone"]) {
         $response["supportPhone"] = $config["mobile"]["support_phone"];
+    }
+
+    $privacyPolicy = $config["mobile"]["privacy_policy"] ?? "";
+    if (is_string($privacyPolicy) && trim($privacyPolicy) !== "") {
+        $response["privacyPolicy"] = $privacyPolicy;
     }
 
     if (@$config["mobile"]["payments_url"]) {
