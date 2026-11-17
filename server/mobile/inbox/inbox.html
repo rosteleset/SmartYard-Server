@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark">
     <title>inbox</title>
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,11 +13,38 @@
     -->
     <style type="text/css">
         :root {
+            color-scheme: light dark;
             --accent: #28323E;
             --no-accent: #6D7A8A;
             --light-background: #FFFFFF;
             --shaded-background: #F3F4FA;
             --brand: #298BFF;
+        }
+
+        :root[data-smartyard-theme="light"] {
+            color-scheme: light;
+        }
+
+        :root[data-smartyard-theme="dark"] {
+            color-scheme: dark;
+            --accent: #E0E0E0;
+            --no-accent: #A0A0A0;
+            --light-background: #191919;
+            --shaded-background: #0A0A0A;
+            --brand: #4399FF;
+            --metadata-opacity: .85;
+        }
+
+        /* Use the WebView preference when the app does not send an explicit theme. */
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-smartyard-theme]) {
+                --accent: #E0E0E0;
+                --no-accent: #A0A0A0;
+                --light-background: #191919;
+                --shaded-background: #0A0A0A;
+                --brand: #4399FF;
+                --metadata-opacity: .85;
+            }
         }
 
         @font-face {
@@ -155,7 +183,7 @@
             font-size: 14px;
             line-height: 18px;
             color: var(--no-accent);
-            opacity: .5;
+            opacity: var(--metadata-opacity, .5);
         }
 
         .inbox-date {
@@ -224,6 +252,7 @@
         .inbox-message-icon.icon-avatar {
             background: url('static/icon/avatar.png') 0 0 no-repeat;
             background-size: 100%;
+            filter: url(#inbox-avatar-outline);
         }
 
         .clearfix:before,
@@ -236,6 +265,17 @@
 </head>
 
 <body>
+    <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+        <filter id="inbox-avatar-outline" color-interpolation-filters="sRGB">
+            <!-- The stroke and fill have red levels 66 and 232, mapping to opacity 1 and 0. -->
+            <feColorMatrix type="matrix" values="
+                0 0 0 0 .258824
+                0 0 0 0 .552941
+                0 0 0 0 1
+                -1.536145 0 0 0 1.397590" />
+            <feComposite in2="SourceAlpha" operator="in" />
+        </filter>
+    </svg>
     <div class="inbox-block">%c</div>
     <script type="application/javascript">
         //    scrollingElement = (document.scrollingElement || document.body)
