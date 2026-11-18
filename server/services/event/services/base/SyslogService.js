@@ -26,6 +26,7 @@ class SyslogService {
         this.unit = unit;
         this.config = config;
         this.spamWords = spamWords;
+        this.isCustom = false;
     }
 
     /**
@@ -115,6 +116,7 @@ class SyslogService {
 
         syslog.start({ port: this.config.port }).then(() => {
             console.log(
+                (this.isCustom ? 'Custom ' : '') +
                 `${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port}` +
                 ` || NAT is ${natEnabled}` +
                 ` || mode: ${mode}`,
