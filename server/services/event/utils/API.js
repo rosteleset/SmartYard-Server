@@ -122,8 +122,8 @@ class API {
      * @param {string|null} ip device IP address if exists
      * @param {string|null} subId unique device identifier if required
      * @param {number:{0,1,2}} door door ID (lock ID)
-     * @param {string|number|null} detail RFID key number or personal code number
-     * @param {"rfid"|"code"|"dtmf"|"button"} by event type
+     * @param {string|number|null} detail RFID/BLE key number or personal code number
+     * @param {"rfid"|"code"|"dtmf"|"button"|"ble"} by event type
      */
     async openDoor({ date, ip = null, subId = null, door = 0, detail, by }) {
         const payload = { date, ip, subId, door, event: null, detail };
@@ -138,6 +138,9 @@ class API {
                     break;
                 case "button":
                     payload.event = EVENT.OPEN_BY_BUTTON;
+                    break;
+                case "ble":
+                    payload.event = EVENT.OPEN_BY_BLE;
                     break;
             }
             return await internalAPI.post("/actions/openDoor", payload);
