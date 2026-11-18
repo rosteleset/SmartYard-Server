@@ -1,3 +1,4 @@
+import { lstatSync } from 'node:fs';
 import config from "./config.json" with { type: "json" };
 import spamWords from "./spamwords.json" with { type: "json" };
 
@@ -38,6 +39,24 @@ import {
     SERVICE_RACS1101,
 } from "./constants.js";
 
+async function createService(Service, ...args) {
+    const file = new URL(`./services/custom/${Service.name}.js`, import.meta.url);
+
+    if (lstatSync(file, { throwIfNoEntry: false })) {
+        const { default: CustomService } = await import(file);
+
+        if (typeof CustomService !== 'function') {
+            throw new TypeError(`${file.pathname} must provide a default class export`);
+        }
+
+        const service = new CustomService(...args);
+        service.isCustom = true;
+        return service;
+    }
+
+    return new Service(...args);
+}
+
 const { hw } = config;
 
 const serviceParam = process.argv[2]?.toLowerCase();
@@ -56,57 +75,57 @@ const serviceConfig = hw[serviceParam];
 
 switch (serviceParam) {
     case SERVICE_BEWARD:
-        const bewardService = new BewardService(SERVICE_BEWARD, serviceConfig, spamWords[SERVICE_BEWARD]);
+        const bewardService = await createService(BewardService, SERVICE_BEWARD, serviceConfig, spamWords[SERVICE_BEWARD]);
         bewardService.createSyslogServer();
         break;
 
     case SERVICE_BEWARD_DS:
-        const bewardServiceDS = new BewardServiceDS(SERVICE_BEWARD_DS, serviceConfig, spamWords[SERVICE_BEWARD_DS]);
+        const bewardServiceDS = await createService(BewardServiceDS, SERVICE_BEWARD_DS, serviceConfig, spamWords[SERVICE_BEWARD_DS]);
         bewardServiceDS.createSyslogServer();
         break;
 
     case SERVICE_QTECH:
-        const qtechService = new QtechService(SERVICE_QTECH, serviceConfig, spamWords[SERVICE_QTECH]);
+        const qtechService = await createService(QtechService, SERVICE_QTECH, serviceConfig, spamWords[SERVICE_QTECH]);
         qtechService.createSyslogServer();
         break;
 
     case SERVICE_AKUVOX:
-        const akuvoxService = new AkuvoxService(SERVICE_AKUVOX, serviceConfig, spamWords[SERVICE_AKUVOX]);
+        const akuvoxService = await createService(AkuvoxService, SERVICE_AKUVOX, serviceConfig, spamWords[SERVICE_AKUVOX]);
         akuvoxService.createSyslogServer();
         break;
 
     case SERVICE_IS:
-        const isService = new IsService(SERVICE_IS, serviceConfig, spamWords[SERVICE_IS]);
+        const isService = await createService(IsService, SERVICE_IS, serviceConfig, spamWords[SERVICE_IS]);
         isService.createSyslogServer();
         break;
 
     case SERVICE_RUBETEK:
-        const rubetekService = new RubetekService(SERVICE_RUBETEK, serviceConfig, spamWords[SERVICE_RUBETEK]);
+        const rubetekService = await createService(RubetekService, SERVICE_RUBETEK, serviceConfig, spamWords[SERVICE_RUBETEK]);
         rubetekService.createSyslogServer();
         break;
 
     case SERVICE_UFANET:
-        const ufanetService = new UfanetService(SERVICE_UFANET, serviceConfig, spamWords[SERVICE_UFANET]);
+        const ufanetService = await createService(UfanetService, SERVICE_UFANET, serviceConfig, spamWords[SERVICE_UFANET]);
         ufanetService.createSyslogServer();
         break;
 
     case SERVICE_UFANET_MINI:
-        const ufanetMiniService = new UfanetMiniService(SERVICE_UFANET_MINI, serviceConfig);
+        const ufanetMiniService = await createService(UfanetMiniService, SERVICE_UFANET_MINI, serviceConfig);
         ufanetMiniService.createSyslogServer();
         break;
 
     case SERVICE_BASIP:
-        const basipService = new BasipService(SERVICE_BASIP, serviceConfig);
+        const basipService = await createService(BasipService, SERVICE_BASIP, serviceConfig);
         basipService.start();
         break;
 
     case SERVICE_NONAME_WEBHOOK:
-        const nonameWebhookService = new NonameWebHookService(SERVICE_NONAME_WEBHOOK, serviceConfig);
+        const nonameWebhookService = await createService(NonameWebHookService, SERVICE_NONAME_WEBHOOK, serviceConfig);
         nonameWebhookService.start();
         break;// example webhook event service
 
     case SERVICE_OMNY:
-        const omnyWebhookService = new OmnyWebHookService(SERVICE_OMNY, serviceConfig);
+        const omnyWebhookService = await createService(OmnyWebHookService, SERVICE_OMNY, serviceConfig);
         omnyWebhookService.start();
         break;// example webhook for ip camera (example OMNY miniDome2T-U v2), make api call to LPRS or FRS services
 
@@ -115,32 +134,34 @@ switch (serviceParam) {
             console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`);
             process.exit(1);
         }
-        const sputnikCloudService = new SputnikCloudService(SERVICE_SPUTNIK_CLOUD, serviceConfig);
+        const sputnikCloudService = await createService(SputnikCloudService, SERVICE_SPUTNIK_CLOUD, serviceConfig);
         sputnikCloudService.start();
         break;
 
     case SERVICE_BROVOTECH:
-        const brovotechService = new BrovotechService(SERVICE_BROVOTECH, serviceConfig, spamWords[SERVICE_BROVOTECH]);
+        const brovotechService = await createService(BrovotechService, SERVICE_BROVOTECH, serviceConfig, spamWords[SERVICE_BROVOTECH]);
         brovotechService.createSyslogServer();
         break;
 
     case SERVICE_IFLOW:
-        const iflowWebhookService = new IFlowWebHookService(SERVICE_IFLOW, serviceConfig);
+        const iflowWebhookService = await createService(IFlowWebHookService, SERVICE_IFLOW, serviceConfig);
         iflowWebhookService.start();
         break;
 
     case SERVICE_DAHUA:
-        const dahuaService = new DahuaService(serviceConfig);
+        const dahuaService = await createService(DahuaService, serviceConfig);
         dahuaService.start();
         break;
 
     case SERVICE_RACS1101:
-        import('./services/Racs1101Service.js')
-            .then(({ Racs1101Service }) => new Racs1101Service(SERVICE_RACS1101, serviceConfig).start())
-            .catch(error => {
-                console.error(error);
-                process.exitCode = 1;
-            });
+        try {
+            const { Racs1101Service } = await import('./services/Racs1101Service.js');
+            const racs1101Service = await createService(Racs1101Service, SERVICE_RACS1101, serviceConfig);
+            await racs1101Service.start();
+        } catch (error) {
+            console.error(error);
+            process.exitCode = 1;
+        }
         break;
 
     default:

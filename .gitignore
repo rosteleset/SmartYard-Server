@@ -85,6 +85,8 @@ server/mqtt/package-lock.json
 server/services/push/assets/*
 server/services/push/.env*
 server/services/event/config.json
+server/services/event/services/custom/*
+!server/services/event/services/custom/.gitkeep
 server/services/parking/config.json
 server/services/sys_exporter/.env
 server/mobile/**/custom/**
