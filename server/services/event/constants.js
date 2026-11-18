@@ -8,6 +8,7 @@ export const EVENT = {
     "OPEN_BY_CALL": 7,
     "OPEN_BY_BUTTON": 8,
     "OPEN_BY_VEHICLE": 9,
+    "OPEN_BY_BLE": 10,
 };
 
 // services names:
