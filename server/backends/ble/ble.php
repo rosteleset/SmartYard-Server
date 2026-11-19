@@ -11,6 +11,17 @@ use Exception;
 abstract class ble extends backend
 {
     /**
+     * Returns the ID of the subscriber who owns the BLE key.
+     *
+     * @param string $key BLE key in the format returned by getKeys().
+     * @return int|null Subscriber ID, or null if no unique owner is known.
+     */
+    public function findSubscriberIdByKey(string $key): ?int
+    {
+        return null;
+    }
+
+    /**
      * Returns the subscriber's BLE keys for mobile applications.
      *
      * @param int $subscriberId Subscriber ID.

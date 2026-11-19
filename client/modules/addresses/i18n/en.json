@@ -626,6 +626,7 @@
     "eventType6": "Code",
     "eventType7": "Call",
     "eventType9": "License plate number",
+    "eventType10": "BLE",
     "eventType1": "Unanswered call",
     "eventType2": "Answered call",
     "flatPlog": "Flat event log",

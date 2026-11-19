@@ -23,6 +23,7 @@
             const EVENT_OPENED_BY_CODE = 6;
             const EVENT_OPENED_GATES_BY_CALL = 7;
             const EVENT_OPENED_BY_VEHICLE = 9;
+            const EVENT_OPENED_BY_BLE = 10;
 
             //колонки событий
             const COLUMN_DATE = 'date';

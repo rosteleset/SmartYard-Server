@@ -168,6 +168,10 @@
                             $event["detailX"]["key"] = strval($row[plog::COLUMN_RFID]);
                             break;
 
+                        case plog::EVENT_OPENED_BY_BLE:
+                            $event["detailX"]["key"] = strval($row[plog::COLUMN_CODE]);
+                            break;
+
                         case plog::EVENT_OPENED_BY_APP:
                             if ($phones && $phones->user_phone) {
                                 $event["detailX"]["phone"] = strval($phones->user_phone);

@@ -763,6 +763,25 @@
                 return array_intersect(array_merge($flats1, $flats2), $flats3);
             }
 
+            //получение списка flat_id по BLE-ключу на домофоне
+            private function getFlatIdByBleKey($ble_key, $domophone_id) {
+                $ble = loadBackend('ble');
+                $subscriber_id = $ble ? $ble->findSubscriberIdByKey($ble_key) : null;
+                if ($subscriber_id === null) {
+                    return [];
+                }
+
+                $households = loadBackend('households');
+                $subscribers = $households->getSubscribers('id', $subscriber_id, ['withoutHouses']);
+                if (empty($subscribers[0]['flats'])) {
+                    return [];
+                }
+
+                $flats1 = array_map('self::getFlatId', $subscribers[0]['flats']);
+                $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $domophone_id));
+                return array_intersect($flats1, $flats2);
+            }
+
             //получение списка flat_id по коду открытия на устройстве
             private function getFlatIdByCode($code, $domophone_id) {
                 $households = loadBackend('households');
@@ -900,6 +919,17 @@
                         $flat_list = $this->getFlatIdByRfid($rfid_key, $domophone_id);
                         if (!$flat_list) {
                             debugMsg("    Skip the event because there is no apartment linked to the rfid = $rfid_key.");
+                            continue;
+                        }
+                    }
+
+                    if ($event_type == self::EVENT_OPENED_BY_BLE) {
+                        $event_data[self::COLUMN_OPENED] = 1;
+                        $ble_key = $row['detail'];
+                        $event_data[self::COLUMN_CODE] = $ble_key;
+                        $flat_list = $this->getFlatIdByBleKey($ble_key, $domophone_id);
+                        if (!$flat_list) {
+                            debugMsg("    Skip the event because there is no apartment linked to the BLE key = $ble_key.");
                             continue;
                         }
                     }

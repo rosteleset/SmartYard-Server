@@ -534,7 +534,7 @@
     },
 
     allEventTypes: function () {
-        return [1, 2, 3, 4, 5, 6, 7, 9];
+        return [1, 2, 3, 4, 5, 6, 7, 9, 10];
     },
 
     defaultEventTypeFilter: function () {
@@ -590,6 +590,7 @@
             case 2:
                 return detail.opened === "t" ? i18n("addresses.plogOpened") : i18n("addresses.plogNotOpened");
             case 3:
+            case 10:
                 return detail.key || "";
             case 4:
                 return detail.phone || "";
@@ -831,7 +832,7 @@
             if (scope.mode === "key") {
                 cols.push(
                     { data: event.mechanizmaDescription || event.objectMechanizma, nowrap: true },
-                    { data: modules.addresses.flatPlog.formatDetail(event) },
+                    { data: escapeHTML(modules.addresses.flatPlog.formatDetail(event)) },
                     { data: modules.addresses.flatPlog.formatPreview(event), nowrap: true },
                 );
             } else {
@@ -849,7 +850,7 @@
                 }
 
                 cols.push(
-                    { data: modules.addresses.flatPlog.formatDetail(event) },
+                    { data: escapeHTML(modules.addresses.flatPlog.formatDetail(event)) },
                     { data: modules.addresses.flatPlog.formatPreview(event), nowrap: true },
                 );
             }

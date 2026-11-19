@@ -633,6 +633,7 @@
     "eventType6": "Код",
     "eventType7": "Звонок",
     "eventType9": "Номер автомобиля",
+    "eventType10": "BLE",
     "eventType1": "Звонок без ответа",
     "eventType2": "Звонок с ответом",
     "flatPlog": "Журнал событий квартиры",
