@@ -10,7 +10,7 @@
      * @apiParam {Number} date timestamp related to the call finished event.
      * @apiParam {string|null} ip IP address associated with the event.
      * @apiParam {string|null} subId subscription ID related to the event
-     * @apiParam {Number=1,2,3,4,5,6,7,8} event Event code
+     * @apiParam {Number=1,2,3,4,5,6,7,8,10} event Event code
      * @apiParam {Number=0,1} door Number door 0 - main door , 1 0 second door
      * @apiParam {string} detail
      *
@@ -37,6 +37,7 @@
         "OPEN_BY_CODE" => 6,
         "OPEN_BY_CALL" => 7,
         "OPEN_BY_BUTTON" => 8,
+        "OPEN_BY_BLE" => 10,
     ];
 
     if (!isset($postdata["ip"]) && !isset($postdata["subId"])) {
@@ -76,6 +77,13 @@
 
             // paranoidEvent (pushes)
             $households->paranoidEvent($ip, $subId, $door, "rfId", $detail);
+
+            response(201, ["id" => $plogDoorOpen]);
+
+        case $events['OPEN_BY_BLE']:
+            $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
+
+            // TODO: paranoid
 
             response(201, ["id" => $plogDoorOpen]);
 
