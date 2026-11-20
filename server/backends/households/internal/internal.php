@@ -3935,7 +3935,6 @@
                 switch ($by) {
                     case "rfId":
                     case "app":
-                    case "code":
                     case "lp":
                         $paranoids = $this->db->get("
                             select * from (
@@ -3974,6 +3973,46 @@
                             "comments" => "comments",
                         ]);
 
+                        break;
+
+                    case "code":
+                        if (!is_string($detail) && !is_int($detail)) {
+                            return false;
+                        }
+
+                        $paranoids = $this->db->get("
+                            with entrance_pins as (
+                                select f.house_flat_id, f.address_house_id,
+                                    substring(f.open_code from '^[[:space:]]*[+]?(?:[0-9]+[.]?[0-9]*|[.][0-9]+)(?:[eE][+-]?[0-9]+)?') as stored_code,
+                                    substring(:detail from '^0*([1-9][0-9]*)$') as pin
+                                from houses_entrances_flats ef
+                                join houses_flats f using (house_flat_id)
+                                where ef.house_entrance_id = :house_entrance_id
+                            )
+                            select distinct on (d.subscriber_device_id)
+                                p.address_house_id, d.platform, d.push_token, d.push_token_type, d.ua, w.comments
+                            from entrance_pins p
+                            join houses_watchers w using (house_flat_id)
+                            join houses_subscribers_devices d using (subscriber_device_id)
+                            join houses_flats_subscribers fs on fs.house_flat_id = p.house_flat_id
+                                and fs.house_subscriber_id = d.house_subscriber_id
+                            where w.event_type = :event_type and d.push_token <> ''
+                              and case when jsonb_path_exists(to_jsonb(p.stored_code), '$.double()', '{}', true)
+                                  then trunc(p.stored_code::double precision)::text end = p.pin
+                              and (coalesce(w.event_detail, '') = '' or ltrim(w.event_detail, '0') = p.pin)
+                            order by d.subscriber_device_id, (coalesce(w.event_detail, '') <> '') desc, w.house_watcher_id
+                        ", [
+                            "event_type" => $map_event_type[$by]["event_type"],
+                            "detail" => $detail,
+                            "house_entrance_id" => $entrance["entranceId"],
+                        ], [
+                            "address_house_id" => "houseId",
+                            "platform" => "platform",
+                            "push_token" => "pushToken",
+                            "push_token_type" => "tokenType",
+                            "ua" => "ua",
+                            "comments" => "comments",
+                        ]);
                         break;
 
                     case "face":
