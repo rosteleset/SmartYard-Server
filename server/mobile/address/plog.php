@@ -28,7 +28,7 @@
      * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - DVR, 2 - FRS)
      * @apiSuccess {object} [-.detailX] детализация события
      * @apiSuccess {string="t","f"} [-.detailX.opened] открыли или нет (1, 2)
-     * @apiSuccess {string} [-.detailX.key] ключ (3)
+     * @apiSuccess {string} [-.detailX.key] ключ (3, 10)
      * @apiSuccess {string} [-.detailX.phone] телефон (4)
      * @apiSuccess {string} [-.detailX.faceId] идентификатор лица (5+)
      * @apiSuccess {string} [-.detailX.code] код открытия (6)
@@ -189,6 +189,10 @@
 
                     case plog::EVENT_OPENED_BY_KEY:
                         $e_details['detailX']['key'] = strval($row[plog::COLUMN_RFID]);
+                        break;
+
+                    case plog::EVENT_OPENED_BY_BLE:
+                        $e_details['detailX']['key'] = strval($row[plog::COLUMN_CODE]);
                         break;
 
                     case plog::EVENT_OPENED_BY_APP:

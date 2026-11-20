@@ -83,7 +83,9 @@
         case $events['OPEN_BY_BLE']:
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
 
-            // TODO: paranoid
+            // paranoidEvent (pushes)
+            $households = loadBackend('households');
+            $households->paranoidEvent($ip, $subId, $door, "ble", $detail);
 
             response(201, ["id" => $plogDoorOpen]);
 

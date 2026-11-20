@@ -3940,12 +3940,18 @@
                         "title" => "mobile.paranoidTitleFace",
                         "message" => "mobile.paranoidMsgFace",
                     ],
+                    "ble" => [
+                        "event_type" => "10",
+                        "title" => "mobile.paranoidTitleBle",
+                        "message" => "mobile.paranoidMsgBle",
+                    ],
                 ];
 
                 switch ($by) {
                     case "rfId":
                     case "app":
                     case "lp":
+                    case "ble":
                         $paranoids = $this->db->get("
                             select * from (
                                 select
@@ -4103,6 +4109,12 @@
                             $this->redis->setex("live_" . $hash, 3 * 60, $cameraId);
                         }
 
+                        $messageDetail = $paranoid["comments"] ?: $detail;
+                        if ($by === "ble") {
+                            // Keep vendor-specific BLE key formats out of user-facing messages
+                            $messageDetail = $paranoid["comments"] ? " (" . $paranoid["comments"] . ")" : "";
+                        }
+
                         if (!$isdn->push([
                             "token" => $paranoid["pushToken"],
                             "type" => ((int)$paranoid["platform"] === 1) ? 0 : $paranoid["tokenType"], // force FCM for Apple for text messages
@@ -4110,7 +4122,7 @@
                             "ttl" => 90,
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
                             "title" => i18nL($l, $map_event_type[$by]["title"]),
-                            "msg" => i18nL($l, $map_event_type[$by]["message"], $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ?: $detail),
+                            "msg" => i18nL($l, $map_event_type[$by]["message"], $house["houseFull"], $entrance["callerId"], $messageDetail),
                             "houseId" => $paranoid["houseId"],
                             "hash" => $hash,
                             "sound" => "default",

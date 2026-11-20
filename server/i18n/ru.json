@@ -54,6 +54,8 @@
         "addressAlreadyExists": "Некоторые адреса уже были доступны вам в приложении",
         "maxAttempts": "Превышено максимальное число попыток ввода",
         "pinError": "Пин-код введен неверно",
+        "paranoidTitleBle": "Открытие двери по Bluetooth",
+        "paranoidMsgBle": "%s, %s открыта по Bluetooth%s",
         "paranoidTitleRf": "Открытие двери по ключу",
         "paranoidMsgRf": "%s, %s открыта ключом \"%s\"",
         "paranoidTitleApp": "Открытие двери из приложения",

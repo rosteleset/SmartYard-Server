@@ -54,6 +54,8 @@
         "addressAlreadyExists": "Some addresses were already available to you in the app",
         "maxAttempts": "Maximum number of login attempts exceeded",
         "pinError": "The PIN code was entered incorrectly",
+        "paranoidTitleBle": "Door opened via Bluetooth",
+        "paranoidMsgBle": "%s, %s opened via Bluetooth%s",
         "paranoidTitleRf": "Door opened by rfId",
         "paranoidMsgRf": "%s, %s opened by rfId \"%s\"",
         "paranoidTitleApp": "Door opened from app",
