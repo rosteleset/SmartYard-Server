@@ -25,6 +25,8 @@
 + added parking support with capacity calculation, free-space detection and mobile API
 + added explicit saving of Beward settings during autoconfiguration
 + added configurable privacy policy text to mobile options
++ added dark theme support to the mobile inbox
+- fixed personal door-code notifications being sent to subscribers of unrelated flats
 ```
 
 ## v1.3.0
