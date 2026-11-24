@@ -113,6 +113,19 @@
                 }
             }
 
+            private function tokenKeys(string $namespace, $token): array {
+                if (!is_string($token) || $token === "") {
+                    return [];
+                }
+
+                $keys = $this->redis->keys($namespace . ":" . addcslashes($token, '\\*?[]') . ":*");
+                $prefix = $namespace . ":" . $token . ":";
+
+                return array_filter($keys ?: [], static function ($key) use ($prefix) {
+                    return str_starts_with($key, $prefix) && ctype_digit(substr($key, strlen($prefix)));
+                });
+            }
+
             /**
              * @param string $authorization authorization string
              * @param string $ua user agent
@@ -125,9 +138,9 @@
                 $users = loadBackend("users");
 
                 if ($authorization[0] === "Bearer") {
-                    $token = $authorization[1];
+                    $token = $authorization[1] ?? "";
 
-                    $keys = $this->redis->keys("PERSISTENT:" . $token . ":*");
+                    $keys = $this->tokenKeys("PERSISTENT", $token);
 
                     foreach ($keys as $key) {
                         $auth = json_decode($this->redis->get($key), true);
@@ -153,7 +166,7 @@
                         }
                     }
 
-                    $keys = $this->redis->keys("AUTH:" . $token . ":*");
+                    $keys = $this->tokenKeys("AUTH", $token);
 
                     foreach ($keys as $key) {
                         $auth = json_decode($this->redis->get($key), true);
@@ -222,11 +235,11 @@
              */
 
             public function logout($token, $all = false) {
-                $keys = $this->redis->keys("AUTH:" . $token . ":*");
+                $keys = $this->tokenKeys("AUTH", $token);
 
                 if ($all) {
                     foreach ($keys as $key) {
-                        $uid = (string)@explode(":", $key)[2];
+                        $uid = substr($key, strrpos($key, ":") + 1);
                         $_keys = $this->redis->keys("AUTH:*:" . $uid);
 
                         foreach ($_keys as $_key) {
@@ -236,8 +249,6 @@
                         break;
                     }
                 } else {
-                    $keys = $this->redis->keys("AUTH:" . $token . ":*");
-
                     foreach ($keys as $key) {
                         $this->redis->del($key);
                     }
@@ -258,7 +269,7 @@
 
                 $users = loadBackend("users");
 
-                $keys = $this->redis->keys("AUTH:" . $token . ":*");
+                $keys = $this->tokenKeys("AUTH", $token);
 
                 foreach ($keys as $key) {
                     $auth = json_decode($this->redis->get($key), true);

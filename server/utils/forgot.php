@@ -1,5 +1,23 @@
 <?php
 
+    function consumePasswordResetToken($redis, $token) {
+        if (!is_string($token) || preg_match('/\A[0-9a-f]{32}\z/', $token) !== 1) {
+            return false;
+        }
+
+        $prefix = "FORGOT:" . $token . ":";
+        $prefixLength = strlen($prefix);
+        $matches = array_values(array_filter($redis->keys($prefix . "*") ?: [], static function ($key) use ($prefix, $prefixLength) {
+            return str_starts_with($key, $prefix) && ctype_digit(substr($key, $prefixLength));
+        }));
+
+        if (count($matches) !== 1 || $redis->del($matches[0]) !== 1) {
+            return false;
+        }
+
+        return substr($matches[0], $prefixLength);
+    }
+
     /**
      * @api {get} /accounts/forgot restore password
      *
@@ -40,28 +58,18 @@
             }
         }
 
-        if (@$params["token"]) {
-            $keys = $params["_redis"]->keys("FORGOT:{$params["token"]}:*");
-
-            $uid = false;
-
+        $uid = consumePasswordResetToken($params["_redis"], $params["token"] ?? null);
+        if ($uid !== false) {
+            $pw = generatePassword();
+            $params["_backends"]["users"]->setPassword($uid, $pw);
+            $user = $params["_backends"]["users"]->getUser($uid);
+            eMail($params["_config"], $user["eMail"], "password restoration", "your new password is $pw");
+            $keys = $params["_redis"]->keys("AUTH:*:$uid");
             foreach ($keys as $key) {
                 $params["_redis"]->del($key);
-                $uid = explode(":", $key)[2];
             }
-
-            if ($uid !== false) {
-                $pw = generatePassword();
-                $params["_backends"]["users"]->setPassword($uid, $pw);
-                $user = $params["_backends"]["users"]->getUser($uid);
-                eMail($params["_config"], $user["eMail"], "password restoration", "your new password is $pw");
-                $keys = $params["_redis"]->keys("AUTH:*:$uid");
-                foreach ($keys as $key) {
-                    $params["_redis"]->del($key);
-                }
-                echo "check your mailbox for your new password";
-                exit;
-            }
+            echo "check your mailbox for your new password";
+            exit;
         }
 
         if (@$params["available"]) {

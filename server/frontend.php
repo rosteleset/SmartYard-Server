@@ -160,6 +160,7 @@
 
     $api = @$m[0];
     $method = @$m[1];
+    $requestMethod = $_SERVER["REQUEST_METHOD"];
 
     $params = [];
 
@@ -167,12 +168,6 @@
         $params["_id"] = urldecode($m[2]);
     }
 
-    $params["_path"] = [
-        "api" => $api,
-        "method" => $method,
-    ];
-
-    $params["_request_method"] = @$_SERVER['REQUEST_METHOD'];
     $params["_ua"] = @$_SERVER["HTTP_USER_AGENT"];
 
     $clearCache = false;
@@ -241,6 +236,13 @@
         }
     }
 
+    // Route metadata for authorization must come from the actual request, not its parameters.
+    $params["_path"] = [
+        "api" => $api,
+        "method" => $method,
+    ];
+    $params["_request_method"] = $requestMethod;
+
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
@@ -251,7 +253,7 @@
         }
     }
 
-    if ($api === "plog" && $method === "camshot" && $params["_request_method"] === "GET") {
+    if ($api === "plog" && $method === "camshot" && $requestMethod === "GET") {
         $params["_config"] = $config;
         require_once __DIR__ . "/api/plog/camshot.php";
         $result = \api\plog\camshot::GET($params);
@@ -329,7 +331,7 @@
     if (file_exists(__DIR__ . "/api/$api/$method.php")) {
         if ($backends["authorization"]->allow($params)) {
             $cache = false;
-            if ($params["_request_method"] === "GET") {
+            if ($requestMethod === "GET") {
                 try {
                     $cache = json_decode($redis->get("CACHE:FRONT:" . strtoupper($params["_md5"])) . ":" . $auth["uid"], true);
                 } catch (Exception $e) {
@@ -355,10 +357,10 @@
                 require_once $file;
                 if (class_exists($class)) {
                     try {
-                        $result = call_user_func([$class, $params["_request_method"]], $params);
+                        $result = call_user_func([$class, $requestMethod], $params);
                         $code = array_key_first($result);
                         if ((int)$code) {
-                            if ($params["_request_method"] == "GET" && (int)$code === 200) {
+                            if ($requestMethod === "GET" && (int)$code === 200) {
                                 $ttl = (array_key_exists("cache", $result)) ? ((int)$cache) : $redis_cache_ttl;
                                 if ((int)$auth["uid"] > 0) {
                                     $redis->setex("CACHE:FRONT:" . strtoupper($params["_md5"]) . ":" . $auth["uid"], $ttl, json_encode($result));
