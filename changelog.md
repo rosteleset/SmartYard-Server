@@ -27,6 +27,8 @@
 + added configurable privacy policy text to mobile options
 + added dark theme support to the mobile inbox
 - fixed personal door-code notifications being sent to subscribers of unrelated flats
++ added SesamePortal auth backend support for Sesame DVR and Flussonic playback
+- prevented flat updates from clearing the flat number
 ```
 
 ## v1.3.0

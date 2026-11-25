@@ -1,5 +1,11 @@
 # devel
 
+## 2026-11-24
+
+### SesamePortal playback authorization
+
+Optional for Sesame DVR and Flussonic. See the [setup guide](doc/rbt-authbackend.ru.md).
+
 ## 2026-11-13
 
 ### Parking occupancy service
