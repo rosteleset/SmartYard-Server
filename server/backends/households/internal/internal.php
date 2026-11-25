@@ -859,6 +859,12 @@
 
             function modifyFlat($flatId, $params) {
                 if (checkInt($flatId)) {
+                    if (array_key_exists("flat", $params) &&
+                        (!is_scalar($params["flat"]) || is_bool($params["flat"]) || trim((string)$params["flat"]) === "")) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (array_key_exists("manualBlock", $params) && !checkInt($params["manualBlock"])) {
                         setLastError("invalidParams");
                         return false;
