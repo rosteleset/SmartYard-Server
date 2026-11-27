@@ -29,6 +29,7 @@
 - fixed personal door-code notifications being sent to subscribers of unrelated flats
 + added SesamePortal auth backend support for Sesame DVR and Flussonic playback
 - prevented flat updates from clearing the flat number
++ added configurable rate limits for mobile verification via SMS and flash calls
 ```
 
 ## v1.3.0
