@@ -218,6 +218,15 @@
             "common_secret": "<!-- your secret here --!>",
             "confirm_method": "outgoingCall",
             "confirm_number": "+74752637845",
+
+            // Shared limits for SMS and flash calls (user-initiated calls do not count)
+            "send_code_limits": {
+                // Minimum interval in seconds between sends to the same normalized number
+                "phone_cooldown": 60,
+                // Per-instance quotas over rolling windows
+                "per_minute": 10,
+                "per_24h": 200,
+            },
         },
 
         "inbox": {

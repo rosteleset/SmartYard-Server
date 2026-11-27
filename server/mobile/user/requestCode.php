@@ -15,8 +15,11 @@
      *
      * @apiErrorExample Ошибки
      * 422 неверный формат данных
-     * 429 код уже запрошен
+     * 429 код уже запрошен или исчерпан лимит отправок
+     * 503 отправка временно недоступна
      */
+
+    use utils\SendCodeLimiter;
 
     $user_phone = @$postdata['userPhone'];
 
@@ -57,15 +60,21 @@
                 break;
 
             default:
-                // smsCode - default
-                $already = $redis->get("USERPIN:" . $user_phone);
-                if ($already){
-                    response(429);
-                } else {
-                    $pin = explode(":", $isdn->sendCode($user_phone))[0];
-                    $redis->setex("USERPIN:" . $user_phone, 60, $pin);
-                    response(200, [ "method" => $confirmMethod ]);
+                require_once __DIR__ . '/../../utils/SendCodeLimiter.php';
+
+                $limiter = new SendCodeLimiter($redis, $config);
+                $retryAfter = $limiter->reserve($user_phone);
+                if ($retryAfter === null) {
+                    response(503);
                 }
+                if ($retryAfter > 0) {
+                    header('Retry-After: ' . $retryAfter);
+                    response(429);
+                }
+
+                $pin = explode(":", $isdn->sendCode($user_phone))[0];
+                $redis->setex("USERPIN:" . $user_phone, 60, $pin);
+                response(200, [ "method" => $confirmMethod ]);
                 break;
         }
     } else {
